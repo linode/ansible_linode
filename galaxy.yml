@@ -1,0 +1,17 @@
+namespace: linode
+name: cloud
+version: 0.0.1
+readme: README.md
+description: Linode ansible collection
+authors:
+  - Luke Murphy (@decentral1se)
+  - Charles Kenney (@charliekenney23)
+  - Phillip Campbell (@phillc)
+license_file: COPYING
+tags:
+  - linode
+  - cloud
+repository: https://github.com/linode/ansible_linode
+documentation: https://docs.ansible.com/ansible/latest/collections/linode/ansible_linode/
+homepage: https://github.com/linode/ansible_linode
+issues: https://github.com/linode/ansible_linode/issues
