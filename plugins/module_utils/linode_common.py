@@ -59,7 +59,6 @@ class LinodeModuleBase():
             skip_exec=False):
 
         arg_spec = dict()
-        arg_spec.update(module_arg_spec)
         arg_spec.update(LINODE_COMMON_ARGS)
 
         if has_label:
@@ -68,12 +67,20 @@ class LinodeModuleBase():
         if supports_tags:
             arg_spec.update(LINODE_TAG_ARGS)
 
+        arg_spec.update(module_arg_spec)
+
         self._client = None
+
         self.module = AnsibleModule(
             argument_spec=arg_spec, bypass_checks=bypass_checks, no_log=no_log,
             mutually_exclusive=mutually_exclusive, required_together=required_together,
             required_one_of=required_one_of, add_file_common_args=add_file_common_args,
             supports_check_mode=supports_check_mode, required_if=required_if)
+
+        self.results = self.results or dict(
+            changed=False,
+            actions=[]
+        )
 
         if not HAS_LINODE:
             self.fail(msg=missing_required_lib('linode_api4'), exception=HAS_LINODE_EXC)
@@ -96,10 +103,15 @@ class LinodeModuleBase():
         """Returns a not implemented error"""
         self.fail("Error: module {0} not implemented".format(self.__class__.__name__))
 
+    def register_action(self, description):
+        """Sets the changed flag to true and adds the given action to the result"""
+
+        self.results['changed'] = True
+        self.results['actions'].append(description)
+
     @property
     def client(self):
         """Creates a 'client' property that is used to access the Linode API."""
-
         if not self._client:
             api_token = self.module.params['api_token']
             api_version = self.module.params['api_version']

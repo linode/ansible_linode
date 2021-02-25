@@ -202,15 +202,14 @@ class LinodeInstance(LinodeModuleBase):
         )
 
         super().__init__(module_arg_spec=self.module_arg_spec,
-                                             required_one_of=self.required_one_of,
-                                             required_together=self.required_together)
+                         required_one_of=self.required_one_of,
+                         required_together=self.required_together)
 
     def get_instance_by_label(self, label):
         """Gets a Linode instance by label"""
 
         try:
-            res = self.client.linode.instances(Instance.label == label)
-            return res[0]
+            return self.client.linode.instances(Instance.label == label)[0]
         except IndexError:
             return None
         except Exception as exception:
@@ -233,7 +232,9 @@ class LinodeInstance(LinodeModuleBase):
                 instance_json = instance._raw_json
                 instance_json.update({'root_pass': root_pass})
                 return instance_json
+
             return res._raw_json
+
         except TypeError:
             self.fail(msg='unable to parse Linode instance creation response')
 

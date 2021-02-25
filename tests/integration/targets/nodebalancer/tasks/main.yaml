@@ -1,0 +1,338 @@
+- name: Run NodeBalancer integration tests
+  block:
+    # Create node instances
+    - name: Create node1
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-node1-{{ ansible_date_time.epoch }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        root_pass: Fn$$oobar123
+        private_ip: true
+        state: present
+
+      register: node1_inst
+
+    - name: Assert node1 is created
+      assert:
+        that:
+          - node1_inst.changed
+          - node1_inst.instance.ipv4|length > 1
+
+    - name: Create node2
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-node2-{{ ansible_date_time.epoch }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        root_pass: Fn$$oobar123
+        private_ip: true
+        state: present
+
+      register: node2_inst
+
+    - name: Assert node2 is created
+      assert:
+        that:
+          - node2_inst.changed
+          - node2_inst.instance.ipv4|length > 1
+
+    - name: Create node3
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-node3-{{ ansible_date_time.epoch }}'
+        region: us-central
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        root_pass: Fn$$oobar123
+        private_ip: true
+        state: present
+
+      register: node3_inst
+
+    - name: Assert node3 is created
+      assert:
+        that:
+          - node3_inst.changed
+          - node3_inst.instance.ipv4|length > 1
+
+    # Create NodeBalancer without configs/nodes
+    - name: create empty nodebalancer
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-empty-{{ ansible_date_time.epoch }}'
+        region: us-east
+        state: present
+
+      register: create_empty_nodebalancer
+
+    - name: Assert empty NodeBalancer is created
+      assert:
+        that:
+          - create_empty_nodebalancer.changed
+          - create_empty_nodebalancer.configs|length == 0
+
+    # Create populated NodeBalancers
+    - name: Create a populated NodeBalancer
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: 'ansible-nb-populated-{{ ansible_date_time.epoch }}'
+        region: us-east
+        state: present
+        configs:
+          - port: 80
+            algorithm: roundrobin
+            check: http
+            check_attempts: 3
+            check_interval: 90
+            check_passive: false
+            check_path: /
+            check_timeout: 10
+            cipher_suite: recommended
+            protocol: http
+            proxy_protocol: none
+            stickiness: none
+            nodes:
+              - label: node1
+                address: '{{ node1_inst.instance.ipv4[1] }}:80'
+                mode: accept
+                weight: 10
+
+      register: create_populated_nodebalancer
+
+    - name: Assert populated NodeBalancer is created
+      assert:
+        that:
+          - create_populated_nodebalancer.changed
+          - create_populated_nodebalancer.node_balancer.region == 'us-east'
+          - create_populated_nodebalancer.configs|length == 1
+          - create_populated_nodebalancer.configs[0].port == 80
+          - create_populated_nodebalancer.configs[0].protocol == 'http'
+          - create_populated_nodebalancer.configs[0].algorithm == 'roundrobin'
+          - create_populated_nodebalancer.configs[0].check == 'http'
+          - create_populated_nodebalancer.configs[0].check_attempts == 3
+          - create_populated_nodebalancer.configs[0].check_interval == 90
+          - create_populated_nodebalancer.configs[0].check_passive == false
+          - create_populated_nodebalancer.configs[0].check_path == '/'
+          - create_populated_nodebalancer.configs[0].check_timeout == 10
+          - create_populated_nodebalancer.configs[0].cipher_suite == 'recommended'
+          - create_populated_nodebalancer.configs[0].proxy_protocol == 'none'
+          - create_populated_nodebalancer.configs[0].stickiness == 'none'
+          - create_populated_nodebalancer.nodes|length == 1
+
+
+    # Edit the NodeBalancer config
+    - name: Update the NodeBalancer config
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+        region: us-east
+        state: present
+        configs:
+          - port: 81 # Port changed
+            protocol: http
+            nodes:
+              - label: node1
+                address: '{{ node1_inst.instance.ipv4[1] }}:80'
+
+      register: update_populated_config
+
+    - name: Assert populated NodeBalancer is updated
+      assert:
+        that:
+          - update_populated_config.changed
+          - update_populated_config.configs[0].port == 81
+
+    # Add a node to the NodeBalancer
+    - name: Add node to NodeBalancer
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+        region: us-east
+        state: present
+        configs:
+          - port: 81
+            protocol: http
+            nodes:
+              - label: node1
+                address: '{{ node1_inst.instance.ipv4[1] }}:80'
+              - label: node2
+                address: '{{ node2_inst.instance.ipv4[1] }}:80'
+
+      register: add_node
+
+    - name: Assert Node was added
+      assert:
+        that:
+          - add_node.changed
+          - add_node.nodes|length == 2
+
+    # Add a node from a different region to the NodeBalancer
+    - name: Add node from different region to NodeBalancer
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+        region: us-east
+        state: present
+        configs:
+          - port: 81
+            protocol: http
+            nodes:
+              - label: node1
+                address: '{{ node1_inst.instance.ipv4[1] }}:80'
+              - label: node2
+                address: '{{ node2_inst.instance.ipv4[1] }}:80'
+              - label: node3
+                address: '{{ node3_inst.instance.ipv4[1] }}:80'
+      register: add_node_dr
+      failed_when:   # Check that the request failed
+        -  add_node_dr.changed == true
+        - "'No backend' in add_node_dr.msg"
+
+    # Add an additional config and node to NodeBalancer
+    - name: Add additional config and node to NodeBalancer
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+        region: us-east
+        state: present
+        configs:
+          - port: 81
+            protocol: http
+            nodes:
+              - label: node1
+                address: '{{ node1_inst.instance.ipv4[1] }}:80'
+              - label: node2
+                address: '{{ node2_inst.instance.ipv4[1] }}:80'
+          - port: 80
+            protocol: http
+            nodes:
+              - label: node1
+                address: '{{ node2_inst.instance.ipv4[1] }}:80'
+
+      register: add_config
+
+    - name: Assert Config was added
+      assert:
+        that:
+          - add_config.changed
+          - add_config.configs|length == 2
+          - add_config.nodes|length == 3
+          - add_config.nodes[0].config_id == add_config.configs[0].id
+          - add_config.nodes[1].config_id == add_config.configs[0].id
+          - add_config.nodes[2].config_id == add_config.configs[1].id
+
+    - name: Remove a config from the NodeBalancer
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+        region: us-east
+        state: present
+        configs:
+          - port: 80
+            protocol: http
+            nodes:
+              - label: node1
+                address: '{{ node2_inst.instance.ipv4[1] }}:80'
+
+      register: rm_config
+
+    - name: Assert Config was removed
+      assert:
+        that:
+          - rm_config.changed
+          - rm_config.configs|length == 1
+          - rm_config.nodes|length == 1
+
+    - name: Get info about the NodeBalancer
+      linode.cloud.nodebalancer_info:
+        api_token: '{{ api_token }}'
+        label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+        id: '{{ create_populated_nodebalancer.node_balancer.id }}'
+      register: nb_info
+
+    - name: Assert that info is valid
+      assert:
+        that:
+          - nb_info.node_balancer.label == rm_config.node_balancer.label
+          - nb_info.configs|length == 1
+          - nb_info.nodes|length == 1
+          - nb_info.nodes[0] != None
+
+    - name: Get info about a NodeBalancer that doesn't exist
+      linode.cloud.nodebalancer_info:
+        api_token: '{{ api_token }}'
+        label: 'fake_nodebalancer-{{ ansible_date_time.epoch }}'
+      register: fake_nb_info
+      failed_when:
+        - "'failed' not in fake_nb_info.msg"
+
+  always:
+    # Delete the NodeBalancers
+    - name: Delete the populated NodeBalancer
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+        state: absent
+      register: delete_populated
+
+    - name: Assert populated NodeBalancer delete
+      assert:
+        that:
+          - delete_populated.changed
+          - delete_populated.node_balancer.id == update_populated_config.node_balancer.id
+
+    - name: Delete the empty NodeBalancer
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_empty_nodebalancer.node_balancer.label }}'
+        state: absent
+      register: delete_empty
+
+    - name: Assert empty NodeBalancer delete
+      assert:
+        that:
+          - delete_empty.changed
+          - delete_empty.node_balancer.id == delete_empty.node_balancer.id
+
+    # Delete the node instances
+    - name: Delete node1
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ node1_inst.instance.label }}'
+        state: absent
+      register: delete_node1
+
+    - name: Assert node1 delete
+      assert:
+        that:
+          - delete_node1.changed
+          - delete_node1.instance.id == node1_inst.instance.id
+
+    - name: Delete node2
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ node2_inst.instance.label }}'
+        state: absent
+      register: delete_node2
+
+    - name: Assert node2 delete
+      assert:
+        that:
+          - delete_node2.changed
+          - delete_node2.instance.id == node2_inst.instance.id
+
+    - name: Delete node3
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ node3_inst.instance.label }}'
+        state: absent
+      register: delete_node3
+
+    - name: Assert node3 delete
+      assert:
+        that:
+          - delete_node3.changed
+          - delete_node3.instance.id == node3_inst.instance.id

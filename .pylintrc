@@ -10,4 +10,5 @@ disable=protected-access,
         inconsistent-return-statements,
         assignment-from-no-return,
         too-many-arguments,
-        too-few-public-methods
+        too-few-public-methods,
+        duplicate-code
