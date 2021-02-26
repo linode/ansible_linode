@@ -1,0 +1,29 @@
+- name: Create a Linode instance
+  linode.cloud.instance:
+    api_token: '{{ api_token }}'
+    label: 'ansible-test-{{ ansible_date_time.epoch }}'
+    region: us-east
+    type: g6-standard-1
+    image: linode/ubuntu20.04
+    root_pass: Fn$$oobar123
+    state: present
+  register: create
+
+- name: Assert instance created
+  assert:
+    that:
+      - create.changed
+      - create.instance.status == 'provisioning'
+
+- name: Delete a Linode instance
+  linode.cloud.instance:
+    api_token: '{{ api_token }}'
+    label: '{{ create.instance.label }}'
+    state: absent
+  register: delete
+
+- name: Assert instance delete succeeded
+  assert:
+    that:
+      - delete.changed
+      - delete.instance.id == create.instance.id
