@@ -9,26 +9,26 @@ DOCUMENTATION = '''
 module: instance
 description: Manage Linode instances.
 requirements:
-  - python: >= 2.7
-  - linode_api4: >= 3.0
+  - python >= 2.7
+  - linode_api4 >= 3.0
 author:
   - Luke Murphy (@decentral1se)
   - Charles Kenney (@charliekenney23)
   - Phillip Campbell (@phillc)
 options:
   label:
-    desription:
+    description:
       - The unique label to give this instance.
     required: true
     type: string
   type:
     description:
       - The type or plan of this instance.
-      - See: U(https://api.linode.com/v4/linode/types)
+      - See U(https://api.linode.com/v4/linode/types)
   region:
     description:
       - The location to deploy the instance in.
-      - See: U(https://api.linode.com/v4/regions)
+      - See U(https://api.linode.com/v4/regions)
     required: true
     type: str
   image:
@@ -45,8 +45,8 @@ options:
     required: false
   tags:
     description:
-      - The tags that the instance should be marked under. See
-        U(https://www.linode.com/docs/api/tags/).
+      - The tags that the instance should be marked under.
+      - See U(https://www.linode.com/docs/api/tags/).
     required: false
     type: list
   root_pass:
