@@ -97,6 +97,7 @@ EXAMPLES = '''
     region: us-east
     image: linode/ubuntu20.04
     root_pass: verysecurepassword!!!
+    private_ip: false
     authorized_keys:
       - "ssh-rsa ..."
     stackscript_id: 1337
