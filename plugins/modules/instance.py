@@ -176,7 +176,8 @@ class LinodeInstance(LinodeModuleBase):
       group=dict(type='str', required=False),
       root_pass=dict(type='str', required=False, no_log=True),
       stackscript_id=dict(type='int', required=False),
-      stackscript_data=dict(type='dict', required=False)
+      stackscript_data=dict(type='dict', required=False),
+      private_ip=dict(type='bool', required=False)
     )
 
     self.required_one_of=['state', 'label']
@@ -253,6 +254,7 @@ class LinodeInstance(LinodeModuleBase):
         ltype=kwargs.get('type'),
         stackscript=kwargs.get('stackscript_id'),
         stackscript_data=kwargs.get('stackscript_data'),
+        private_ip=kwargs.get('private_ip')
       )
       return dict(changed=True, instance=instance_json)
 
