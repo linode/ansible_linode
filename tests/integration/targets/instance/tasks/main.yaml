@@ -6,6 +6,7 @@
     type: g6-standard-1
     image: linode/ubuntu20.04
     root_pass: Fn$$oobar123
+    private_ip: true
     state: present
   register: create
 
@@ -14,6 +15,7 @@
     that:
       - create.changed
       - create.instance.status == 'provisioning'
+      - create.instance.ipv4|length > 1
 
 - name: Delete a Linode instance
   linode.cloud.instance:

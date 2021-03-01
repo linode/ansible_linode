@@ -56,6 +56,11 @@ options:
         success JSON.
     required: false
     type: str
+  private_ip:
+    description:
+      - If true, the created Linode will have private networking enabled.
+    required: false
+    type: bool
   authorized_keys:
     description:
       - A list of SSH public key parts to deploy for the root user.
@@ -92,6 +97,7 @@ EXAMPLES = '''
     region: us-east
     image: linode/ubuntu20.04
     root_pass: verysecurepassword!!!
+    private_ip: false
     authorized_keys:
       - "ssh-rsa ..."
     stackscript_id: 1337
@@ -176,7 +182,8 @@ class LinodeInstance(LinodeModuleBase):
       group=dict(type='str', required=False),
       root_pass=dict(type='str', required=False, no_log=True),
       stackscript_id=dict(type='int', required=False),
-      stackscript_data=dict(type='dict', required=False)
+      stackscript_data=dict(type='dict', required=False),
+      private_ip=dict(type='bool', required=False)
     )
 
     self.required_one_of=['state', 'label']
@@ -253,6 +260,7 @@ class LinodeInstance(LinodeModuleBase):
         ltype=kwargs.get('type'),
         stackscript=kwargs.get('stackscript_id'),
         stackscript_data=kwargs.get('stackscript_data'),
+        private_ip=kwargs.get('private_ip')
       )
       return dict(changed=True, instance=instance_json)
 
