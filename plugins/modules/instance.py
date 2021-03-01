@@ -56,6 +56,11 @@ options:
         success JSON.
     required: false
     type: str
+  private_ip:
+    description:
+      - If true, the created Linode will have private networking enabled.
+    required: false
+    type: bool
   authorized_keys:
     description:
       - A list of SSH public key parts to deploy for the root user.
