@@ -33,4 +33,4 @@ jobs:
       - name: run tests
         run: cd ~/.ansible/collections/ansible_collections/linode/cloud && make test
         env:
-          LINODE_API_TOKEN: ${{ secrets.LINODE_API_TOKEN }}
+          LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
