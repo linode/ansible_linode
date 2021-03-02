@@ -1,0 +1,25 @@
+name: Run Linter
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+
+      - name: setup python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: install dependencies
+        run: pip3 install pylint ansible linode_api4
+
+      - name: run linter
+        run: pylint plugins --exit-zero
