@@ -1,5 +1,6 @@
+"""This module contains the base Linode module that other modules inherit from."""
+
 from __future__ import absolute_import, division, print_function
-__metaclass__ = type
 
 import traceback
 
@@ -11,99 +12,102 @@ except Exception:
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib, env_fallback
 
 try:
-  from linode_api4 import LinodeClient
-  HAS_LINODE = True
-except ImportError:
-  HAS_LINODE = False
-  HAS_LINODE_EXC = traceback.format_exc()
+    from linode_api4 import LinodeClient
 
+    HAS_LINODE = True
+except ImportError:
+    HAS_LINODE = False
+    HAS_LINODE_EXC = traceback.format_exc()
 
 ANSIBLE_USER_AGENT = 'Ansible/{0}'.format(ANSIBLE_VERSION)
 
-
 LINODE_COMMON_ARGS = dict(
-  api_token=dict(
-    type='str',
-    fallback=(env_fallback, ['LINODE_API_TOKEN', 'LINODE_TOKEN']),
-    required=True,
-    no_log=True
-  ),
-  api_version=dict(
-    type='str',
-    fallback=(env_fallback, ['LINODE_API_VERSION']),
-    default='v4'
-  ),
-  state=dict(
-    type='str',
-    required=True,
-    choices=['present', 'absent'],
-  ),
+    api_token=dict(
+        type='str',
+        fallback=(env_fallback, ['LINODE_API_TOKEN', 'LINODE_TOKEN']),
+        required=True,
+        no_log=True
+    ),
+    api_version=dict(
+        type='str',
+        fallback=(env_fallback, ['LINODE_API_VERSION']),
+        default='v4'
+    ),
+    state=dict(
+        type='str',
+        required=True,
+        choices=['present', 'absent'],
+    ),
 )
-
 
 LINODE_TAG_ARGS = dict(
-  tags=dict(type='list'),
+    tags=dict(type='list'),
 )
-
 
 LINODE_LABEL_ARGS = dict(
-  label=dict(type='str', required=True),
+    label=dict(type='str', required=True),
 )
 
 
-class LinodeModuleBase(object):
-  """A base for all Linode resource modules."""
+class LinodeModuleBase():
+    """A base for all Linode resource modules."""
 
-  def __init__(self, module_arg_spec, supports_tags=True, has_label=True, bypass_checks=False,
-    no_log=False, mutually_exclusive=None, required_together=None, required_one_of=None,
-    add_file_common_args=False, supports_check_mode=False, required_if=None, skip_exec=False):
+    def __init__(
+            self, module_arg_spec, supports_tags=True, has_label=True, bypass_checks=False,
+            no_log=False, mutually_exclusive=None, required_together=None, required_one_of=None,
+            add_file_common_args=False, supports_check_mode=False, required_if=None,
+            skip_exec=False):
 
-    arg_spec = dict()
-    arg_spec.update(module_arg_spec)
-    arg_spec.update(LINODE_COMMON_ARGS)
+        arg_spec = dict()
+        arg_spec.update(module_arg_spec)
+        arg_spec.update(LINODE_COMMON_ARGS)
 
-    if has_label:
-      arg_spec.update(LINODE_LABEL_ARGS)
+        if has_label:
+            arg_spec.update(LINODE_LABEL_ARGS)
 
-    if supports_tags:
-      arg_spec.update(LINODE_TAG_ARGS)
+        if supports_tags:
+            arg_spec.update(LINODE_TAG_ARGS)
 
-    self._client = None
-    self.module = AnsibleModule(argument_spec=arg_spec, bypass_checks=bypass_checks, no_log=no_log,
-      mutually_exclusive=mutually_exclusive, required_together=required_together,
-      required_one_of=required_one_of, add_file_common_args=add_file_common_args,
-      supports_check_mode=supports_check_mode, required_if=required_if)
+        self._client = None
+        self.module = AnsibleModule(
+            argument_spec=arg_spec, bypass_checks=bypass_checks, no_log=no_log,
+            mutually_exclusive=mutually_exclusive, required_together=required_together,
+            required_one_of=required_one_of, add_file_common_args=add_file_common_args,
+            supports_check_mode=supports_check_mode, required_if=required_if)
 
-    if not HAS_LINODE:
-      self.fail(msg=missing_required_lib('linode_api4'), exception=HAS_LINODE_EXC)
+        if not HAS_LINODE:
+            self.fail(msg=missing_required_lib('linode_api4'), exception=HAS_LINODE_EXC)
 
-    if not skip_exec:
-      res = self.exec_module(**self.module.params)
-      self.module.exit_json(**res)
+        if not skip_exec:
+            res = self.exec_module(**self.module.params)
+            self.module.exit_json(**res)
 
-  def fail(self, msg, **kwargs):
-    '''
-    Shortcut for calling module.fail
+    def fail(self, msg, **kwargs):
+        '''
+        Shortcut for calling module.fail
 
-    :param msg: Error message
-    :param kwargs: Any key=value pairs
-    :return: None
-    '''
-    self.module.fail_json(msg=msg, **kwargs)
+        :param msg: Error message
+        :param kwargs: Any key=value pairs
+        :return: None
+        '''
+        self.module.fail_json(msg=msg, **kwargs)
 
-  def exec_module(self, **kwargs):
-    self.fail("Error: module {0} not implemented".format(self.__class__.__name__))
+    def exec_module(self, **kwargs):
+        """Returns a not implemented error"""
+        self.fail("Error: module {0} not implemented".format(self.__class__.__name__))
 
-  @property
-  def client(self):
-    if not self._client:
-      api_token = self.module.params['api_token']
-      api_version = self.module.params['api_version']
+    @property
+    def client(self):
+        """Creates a 'client' property that is used to access the Linode API."""
 
-      self._client = LinodeClient(
-        api_token,
-        base_url='https://api.linode.com/{0}'.format(api_version),
-        user_agent=ANSIBLE_USER_AGENT,
-      )
+        if not self._client:
+            api_token = self.module.params['api_token']
+            api_version = self.module.params['api_version']
 
-    return self._client
+            self._client = LinodeClient(
+                api_token,
+                base_url='https://api.linode.com/{0}'.format(api_version),
+                user_agent=ANSIBLE_USER_AGENT,
+            )
+
+        return self._client

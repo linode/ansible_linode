@@ -2,4 +2,12 @@
 suggestion-mode=yes
 
 [MESSAGES CONTROL]
-disable=protected-access
+disable=protected-access,
+        broad-except,
+        unused-argument,
+        no-name-in-module,
+        import-error,
+        inconsistent-return-statements,
+        assignment-from-no-return,
+        too-many-arguments,
+        too-few-public-methods
