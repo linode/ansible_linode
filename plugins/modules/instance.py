@@ -1,8 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+"""This module contains all of the functionality for Linode instances."""
+
 from __future__ import absolute_import, division, print_function
-__metaclass__ = type
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 
 DOCUMENTATION = '''
 ---
@@ -160,120 +162,119 @@ instance:
   }
 '''
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-
 try:
-  from linode_api4 import Instance
+    from linode_api4 import Instance
 except ImportError:
-  # handled in module_utils.linode_common
-  pass
+    # handled in module_utils.linode_common
+    pass
 
 
 class LinodeInstance(LinodeModuleBase):
-  """Configuration class for a Linode instance resource"""
+    """Configuration class for a Linode instance resource"""
 
-  def __init__(self):
+    def __init__(self):
 
-    self.module_arg_spec = dict(
-      type=dict(type='str', required=False),
-      region=dict(type='str', required=False),
-      image=dict(type='str', required=False),
-      authorized_key=dict(type='list', required=False),
-      group=dict(type='str', required=False),
-      root_pass=dict(type='str', required=False, no_log=True),
-      stackscript_id=dict(type='int', required=False),
-      stackscript_data=dict(type='dict', required=False),
-      private_ip=dict(type='bool', required=False)
-    )
+        self.module_arg_spec = dict(
+            type=dict(type='str', required=False),
+            region=dict(type='str', required=False),
+            image=dict(type='str', required=False),
+            authorized_key=dict(type='list', required=False),
+            group=dict(type='str', required=False),
+            root_pass=dict(type='str', required=False, no_log=True),
+            stackscript_id=dict(type='int', required=False),
+            stackscript_data=dict(type='dict', required=False),
+            private_ip=dict(type='bool', required=False)
+        )
 
-    self.required_one_of=['state', 'label']
-    self.required_together=['region', 'image', 'type']
+        self.required_one_of = ['state', 'label']
+        self.required_together = ['region', 'image', 'type']
 
-    self.results = dict(
-      changed=False,
-      actions=[],
-      instance=None,
-    )
+        self.results = dict(
+            changed=False,
+            actions=[],
+            instance=None,
+        )
 
-    self.results = dict(
-      changed=False,
-      actions=[],
-      instance=None,
-    )
+        self.results = dict(
+            changed=False,
+            actions=[],
+            instance=None,
+        )
 
-    super(LinodeInstance, self).__init__(module_arg_spec=self.module_arg_spec,
-      required_one_of=self.required_one_of, required_together=self.required_together)
+        super().__init__(module_arg_spec=self.module_arg_spec,
+                                             required_one_of=self.required_one_of,
+                                             required_together=self.required_together)
 
+    def get_instance_by_label(self, label):
+        """Gets a Linode instance by label"""
 
-  def get_instance_by_label(self, label):
-    """Gets a Linode instance by label"""
+        try:
+            res = self.client.linode.instances(Instance.label == label)
+            return res[0]
+        except IndexError:
+            return None
+        except Exception as exception:
+            self.fail(msg='failed to get instance {0}: {1}'.format(label, exception))
 
-    try:
-      res = self.client.linode.instances(Instance.label == label)
-      return res[0]
-    except IndexError:
-      return None
-    except Exception as exception:
-      self.fail(msg='failed to get instance {0}: {1}'.format(label, exception))
+    def create_linode(self, **kwargs):
+        """Creates a Linode instance"""
 
+        if kwargs['root_pass'] is None:
+            kwargs.pop('root_pass')
 
-  def create_linode(self, **kwargs):
-    """Creates a Linode instance"""
+        try:
+            res = self.client.linode.instance_create(**kwargs)
+        except Exception as exception:
+            self.fail(msg='failed to create instance: {0}'.format(exception))
 
-    if kwargs['root_pass'] is None:
-      kwargs.pop('root_pass')
+        try:
+            if isinstance(res, tuple):
+                instance, root_pass = res
+                instance_json = instance._raw_json
+                instance_json.update({'root_pass': root_pass})
+                return instance_json
+            return res._raw_json
+        except TypeError:
+            self.fail(msg='unable to parse Linode instance creation response')
 
-    try:
-      res = self.client.linode.instance_create(**kwargs)
-    except Exception as exception:
-      self.fail(msg='failed to create instance: {0}'.format(exception))
+    def exec_module(self, **kwargs):
+        """Entrypoint for Instance module"""
 
-    try:
-      if isinstance(res, tuple):
-        instance, root_pass = res
-        instance_json = instance._raw_json
-        instance_json.update({'root_pass': root_pass})
-        return instance_json
-      else:
-        return res._raw_json
-    except TypeError:
-      self.fail(msg='unable to parse Linode instance creation response')
+        label = kwargs.get('label')
+        state = kwargs.get('state')
+        instance = self.get_instance_by_label(label)
 
+        if state == 'present' and instance is not None:
+            return dict(changed=False, instance=instance._raw_json)
 
-  def exec_module(self, **kwargs):
-    label = kwargs.get('label')
-    state = kwargs.get('state')
-    instance = self.get_instance_by_label(label)
+        if state == 'present' and instance is None:
+            instance_json = self.create_linode(
+                label=label,
+                authorized_keys=kwargs.get('authorized_keys'),
+                group=kwargs.get('group'),
+                image=kwargs.get('image'),
+                region=kwargs.get('region'),
+                root_pass=kwargs.get('root_pass'),
+                tags=kwargs.get('tags'),
+                ltype=kwargs.get('type'),
+                stackscript=kwargs.get('stackscript_id'),
+                stackscript_data=kwargs.get('stackscript_data'),
+                private_ip=kwargs.get('private_ip')
+            )
+            return dict(changed=True, instance=instance_json)
 
-    if state == 'present' and instance is not None:
-      return dict(changed=False, instance=instance._raw_json)
+        if state == 'absent' and instance is not None:
+            instance.delete()
+            return dict(changed=True, instance=instance._raw_json)
 
-    elif state == 'present' and instance is None:
-      instance_json = self.create_linode(
-        label=label,
-        authorized_keys=kwargs.get('authorized_keys'),
-        group=kwargs.get('group'),
-        image=kwargs.get('image'),
-        region=kwargs.get('region'),
-        root_pass=kwargs.get('root_pass'),
-        tags=kwargs.get('tags'),
-        ltype=kwargs.get('type'),
-        stackscript=kwargs.get('stackscript_id'),
-        stackscript_data=kwargs.get('stackscript_data'),
-        private_ip=kwargs.get('private_ip')
-      )
-      return dict(changed=True, instance=instance_json)
-
-    elif state == 'absent' and instance is not None:
-      instance.delete()
-      return dict(changed=True, instance=instance._raw_json)
-
-    return dict(changed=False, instance={})
+        return dict(changed=False, instance={})
 
 
 def main():
-  LinodeInstance()
+    """Constructs and calls the Linode instance module"""
+
+    LinodeInstance()
 
 
 if __name__ == '__main__':
-  main()
+    main()

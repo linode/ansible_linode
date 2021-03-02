@@ -1,5 +1,9 @@
-class ModuleDocFragment(object):
-  DOCUMENTATION = r'''
+"""Contains documentation fragments for reuse across the collection documentation."""
+
+class ModuleDocFragment():
+    """Contains documentation fragments"""
+
+    DOCUMENTATION = r'''
 
 options:
   api_version:
