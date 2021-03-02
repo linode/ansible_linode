@@ -1,0 +1,5 @@
+[MASTER]
+suggestion-mode=yes
+
+[MESSAGES CONTROL]
+disable=protected-access
