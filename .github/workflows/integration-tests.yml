@@ -25,7 +25,7 @@ jobs:
           python-version: '3.x'
 
       - name: install dependencies
-        run: pip3 install -r requirements-dev.txt
+        run: pip3 install -r requirements-dev.txt -r requirements.txt ansible
 
       - name: install collection
         run: make install
