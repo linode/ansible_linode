@@ -25,7 +25,7 @@ jobs:
           python-version: '3.x'
 
       - name: install dependencies
-        run: pip3 install ansible linode_api4
+        run: pip3 install -r requirements-dev.txt
 
       - name: install collection
         run: make install
