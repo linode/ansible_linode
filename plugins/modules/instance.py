@@ -178,7 +178,8 @@ class LinodeInstance(LinodeModuleBase):
             type=dict(type='str', required=False),
             region=dict(type='str', required=False),
             image=dict(type='str', required=False),
-            authorized_key=dict(type='list', required=False),
+            authorized_keys=dict(type='list', required=False),
+            authorized_users=dict(type='list', required=False),
             group=dict(type='str', required=False),
             root_pass=dict(type='str', required=False, no_log=True),
             stackscript_id=dict(type='int', required=False),
@@ -251,6 +252,7 @@ class LinodeInstance(LinodeModuleBase):
             instance_json = self.create_linode(
                 label=label,
                 authorized_keys=kwargs.get('authorized_keys'),
+                authorized_users=kwargs.get('authorized_users'),
                 group=kwargs.get('group'),
                 image=kwargs.get('image'),
                 region=kwargs.get('region'),
