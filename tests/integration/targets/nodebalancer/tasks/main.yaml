@@ -144,6 +144,8 @@
         that:
           - update_populated_config.changed
           - update_populated_config.configs[0].port == 81
+          - update_populated_config.configs|length == 1
+          - update_populated_config.nodes|length == 1
 
     # Add a node to the NodeBalancer
     - name: Add node to NodeBalancer
