@@ -1,0 +1,141 @@
+- name: Run volume integration tests
+  block:
+    - name: Create Linode instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-inst-{{ ansible_date_time.epoch }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        root_pass: Fn$$oobar123
+        state: present
+      register: create_inst
+
+    - name: Assert instance is created
+      assert:
+        that:
+          - create_inst.changed
+
+    - name: Create a volume with an instance
+      linode.cloud.volume:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-attached-{{ ansible_date_time.epoch }}'
+        region: us-east
+        size: 30
+        linode_id: '{{ create_inst.instance.id }}'
+        state: present
+      register: create_volume_inst
+
+    - name: Assert attached volume is valid
+      assert:
+        that:
+          - create_volume_inst.changed
+          - create_volume_inst.volume.size == 30
+          - create_volume_inst.volume.linode_id == create_inst.instance.id
+
+    - name: Create a volume without an instance
+      linode.cloud.volume:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        region: us-east
+        size: 42
+        state: present
+      register: create_volume_noinst
+
+    - name: Assert volume is valid
+      assert:
+        that:
+          - create_volume_noinst.changed
+          - create_volume_noinst.volume.size == 42
+
+    - name: Resize the volume
+      linode.cloud.volume:
+        api_token: '{{ api_token }}'
+        label: '{{ create_volume_noinst.volume.label }}'
+        size: 50
+        state: present
+      register: resize_volume_noinst
+
+    - name: Assert volume is resized
+      assert:
+        that:
+          - resize_volume_noinst.changed
+          - resize_volume_noinst.volume.size == 50
+
+    - name: Attach the volume to a Linode
+      linode.cloud.volume:
+        api_token: '{{ api_token }}'
+        label: '{{ create_volume_noinst.volume.label }}'
+        linode_id: '{{ create_inst.instance.id }}'
+        state: present
+      register: attach_volume
+
+    - name: Assert the volume is attached
+      assert:
+        that:
+          - attach_volume.changed
+          - attach_volume.volume.linode_id == create_inst.instance.id
+
+    - name: Get info about the volume by label
+      linode.cloud.volume_info:
+        api_token: '{{ api_token }}'
+        label: '{{ create_volume_noinst.volume.label }}'
+      register: volume_info_label
+
+    - name: Assert the volume info is valid
+      assert:
+        that:
+          - volume_info_label.volume.linode_id == attach_volume.volume.linode_id
+          - volume_info_label.volume.size == attach_volume.volume.size
+
+    - name: Detach the volume
+      linode.cloud.volume:
+        api_token: '{{ api_token }}'
+        label: '{{ create_volume_noinst.volume.label }}'
+        attached: false
+        state: present
+      register: detach_volume
+
+    - name: Assert the volume is detached
+      assert:
+        that:
+          - detach_volume.changed
+          - not detach_volume.volume.linode_id|d(False)
+
+  always:
+    - name: Delete the instance volume
+      linode.cloud.volume:
+        api_token: '{{ api_token }}'
+        label: '{{ create_volume_inst.volume.label }}'
+        state: absent
+      register: delete_volume_inst
+
+    - name: Assert the instance volume was deleted
+      assert:
+        that:
+          - delete_volume_inst.changed
+
+    - name: Delete the volume
+      linode.cloud.volume:
+        api_token: '{{ api_token }}'
+        label: '{{ create_volume_noinst.volume.label }}'
+        state: absent
+      register: delete_volume_noinst
+
+    - name: Assert the volume was deleted
+      assert:
+        that:
+          - delete_volume_noinst.changed
+
+    - name: Delete the instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create_inst.instance.label }}'
+        state: absent
+      register: delete_inst
+
+    - name: Assert instance delete
+      assert:
+        that:
+          - delete_inst.changed
+          - delete_inst.instance.id == create_inst.instance.id
