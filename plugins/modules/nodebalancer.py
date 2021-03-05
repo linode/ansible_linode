@@ -99,6 +99,7 @@ options:
       cipher_suite:
         description:
           - What ciphers to use for SSL connections served by this NodeBalancer.
+          - C(legacy) is considered insecure and should only be used if necessary.
         choices:
           - recommended
           - legacy
