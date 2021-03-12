@@ -182,7 +182,8 @@ class LinodeVolume(LinodeModuleBase):
         if linode_id is not None and self._volume.linode_id != linode_id:
             self._volume.attach(linode_id, config_id)
             self.register_action(
-                'Attached volume {0} to linode_id {1} and config_id {2}'.format(label, linode_id, config_id))
+                'Attached volume {0} to linode_id {1} and config_id {2}'
+                    .format(label, linode_id, config_id))
 
         if not attached:
             self._volume.detach()
