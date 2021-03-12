@@ -115,7 +115,7 @@ class LinodeInstanceInfo(LinodeModuleBase):
                          required_one_of=self.required_one_of)
 
     def get_instance_by_properties(self, **kwargs):
-        """Gets the volume with the given property in kwargs"""
+        """Gets the instance with the given property in kwargs"""
 
         filter_items = {k: v for k, v in kwargs.items()
                         if k in linode_instance_valid_filters and v is not None}
