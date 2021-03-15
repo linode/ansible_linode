@@ -19,7 +19,7 @@ jobs:
           python-version: '3.x'
 
       - name: install dependencies
-        run: pip3 install pylint ansible linode_api4
+        run: pip3 install -r requirements-dev.txt -r requirements.txt ansible
 
       - name: run linter
         run: pylint plugins --exit-zero
