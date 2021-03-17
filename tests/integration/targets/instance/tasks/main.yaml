@@ -1,31 +1,57 @@
-- name: Create a Linode instance
-  linode.cloud.instance:
-    api_token: '{{ api_token }}'
-    label: 'ansible-test-{{ ansible_date_time.epoch }}'
-    region: us-east
-    type: g6-standard-1
-    image: linode/ubuntu20.04
-    root_pass: Fn$$oobar123
-    private_ip: true
-    state: present
-  register: create
+- name: Run instance integration tests
+  block:
+    - name: Create a Linode instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        root_pass: Fn$$oobar123
+        private_ip: true
+        state: present
+      register: create
 
-- name: Assert instance created
-  assert:
-    that:
-      - create.changed
-      - create.instance.status == 'provisioning'
-      - create.instance.ipv4|length > 1
+    - name: Assert instance created
+      assert:
+        that:
+          - create.changed
+          - create.instance.status == 'provisioning'
+          - create.instance.ipv4|length > 1
 
-- name: Delete a Linode instance
-  linode.cloud.instance:
-    api_token: '{{ api_token }}'
-    label: '{{ create.instance.label }}'
-    state: absent
-  register: delete
+    - name: Get info about the instance by id
+      linode.cloud.instance_info:
+        api_token: '{{ api_token }}'
+        id: '{{ create.instance.id }}'
+      register: info_id
 
-- name: Assert instance delete succeeded
-  assert:
-    that:
-      - delete.changed
-      - delete.instance.id == create.instance.id
+    - name: Assert instance info
+      assert:
+        that:
+          - info_id.instance.ipv4|length > 1
+          - info_id.instance.region == 'us-east'
+
+    - name: Get info about the instance by label
+      linode.cloud.instance_info:
+        api_token: '{{ api_token }}'
+        label: '{{ create.instance.label }}'
+      register: info_label
+
+    - name: Assert instance info
+      assert:
+        that:
+          - info_label.instance.ipv4|length > 1
+          - info_label.instance.region == 'us-east'
+  always:
+    - name: Delete a Linode instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create.instance.label }}'
+        state: absent
+      register: delete
+
+    - name: Assert instance delete succeeded
+      assert:
+        that:
+          - delete.changed
+          - delete.instance.id == create.instance.id
