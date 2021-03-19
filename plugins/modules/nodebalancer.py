@@ -211,17 +211,34 @@ EXAMPLES = '''
 
 RETURN = '''
 nodebalancer:
-  description: The NodeBalancer, Configs, and Nodes in JSON serialized form.
-  returned: Always.
+  description: The NodeBalancer in JSON serialized form.
+  returned: always
   type: dict
   sample: {
-    "actions": [
-        "Deleted Config xxxxxx",
-        "Created Config xxxxxx",
-        "Created Node node1"
-    ],
-    "changed": true,
-    "configs": [
+      "client_conn_throttle": 0,
+      "created": "",
+      "hostname": "xxxx.newark.nodebalancer.linode.com",
+      "id": xxxxxx,
+      "ipv4": "xxx.xxx.xxx.xxx",
+      "ipv6": "xxxx:xxxx:x::xxxx:xxxx",
+      "label": "my-loadbalancer",
+      "region": "us-east",
+      "tags": [
+
+      ],
+      "transfer": {
+        "in": 0,
+        "out": 0,
+        "total": 0
+      },
+      "updated": ""
+    }
+    
+configs:
+  description: A list of configs applied to the NodeBalancer.
+  returned: always
+  type: list
+  sample: [
       {
         "algorithm": "roundrobin",
         "check": "none",
@@ -247,27 +264,13 @@ nodebalancer:
         "ssl_key": null,
         "stickiness": "none"
       }
-    ],
-    "node_balancer": {
-      "client_conn_throttle": 0,
-      "created": "",
-      "hostname": "xxxx.newark.nodebalancer.linode.com",
-      "id": xxxxxx,
-      "ipv4": "xxx.xxx.xxx.xxx",
-      "ipv6": "xxxx:xxxx:x::xxxx:xxxx",
-      "label": "my-loadbalancer",
-      "region": "us-east",
-      "tags": [
-
-      ],
-      "transfer": {
-        "in": 0,
-        "out": 0,
-        "total": 0
-      },
-      "updated": ""
-    },
-    "nodes": [
+    ]
+    
+nodes:
+  description: A list of all nodes associated with the NodeBalancer.
+  returned: always
+  type: list
+  sample: [
       {
         "address": "xxx.xxx.xxx.xx:80",
         "config_id": xxxxxx,
@@ -279,7 +282,6 @@ nodebalancer:
         "weight": 1
       }
     ]
-  }
 '''
 
 linode_nodes_spec = dict(
