@@ -220,7 +220,7 @@ nodebalancer:
       "hostname": "xxxx.newark.nodebalancer.linode.com",
       "id": xxxxxx,
       "ipv4": "xxx.xxx.xxx.xxx",
-      "ipv6": "xxxx:xxxx:x::xxxx:xxxx",
+      "ipv6": "xxxx:xxxx::xxxx:xxxx:xxxx:xxxx",
       "label": "my-loadbalancer",
       "region": "us-east",
       "tags": [
