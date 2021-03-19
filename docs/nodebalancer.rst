@@ -168,7 +168,7 @@ Examples
 Return Values
 -------------
 
-nodebalancer (always, dict, {'client_conn_throttle': 0, 'created': '', 'hostname': 'xxxx.newark.nodebalancer.linode.com', 'id': 'xxxxxx', 'ipv4': 'xxx.xxx.xxx.xxx', 'ipv6': 'xxxx:xxxx:x::xxxx:xxxx', 'label': 'my-loadbalancer', 'region': 'us-east', 'tags': [], 'transfer': {'in': 0, 'out': 0, 'total': 0}, 'updated': ''})
+nodebalancer (always, dict, {'client_conn_throttle': 0, 'created': '', 'hostname': 'xxxx.newark.nodebalancer.linode.com', 'id': 'xxxxxx', 'ipv4': 'xxx.xxx.xxx.xxx', 'ipv6': 'xxxx:xxxx::xxxx:xxxx:xxxx:xxxx', 'label': 'my-loadbalancer', 'region': 'us-east', 'tags': [], 'transfer': {'in': 0, 'out': 0, 'total': 0}, 'updated': ''})
   The NodeBalancer in JSON serialized form.
 
 
@@ -189,7 +189,7 @@ Status
 
 
 
-- This module is maintained by linode.
+- This module is maintained by Linode.
 
 
 

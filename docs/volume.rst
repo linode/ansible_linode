@@ -121,7 +121,7 @@ Status
 
 
 
-- This module is maintained by linode.
+- This module is maintained by Linode.
 
 
 
