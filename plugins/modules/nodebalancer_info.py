@@ -52,71 +52,79 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
+
 nodebalancer:
-  description: The NodeBalancer, Configs, and Nodes in JSON serialized form.
-  returned: Always.
+  description: The NodeBalancer in JSON serialized form.
+  returned: always
   type: dict
   sample: {
-   "changed":false,
-   "configs":[
-      {
-         "algorithm":"roundrobin",
-         "check":"none",
-         "check_attempts":3,
-         "check_body":"",
-         "check_interval":0,
-         "check_passive":true,
-         "check_path":"",
-         "check_timeout":30,
-         "cipher_suite":"recommended",
-         "id":xxxxx,
-         "nodebalancer_id":xxxxxx,
-         "nodes_status":{
-            "down":1,
-            "up":0
-         },
-         "port":80,
-         "protocol":"http",
-         "proxy_protocol":"none",
-         "ssl_cert":null,
-         "ssl_commonname":"",
-         "ssl_fingerprint":"",
-         "ssl_key":null,
-         "stickiness":"none"
-      }
-   ],
-   "node_balancer":{
-      "client_conn_throttle":0,
-      "created":"2021-03-03T17:45:37",
-      "hostname":"xxx.nodebalancer.linode.com",
+      "client_conn_throttle": 0,
+      "created": "",
+      "hostname": "xxxx.newark.nodebalancer.linode.com",
       "id": xxxxxx,
-      "ipv4":"xxx.xxx.xxx.xxx",
-      "ipv6":"xxxx:xxxx:x::xxxx:xxxx",
-      "label":"ansible-nodebalancer",
-      "region":"us-east",
-      "tags":[
-         
+      "ipv4": "xxx.xxx.xxx.xxx",
+      "ipv6": "xxxx:xxxx:x::xxxx:xxxx",
+      "label": "my-loadbalancer",
+      "region": "us-east",
+      "tags": [
+
       ],
-      "transfer":{
-         "in":null,
-         "out":null,
-         "total":null
+      "transfer": {
+        "in": 0,
+        "out": 0,
+        "total": 0
       },
-      "updated":"2021-03-03T17:45:37"
-   },
-   "nodes":[
+      "updated": ""
+    }
+    
+configs:
+  description: A list of configs applied to the NodeBalancer.
+  returned: always
+  type: list
+  sample: [
       {
-         "address":"xxx.xxx.xxx.xxx:80",
-         "config_id": xxxxxx,
-         "id": xxxxxx,
-         "label":"node1",
-         "mode":"accept",
-         "nodebalancer_id": xxxxxx,
-         "status":"Unknown",
-         "weight":50
+        "algorithm": "roundrobin",
+        "check": "none",
+        "check_attempts": 3,
+        "check_body": "",
+        "check_interval": 0,
+        "check_passive": true,
+        "check_path": "",
+        "check_timeout": 30,
+        "cipher_suite": "recommended",
+        "id": xxxxxx,
+        "nodebalancer_id": xxxxxx,
+        "nodes_status": {
+          "down": 1,
+          "up": 0
+        },
+        "port": 80,
+        "protocol": "http",
+        "proxy_protocol": "none",
+        "ssl_cert": null,
+        "ssl_commonname": "",
+        "ssl_fingerprint": "",
+        "ssl_key": null,
+        "stickiness": "none"
       }
-   ]
-}
+    ]
+    
+nodes:
+  description: A list of all nodes associated with the NodeBalancer.
+  returned: always
+  type: list
+  sample: [
+      {
+        "address": "xxx.xxx.xxx.xx:80",
+        "config_id": xxxxxx,
+        "id": xxxxxx,
+        "label": "node1",
+        "mode": "accept",
+        "nodebalancer_id": xxxxxx,
+        "status": "Unknown",
+        "weight": 1
+      }
+    ]
 '''
 
 linode_nodebalancer_info_spec = dict(

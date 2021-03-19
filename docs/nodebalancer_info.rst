@@ -62,8 +62,16 @@ Examples
 Return Values
 -------------
 
-nodebalancer (Always., dict, {'changed': False, 'configs': [{'algorithm': 'roundrobin', 'check': 'none', 'check_attempts': 3, 'check_body': '', 'check_interval': 0, 'check_passive': True, 'check_path': '', 'check_timeout': 30, 'cipher_suite': 'recommended', 'id': 'xxxxx', 'nodebalancer_id': 'xxxxxx', 'nodes_status': {'down': 1, 'up': 0}, 'port': 80, 'protocol': 'http', 'proxy_protocol': 'none', 'ssl_cert': None, 'ssl_commonname': '', 'ssl_fingerprint': '', 'ssl_key': None, 'stickiness': 'none'}], 'node_balancer': {'client_conn_throttle': 0, 'created': '2021-03-03T17:45:37', 'hostname': 'xxx.nodebalancer.linode.com', 'id': 'xxxxxx', 'ipv4': 'xxx.xxx.xxx.xxx', 'ipv6': 'xxxx:xxxx:x::xxxx:xxxx', 'label': 'ansible-nodebalancer', 'region': 'us-east', 'tags': [], 'transfer': {'in': None, 'out': None, 'total': None}, 'updated': '2021-03-03T17:45:37'}, 'nodes': [{'address': 'xxx.xxx.xxx.xxx:80', 'config_id': 'xxxxxx', 'id': 'xxxxxx', 'label': 'node1', 'mode': 'accept', 'nodebalancer_id': 'xxxxxx', 'status': 'Unknown', 'weight': 50}]})
-  The NodeBalancer, Configs, and Nodes in JSON serialized form.
+nodebalancer (always, dict, {'client_conn_throttle': 0, 'created': '', 'hostname': 'xxxx.newark.nodebalancer.linode.com', 'id': 'xxxxxx', 'ipv4': 'xxx.xxx.xxx.xxx', 'ipv6': 'xxxx:xxxx:x::xxxx:xxxx', 'label': 'my-loadbalancer', 'region': 'us-east', 'tags': [], 'transfer': {'in': 0, 'out': 0, 'total': 0}, 'updated': ''})
+  The NodeBalancer in JSON serialized form.
+
+
+configs (always, list, [{'algorithm': 'roundrobin', 'check': 'none', 'check_attempts': 3, 'check_body': '', 'check_interval': 0, 'check_passive': True, 'check_path': '', 'check_timeout': 30, 'cipher_suite': 'recommended', 'id': 'xxxxxx', 'nodebalancer_id': 'xxxxxx', 'nodes_status': {'down': 1, 'up': 0}, 'port': 80, 'protocol': 'http', 'proxy_protocol': 'none', 'ssl_cert': None, 'ssl_commonname': '', 'ssl_fingerprint': '', 'ssl_key': None, 'stickiness': 'none'}])
+  A list of configs applied to the NodeBalancer.
+
+
+nodes (always, list, [{'address': 'xxx.xxx.xxx.xx:80', 'config_id': 'xxxxxx', 'id': 'xxxxxx', 'label': 'node1', 'mode': 'accept', 'nodebalancer_id': 'xxxxxx', 'status': 'Unknown', 'weight': 1}])
+  A list of all nodes associated with the NodeBalancer.
 
 
 
