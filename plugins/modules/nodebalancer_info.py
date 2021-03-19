@@ -12,6 +12,11 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 # pylint: disable=unused-import
 from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList, and_
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'supported_by': 'linode'
+}
+
 DOCUMENTATION = '''
 ---
 module: nodebalancer_info
