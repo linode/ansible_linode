@@ -23,7 +23,7 @@ author:
   - Luke Murphy (@decentral1se)
   - Charles Kenney (@charliekenney23)
   - Phillip Campbell (@phillc)
-  - Luke Garber (@lbgarber)
+  - Lena Garber (@lbgarber)
 options:
   label:
     description:
