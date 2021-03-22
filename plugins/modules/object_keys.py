@@ -84,7 +84,6 @@ EXAMPLES = '''
 RETURN = '''
 key:
   description: The Object Storage key in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/object-storage/#object-storage-key-view__responses"
   returned: always
   type: dict
   sample: {

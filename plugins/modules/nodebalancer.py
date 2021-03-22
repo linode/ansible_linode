@@ -212,7 +212,6 @@ EXAMPLES = '''
 RETURN = '''
 nodebalancer:
   description: The NodeBalancer in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses"
   returned: always
   type: dict
   sample: {
@@ -237,7 +236,6 @@ nodebalancer:
     
 configs:
   description: A list of configs applied to the NodeBalancer.
-  linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#config-view__responses"
   returned: always
   type: list
   sample: [
@@ -270,7 +268,6 @@ configs:
     
 nodes:
   description: A list of all nodes associated with the NodeBalancer.
-  linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#node-view__responses"
   returned: always
   type: list
   sample: [
