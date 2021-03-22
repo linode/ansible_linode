@@ -198,9 +198,7 @@ class LinodeInstance(LinodeModuleBase):
 
         self._instance = None
 
-        super().__init__(module_arg_spec=self.module_arg_spec,
-                         required_one_of=self.required_one_of,
-                         required_together=self.required_together)
+        super().__init__(module_arg_spec=self.module_arg_spec)
 
     def get_instance_by_label(self, label):
         """Gets a Linode instance by label"""
