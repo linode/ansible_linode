@@ -171,8 +171,8 @@ except ImportError:
     pass
 
 linode_instance_spec = dict(
-    type=dict(type='str', required=False),
-    region=dict(type='str', required=False),
+    type=dict(type='str', required=True),
+    region=dict(type='str', required=True),
     image=dict(type='str', required=False),
     authorized_keys=dict(type='list', required=False),
     authorized_users=dict(type='list', required=False),
@@ -190,8 +190,7 @@ class LinodeInstance(LinodeModuleBase):
     def __init__(self):
         self.module_arg_spec = linode_instance_spec
 
-        self.required_one_of = ['state', 'label']
-        self.required_together = ['region', 'image', 'type']
+        self.required_one_of = ['state']
 
         self.results = dict(
             changed=False,
