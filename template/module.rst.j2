@@ -111,8 +111,12 @@ Examples
 {%     set typ = spec.type | default("any") %}
 {%     set sample = spec.sample %}
 {{ "  " * level }}{{ name }} ({{ ret }}, {{ typ }}):
+
 .. code-block:: JSON
-    {{ sample | tojson(indent=True) | indent }}
+
+{{ sample | tojson(indent=True) | indent }}
+
+
 {%     for para in spec.description %}
   {{ "  " * level }}{{ para | rst_ify }}
 

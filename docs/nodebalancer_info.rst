@@ -64,8 +64,10 @@ Return Values
 -------------
 
 nodebalancer (always, dict):
+
 .. code-block:: JSON
-    {
+
+{
      "client_conn_throttle": 0,
      "created": "",
      "hostname": "xxxx.newark.nodebalancer.linode.com",
@@ -82,12 +84,16 @@ nodebalancer (always, dict):
      },
      "updated": ""
     }
+
+
   The NodeBalancer in JSON serialized form.
 
 
 configs (always, list):
+
 .. code-block:: JSON
-    [
+
+[
      {
       "algorithm": "roundrobin",
       "check": "none",
@@ -114,12 +120,16 @@ configs (always, list):
       "stickiness": "none"
      }
     ]
+
+
   A list of configs applied to the NodeBalancer.
 
 
 nodes (always, list):
+
 .. code-block:: JSON
-    [
+
+[
      {
       "address": "xxx.xxx.xxx.xx:80",
       "config_id": "xxxxxx",
@@ -131,6 +141,8 @@ nodes (always, list):
       "weight": 1
      }
     ]
+
+
   A list of all nodes associated with the NodeBalancer.
 
 

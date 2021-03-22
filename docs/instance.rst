@@ -125,8 +125,10 @@ Return Values
 -------------
 
 instance (always, dict):
+
 .. code-block:: JSON
-    {
+
+{
      "alerts": {
       "cpu": 90,
       "io": 10000,
@@ -167,6 +169,8 @@ instance (always, dict):
      "updated": "2018-09-26T10:10:14",
      "watchdog_enabled": true
     }
+
+
   The instance description in JSON serialized form.
 
 
