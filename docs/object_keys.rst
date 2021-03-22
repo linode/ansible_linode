@@ -91,6 +91,8 @@ Return Values
 
 The Object Storage key in JSON serialized form.
 
+`Linode Response Object Documentation <https://www.linode.com/docs/api/object-storage/#object-storage-key-view__responses>`
+
 Sample Response:
 
 .. code-block:: JSON

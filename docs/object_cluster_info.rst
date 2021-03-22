@@ -75,6 +75,8 @@ Return Values
 
 The Object Storage clusters in JSON serialized form.
 
+`Linode Response Object Documentation <https://www.linode.com/docs/api/object-storage/#cluster-view__responses>`
+
 Sample Response:
 
 .. code-block:: JSON

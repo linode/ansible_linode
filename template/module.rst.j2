@@ -110,11 +110,14 @@ Examples
 {%     set ret = spec.returned %}
 {%     set typ = spec.type | default("any") %}
 {%     set sample = spec.sample %}
+{%     set api_docs = spec.linode_api_docs %}
 {{ "  " * level }}**{{ name }} ({{ ret }}, {{ typ }}):**
 
 {%     for para in spec.description %}
 {{ "  " * level }}{{ para | rst_ify }}
 {%     endfor %}
+
+`Linode Response Object Documentation <{{ api_docs }}>`
 
 Sample Response:
 

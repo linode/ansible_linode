@@ -67,6 +67,8 @@ Return Values
 
 The volume in JSON serialized form.
 
+`Linode Response Object Documentation <https://www.linode.com/docs/api/volumes/#volume-view__responses>`
+
 Sample Response:
 
 .. code-block:: JSON

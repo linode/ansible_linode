@@ -126,6 +126,7 @@ EXAMPLES = '''
 RETURN = '''
 instance:
   description: The instance description in JSON serialized form.
+  linode_api_docs: "https://www.linode.com/docs/api/linode-instances/#linode-view__responses"
   returned: always
   type: dict
   sample: {

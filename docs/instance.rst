@@ -128,6 +128,8 @@ Return Values
 
 The instance description in JSON serialized form.
 
+`Linode Response Object Documentation <https://www.linode.com/docs/api/linode-instances/#linode-view__responses>`
+
 Sample Response:
 
 .. code-block:: JSON

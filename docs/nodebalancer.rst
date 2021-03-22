@@ -173,6 +173,8 @@ Return Values
 
 The NodeBalancer in JSON serialized form.
 
+`Linode Response Object Documentation <https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses>`
+
 Sample Response:
 
 .. code-block:: JSON
@@ -199,6 +201,8 @@ Sample Response:
 **configs (always, list):**
 
 A list of configs applied to the NodeBalancer.
+
+`Linode Response Object Documentation <https://www.linode.com/docs/api/nodebalancers/#config-view__responses>`
 
 Sample Response:
 
@@ -236,6 +240,8 @@ Sample Response:
 **nodes (always, list):**
 
 A list of all nodes associated with the NodeBalancer.
+
+`Linode Response Object Documentation <https://www.linode.com/docs/api/nodebalancers/#node-view__responses>`
 
 Sample Response:
 
