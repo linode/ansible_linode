@@ -70,7 +70,15 @@ Examples
 Return Values
 -------------
 
-clusters (always, list, [{'domain': 'us-east-1.linodeobjects.com', 'id': 'us-east-1', 'region': 'us-east', 'static_site_domain': 'website-us-east-1.linodeobjects.com', 'status': 'available'}])
+clusters (always, list, [
+ {
+  "domain": "us-east-1.linodeobjects.com",
+  "id": "us-east-1",
+  "region": "us-east",
+  "static_site_domain": "website-us-east-1.linodeobjects.com",
+  "status": "available"
+ }
+])
   The Object Storage clusters in JSON serialized form.
 
 

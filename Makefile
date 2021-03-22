@@ -14,7 +14,7 @@ install: clean build
 
 gendocs:
 	rm -f docs/*
-	ansible-doc-extractor docs plugins/modules/*.py
+	ansible-doc-extractor --template=template/module.rst.j2 docs plugins/modules/*.py
 
 integration-test: $(INTEGRATION_CONFIG)
 	ansible-test integration $(TEST_ARGS)

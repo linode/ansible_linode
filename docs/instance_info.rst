@@ -62,7 +62,46 @@ Examples
 Return Values
 -------------
 
-instance (always, dict, {'alerts': {'cpu': 90, 'io': 10000, 'network_in': 10, 'network_out': 10, 'transfer_quota': 80}, 'backups': {'enabled': False, 'schedule': {'day': None, 'window': None}}, 'created': 'xxxx-xx-xxTxx:xx:xx', 'group': 'app', 'hypervisor': 'kvm', 'id': 'xxxxxx', 'image': 'linode/ubuntu20.04', 'ipv4': ['xxx.xxx.xxx.xxx'], 'ipv6': 'xxxx:xxxx::xxxx:xxxx:xxxx:xxxx/64', 'label': 'my-linode', 'region': 'us-east', 'specs': {'disk': 25600, 'memory': 1024, 'transfer': 1000, 'vcpus': 1}, 'status': 'running', 'tags': ['env=prod'], 'type': 'g6-nanode-1', 'updated': 'xxxx-xx-xxTxx:xx:xx', 'watchdog_enabled': True})
+instance (always, dict, {
+ "alerts": {
+  "cpu": 90,
+  "io": 10000,
+  "network_in": 10,
+  "network_out": 10,
+  "transfer_quota": 80
+ },
+ "backups": {
+  "enabled": false,
+  "schedule": {
+   "day": null,
+   "window": null
+  }
+ },
+ "created": "xxxx-xx-xxTxx:xx:xx",
+ "group": "app",
+ "hypervisor": "kvm",
+ "id": "xxxxxx",
+ "image": "linode/ubuntu20.04",
+ "ipv4": [
+  "xxx.xxx.xxx.xxx"
+ ],
+ "ipv6": "xxxx:xxxx::xxxx:xxxx:xxxx:xxxx/64",
+ "label": "my-linode",
+ "region": "us-east",
+ "specs": {
+  "disk": 25600,
+  "memory": 1024,
+  "transfer": 1000,
+  "vcpus": 1
+ },
+ "status": "running",
+ "tags": [
+  "env=prod"
+ ],
+ "type": "g6-nanode-1",
+ "updated": "xxxx-xx-xxTxx:xx:xx",
+ "watchdog_enabled": true
+})
   The instance description in JSON serialized form.
 
 
