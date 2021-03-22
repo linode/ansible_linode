@@ -11,23 +11,6 @@ A collection may contain metadata that identifies these versions.
 PEP440 is the schema used to describe the versions of Ansible.
 <!--end requires_ansible-->
 
-## Included content
-
-<!--start collection content-->
-### Modules
-Name | Description
---- | ---
-[linode.cloud.instance](docs/instance.rst)|Create and destroy Linodes.
-[linode.cloud.instance_info](docs/instance_info.rst)|Gather info about an existing Linode instance.
-[linode.cloud.nodebalancer](docs/nodebalancer.rst)|Create, destroy, and configure NodeBalancers.
-[linode.cloud.nodebalancer_info](docs/nodebalancer_info.rst)|Gather info about an existing NodeBalancer.
-[linode.cloud.object_cluster_info](docs/object_cluster_info.rst)|Gather info about Object Storage clusters.
-[linode.cloud.object_keys](docs/object_keys.rst)|Create and destroy Object Storage keys.
-[linode.cloud.volume](docs/volume.rst)|Create, destroy, and attach Linode volumes.
-[linode.cloud.volume_info](docs/volume_info.rst)|Gather info about an existing Linode volume.
-
-<!--end collection content-->
-
 ## Installation
 
 You can install the Linode collection with the Ansible Galaxy CLI:
