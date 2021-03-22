@@ -65,9 +65,13 @@ Return Values
 
 volume (always, dict):
 
+The volume in JSON serialized form.
+
+Sample Response:
+
 .. code-block:: JSON
 
-{
+    {
      "created": "",
      "filesystem_path": "/dev/disk/by-id/xxxxxx",
      "id": "xxxxxx",
@@ -80,9 +84,6 @@ volume (always, dict):
      "tags": [],
      "updated": "2021-03-05T19:05:33"
     }
-
-
-  The volume in JSON serialized form.
 
 
 

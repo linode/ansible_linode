@@ -112,15 +112,16 @@ Examples
 {%     set sample = spec.sample %}
 {{ "  " * level }}{{ name }} ({{ ret }}, {{ typ }}):
 
+{%     for para in spec.description %}
+{{ "  " * level }}{{ para | rst_ify }}
+{%     endfor %}
+
+Sample Response:
+
 .. code-block:: JSON
 
-{{ sample | tojson(indent=True) | indent }}
+{{ sample | tojson(indent=True) | indent(4, True) }}
 
-
-{%     for para in spec.description %}
-  {{ "  " * level }}{{ para | rst_ify }}
-
-{%     endfor %}
 
 {%     if spec.contains %}
 {{ result_desc(spec.contains, level + 1) }}

@@ -89,9 +89,13 @@ Return Values
 
 key (always, dict):
 
+The Object Storage key in JSON serialized form.
+
+Sample Response:
+
 .. code-block:: JSON
 
-{
+    {
      "access_key": "xxxxxxxxxxxxxxxxx",
      "bucket_access": [
       {
@@ -105,9 +109,6 @@ key (always, dict):
      "limited": true,
      "secret_key": "xxxxxxxxxxxxxxxxxxxxxxxxxxx"
     }
-
-
-  The Object Storage key in JSON serialized form.
 
 
 

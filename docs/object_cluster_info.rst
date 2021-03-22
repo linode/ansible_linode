@@ -73,9 +73,13 @@ Return Values
 
 clusters (always, list):
 
+The Object Storage clusters in JSON serialized form.
+
+Sample Response:
+
 .. code-block:: JSON
 
-[
+    [
      {
       "domain": "us-east-1.linodeobjects.com",
       "id": "us-east-1",
@@ -84,9 +88,6 @@ clusters (always, list):
       "status": "available"
      }
     ]
-
-
-  The Object Storage clusters in JSON serialized form.
 
 
 
