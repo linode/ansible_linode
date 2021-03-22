@@ -190,8 +190,6 @@ class LinodeInstance(LinodeModuleBase):
     def __init__(self):
         self.module_arg_spec = linode_instance_spec
 
-        self.required_one_of = ['state']
-
         self.results = dict(
             changed=False,
             actions=[],
