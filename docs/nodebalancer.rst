@@ -168,7 +168,7 @@ Examples
 Return Values
 -------------
 
-nodebalancer (always, dict, {
+nodebalancer (always, dict, .. code-block:: json {
  "client_conn_throttle": 0,
  "created": "",
  "hostname": "xxxx.newark.nodebalancer.linode.com",
@@ -188,7 +188,7 @@ nodebalancer (always, dict, {
   The NodeBalancer in JSON serialized form.
 
 
-configs (always, list, [
+configs (always, list, .. code-block:: json [
  {
   "algorithm": "roundrobin",
   "check": "none",
@@ -218,7 +218,7 @@ configs (always, list, [
   A list of configs applied to the NodeBalancer.
 
 
-nodes (always, list, [
+nodes (always, list, .. code-block:: json [
  {
   "address": "xxx.xxx.xxx.xx:80",
   "config_id": "xxxxxx",

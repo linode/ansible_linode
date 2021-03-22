@@ -110,7 +110,7 @@ Examples
 {%     set ret = spec.returned %}
 {%     set typ = spec.type | default("any") %}
 {%     set sample = spec.sample | tojson(indent=True) %}
-{{ "  " * level }}{{ name }} ({{ ret }}, {{ typ }}, {{ sample }})
+{{ "  " * level }}{{ name }} ({{ ret }}, {{ typ }}, .. code-block:: json {{ sample }})
 {%     for para in spec.description %}
   {{ "  " * level }}{{ para | rst_ify }}
 

@@ -108,7 +108,7 @@ Examples
 Return Values
 -------------
 
-volume (always, dict, {
+volume (always, dict, .. code-block:: json {
  "created": "",
  "filesystem_path": "/dev/disk/by-id/xxxxxx",
  "id": "xxxxxx",

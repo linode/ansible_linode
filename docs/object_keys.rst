@@ -86,7 +86,7 @@ Examples
 Return Values
 -------------
 
-key (always, dict, {
+key (always, dict, .. code-block:: json {
  "access_key": "xxxxxxxxxxxxxxxxx",
  "bucket_access": [
   {
