@@ -70,7 +70,7 @@ Examples
 Return Values
 -------------
 
-clusters (always, list, .. code-block:: json [
+clusters (always, list, [
  {
   "domain": "us-east-1.linodeobjects.com",
   "id": "us-east-1",

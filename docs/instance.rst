@@ -123,7 +123,7 @@ Examples
 Return Values
 -------------
 
-instance (always, dict, .. code-block:: json {
+instance (always, dict, {
  "alerts": {
   "cpu": 90,
   "io": 10000,
