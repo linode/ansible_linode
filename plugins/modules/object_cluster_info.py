@@ -59,7 +59,7 @@ EXAMPLES = '''
 RETURN = '''
 clusters:
   description: The Object Storage clusters in JSON serialized form.
-  returned: Always.
+  returned: always
   type: list
   elements: dict
   sample: [

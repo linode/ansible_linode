@@ -126,7 +126,7 @@ EXAMPLES = '''
 RETURN = '''
 instance:
   description: The instance description in JSON serialized form.
-  returned: Always.
+  returned: always
   type: dict
   sample: {
     "root_pass": "foobar",  # if auto-generated

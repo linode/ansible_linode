@@ -84,7 +84,7 @@ EXAMPLES = '''
 RETURN = '''
 key:
   description: The Object Storage key in JSON serialized form.
-  returned: Always.
+  returned: always
   type: dict
   sample: {
    "access_key":"xxxxxxxxxxxxxxxxx",

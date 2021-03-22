@@ -52,7 +52,7 @@ EXAMPLES = '''
 RETURN = '''
 volume:
   description: The volume in JSON serialized form.
-  returned: Always.
+  returned: always
   type: dict
   sample: {
    "created":"",
