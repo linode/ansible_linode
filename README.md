@@ -28,24 +28,39 @@ Name | Description
 
 <!--end collection content-->
 
-## Installing this collection
+## Installation
 
 You can install the Linode collection with the Ansible Galaxy CLI:
 
     ansible-galaxy collection install linode.cloud
 
-You can also include it in a `requirements.yml` file and install it with `ansible-galaxy collection install -r requirements.yml`, using the format:
-
-```yaml
----
-collections:
-  - name: linode.cloud
-```
-
 The python module dependencies are not installed by `ansible-galaxy`.  They can
 be manually installed using pip:
 
     pip install -r requirements.txt
+
+## Usage
+Once the Linode Ansible collection is installed, it can be referenced by its [Fully Qualified Collection Namespace (FQCN)](https://github.com/ansible-collections/overview#terminology): `linode.cloud.module_name`.
+
+In order to use this collection, the `LINODE_API_TOKEN` environment variable must be set to a valid Linode API v4 token. Alternatively, you can pass your Linode API v4 token into the `api_token` option on every task that executes a Linode module.
+
+#### Example Playbook
+```yaml
+---
+- name: create linode instance
+  hosts: localhost
+  tasks:
+    - name: Create a Linode instance    
+      linode.cloud.instance:
+        label: my-linode
+        type: g6-nanode-1
+        region: us-east
+        image: linode/ubuntu20.04
+        root_pass: verysecurepassword!!!
+        state: present
+```
+
+For more information on Ansible collection usage, see [Ansible's official usage guide](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html).
 
 ## Licensing
 
