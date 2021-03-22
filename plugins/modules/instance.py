@@ -171,8 +171,8 @@ except ImportError:
     pass
 
 linode_instance_spec = dict(
-    type=dict(type='str', required=True),
-    region=dict(type='str', required=True),
+    type=dict(type='str', required=False),
+    region=dict(type='str', required=False),
     image=dict(type='str', required=False),
     authorized_keys=dict(type='list', required=False),
     authorized_users=dict(type='list', required=False),
