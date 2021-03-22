@@ -71,7 +71,7 @@ Examples
 Return Values
 -------------
 
-clusters (always, list):
+**clusters (always, list):**
 
 The Object Storage clusters in JSON serialized form.
 

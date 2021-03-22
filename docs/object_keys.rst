@@ -87,7 +87,7 @@ Examples
 Return Values
 -------------
 
-key (always, dict):
+**key (always, dict):**
 
 The Object Storage key in JSON serialized form.
 

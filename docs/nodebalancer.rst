@@ -169,7 +169,7 @@ Examples
 Return Values
 -------------
 
-nodebalancer (always, dict):
+**nodebalancer (always, dict):**
 
 The NodeBalancer in JSON serialized form.
 
@@ -196,7 +196,7 @@ Sample Response:
     }
 
 
-configs (always, list):
+**configs (always, list):**
 
 A list of configs applied to the NodeBalancer.
 
@@ -233,7 +233,7 @@ Sample Response:
     ]
 
 
-nodes (always, list):
+**nodes (always, list):**
 
 A list of all nodes associated with the NodeBalancer.
 

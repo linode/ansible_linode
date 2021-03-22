@@ -63,7 +63,7 @@ Examples
 Return Values
 -------------
 
-instance (always, dict):
+**instance (always, dict):**
 
 The instance description in JSON serialized form.
 
