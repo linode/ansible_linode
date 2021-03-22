@@ -86,7 +86,7 @@ Examples
 Return Values
 -------------
 
-key (Always., dict, {'access_key': 'xxxxxxxxxxxxxxxxx', 'bucket_access': [{'bucket_name': 'my-bucket', 'cluster': 'us-east-1', 'permissions': 'read_write'}], 'id': 'xxxxx', 'label': 'my-key', 'limited': True, 'secret_key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxx'})
+key (always, dict, {'access_key': 'xxxxxxxxxxxxxxxxx', 'bucket_access': [{'bucket_name': 'my-bucket', 'cluster': 'us-east-1', 'permissions': 'read_write'}], 'id': 'xxxxx', 'label': 'my-key', 'limited': True, 'secret_key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxx'})
   The Object Storage key in JSON serialized form.
 
 

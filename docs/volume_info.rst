@@ -62,7 +62,7 @@ Examples
 Return Values
 -------------
 
-volume (Always., dict, {'created': '', 'filesystem_path': '/dev/disk/by-id/xxxxxx', 'id': 'xxxxxx', 'label': 'xxxxxx', 'linode_id': 'xxxxxx', 'linode_label': 'xxxxxx', 'region': 'us-east', 'size': 30, 'status': 'creating', 'tags': [], 'updated': '2021-03-05T19:05:33'})
+volume (always, dict, {'created': '', 'filesystem_path': '/dev/disk/by-id/xxxxxx', 'id': 'xxxxxx', 'label': 'xxxxxx', 'linode_id': 'xxxxxx', 'linode_label': 'xxxxxx', 'region': 'us-east', 'size': 30, 'status': 'creating', 'tags': [], 'updated': '2021-03-05T19:05:33'})
   The volume in JSON serialized form.
 
 
