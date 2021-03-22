@@ -165,71 +165,78 @@ Examples
 
 
 
+
 Return Values
 -------------
 
-nodebalancer (always, dict, {
- "client_conn_throttle": 0,
- "created": "",
- "hostname": "xxxx.newark.nodebalancer.linode.com",
- "id": "xxxxxx",
- "ipv4": "xxx.xxx.xxx.xxx",
- "ipv6": "xxxx:xxxx::xxxx:xxxx:xxxx:xxxx",
- "label": "my-loadbalancer",
- "region": "us-east",
- "tags": [],
- "transfer": {
-  "in": 0,
-  "out": 0,
-  "total": 0
- },
- "updated": ""
-})
+nodebalancer (always, dict):
+.. code-block:: JSON
+    {
+     "client_conn_throttle": 0,
+     "created": "",
+     "hostname": "xxxx.newark.nodebalancer.linode.com",
+     "id": "xxxxxx",
+     "ipv4": "xxx.xxx.xxx.xxx",
+     "ipv6": "xxxx:xxxx::xxxx:xxxx:xxxx:xxxx",
+     "label": "my-loadbalancer",
+     "region": "us-east",
+     "tags": [],
+     "transfer": {
+      "in": 0,
+      "out": 0,
+      "total": 0
+     },
+     "updated": ""
+    }
   The NodeBalancer in JSON serialized form.
 
 
-configs (always, list, [
- {
-  "algorithm": "roundrobin",
-  "check": "none",
-  "check_attempts": 3,
-  "check_body": "",
-  "check_interval": 0,
-  "check_passive": true,
-  "check_path": "",
-  "check_timeout": 30,
-  "cipher_suite": "recommended",
-  "id": "xxxxxx",
-  "nodebalancer_id": "xxxxxx",
-  "nodes_status": {
-   "down": 1,
-   "up": 0
-  },
-  "port": 80,
-  "protocol": "http",
-  "proxy_protocol": "none",
-  "ssl_cert": null,
-  "ssl_commonname": "",
-  "ssl_fingerprint": "",
-  "ssl_key": null,
-  "stickiness": "none"
- }
-])
+configs (always, list):
+.. code-block:: JSON
+    [
+     {
+      "algorithm": "roundrobin",
+      "check": "none",
+      "check_attempts": 3,
+      "check_body": "",
+      "check_interval": 0,
+      "check_passive": true,
+      "check_path": "",
+      "check_timeout": 30,
+      "cipher_suite": "recommended",
+      "id": "xxxxxx",
+      "nodebalancer_id": "xxxxxx",
+      "nodes_status": {
+       "down": 1,
+       "up": 0
+      },
+      "port": 80,
+      "protocol": "http",
+      "proxy_protocol": "none",
+      "ssl_cert": null,
+      "ssl_commonname": "",
+      "ssl_fingerprint": "",
+      "ssl_key": null,
+      "stickiness": "none"
+     }
+    ]
   A list of configs applied to the NodeBalancer.
 
 
-nodes (always, list, [
- {
-  "address": "xxx.xxx.xxx.xx:80",
-  "config_id": "xxxxxx",
-  "id": "xxxxxx",
-  "label": "node1",
-  "mode": "accept",
-  "nodebalancer_id": "xxxxxx",
-  "status": "Unknown",
-  "weight": 1
- }
-])
+nodes (always, list):
+.. code-block:: JSON
+    [
+     {
+      "address": "xxx.xxx.xxx.xx:80",
+      "config_id": "xxxxxx",
+      "id": "xxxxxx",
+      "label": "node1",
+      "mode": "accept",
+      "nodebalancer_id": "xxxxxx",
+      "status": "Unknown",
+      "weight": 1
+     }
+    ]
   A list of all nodes associated with the NodeBalancer.
 
 

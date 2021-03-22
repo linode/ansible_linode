@@ -109,8 +109,10 @@ Examples
 {%   for name, spec in results.items() %}
 {%     set ret = spec.returned %}
 {%     set typ = spec.type | default("any") %}
-{%     set sample = spec.sample | tojson(indent=True) %}
-{{ "  " * level }}{{ name }} ({{ ret }}, {{ typ }}, {{ sample | escape }})
+{%     set sample = spec.sample %}
+{{ "  " * level }}{{ name }} ({{ ret }}, {{ typ }}):
+.. code-block:: JSON
+    {{ sample | tojson(indent=True) | indent }}
 {%     for para in spec.description %}
   {{ "  " * level }}{{ para | rst_ify }}
 
@@ -121,6 +123,7 @@ Examples
 {%     endif %}
 {%   endfor %}
 {% endmacro %}
+
 
 {% if returndocs -%}
 Return Values

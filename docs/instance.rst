@@ -120,50 +120,53 @@ Examples
 
 
 
+
 Return Values
 -------------
 
-instance (always, dict, {
- "alerts": {
-  "cpu": 90,
-  "io": 10000,
-  "network_in": 10,
-  "network_out": 10,
-  "transfer_quota": 80
- },
- "backups": {
-  "enabled": false,
-  "schedule": {
-   "day": null,
-   "window": null
-  }
- },
- "created": "2018-09-26T08:12:33",
- "group": "app",
- "hypervisor": "kvm",
- "id": "xxxxxx",
- "image": "linode/ubuntu20.04",
- "ipv4": [
-  "xxx.xxx.xxx.xxx"
- ],
- "ipv6": "xxxx:xxxx::xxxx:xxxx:xxxx:xxxx/64",
- "label": "my-linode",
- "region": "us-east",
- "root_pass": "foobar",
- "specs": {
-  "disk": 25600,
-  "memory": 1024,
-  "transfer": 1000,
-  "vcpus": 1
- },
- "status": "running",
- "tags": [
-  "env=prod"
- ],
- "type": "g6-nanode-1",
- "updated": "2018-09-26T10:10:14",
- "watchdog_enabled": true
-})
+instance (always, dict):
+.. code-block:: JSON
+    {
+     "alerts": {
+      "cpu": 90,
+      "io": 10000,
+      "network_in": 10,
+      "network_out": 10,
+      "transfer_quota": 80
+     },
+     "backups": {
+      "enabled": false,
+      "schedule": {
+       "day": null,
+       "window": null
+      }
+     },
+     "created": "2018-09-26T08:12:33",
+     "group": "app",
+     "hypervisor": "kvm",
+     "id": "xxxxxx",
+     "image": "linode/ubuntu20.04",
+     "ipv4": [
+      "xxx.xxx.xxx.xxx"
+     ],
+     "ipv6": "xxxx:xxxx::xxxx:xxxx:xxxx:xxxx/64",
+     "label": "my-linode",
+     "region": "us-east",
+     "root_pass": "foobar",
+     "specs": {
+      "disk": 25600,
+      "memory": 1024,
+      "transfer": 1000,
+      "vcpus": 1
+     },
+     "status": "running",
+     "tags": [
+      "env=prod"
+     ],
+     "type": "g6-nanode-1",
+     "updated": "2018-09-26T10:10:14",
+     "watchdog_enabled": true
+    }
   The instance description in JSON serialized form.
 
 
