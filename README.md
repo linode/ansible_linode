@@ -42,7 +42,8 @@ be manually installed using pip:
 ## Usage
 Once the Linode Ansible collection is installed, it can be referenced by its [Fully Qualified Collection Namespace (FQCN)](https://github.com/ansible-collections/overview#terminology): `linode.cloud.module_name`.
 
-In order to use this collection, the `LINODE_API_TOKEN` environment variable must be set to a valid Linode API v4 token. Alternatively, you can pass your Linode API v4 token into the `api_token` option on every task that executes a Linode module.
+In order to use this collection, the `LINODE_API_TOKEN` environment variable must be set to a valid Linode API v4 token. 
+Alternatively, you can pass your Linode API v4 token into the `api_token` option for each Linode module you reference.
 
 #### Example Playbook
 ```yaml
