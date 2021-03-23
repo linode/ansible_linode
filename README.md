@@ -54,4 +54,4 @@ For more information on Ansible collection usage, see [Ansible's official usage 
 
 GNU General Public License v3.0 or later.
 
-See [COPYING](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
+See [COPYING](COPYING) to see the full text.
