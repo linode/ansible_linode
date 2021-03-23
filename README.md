@@ -52,6 +52,6 @@ For more information on Ansible collection usage, see [Ansible's official usage 
 
 ## Licensing
 
-GNU General Public License v3.0 or later.
+GNU General Public License v3.0.
 
 See [COPYING](COPYING) to see the full text.
