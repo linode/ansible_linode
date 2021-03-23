@@ -15,12 +15,16 @@ PEP440 is the schema used to describe the versions of Ansible.
 
 You can install the Linode collection with the Ansible Galaxy CLI:
 
-    ansible-galaxy collection install linode.cloud
+```shell
+ansible-galaxy collection install linode.cloud
+```
 
 The python module dependencies are not installed by `ansible-galaxy`.  They can
 be manually installed using pip:
 
-    pip install -r requirements.txt
+```shell
+pip install -r requirements.txt
+```
 
 ## Usage
 Once the Linode Ansible collection is installed, it can be referenced by its [Fully Qualified Collection Namespace (FQCN)](https://github.com/ansible-collections/overview#terminology): `linode.cloud.module_name`.
