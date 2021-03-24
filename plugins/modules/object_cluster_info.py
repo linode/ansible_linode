@@ -11,6 +11,11 @@ from linode_api4 import ObjectStorageKeys, ObjectStorageCluster
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'supported_by': 'Linode'
+}
+
 DOCUMENTATION = '''
 module: object_cluster_info
 description: Get information about an Object Storage cluster.
@@ -54,7 +59,7 @@ EXAMPLES = '''
 RETURN = '''
 clusters:
   description: The Object Storage clusters in JSON serialized form.
-  returned: Always.
+  returned: always
   type: list
   elements: dict
   sample: [

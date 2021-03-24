@@ -7,6 +7,11 @@ from __future__ import absolute_import, division, print_function
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'supported_by': 'Linode'
+}
+
 DOCUMENTATION = '''
 ---
 module: instance
@@ -121,7 +126,7 @@ EXAMPLES = '''
 RETURN = '''
 instance:
   description: The instance description in JSON serialized form.
-  returned: Always.
+  returned: always
   type: dict
   sample: {
     "root_pass": "foobar",  # if auto-generated

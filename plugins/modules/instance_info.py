@@ -11,6 +11,11 @@ from linode_api4 import Instance
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'supported_by': 'Linode'
+}
+
 DOCUMENTATION = '''
 ---
 module: instance_info
@@ -47,7 +52,7 @@ EXAMPLES = '''
 RETURN = '''
 instance:
   description: The instance description in JSON serialized form.
-  returned: Always.
+  returned: always
   type: dict
   sample: {
     "alerts": {

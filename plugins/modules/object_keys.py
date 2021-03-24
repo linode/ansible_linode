@@ -10,6 +10,11 @@ from linode_api4 import ObjectStorageKeys, ObjectStorageCluster
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'supported_by': 'Linode'
+}
+
 DOCUMENTATION = '''
 module: object_keys
 description: Manage Linode Object Storage Keys.
@@ -79,7 +84,7 @@ EXAMPLES = '''
 RETURN = '''
 key:
   description: The Object Storage key in JSON serialized form.
-  returned: Always.
+  returned: always
   type: dict
   sample: {
    "access_key":"xxxxxxxxxxxxxxxxx",
