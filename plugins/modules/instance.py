@@ -195,9 +195,6 @@ class LinodeInstance(LinodeModuleBase):
     def __init__(self):
         self.module_arg_spec = linode_instance_spec
 
-        self.required_one_of = ['state', 'label']
-        self.required_together = ['region', 'image', 'type']
-
         self.results = dict(
             changed=False,
             actions=[],
@@ -206,9 +203,7 @@ class LinodeInstance(LinodeModuleBase):
 
         self._instance = None
 
-        super().__init__(module_arg_spec=self.module_arg_spec,
-                         required_one_of=self.required_one_of,
-                         required_together=self.required_together)
+        super().__init__(module_arg_spec=self.module_arg_spec)
 
     def get_instance_by_label(self, label):
         """Gets a Linode instance by label"""
