@@ -52,6 +52,7 @@ EXAMPLES = '''
 RETURN = '''
 volume:
   description: The volume in JSON serialized form.
+  linode_api_docs: "https://www.linode.com/docs/api/volumes/#volume-view__responses"
   returned: always
   type: dict
   sample: {

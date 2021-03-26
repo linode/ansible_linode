@@ -59,6 +59,7 @@ EXAMPLES = '''
 RETURN = '''
 clusters:
   description: The Object Storage clusters in JSON serialized form.
+  linode_api_docs: "https://www.linode.com/docs/api/object-storage/#cluster-view__responses"
   returned: always
   type: list
   elements: dict

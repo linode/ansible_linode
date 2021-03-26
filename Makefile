@@ -12,6 +12,11 @@ build:
 install: clean build
 	ansible-galaxy collection install *.tar.gz --force -p $(COLLECTIONS_PATH)
 
+gendocs:
+	mkdir -p docs
+	rm -f docs/*
+	ansible-doc-extractor --template=template/module.rst.j2 docs plugins/modules/*.py
+
 integration-test: $(INTEGRATION_CONFIG)
 	ansible-test integration $(TEST_ARGS)
 
