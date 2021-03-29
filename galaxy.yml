@@ -16,3 +16,11 @@ repository: https://github.com/linode/ansible_linode
 documentation: https://docs.ansible.com/ansible/latest/collections/linode/ansible_linode/
 homepage: https://github.com/linode/ansible_linode
 issues: https://github.com/linode/ansible_linode/issues
+build_ignore:
+  - '.gitignore'
+  - '.github'
+  - '.pylintrc'
+  - '*.tar.gz'
+  - 'Makefile'
+  - 'template'
+  - 'tests'
