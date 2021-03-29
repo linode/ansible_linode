@@ -33,6 +33,9 @@ jobs:
       - name: install collection
         run: make install
 
+      - name: copy makefile to installed collection
+        run: cp Makefile ~/.ansible/ansible_collections/linode/cloud/Makefile
+
       - name: run tests
         run: make test
         env:
