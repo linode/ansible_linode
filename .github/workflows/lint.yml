@@ -1,10 +1,6 @@
 name: Run Linter
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - master
+on: [push, pull_request]
 
 jobs:
   lint:
