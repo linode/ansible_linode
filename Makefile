@@ -1,4 +1,5 @@
 COLLECTIONS_PATH ?= ~/.ansible/collections
+DOCS_PATH ?= docs
 
 TEST_ARGS := -v
 INTEGRATION_CONFIG := tests/integration/integration_config.yml
@@ -13,9 +14,9 @@ install: clean build
 	ansible-galaxy collection install *.tar.gz --force -p $(COLLECTIONS_PATH)
 
 gendocs:
-	mkdir -p docs
-	rm -f docs/*
-	ansible-doc-extractor --template=template/module.rst.j2 docs plugins/modules/*.py
+	mkdir -p $(DOCS_PATH)
+	rm -f $(DOCS_PATH)/*
+	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH) plugins/modules/*.py
 
 integration-test: $(INTEGRATION_CONFIG)
 	ansible-test integration $(TEST_ARGS)
