@@ -1,0 +1,36 @@
+name: Run Documentation Validation
+
+on: [push, pull_request]
+
+jobs:
+  run-docs-validation:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+
+      - name: update packages
+        run: sudo apt-get update -y
+
+      - name: install packages
+        run: sudo apt-get install -y make
+
+      - name: setup python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: install dependencies
+        run: pip3 install ansible-doc-extractor==0.1.6
+
+      - name: make temp directory
+        run: mkdir tmp
+
+      - name: generate new docs
+        run: DOCS_PATH=tmp/docs make gendocs
+
+      - name: compare results
+        run: diff -qr docs tmp/docs
+
+      - name: clean up
+        run: rm -rf tmp
