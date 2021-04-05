@@ -1,6 +1,6 @@
 namespace: linode
 name: cloud
-version: 0.0.2
+version: 0.0.3
 readme: README.md
 description: Linode ansible collection
 authors:
@@ -13,7 +13,7 @@ tags:
   - linode
   - cloud
 repository: https://github.com/linode/ansible_linode
-documentation: https://github.com/linode/ansible_linode/blob/master/README.md
+documentation: https://github.com/linode/ansible_linode/tree/master/README.md
 homepage: https://github.com/linode/ansible_linode
 issues: https://github.com/linode/ansible_linode/issues
 build_ignore:
