@@ -4,6 +4,14 @@ linode.cloud Release Notes
 
 .. contents:: Topics
 
+v0.0.3
+======
+
+Minor Changes
+-------------
+
+- Update Linode module documentation link.
+
 v0.0.2
 ======
 
