@@ -230,29 +230,30 @@ class LinodeInstance(LinodeModuleBase):
         except Exception as exception:
             self.fail(msg='failed to create instance: {0}'.format(exception))
 
-        try:
-            if isinstance(res, tuple):
-                instance, root_pass = res
-                instance_json = instance._raw_json
-                instance_json.update({'root_pass': root_pass})
-                return instance_json
-
-            return res
-
-        except TypeError:
-            self.fail(msg='unable to parse Linode instance creation response')
+        return res
 
     def __handle_instance(self, **kwargs):
         """Updates the instance defined in kwargs"""
         label = kwargs.get('label')
 
         self._instance = self.get_instance_by_label(label)
+        root_pass = None
 
         if self._instance is None:
-            self._instance = self.create_linode(**kwargs)
+            result = self.create_linode(**kwargs)
+            if isinstance(result, tuple):
+                self._instance = result[0]
+                root_pass = result[1]
+            else:
+                self._instance = result
+
             self.register_action('Created instance {0}'.format(label))
 
-        self.results['instance'] = self._instance._raw_json
+        inst_result = self._instance._raw_json
+        if root_pass is not None:
+            inst_result['root_pass'] = root_pass
+
+        self.results['instance'] = inst_result
 
     def __handle_instance_absent(self, **kwargs):
         """Destroys the instance defined in kwargs"""

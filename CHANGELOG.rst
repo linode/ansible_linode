@@ -11,6 +11,7 @@ Minor Changes
 -------------
 
 - Fix issue that would force NodeBalancer configs to be recreated.
+- Fix error on the creation of Linode instances without root password.
 
 v0.0.3
 ======
