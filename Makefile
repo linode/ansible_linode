@@ -13,6 +13,9 @@ build:
 install: clean build
 	ansible-galaxy collection install *.tar.gz --force -p $(COLLECTIONS_PATH)
 
+lint:
+	pylint plugins
+
 gendocs:
 	mkdir -p $(DOCS_PATH)
 	rm -f $(DOCS_PATH)/*

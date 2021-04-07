@@ -18,4 +18,4 @@ jobs:
         run: pip3 install -r requirements-dev.txt -r requirements.txt ansible
 
       - name: run linter
-        run: pylint plugins --exit-zero
+        run: make lint
