@@ -147,6 +147,26 @@
           - update_populated_config.configs|length == 1
           - update_populated_config.nodes|length == 1
 
+    - name: Attempt to update with no differences
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+        region: us-east
+        state: present
+        configs:
+          - port: 81
+            protocol: http
+            nodes:
+              - label: node1
+                address: '{{ node1_inst.instance.ipv4[1] }}:80'
+
+      register: update_populated_config_nochanges
+
+    - name: Assert populated NodeBalancer is not updated
+      assert:
+        that:
+          - update_populated_config_nochanges.changed == false
+
     # Add a node to the NodeBalancer
     - name: Add node to NodeBalancer
       linode.cloud.nodebalancer:
