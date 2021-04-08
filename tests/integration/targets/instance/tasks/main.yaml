@@ -19,6 +19,24 @@
           - create.instance.status == 'provisioning'
           - create.instance.ipv4|length > 1
 
+    - name: Create a Linode instance without a root password
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-nopass-{{ ansible_date_time.epoch }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        private_ip: true
+        state: present
+      register: create_nopass
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_nopass.changed
+          - create_nopass.instance.status == 'provisioning'
+          - create_nopass.instance.ipv4|length > 1
+
     - name: Get info about the instance by id
       linode.cloud.instance_info:
         api_token: '{{ api_token }}'
@@ -55,3 +73,16 @@
         that:
           - delete.changed
           - delete.instance.id == create.instance.id
+
+    - name: Delete a Linode instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create_nopass.instance.label }}'
+        state: absent
+      register: delete_nopass
+
+    - name: Assert instance delete succeeded
+      assert:
+        that:
+          - delete_nopass.changed
+          - delete_nopass.instance.id == create_nopass.instance.id
