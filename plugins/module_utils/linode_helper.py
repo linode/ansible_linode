@@ -15,6 +15,9 @@ def dict_select_matching(d_1, d_2):
 
     return new_d1, new_d2
 
+def filter_null_values(input_dict):
+    """Returns a copy of the given dict with all keys containing null values removed"""
+    return {key: value for key, value in input_dict.items() if value is not None}
 
 def paginated_list_to_json(target_list):
     """Copies a PaginatedList to a new list containing JSON objects"""

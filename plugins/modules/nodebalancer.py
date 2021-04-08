@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 
 import copy
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    paginated_list_to_json, dict_select_matching
+    paginated_list_to_json, dict_select_matching, filter_null_values
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 
 # pylint: disable=unused-import
@@ -401,7 +401,8 @@ class LinodeNodeBalancer(LinodeModuleBase):
             should_delete = True
 
             for node in new_nodes:
-                node_match, remote_node_match = dict_select_matching(node, remote_node._raw_json)
+                node_match, remote_node_match = dict_select_matching(
+                    filter_null_values(node), remote_node._raw_json)
 
                 if node_match == remote_node_match:
                     should_delete = False
@@ -417,7 +418,8 @@ class LinodeNodeBalancer(LinodeModuleBase):
             current_node = None
 
             for remote_node in nodes:
-                node_match, remote_node_match = dict_select_matching(node, remote_node._raw_json)
+                node_match, remote_node_match = dict_select_matching(
+                    filter_null_values(node), remote_node._raw_json)
 
                 if node_match == remote_node_match:
                     exists = True
@@ -443,7 +445,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
             for config in configs:
                 config_match, remote_config_match = dict_select_matching(
-                    config, remote_config._raw_json)
+                    filter_null_values(config), remote_config._raw_json)
 
                 if config_match == remote_config_match:
                     should_delete = False
@@ -460,7 +462,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
             for remote_config in remote_configs:
                 config_match, remote_config_match = dict_select_matching(
-                    config, remote_config._raw_json)
+                    filter_null_values(config), remote_config._raw_json)
 
                 if config_match == remote_config_match:
                     exists = True
