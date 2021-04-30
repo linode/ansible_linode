@@ -1,11 +1,13 @@
 """This module contains helper functions for various Linode modules."""
 
-from linode_api4 import and_
+from linode_api4 import and_, MappedObject
+
 
 def dict_select_spec(target, spec):
     """Returns a new dictionary that only selects the keys from target that are specified in spec"""
 
     return {key: target.get(key) for key in spec.keys()}
+
 
 def dict_select_matching(d_1, d_2):
     """Returns copies of the given dictionaries with all non-shared keys removed"""
@@ -15,13 +17,16 @@ def dict_select_matching(d_1, d_2):
 
     return new_d1, new_d2
 
+
 def filter_null_values(input_dict):
     """Returns a copy of the given dict with all keys containing null values removed"""
     return {key: value for key, value in input_dict.items() if value is not None}
 
+
 def paginated_list_to_json(target_list):
     """Copies a PaginatedList to a new list containing JSON objects"""
     return [value._raw_json for value in target_list]
+
 
 # There might be a better way to do this, but this works for now
 def create_filter_and(obj, filter_dict):
@@ -42,3 +47,18 @@ def create_filter_and(obj, filter_dict):
         filter_statement = and_(filter_statement, getattr(obj, key) == value)
 
     return filter_statement
+
+
+def mapping_to_dict(obj):
+    """Recursively converts a mapping to a dict. This is useful for nested API responses."""
+
+    if isinstance(obj, MappedObject):
+        obj = obj.dict
+
+    if isinstance(obj, dict):
+        return {key: mapping_to_dict(value) for key, value in obj.items()}
+
+    if isinstance(obj, list):
+        return [mapping_to_dict(value) for value in obj]
+
+    return obj

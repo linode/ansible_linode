@@ -15,6 +15,8 @@ PEP440 is the schema used to describe the versions of Ansible.
 ### Modules
 Name | Description
 --- | ---
+[linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/master/docs/firewall.rst)|Create and destroy Firewalls.
+[linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/master/docs/firewall_info.rst)|Gather info about an existing Firewall.
 [linode.cloud.instance](https://github.com/linode/ansible_linode/blob/master/docs/instance.rst)|Create and destroy Linodes.
 [linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/master/docs/instance_info.rst)|Gather info about an existing Linode instance.
 [linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/master/docs/nodebalancer.rst)|Create, destroy, and configure NodeBalancers.
