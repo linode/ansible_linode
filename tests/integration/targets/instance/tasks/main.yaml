@@ -4,7 +4,7 @@
       linode.cloud.instance:
         api_token: '{{ api_token }}'
         label: 'ansible-test-{{ ansible_date_time.epoch }}'
-        region: us-east
+        region: us-southeast
         type: g6-standard-1
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
@@ -47,7 +47,8 @@
       assert:
         that:
           - info_id.instance.ipv4|length > 1
-          - info_id.instance.region == 'us-east'
+          - info_id.instance.region == 'us-southeast'
+          - info_id.configs|length == 1
 
     - name: Get info about the instance by label
       linode.cloud.instance_info:
@@ -59,7 +60,8 @@
       assert:
         that:
           - info_label.instance.ipv4|length > 1
-          - info_label.instance.region == 'us-east'
+          - info_label.instance.region == 'us-southeast'
+          - info_label.configs|length == 1
 
     - name: Update the instance region and type (recreate disallowed)
       linode.cloud.instance:
@@ -92,6 +94,75 @@
         that:
           - update_nopass.instance.group == 'funny'
 
+    - name: Create a Linode instance with interface
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ ansible_date_time.epoch }}-i'
+        region: us-southeast
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        interfaces:
+          - purpose: vlan
+            label: really-cool-vlan
+        private_ip: true
+        state: present
+      register: create_interface
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_interface.changed
+          - create_interface.instance.status == 'provisioning'
+          - create_interface.instance.ipv4|length > 1
+
+          - create_interface.configs[0].interfaces[0].purpose == 'vlan'
+          - create_interface.configs[0].interfaces[0].label == 'really-cool-vlan'
+
+    - name: Update the instance interfaces
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create_interface.instance.label }}'
+        region: us-southeast
+        group: funny
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        private_ip: true
+        interfaces:
+          - purpose: vlan
+            label: cool-vlan
+          - purpose: public
+        state: present
+      register: update_interface
+
+    - name: Assert update
+      assert:
+        that:
+          - update_interface.configs[0].interfaces[0].purpose == 'vlan'
+          - update_interface.configs[0].interfaces[0].label == 'cool-vlan'
+
+          - update_interface.configs[0].interfaces[1].purpose == 'public'
+
+    - name: Update the instance interfaces
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create_interface.instance.label }}'
+        region: us-southeast
+        group: funny
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        private_ip: true
+        interfaces:
+          - purpose: vlan
+            label: cool-vlan
+          - purpose: public
+        state: present
+      register: update_interface_noupdate
+
+    - name: Assert no update
+      assert:
+        that:
+          - update_interface_noupdate.changed == false
+
   always:
     - name: Delete a Linode instance
       linode.cloud.instance:
@@ -105,6 +176,19 @@
         that:
           - delete.changed
           - delete.instance.id == create.instance.id
+
+    - name: Delete a Linode instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create_interface.instance.label }}'
+        state: absent
+      register: delete_interface
+
+    - name: Assert instance delete succeeded
+      assert:
+        that:
+          - delete_interface.changed
+          - delete_interface.instance.id == create_interface.instance.id
 
     - name: Delete a Linode instance
       linode.cloud.instance:

@@ -23,6 +23,11 @@ def filter_null_values(input_dict):
     return {key: value for key, value in input_dict.items() if value is not None}
 
 
+def drop_empty_strings(input_dict):
+    """Returns a copy of the given dict with all keys containing null and empty values removed"""
+    return {key: value for key, value in input_dict.items() if value is not None and value != ''}
+
+
 def paginated_list_to_json(target_list):
     """Copies a PaginatedList to a new list containing JSON objects"""
     return [value._raw_json for value in target_list]

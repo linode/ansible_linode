@@ -115,6 +115,54 @@ Sample Response:
     }
 
 
+**configs (always, list):**
+
+The configs tied to this Linode instance.
+
+`Linode Response Object Documentation <https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses>`_
+
+Sample Response:
+
+.. code-block:: JSON
+
+    [
+     {
+      "comments": "",
+      "created": "xxxxx",
+      "devices": {
+       "sda": null,
+       "sdb": {
+        "disk_id": "xxxxx",
+        "volume_id": null
+       },
+       "sdc": null,
+       "sdd": null,
+       "sde": null,
+       "sdf": null,
+       "sdg": null,
+       "sdh": null
+      },
+      "helpers": {
+       "devtmpfs_automount": true,
+       "distro": true,
+       "modules_dep": true,
+       "network": true,
+       "updatedb_disabled": true
+      },
+      "id": "xxxxx",
+      "initrd": null,
+      "interfaces": [],
+      "kernel": "linode/grub2",
+      "label": "My Ubuntu 20.04 LTS Disk Profile",
+      "memory_limit": 0,
+      "root_device": "/dev/sda",
+      "run_level": "default",
+      "updated": "xxxxx",
+      "virt_mode": "paravirt"
+     }
+    ]
+
+
 
 
 
