@@ -5,6 +5,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import List, Optional, Any
+
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     create_filter_and
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -145,10 +147,10 @@ linode_nodebalancer_valid_filters = [
 class LinodeNodeBalancerInfo(LinodeModuleBase):
     """Retrieves info about a Linode NodeBalancer"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.module_arg_spec = linode_nodebalancer_info_spec
-        self.required_one_of = []
-        self.results = dict(
+        self.required_one_of: List[str] = []
+        self.results: dict = dict(
             node_balancer=None,
             configs=[],
             nodes=[]
@@ -157,10 +159,10 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def get_nodebalancer_by_property(self, **kwargs):
+    def get_nodebalancer_by_property(self, spec_args: dict) -> Optional[NodeBalancer]:
         """Gets the NodeBalancer with the given property in kwargs"""
 
-        filter_items = {k: v for k, v in kwargs.items()
+        filter_items = {k: v for k, v in spec_args.items()
                         if k in linode_nodebalancer_valid_filters and v is not None}
 
         filter_statement = create_filter_and(NodeBalancer, filter_items)
@@ -168,7 +170,7 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
         try:
             # Special case because ID is not filterable
             if 'id' in filter_items.keys():
-                result = NodeBalancer(self.client, kwargs.get('id'))
+                result = NodeBalancer(self.client, spec_args.get('id'))
                 result._api_get()  # Force lazy-loading
 
                 return result
@@ -177,24 +179,26 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
         except IndexError:
             return None
         except Exception as exception:
-            self.fail(msg='failed to get nodebalancer {0}'.format(exception))
+            return self.fail(msg='failed to get nodebalancer {0}'.format(exception))
 
-    def get_node_by_label(self, config, label):
+    def get_node_by_label(self, config: NodeBalancerConfig, label: str) \
+            -> Optional[NodeBalancerNode]:
         """Gets the node within the given config by its label"""
         try:
             return config.nodes(NodeBalancerNode.label == label)[0]
         except IndexError:
             return None
         except Exception as exception:
-            self.fail(msg='failed to get nodebalancer node {0}, {1}'.format(label, exception))
+            return self.fail(msg='failed to get nodebalancer node {0}, {1}'
+                             .format(label, exception))
 
-    def exec_module(self, **kwargs):
+    def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for NodeBalancer Info module"""
 
-        node_balancer = self.get_nodebalancer_by_property(**kwargs)
+        node_balancer = self.get_nodebalancer_by_property(kwargs)
 
         if node_balancer is None:
-            self.fail('failed to get nodebalancer')
+            return self.fail('failed to get nodebalancer')
 
         self.results['node_balancer'] = node_balancer._raw_json
 
@@ -209,7 +213,7 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
         return self.results
 
 
-def main():
+def main() -> None:
     """Constructs and calls the Linode NodeBalancer Info module"""
     LinodeNodeBalancerInfo()
 
