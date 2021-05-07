@@ -6,6 +6,7 @@
 from __future__ import absolute_import, division, print_function
 
 import copy
+from typing import Optional, List, Any
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
@@ -315,7 +316,7 @@ devices:
 '''
 
 try:
-    from linode_api4 import Firewall
+    from linode_api4 import Firewall, FirewallDevice
 except ImportError:
     # handled in module_utils.linode_common
     pass
@@ -363,7 +364,7 @@ linode_firewall_mutable: list[str] = [
 class LinodeFirewall(LinodeModuleBase):
     """Configuration class for a Linode firewall resource"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.module_arg_spec = linode_firewall_spec
 
         self.results: dict = dict(
@@ -373,11 +374,11 @@ class LinodeFirewall(LinodeModuleBase):
             devices=None
         )
 
-        self._firewall: Firewall = None
+        self._firewall: Optional[Firewall] = None
 
         super().__init__(module_arg_spec=self.module_arg_spec)
 
-    def get_firewall_by_label(self, label) -> Firewall:
+    def get_firewall_by_label(self, label: str) -> Optional[Firewall]:
         """Gets a Linode Firewall by label"""
 
         try:
@@ -385,7 +386,7 @@ class LinodeFirewall(LinodeModuleBase):
         except IndexError:
             return None
         except Exception as exception:
-            self.fail(msg='failed to get firewall {0}: {1}'.format(label, exception))
+            return self.fail(msg='failed to get firewall {0}: {1}'.format(label, exception))
 
     def create_firewall(self, spec_args: dict) -> dict:
         """Creates a Linode Firewall"""
@@ -404,12 +405,12 @@ class LinodeFirewall(LinodeModuleBase):
 
         return result
 
-    def __create_device(self, device_id: str, device_type: str, **kwargs):
-        self._firewall.device_create(device_id, device_type, **kwargs)
+    def __create_device(self, device_id: int, device_type: str, **spec_args: Any) -> None:
+        self._firewall.device_create(device_id, device_type, **spec_args)
         self.register_action('Created device {0} of type {1}'.format(
             device_id, device_type))
 
-    def __delete_device(self, device) -> None:
+    def __delete_device(self, device: FirewallDevice) -> None:
         self.register_action('Deleted device {0} of type {1}'.format(
             device.entity.id, device.entity.type))
         device.delete()
@@ -470,7 +471,9 @@ class LinodeFirewall(LinodeModuleBase):
             self.register_action('Updated Firewall rules')
 
         # Update devices
-        self.__update_devices(spec_args.get('devices'))
+        devices: Optional[List[Any]] = spec_args.get('devices')
+        if devices is not None:
+            self.__update_devices(devices)
 
     def __handle_firewall(self, spec_args: dict) -> None:
         """Updates the Firewall defined in spec_args"""
@@ -501,7 +504,7 @@ class LinodeFirewall(LinodeModuleBase):
             self.register_action('Deleted Firewall {0}'.format(label))
             self._firewall.delete()
 
-    def exec_module(self, **kwargs) -> dict:
+    def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Firewall module"""
 
         state = kwargs.get('state')
@@ -514,7 +517,7 @@ class LinodeFirewall(LinodeModuleBase):
         return self.results
 
 
-def main():
+def main() -> None:
     """Constructs and calls the Linode Firewall module"""
 
     LinodeFirewall()
