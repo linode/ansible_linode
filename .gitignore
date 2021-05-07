@@ -1,2 +1,3 @@
 *.tar.gz
 tmp
+.mypy_cache

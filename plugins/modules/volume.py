@@ -6,6 +6,8 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
+from typing import Optional, cast, Any
+
 from linode_api4 import Volume
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -125,7 +127,7 @@ linode_volume_spec = dict(
 class LinodeVolume(LinodeModuleBase):
     """Configuration class for Linode volume resource"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.module_arg_spec = linode_volume_spec
         self.required_one_of = ['state', 'label']
         self.results = dict(
@@ -134,12 +136,12 @@ class LinodeVolume(LinodeModuleBase):
             volume=None,
         )
 
-        self._volume = None
+        self._volume: Optional[Volume] = None
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def get_volume_by_label(self, label):
+    def get_volume_by_label(self, label: str) -> Optional[Volume]:
         """Gets the volume with the given label"""
 
         try:
@@ -147,35 +149,35 @@ class LinodeVolume(LinodeModuleBase):
         except IndexError:
             return None
         except Exception as exception:
-            self.fail(msg='failed to get volume {0}: {1}'.format(label, exception))
+            return self.fail(msg='failed to get volume {0}: {1}'.format(label, exception))
 
-    def create_volume(self, **kwargs):
+    def create_volume(self, spec_args: dict) -> Optional[Volume]:
         """Creates a volume with the given kwargs"""
 
-        label = kwargs.pop('label')
-        region = kwargs.pop('region')
-        linode_id = kwargs.pop('linode_id')
-        size = kwargs.pop('size')
+        label = spec_args.pop('label')
+        region = spec_args.pop('region')
+        linode_id = spec_args.pop('linode_id')
+        size = spec_args.pop('size')
 
         try:
-            return self.client.volume_create(label, region, linode_id, size, **kwargs)
+            return self.client.volume_create(label, region, linode_id, size, **spec_args)
         except Exception as exception:
-            self.fail(msg='failed to create volume: {0}'.format(exception))
+            return self.fail(msg='failed to create volume: {0}'.format(exception))
 
-    def __handle_volume(self, **kwargs):
+    def __handle_volume(self, spec_args: dict) -> None:
         """Updates the volume defined in kwargs"""
 
-        label = kwargs.get('label')
-        size = kwargs.get('size')
-        linode_id = kwargs.get('linode_id')
-        config_id = kwargs.get('config_id')
-        attached = kwargs.pop('attached')
+        label: str = spec_args.get('label')
+        size: int = spec_args.get('size')
+        linode_id: int = spec_args.get('linode_id')
+        config_id: int = spec_args.get('config_id')
+        attached: bool = spec_args.pop('attached')
 
         self._volume = self.get_volume_by_label(label)
 
         # Create the volume if it does not already exist
         if self._volume is None:
-            self._volume = self.create_volume(**kwargs)
+            self._volume = self.create_volume(spec_args)
             self.register_action('Created volume {0}'.format(label))
 
         # Resize the volume if its size does not match
@@ -197,16 +199,16 @@ class LinodeVolume(LinodeModuleBase):
                 'Detached volume {0}'.format(label)
             )
 
-
         # Force lazy-loading
         self._volume._api_get()
 
         self.results['volume'] = self._volume._raw_json
 
-    def __handle_volume_absent(self, **kwargs):
+    def __handle_volume_absent(self, spec_args: dict) -> None:
         """Updates the volume for the absent state"""
 
-        label = kwargs.get('label')
+        label: str = spec_args.get('label')
+
         self._volume = self.get_volume_by_label(label)
 
         if self._volume is not None:
@@ -214,20 +216,20 @@ class LinodeVolume(LinodeModuleBase):
             self._volume.delete()
             self.register_action('Deleted volume {0}'.format(label))
 
-    def exec_module(self, **kwargs):
+    def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for volume module"""
         state = kwargs.get('state')
 
         if state == 'absent':
-            self.__handle_volume_absent(**kwargs)
+            self.__handle_volume_absent(kwargs)
             return self.results
 
-        self.__handle_volume(**kwargs)
+        self.__handle_volume(kwargs)
 
         return self.results
 
 
-def main():
+def main() -> None:
     """Constructs and calls the Linode Volume module"""
     LinodeVolume()
 

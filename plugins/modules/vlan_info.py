@@ -6,6 +6,8 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
+from typing import List, Optional, Any
+
 from linode_api4 import VLAN
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -68,9 +70,9 @@ linode_vlan_info_spec = dict(
 class LinodeVLANInfo(LinodeModuleBase):
     """Configuration class for Linode VLAN resource"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.module_arg_spec = linode_vlan_info_spec
-        self.required_one_of = []
+        self.required_one_of: List[str] = []
         self.results = dict(
             vlan=None,
         )
@@ -78,7 +80,7 @@ class LinodeVLANInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def get_vlan_by_label(self, label):
+    def get_vlan_by_label(self, label: str) -> Optional[VLAN]:
         """Gets the VLAN with the given property in kwargs"""
 
         try:
@@ -86,12 +88,14 @@ class LinodeVLANInfo(LinodeModuleBase):
         except IndexError:
             return None
         except Exception as exception:
-            self.fail(msg='failed to get VLAN {0}'.format(exception))
+            return self.fail(msg='failed to get VLAN {0}'.format(exception))
 
-    def exec_module(self, **kwargs):
+    def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for VLAN info module"""
 
-        vlan = self.get_vlan_by_label(kwargs.get('label'))
+        label: str = kwargs.get('label')
+
+        vlan = self.get_vlan_by_label(label)
 
         if vlan is None:
             self.fail('failed to get vlan')
@@ -101,7 +105,7 @@ class LinodeVLANInfo(LinodeModuleBase):
         return self.results
 
 
-def main():
+def main() -> None:
     """Constructs and calls the Linode VLAN info module"""
     LinodeVLANInfo()
 

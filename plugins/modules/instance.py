@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 
 import copy
 
-from typing import Optional
+from typing import Optional, Any, cast
 import linode_api4
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -291,7 +291,7 @@ linode_instance_mutable: set[str] = {
 class LinodeInstance(LinodeModuleBase):
     """Configuration class for a Linode instance resource"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.module_arg_spec = linode_instance_spec
 
         self.results: dict = dict(
@@ -301,12 +301,12 @@ class LinodeInstance(LinodeModuleBase):
             configs=None,
         )
 
-        self._instance: Instance = None
+        self._instance: Optional[Instance] = None
         self._root_pass: str = ''
 
         super().__init__(module_arg_spec=self.module_arg_spec)
 
-    def get_instance_by_label(self, label) -> Instance:
+    def get_instance_by_label(self, label: str) -> Optional[Instance]:
         """Gets a Linode instance by label"""
 
         try:
@@ -314,7 +314,7 @@ class LinodeInstance(LinodeModuleBase):
         except IndexError:
             return None
         except Exception as exception:
-            self.fail(msg='failed to get instance {0}: {1}'.format(label, exception))
+            return self.fail(msg='failed to get instance {0}: {1}'.format(label, exception))
 
     def create_instance(self, spec_args: dict) -> dict:
         """Creates a Linode instance"""
@@ -351,11 +351,11 @@ class LinodeInstance(LinodeModuleBase):
         except IndexError:
             return None
         except Exception as exception:
-            self.fail(msg='failed to get instance configs: {1}'.format(exception))
+            return self.fail(msg='failed to get instance configs: {0}'.format(exception))
 
     def __update_interfaces(self, spec_args: dict) -> None:
         config = self.__get_boot_config()
-        spec_interfaces: list = spec_args.get('interfaces')
+        spec_interfaces: list[Any] = spec_args.get('interfaces')
 
         if config is None or spec_interfaces is None:
             return
@@ -372,7 +372,7 @@ class LinodeInstance(LinodeModuleBase):
         self.register_action('Updated interfaces for instance {0} config {1}'
                              .format(self._instance.label, config.id))
 
-    def __update_instance(self, spec_args: dict):
+    def __update_instance(self, spec_args: dict) -> None:
         """Update instance handles all update functionality for the current instance"""
         should_update = False
 
@@ -412,7 +412,7 @@ class LinodeInstance(LinodeModuleBase):
         # Update interfaces
         self.__update_interfaces(spec_args)
 
-    def __handle_instance(self, spec_args: dict):
+    def __handle_instance(self, spec_args: dict) -> None:
         """Updates the instance defined in kwargs"""
         label = spec_args.get('label')
 
@@ -420,8 +420,8 @@ class LinodeInstance(LinodeModuleBase):
 
         if self._instance is None:
             result = self.create_instance(spec_args)
-            self._instance = result.get('instance')
-            self._root_pass = result.get('root_pass')
+            self._instance = cast(Instance, result.get('instance'))
+            self._root_pass = str(result.get('root_pass'))
 
             self.register_action('Created instance {0}'.format(label))
         else:
@@ -434,7 +434,7 @@ class LinodeInstance(LinodeModuleBase):
         self.results['instance'] = inst_result
         self.results['configs'] = paginated_list_to_json(self._instance.configs)
 
-    def __handle_instance_absent(self, spec_args: dict):
+    def __handle_instance_absent(self, spec_args: dict) -> None:
         """Destroys the instance defined in kwargs"""
         label = spec_args.get('label')
 
@@ -446,7 +446,7 @@ class LinodeInstance(LinodeModuleBase):
             self.register_action('Deleted instance {0}'.format(label))
             self._instance.delete()
 
-    def exec_module(self, **kwargs) -> dict:
+    def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Instance module"""
 
         state = kwargs.get('state')
@@ -459,7 +459,7 @@ class LinodeInstance(LinodeModuleBase):
         return self.results
 
 
-def main():
+def main() -> None:
     """Constructs and calls the Linode instance module"""
 
     LinodeInstance()

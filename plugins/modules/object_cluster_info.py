@@ -6,6 +6,8 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
+from typing import List, Optional, Any
+
 from linode_api4 import ObjectStorageKeys, ObjectStorageCluster
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -93,9 +95,9 @@ linode_object_cluster_valid_filters = [
 class LinodeObjectStorageClustersInfo(LinodeModuleBase):
     """Configuration class for Linode Object Storage Clusters resource"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.module_arg_spec = linode_object_cluster_info_spec
-        self.required_one_of = []
+        self.required_one_of: List[str] = []
         self.results = dict(
             changed=False,
             actions=[],
@@ -105,10 +107,10 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def get_clusters_by_property(self, **kwargs):
+    def get_clusters_by_property(self, spec_args: dict) -> Optional[List[ObjectStorageCluster]]:
         """Gets a list of clusters with the given property in kwargs"""
 
-        filter_items = {k: v for k, v in kwargs.items()
+        filter_items = {k: v for k, v in spec_args.items()
                         if k in linode_object_cluster_valid_filters and v is not None}
 
         filter_statement = create_filter_and(ObjectStorageCluster, filter_items)
@@ -116,7 +118,7 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
         try:
             # Special case because ID is not filterable
             if 'id' in filter_items.keys():
-                result = ObjectStorageCluster(self.client, kwargs.get('id'))
+                result = ObjectStorageCluster(self.client, spec_args.get('id'))
                 result._api_get()  # Force lazy-loading
 
                 return [result]
@@ -125,23 +127,24 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
         except IndexError:
             return None
         except Exception as exception:
-            self.fail(msg='failed to get clusters {0}'.format(exception))
+            return self.fail(msg='failed to get clusters {0}'.format(exception))
 
-
-    def exec_module(self, **kwargs):
+    def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Constructs and calls the Linode Object Storage Clusters module"""
 
-        clusters = self.get_clusters_by_property(**kwargs)
+        clusters = self.get_clusters_by_property(kwargs)
 
         if clusters is None:
-            self.fail('failed to get clusters')
+            return self.fail('failed to get clusters')
 
         self.results['clusters'] = [cluster._raw_json for cluster in clusters]
 
         return self.results
 
-def main():
+
+def main() -> None:
     """Constructs and calls the Linode Object Storage Clusters module"""
+
     LinodeObjectStorageClustersInfo()
 
 
