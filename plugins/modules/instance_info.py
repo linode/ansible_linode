@@ -9,7 +9,8 @@ from __future__ import absolute_import, division, print_function
 from linode_api4 import Instance
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
+    paginated_list_to_json
 
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
@@ -93,6 +94,50 @@ instance:
     "updated": "xxxx-xx-xxTxx:xx:xx",
     "watchdog_enabled": true
   }
+  
+configs:
+  description: The configs tied to this Linode instance.
+  linode_api_docs: "https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses"
+  returned: always
+  type: list
+  sample: [
+   {
+      "comments":"",
+      "created":"xxxxx",
+      "devices":{
+         "sda":null,
+         "sdb":{
+            "disk_id":xxxxx,
+            "volume_id":null
+         },
+         "sdc":null,
+         "sdd":null,
+         "sde":null,
+         "sdf":null,
+         "sdg":null,
+         "sdh":null
+      },
+      "helpers":{
+         "devtmpfs_automount":true,
+         "distro":true,
+         "modules_dep":true,
+         "network":true,
+         "updatedb_disabled":true
+      },
+      "id":xxxxx,
+      "initrd":null,
+      "interfaces":[
+         
+      ],
+      "kernel":"linode/grub2",
+      "label":"My Ubuntu 20.04 LTS Disk Profile",
+      "memory_limit":0,
+      "root_device":"/dev/sda",
+      "run_level":"default",
+      "updated":"xxxxx",
+      "virt_mode":"paravirt"
+   }
+]
 '''
 
 linode_instance_info_spec = dict(
@@ -114,7 +159,8 @@ class LinodeInstanceInfo(LinodeModuleBase):
         self.module_arg_spec = linode_instance_info_spec
         self.required_one_of = []
         self.results = dict(
-            Instance=None,
+            instance=None,
+            configs=None
         )
 
         super().__init__(module_arg_spec=self.module_arg_spec,
@@ -151,6 +197,7 @@ class LinodeInstanceInfo(LinodeModuleBase):
             self.fail('failed to get instance')
 
         self.results['instance'] = instance._raw_json
+        self.results['configs'] = paginated_list_to_json(instance.configs)
 
         return self.results
 

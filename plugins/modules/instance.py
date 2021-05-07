@@ -7,10 +7,12 @@ from __future__ import absolute_import, division, print_function
 
 import copy
 
+from typing import Optional
 import linode_api4
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import filter_null_values
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    filter_null_values, paginated_list_to_json, drop_empty_strings
 
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
@@ -94,6 +96,32 @@ options:
         See U(https://www.linode.com/docs/api/stackscripts/).
     type: dict
     required: false
+  interfaces:
+    description:
+      - A list of network interfaces to apply to the Linode.
+      - VLANs are currently in beta and will only function correctly if `api_version` is set to `v4beta`.
+      - See U(https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema).
+    type: list
+    elements: dict
+    suboptions:
+      purpose:
+        description: 
+          - The type of interface.
+        choices:
+          - public
+          - vlan
+        type: str
+        required: true
+      label:
+        description:
+          - The name of this interface.
+          - Required for vlan purpose interfaces. 
+          - Must be an empty string or null for public purpose interfaces.
+        type: str
+      ipam_address:
+        description:
+          - This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.
+        type: str
   booted:
     description:
       - Whether the new Instance should be booted. 
@@ -181,13 +209,63 @@ instance:
     "updated": "2018-09-26T10:10:14",
     "watchdog_enabled": true
   }
+
+configs:
+  description: The configs tied to this Linode instance.
+  linode_api_docs: "https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses"
+  returned: always
+  type: list
+  sample: [
+   {
+      "comments":"",
+      "created":"xxxxx",
+      "devices":{
+         "sda":null,
+         "sdb":{
+            "disk_id":xxxxx,
+            "volume_id":null
+         },
+         "sdc":null,
+         "sdd":null,
+         "sde":null,
+         "sdf":null,
+         "sdg":null,
+         "sdh":null
+      },
+      "helpers":{
+         "devtmpfs_automount":true,
+         "distro":true,
+         "modules_dep":true,
+         "network":true,
+         "updatedb_disabled":true
+      },
+      "id":xxxxx,
+      "initrd":null,
+      "interfaces":[
+         
+      ],
+      "kernel":"linode/grub2",
+      "label":"My Ubuntu 20.04 LTS Disk Profile",
+      "memory_limit":0,
+      "root_device":"/dev/sda",
+      "run_level":"default",
+      "updated":"xxxxx",
+      "virt_mode":"paravirt"
+   }
+]
 '''
 
 try:
-    from linode_api4 import Instance
+    from linode_api4 import Instance, Config, ConfigInterface
 except ImportError:
     # handled in module_utils.linode_common
     pass
+
+linode_instance_interface_spec: dict = dict(
+    purpose=dict(type='str', required=True),
+    label=dict(type='str'),
+    ipam_address=dict(type='str')
+)
 
 linode_instance_spec: dict = dict(
     type=dict(type='str'),
@@ -199,6 +277,7 @@ linode_instance_spec: dict = dict(
     stackscript_data=dict(type='dict'),
     private_ip=dict(type='bool'),
     group=dict(type='str'),
+    interfaces=dict(type='list', elements='dict', options=linode_instance_interface_spec),
     booted=dict(type='bool'),
     backup_id=dict(type='int')
 )
@@ -219,6 +298,7 @@ class LinodeInstance(LinodeModuleBase):
             changed=False,
             actions=[],
             instance=None,
+            configs=None,
         )
 
         self._instance: Instance = None
@@ -265,6 +345,33 @@ class LinodeInstance(LinodeModuleBase):
 
         return result
 
+    def __get_boot_config(self) -> Optional[Config]:
+        try:
+            return self._instance.configs[0]
+        except IndexError:
+            return None
+        except Exception as exception:
+            self.fail(msg='failed to get instance configs: {1}'.format(exception))
+
+    def __update_interfaces(self, spec_args: dict) -> None:
+        config = self.__get_boot_config()
+        spec_interfaces: list = spec_args.get('interfaces')
+
+        if config is None or spec_interfaces is None:
+            return
+
+        spec_interfaces = [drop_empty_strings(v) for v in spec_interfaces]
+        remote_interfaces = [drop_empty_strings(v._serialize()) for v in config.interfaces]
+
+        if remote_interfaces == spec_interfaces:
+            return
+
+        config.interfaces = [ConfigInterface(**v) for v in spec_interfaces]
+        config.save()
+
+        self.register_action('Updated interfaces for instance {0} config {1}'
+                             .format(self._instance.label, config.id))
+
     def __update_instance(self, spec_args: dict):
         """Update instance handles all update functionality for the current instance"""
         should_update = False
@@ -302,6 +409,9 @@ class LinodeInstance(LinodeModuleBase):
         if should_update:
             self._instance.save()
 
+        # Update interfaces
+        self.__update_interfaces(spec_args)
+
     def __handle_instance(self, spec_args: dict):
         """Updates the instance defined in kwargs"""
         label = spec_args.get('label')
@@ -322,6 +432,7 @@ class LinodeInstance(LinodeModuleBase):
         inst_result['root_pass'] = self._root_pass
 
         self.results['instance'] = inst_result
+        self.results['configs'] = paginated_list_to_json(self._instance.configs)
 
     def __handle_instance_absent(self, spec_args: dict):
         """Destroys the instance defined in kwargs"""
@@ -331,6 +442,7 @@ class LinodeInstance(LinodeModuleBase):
 
         if self._instance is not None:
             self.results['instance'] = self._instance._raw_json
+            self.results['configs'] = paginated_list_to_json(self._instance.configs)
             self.register_action('Deleted instance {0}'.format(label))
             self._instance.delete()
 

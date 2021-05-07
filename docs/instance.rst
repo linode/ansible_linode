@@ -78,6 +78,31 @@ Parameters
     An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See https://www.linode.com/docs/api/stackscripts/.
 
 
+  interfaces (optional, list, None)
+    A list of network interfaces to apply to the Linode.
+
+    VLANs are currently in beta and will only function correctly if `api_version` is set to `v4beta`.
+
+    See https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema.
+
+
+    purpose (True, str, None)
+      The type of interface.
+
+
+    label (optional, str, None)
+      The name of this interface.
+
+      Required for vlan purpose interfaces.
+
+      Must be an empty string or null for public purpose interfaces.
+
+
+    ipam_address (optional, str, None)
+      This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.
+
+
+
   booted (optional, any, None)
     Whether the new Instance should be booted. This will default to True if the Instance is deployed from an Image or Backup.
 
@@ -183,6 +208,54 @@ Sample Response:
      "updated": "2018-09-26T10:10:14",
      "watchdog_enabled": true
     }
+
+
+**configs (always, list):**
+
+The configs tied to this Linode instance.
+
+`Linode Response Object Documentation <https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses>`_
+
+Sample Response:
+
+.. code-block:: JSON
+
+    [
+     {
+      "comments": "",
+      "created": "xxxxx",
+      "devices": {
+       "sda": null,
+       "sdb": {
+        "disk_id": "xxxxx",
+        "volume_id": null
+       },
+       "sdc": null,
+       "sdd": null,
+       "sde": null,
+       "sdf": null,
+       "sdg": null,
+       "sdh": null
+      },
+      "helpers": {
+       "devtmpfs_automount": true,
+       "distro": true,
+       "modules_dep": true,
+       "network": true,
+       "updatedb_disabled": true
+      },
+      "id": "xxxxx",
+      "initrd": null,
+      "interfaces": [],
+      "kernel": "linode/grub2",
+      "label": "My Ubuntu 20.04 LTS Disk Profile",
+      "memory_limit": 0,
+      "root_device": "/dev/sda",
+      "run_level": "default",
+      "updated": "xxxxx",
+      "virt_mode": "paravirt"
+     }
+    ]
 
 
 
