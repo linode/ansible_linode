@@ -78,6 +78,14 @@ Parameters
     An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See https://www.linode.com/docs/api/stackscripts/.
 
 
+  booted (optional, any, None)
+    Whether the new Instance should be booted. This will default to True if the Instance is deployed from an Image or Backup.
+
+
+  backup_id (optional, any, None)
+    The id of the Backup to restore to the new Instance. May not be provided if “image” is given.
+
+
   state (optional, str, None)
     The desired instance state.
 

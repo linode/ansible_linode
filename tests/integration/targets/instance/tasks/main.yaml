@@ -60,6 +60,38 @@
         that:
           - info_label.instance.ipv4|length > 1
           - info_label.instance.region == 'us-east'
+
+    - name: Update the instance region and type (recreate disallowed)
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create_nopass.instance.label }}'
+        region: us-southeast
+        group: funny
+        type: g6-standard-2
+        image: linode/ubuntu20.04
+        private_ip: true
+        state: present
+      register: recreate_nopass_noforce
+      failed_when:
+        - recreate_nopass_noforce.changed == true
+
+    - name: Update the instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create_nopass.instance.label }}'
+        region: us-east
+        group: funny
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        private_ip: true
+        state: present
+      register: update_nopass
+
+    - name: Assert update
+      assert:
+        that:
+          - update_nopass.instance.group == 'funny'
+
   always:
     - name: Delete a Linode instance
       linode.cloud.instance:
@@ -77,7 +109,7 @@
     - name: Delete a Linode instance
       linode.cloud.instance:
         api_token: '{{ api_token }}'
-        label: '{{ create_nopass.instance.label }}'
+        label: '{{ update_nopass.instance.label }}'
         state: absent
       register: delete_nopass
 
@@ -85,4 +117,4 @@
       assert:
         that:
           - delete_nopass.changed
-          - delete_nopass.instance.id == create_nopass.instance.id
+          - delete_nopass.instance.id == update_nopass.instance.id
