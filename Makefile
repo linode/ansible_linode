@@ -15,6 +15,7 @@ install: clean build
 
 lint:
 	pylint plugins
+	mypy plugins
 
 gendocs:
 	mkdir -p $(DOCS_PATH)

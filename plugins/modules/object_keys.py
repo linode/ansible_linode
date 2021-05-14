@@ -6,6 +6,8 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
+from typing import Optional, Union, List, Any
+
 from linode_api4 import ObjectStorageKeys, ObjectStorageCluster
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -117,7 +119,7 @@ linode_object_keys_spec = dict(
 class LinodeObjectStorageKeys(LinodeModuleBase):
     """Configuration class for Linode Object Storage Keys resource"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.module_arg_spec = linode_object_keys_spec
         self.required_one_of = ['state', 'label']
         self.results = dict(
@@ -126,12 +128,12 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
             key=None,
         )
 
-        self._key = None
+        self._key: Optional[ObjectStorageKeys] = None
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def get_key_by_label(self, label):
+    def get_key_by_label(self, label: str) -> Optional[ObjectStorageKeys]:
         """Gets the Object Storage key with the given label"""
 
         try:
@@ -148,42 +150,36 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
         except IndexError:
             return None
         except Exception as exception:
-            self.fail(msg='failed to get object storage key {0}: {1}'.format(label, exception))
+            return self.fail(msg='failed to get object storage key {0}: {1}'
+                             .format(label, exception))
 
-    def create_key(self, label, bucket_access):
+    def create_key(self, label: str, bucket_access: Union[dict, list[dict]]) \
+            -> Optional[ObjectStorageKeys]:
         """Creates an Object Storage key with the given label and access"""
 
         try:
             return self.client.object_storage.keys_create(label, bucket_access=bucket_access)
         except Exception as exception:
-            self.fail(msg='failed to create object storage key: {0}'.format(exception))
+            return self.fail(msg='failed to create object storage key: {0}'.format(exception))
 
-    def _dict_to_bucket_access(self, access_items):
-        "Converts the given bucket_access spec items into an API compliant format"
-
-        return [self.client.object_storage.bucket_access(
-            v.get('cluster'),
-            v.get('bucket'),
-            v.get('permissions')
-        ) for v in access_items]
-
-    def __handle_key(self, **kwargs):
+    def __handle_key(self, spec_args: dict) -> None:
         """Updates the key defined in kwargs"""
 
-        label = kwargs.pop('label')
+        label: str = spec_args.pop('label')
+        access: dict = spec_args.get('access')
 
         self._key = self.get_key_by_label(label)
 
         if self._key is None:
-            self._key = self.create_key(label, bucket_access=kwargs.get('access'))
+            self._key = self.create_key(label, bucket_access=access)
             self.register_action('Created key {0}'.format(label))
 
         self.results['key'] = self._key._raw_json
 
-    def __handle_key_absent(self, **kwargs):
+    def __handle_key_absent(self, spec_args: dict) -> None:
         """Deletes the key defined in kwargs"""
 
-        label = kwargs.pop('label')
+        label = spec_args.pop('label')
 
         self._key = self.get_key_by_label(label)
 
@@ -192,22 +188,23 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
             self._key.delete()
             self.register_action('Deleted key {0}'.format(label))
 
-
-    def exec_module(self, **kwargs):
+    def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Constructs and calls the Linode Object Storage Key module"""
 
         state = kwargs.pop('state')
 
         if state == 'absent':
-            self.__handle_key_absent(**kwargs)
+            self.__handle_key_absent(kwargs)
             return self.results
 
-        self.__handle_key(**kwargs)
+        self.__handle_key(kwargs)
 
         return self.results
 
-def main():
+
+def main() -> None:
     """Constructs and calls the Linode Object Storage key module"""
+
     LinodeObjectStorageKeys()
 
 

@@ -3,6 +3,7 @@
 from __future__ import absolute_import, division, print_function
 
 import traceback
+from typing import Any
 
 try:
     from ansible.module_utils.ansible_release import __version__ as ANSIBLE_VERSION
@@ -49,14 +50,16 @@ LINODE_LABEL_ARGS = dict(
 )
 
 
-class LinodeModuleBase():
+class LinodeModuleBase:
     """A base for all Linode resource modules."""
 
     def __init__(
-            self, module_arg_spec, supports_tags=True, has_label=True, bypass_checks=False,
-            no_log=False, mutually_exclusive=None, required_together=None, required_one_of=None,
-            add_file_common_args=False, supports_check_mode=False, required_if=None,
-            skip_exec=False):
+            self, module_arg_spec: dict, supports_tags: bool = True, has_label: bool = True,
+            bypass_checks: bool = False, no_log: bool = False, mutually_exclusive: Any = None,
+            required_together: Any = None, required_one_of: Any = None,
+            add_file_common_args: bool = False, supports_check_mode: bool = False,
+            required_if: Any = None,
+            skip_exec: bool = False) -> None:
 
         arg_spec = dict()
         arg_spec.update(LINODE_COMMON_ARGS)
@@ -77,7 +80,7 @@ class LinodeModuleBase():
             required_one_of=required_one_of, add_file_common_args=add_file_common_args,
             supports_check_mode=supports_check_mode, required_if=required_if)
 
-        self.results = self.results or dict(
+        self.results: dict = self.results or dict(
             changed=False,
             actions=[]
         )
@@ -89,28 +92,28 @@ class LinodeModuleBase():
             res = self.exec_module(**self.module.params)
             self.module.exit_json(**res)
 
-    def fail(self, msg, **kwargs):
-        '''
+    def fail(self, msg: str, **kwargs: Any) -> None:
+        """
         Shortcut for calling module.fail
 
         :param msg: Error message
         :param kwargs: Any key=value pairs
         :return: None
-        '''
+        """
         self.module.fail_json(msg=msg, **kwargs)
 
-    def exec_module(self, **kwargs):
+    def exec_module(self, **kwargs: Any) -> Any:
         """Returns a not implemented error"""
         self.fail("Error: module {0} not implemented".format(self.__class__.__name__))
 
-    def register_action(self, description):
+    def register_action(self, description: str) -> None:
         """Sets the changed flag to true and adds the given action to the result"""
 
         self.results['changed'] = True
         self.results['actions'].append(description)
 
     @property
-    def client(self):
+    def client(self) -> LinodeClient:
         """Creates a 'client' property that is used to access the Linode API."""
         if not self._client:
             api_token = self.module.params['api_token']
