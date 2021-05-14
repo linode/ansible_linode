@@ -21,7 +21,7 @@ jobs:
           python-version: '3.x'
 
       - name: install dependencies
-        run: pip3 install ansible-doc-extractor==0.1.6
+        run: pip install -r requirements-dev.txt
 
       - name: make temp directory
         run: mkdir tmp
