@@ -5,11 +5,13 @@
 
 from __future__ import absolute_import, division, print_function
 
-import copy
-from typing import Optional, cast, Any
+from typing import Optional, cast, Any, List, Set, Tuple
+
+import linode_api4
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     paginated_list_to_json, dict_select_matching, filter_null_values
+
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 
 # pylint: disable=unused-import
@@ -316,10 +318,15 @@ linode_configs_spec = dict(
 )
 
 linode_nodebalancer_spec = dict(
-    region=dict(type='str', required=False),
-    configs=dict(type='list', required=False, elements='dict', options=linode_configs_spec)
+    client_conn_throttle=dict(type='int'),
+    region=dict(type='str'),
+    configs=dict(type='list', elements='dict', options=linode_configs_spec)
 )
 
+linode_nodebalancer_mutable: Set[str] = {
+    'client_conn_throttle',
+    'tags'
+}
 
 class LinodeNodeBalancer(LinodeModuleBase):
     """Configuration class for Linode NodeBalancer resource"""
@@ -391,98 +398,136 @@ class LinodeNodeBalancer(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to create nodebalancer node: {0}'.format(exception))
 
-    def __handle_config_nodes(self, config: NodeBalancerConfig, new_nodes: list) -> None:
+    def __create_config(self, node_balancer: NodeBalancer, spec_args: dict) -> NodeBalancerConfig:
+        """Registers a create action for the given config"""
+
+        config = self.create_config(node_balancer, spec_args)
+        self.register_action('Created config: {0}'.format(config.id))
+
+        return config
+
+    def __delete_config(self, config: NodeBalancerConfig) -> None:
+        """Registers a delete action for the given config"""
+
+        self.register_action('Deleted config: {0}'.format(config.id))
+        config.delete()
+
+    def __create_node(self, config: NodeBalancerConfig, spec_args: dict) -> NodeBalancerNode:
+        """Registers a create action for the given node"""
+
+        node = self.create_node(config, spec_args)
+        self.register_action('Created Node: {0}'.format(node.id))
+        cast(list, self.results['nodes']).append(node._raw_json)
+
+        return node
+
+    def __delete_node(self, node: NodeBalancerNode) -> None:
+        """Registers a delete action for the given node"""
+
+        self.register_action('Deleted Node: {0}'.format(node.id))
+        node.delete()
+
+    def __handle_config_nodes(self, config: NodeBalancerConfig, new_nodes: List[dict]) -> None:
         """Updates the NodeBalancer nodes defined in new_nodes within the given config"""
 
-        new_nodes = new_nodes or []
-
+        node_map = {}
         nodes = config.nodes
 
-        # We have to do this to fix lazy loading
         for node in nodes:
             node._api_get()
+            node_map[node.label] = node
 
-        # Remove unspecified nodes
-        for remote_node in nodes:
-            should_delete = True
-
-            for node in new_nodes:
-                node_match, remote_node_match = dict_select_matching(
-                    filter_null_values(node), remote_node._raw_json)
-
-                if node_match == remote_node_match:
-                    should_delete = False
-                    break
-
-            if should_delete:
-                self.register_action('Deleted Node {}'.format(remote_node.label))
-                remote_node.delete()
-
-        # Create specified nodes that do not exist
         for node in new_nodes:
-            exists = False
-            current_node = None
+            node_label = node.get('label')
 
-            for remote_node in nodes:
+            if node_label in node_map:
                 node_match, remote_node_match = dict_select_matching(
-                    filter_null_values(node), remote_node._raw_json)
+                    filter_null_values(node), node_map[node_label]._raw_json)
 
                 if node_match == remote_node_match:
-                    exists = True
-                    current_node = remote_node
+                    cast(list, self.results['nodes']).append(node_map[node_label]._raw_json)
+                    del node_map[node_label]
+                    continue
 
-            if not exists:
-                current_node = self.create_node(config, node)
-                self.register_action('Created Node {}'.format(current_node.label))
+                self.__delete_node(node_map[node_label])
 
-            cast(list, self.results['nodes']).append(current_node._raw_json)
+            self.__create_node(config, node)
 
-    def __handle_configs(self, spec_args: dict) -> None:
-        """Updates the configs defined in kwargs under the instance's NodeBalancer"""
+        for node in node_map.values():
+            self.__delete_node(node)
 
-        configs = spec_args.get('configs')
-        configs = configs or []
+    @staticmethod
+    def __check_config_exists(target: Set[NodeBalancerConfig], config: dict) \
+            -> Tuple[bool, Optional[NodeBalancerConfig]]:
+        """Returns whether a config exists in the target set"""
 
-        remote_configs = copy.deepcopy(self._node_balancer.configs)
+        for remote_config in target:
+            config_match, remote_config_match = \
+                dict_select_matching(filter_null_values(config), remote_config._raw_json)
 
-        # Remove unspecified configs
-        for remote_config in remote_configs:
-            should_delete = True
+            if config_match == remote_config_match:
+                return True, remote_config
 
-            for config in configs:
-                config_match, remote_config_match = dict_select_matching(
-                    filter_null_values(config), remote_config._raw_json)
+        return False, None
 
-                if config_match == remote_config_match:
-                    should_delete = False
-                    break
+    def __handle_configs(self, new_configs: List[dict]) -> None:
+        """Updates the configs defined in new_configs under this NodeBalancer"""
 
-            if should_delete:
-                self.register_action('Deleted Config {}'.format(remote_config.id))
-                remote_config.delete()
+        new_configs = new_configs or []
+        remote_configs = set(self._node_balancer.configs)
 
-        # Create specified configs that do not exist
-        for config in configs:
-            config_current = None
-            exists = False
+        for config in new_configs:
+            config_exists, remote_config = self.__check_config_exists(remote_configs, config)
 
-            for remote_config in remote_configs:
-                config_match, remote_config_match = dict_select_matching(
-                    filter_null_values(config), remote_config._raw_json)
+            if config_exists:
+                self.__handle_config_nodes(remote_config, config.get('nodes'))
+                remote_configs.remove(remote_config)
+                continue
 
-                if config_match == remote_config_match:
-                    exists = True
-                    config_current = remote_config
+            new_config = self.__create_config(self._node_balancer, config)
+            self.__handle_config_nodes(new_config, config.get('nodes'))
 
-            if not exists:
-                config_current = self.create_config(self._node_balancer, config)
+        # Remove remaining configs
+        for config in remote_configs:
+            self.__delete_config(config)
 
-                self.register_action('Created Config {}'.format(config_current.id))
+        cast(list, self.results['configs'])\
+            .extend(paginated_list_to_json(self._node_balancer.configs))
 
-            self.__handle_config_nodes(config_current, config.get('nodes'))
+    def __update_nodebalancer(self, spec_args: dict) -> None:
+        """Update instance handles all update functionality for the current nodebalancer"""
+        should_update = False
 
-        cast(list, self.results['configs']).extend(
-            paginated_list_to_json(self._node_balancer.configs))
+        spec_args = filter_null_values(spec_args)
+
+        # "configs" is defined in NodeBalancer, but is a property method
+        if 'configs' in spec_args.keys():
+            spec_args.pop('configs')
+
+        for key, new_value in spec_args.items():
+            if not hasattr(self._node_balancer, key):
+                continue
+
+            old_value = getattr(self._node_balancer, key)
+
+            if isinstance(old_value, linode_api4.objects.linode.Region):
+                old_value = old_value.id
+
+            if new_value != old_value:
+                if key in linode_nodebalancer_mutable:
+                    setattr(self._node_balancer, key, new_value)
+                    self.register_action('Updated nodebalancer {0}: "{1}" -> "{2}"'.
+                                         format(key, old_value, new_value))
+
+                    should_update = True
+                    continue
+
+                self.fail(
+                    'failed to update nodebalancer {0}: {1} is a non-updatable field'
+                        .format(self._node_balancer.label, key))
+
+        if should_update:
+            self._node_balancer.save()
 
     def __handle_nodebalancer(self, spec_args: dict) -> None:
         """Updates the NodeBalancer defined in kwargs"""
@@ -502,6 +547,9 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         if self._node_balancer is None:
             return self.fail('failed to create nodebalancer')
+
+        self.__update_nodebalancer(spec_args)
+        self._node_balancer._api_get()
 
         self.results['node_balancer'] = self._node_balancer._raw_json
 
@@ -526,7 +574,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
             return self.results
 
         self.__handle_nodebalancer(kwargs)
-        self.__handle_configs(kwargs)
+        self.__handle_configs(kwargs.get('configs'))
 
         return self.results
 
