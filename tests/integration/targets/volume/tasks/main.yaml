@@ -8,6 +8,7 @@
         type: g6-standard-1
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
+        wait: false
         state: present
       register: create_inst
 

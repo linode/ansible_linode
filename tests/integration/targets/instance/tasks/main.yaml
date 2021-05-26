@@ -16,7 +16,7 @@
       assert:
         that:
           - create.changed
-          - create.instance.status == 'provisioning'
+          - create.instance.status == 'running'
           - create.instance.ipv4|length > 1
 
     - name: Create a Linode instance without a root password
@@ -27,6 +27,7 @@
         type: g6-standard-1
         image: linode/ubuntu20.04
         private_ip: true
+        wait: false
         state: present
       register: create_nopass
 
@@ -105,6 +106,7 @@
           - purpose: vlan
             label: really-cool-vlan
         private_ip: true
+        wait: false
         state: present
       register: create_interface
 

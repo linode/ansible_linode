@@ -11,6 +11,7 @@
           - purpose: vlan
             label: really-cool-vlan
         private_ip: true
+        wait: false
         state: present
       register: create_instance
 

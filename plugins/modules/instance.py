@@ -9,6 +9,7 @@ import copy
 
 from typing import Optional, Any, cast
 import linode_api4
+import polling
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
@@ -130,6 +131,16 @@ options:
     description:
       - The id of the Backup to restore to the new Instance. 
         May not be provided if “image” is given.
+  wait:
+    description:
+      - Wait for the instance to have status `running` before returning.
+    default: True
+    type: bool
+  wait_timeout:
+    description:
+      - The amount of time, in seconds, to wait for an instance to have status `running`.
+    default: 240
+    type: int
   state:
     description:
       - The desired instance state.
@@ -279,7 +290,9 @@ linode_instance_spec: dict = dict(
     group=dict(type='str'),
     interfaces=dict(type='list', elements='dict', options=linode_instance_interface_spec),
     booted=dict(type='bool'),
-    backup_id=dict(type='int')
+    backup_id=dict(type='int'),
+    wait=dict(type='bool', default=True),
+    wait_timeout=dict(type='int', default=240)
 )
 
 # Fields that can be updated on an existing instance
@@ -333,6 +346,7 @@ class LinodeInstance(LinodeModuleBase):
 
         try:
             response = self.client.linode.instance_create(ltype, region, **spec_args)
+
         except Exception as exception:
             self.fail(msg='failed to create instance: {0}'.format(exception))
 
@@ -343,7 +357,21 @@ class LinodeInstance(LinodeModuleBase):
         else:
             result['instance'] = response
 
+        if spec_args.get('wait'):
+            self.__wait_for_instance_status(
+                result['instance'], 'running', spec_args.get('wait_timeout'))
+
         return result
+
+    def __wait_for_instance_status(self, instance: Instance, status: str, timeout: int) -> None:
+        try:
+            polling.poll(
+                lambda: instance.status == status,
+                step=10,
+                timeout=timeout,
+            )
+        except polling.TimeoutException:
+            self.fail('failed to wait for instance: timeout period expired')
 
     def __get_boot_config(self) -> Optional[Config]:
         try:
@@ -456,6 +484,7 @@ class LinodeInstance(LinodeModuleBase):
             return self.results
 
         self.__handle_instance(kwargs)
+
         return self.results
 
 
