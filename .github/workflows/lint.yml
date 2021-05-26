@@ -1,16 +1,16 @@
 name: Run Linter
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
   lint:
     runs-on: ubuntu-20.04
     steps:
       - name: checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@f1d3225b5376a0791fdee5a0e8eac5289355e43a # pin@v2
 
       - name: setup python 3
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@0291cefc54fa79cd1986aee8fa5ecb89ad4defea # pin@v2
         with:
           python-version: '3.x'
 

@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@f1d3225b5376a0791fdee5a0e8eac5289355e43a # pin@v2
 
       - name: update packages
         run: sudo apt-get update -y
@@ -20,7 +20,7 @@ jobs:
         run: sudo apt-get install -y build-essential
 
       - name: setup python 3
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@0291cefc54fa79cd1986aee8fa5ecb89ad4defea # pin@v2
         with:
           python-version: '3.x'
 
@@ -34,7 +34,8 @@ jobs:
         run: make install
 
       - name: copy makefile to installed collection
-        run: cp Makefile ~/.ansible/collections/ansible_collections/linode/cloud/Makefile
+        run: cp Makefile
+          ~/.ansible/collections/ansible_collections/linode/cloud/Makefile
 
       - name: copy tests to installed collection
         run: cp -r tests ~/.ansible/collections/ansible_collections/linode/cloud/tests
