@@ -312,69 +312,69 @@
         - "'failed' not in fake_nb_info.msg"
 
   always:
-    # Delete the NodeBalancers
-    - name: Delete the populated NodeBalancer
-      linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        label: '{{ create_populated_nodebalancer.node_balancer.label }}'
-        state: absent
-      register: delete_populated
+    - ignore_errors: yes
+      block:
+        - name: Delete the populated NodeBalancer
+          linode.cloud.nodebalancer:
+            api_token: '{{ api_token }}'
+            label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+            state: absent
+          register: delete_populated
 
-    - name: Assert populated NodeBalancer delete
-      assert:
-        that:
-          - delete_populated.changed
-          - delete_populated.node_balancer.id == update_populated_config.node_balancer.id
+        - name: Assert populated NodeBalancer delete
+          assert:
+            that:
+              - delete_populated.changed
+              - delete_populated.node_balancer.id == update_populated_config.node_balancer.id
 
-    - name: Delete the empty NodeBalancer
-      linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        label: '{{ create_empty_nodebalancer.node_balancer.label }}'
-        state: absent
-      register: delete_empty
+        - name: Delete the empty NodeBalancer
+          linode.cloud.nodebalancer:
+            api_token: '{{ api_token }}'
+            label: '{{ create_empty_nodebalancer.node_balancer.label }}'
+            state: absent
+          register: delete_empty
 
-    - name: Assert empty NodeBalancer delete
-      assert:
-        that:
-          - delete_empty.changed
-          - delete_empty.node_balancer.id == delete_empty.node_balancer.id
+        - name: Assert empty NodeBalancer delete
+          assert:
+            that:
+              - delete_empty.changed
+              - delete_empty.node_balancer.id == delete_empty.node_balancer.id
 
-    # Delete the node instances
-    - name: Delete node1
-      linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        label: '{{ node1_inst.instance.label }}'
-        state: absent
-      register: delete_node1
+        - name: Delete node1
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ node1_inst.instance.label }}'
+            state: absent
+          register: delete_node1
 
-    - name: Assert node1 delete
-      assert:
-        that:
-          - delete_node1.changed
-          - delete_node1.instance.id == node1_inst.instance.id
+        - name: Assert node1 delete
+          assert:
+            that:
+              - delete_node1.changed
+              - delete_node1.instance.id == node1_inst.instance.id
 
-    - name: Delete node2
-      linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        label: '{{ node2_inst.instance.label }}'
-        state: absent
-      register: delete_node2
+        - name: Delete node2
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ node2_inst.instance.label }}'
+            state: absent
+          register: delete_node2
 
-    - name: Assert node2 delete
-      assert:
-        that:
-          - delete_node2.changed
-          - delete_node2.instance.id == node2_inst.instance.id
+        - name: Assert node2 delete
+          assert:
+            that:
+              - delete_node2.changed
+              - delete_node2.instance.id == node2_inst.instance.id
 
-    - name: Delete node3
-      linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        label: '{{ node3_inst.instance.label }}'
-        state: absent
-      register: delete_node3
+        - name: Delete node3
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ node3_inst.instance.label }}'
+            state: absent
+          register: delete_node3
 
-    - name: Assert node3 delete
-      assert:
-        that:
-          - delete_node3.changed
-          - delete_node3.instance.id == node3_inst.instance.id
+        - name: Assert node3 delete
+          assert:
+            that:
+              - delete_node3.changed
+              - delete_node3.instance.id == node3_inst.instance.id

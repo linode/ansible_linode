@@ -103,39 +103,41 @@
           - not detach_volume.volume.linode_id|d(False)
 
   always:
-    - name: Delete the instance volume
-      linode.cloud.volume:
-        api_token: '{{ api_token }}'
-        label: '{{ create_volume_inst.volume.label }}'
-        state: absent
-      register: delete_volume_inst
+    - ignore_errors: yes
+      block:
+        - name: Delete the instance volume
+          linode.cloud.volume:
+            api_token: '{{ api_token }}'
+            label: '{{ create_volume_inst.volume.label }}'
+            state: absent
+          register: delete_volume_inst
 
-    - name: Assert the instance volume was deleted
-      assert:
-        that:
-          - delete_volume_inst.changed
+        - name: Assert the instance volume was deleted
+          assert:
+            that:
+              - delete_volume_inst.changed
 
-    - name: Delete the volume
-      linode.cloud.volume:
-        api_token: '{{ api_token }}'
-        label: '{{ create_volume_noinst.volume.label }}'
-        state: absent
-      register: delete_volume_noinst
+        - name: Delete the volume
+          linode.cloud.volume:
+            api_token: '{{ api_token }}'
+            label: '{{ create_volume_noinst.volume.label }}'
+            state: absent
+          register: delete_volume_noinst
 
-    - name: Assert the volume was deleted
-      assert:
-        that:
-          - delete_volume_noinst.changed
+        - name: Assert the volume was deleted
+          assert:
+            that:
+              - delete_volume_noinst.changed
 
-    - name: Delete the instance
-      linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        label: '{{ create_inst.instance.label }}'
-        state: absent
-      register: delete_inst
+        - name: Delete the instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ create_inst.instance.label }}'
+            state: absent
+          register: delete_inst
 
-    - name: Assert instance delete
-      assert:
-        that:
-          - delete_inst.changed
-          - delete_inst.instance.id == create_inst.instance.id
+        - name: Assert instance delete
+          assert:
+            that:
+              - delete_inst.changed
+              - delete_inst.instance.id == create_inst.instance.id
