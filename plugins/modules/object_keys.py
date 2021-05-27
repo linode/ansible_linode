@@ -117,7 +117,7 @@ linode_object_keys_spec = dict(
 
 
 class LinodeObjectStorageKeys(LinodeModuleBase):
-    """Configuration class for Linode Object Storage Keys resource"""
+    """Module for creating and destroying Linode Object Storage Keys"""
 
     def __init__(self) -> None:
         self.module_arg_spec = linode_object_keys_spec
@@ -133,9 +133,7 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def get_key_by_label(self, label: str) -> Optional[ObjectStorageKeys]:
-        """Gets the Object Storage key with the given label"""
-
+    def __get_key_by_label(self, label: str) -> Optional[ObjectStorageKeys]:
         try:
             # For some reason we can't filter on label here
             keys = self.client.object_storage.keys()
@@ -153,7 +151,7 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
             return self.fail(msg='failed to get object storage key {0}: {1}'
                              .format(label, exception))
 
-    def create_key(self, label: str, bucket_access: Union[dict, list[dict]]) \
+    def __create_key(self, label: str, bucket_access: Union[dict, list[dict]]) \
             -> Optional[ObjectStorageKeys]:
         """Creates an Object Storage key with the given label and access"""
 
@@ -162,26 +160,27 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to create object storage key: {0}'.format(exception))
 
-    def __handle_key(self, spec_args: dict) -> None:
+    def __handle_key(self) -> None:
         """Updates the key defined in kwargs"""
 
-        label: str = spec_args.pop('label')
-        access: dict = spec_args.get('access')
+        params = self.module.params
+        label: str = params.pop('label')
+        access: dict = params.get('access')
 
-        self._key = self.get_key_by_label(label)
+        self._key = self.__get_key_by_label(label)
 
         if self._key is None:
-            self._key = self.create_key(label, bucket_access=access)
+            self._key = self.__create_key(label, bucket_access=access)
             self.register_action('Created key {0}'.format(label))
 
         self.results['key'] = self._key._raw_json
 
-    def __handle_key_absent(self, spec_args: dict) -> None:
+    def __handle_key_absent(self) -> None:
         """Deletes the key defined in kwargs"""
 
-        label = spec_args.pop('label')
+        label = self.module.params.pop('label')
 
-        self._key = self.get_key_by_label(label)
+        self._key = self.__get_key_by_label(label)
 
         if self._key is not None:
             self.results['key'] = self._key._raw_json
@@ -194,10 +193,10 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
         state = kwargs.pop('state')
 
         if state == 'absent':
-            self.__handle_key_absent(kwargs)
+            self.__handle_key_absent()
             return self.results
 
-        self.__handle_key(kwargs)
+        self.__handle_key()
 
         return self.results
 

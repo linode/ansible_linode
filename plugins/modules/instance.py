@@ -302,7 +302,7 @@ linode_instance_mutable: set[str] = {
 }
 
 class LinodeInstance(LinodeModuleBase):
-    """Configuration class for a Linode instance resource"""
+    """Module for creating and destroying Linode Instances"""
 
     def __init__(self) -> None:
         self.module_arg_spec = linode_instance_spec
@@ -319,7 +319,7 @@ class LinodeInstance(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec)
 
-    def get_instance_by_label(self, label: str) -> Optional[Instance]:
+    def __get_instance_by_label(self, label: str) -> Optional[Instance]:
         """Gets a Linode instance by label"""
 
         try:
@@ -329,15 +329,15 @@ class LinodeInstance(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get instance {0}: {1}'.format(label, exception))
 
-    def create_instance(self, spec_args: dict) -> dict:
+    def __create_instance(self) -> dict:
         """Creates a Linode instance"""
-        spec_args = copy.deepcopy(spec_args)
+        params = copy.deepcopy(self.module.params)
 
-        if 'root_pass' in spec_args.keys() and spec_args.get('root_pass') is None:
-            spec_args.pop('root_pass')
+        if 'root_pass' in params.keys() and params.get('root_pass') is None:
+            params.pop('root_pass')
 
-        ltype = spec_args.pop('type')
-        region = spec_args.pop('region')
+        ltype = params.pop('type')
+        region = params.pop('region')
 
         result = {
             'instance': None,
@@ -345,7 +345,7 @@ class LinodeInstance(LinodeModuleBase):
         }
 
         try:
-            response = self.client.linode.instance_create(ltype, region, **spec_args)
+            response = self.client.linode.instance_create(ltype, region, **params)
 
         except Exception as exception:
             self.fail(msg='failed to create instance: {0}'.format(exception))
@@ -357,9 +357,9 @@ class LinodeInstance(LinodeModuleBase):
         else:
             result['instance'] = response
 
-        if spec_args.get('wait'):
+        if params.get('wait'):
             self.__wait_for_instance_status(
-                result['instance'], 'running', spec_args.get('wait_timeout'))
+                result['instance'], 'running', params.get('wait_timeout'))
 
         return result
 
@@ -381,32 +381,32 @@ class LinodeInstance(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get instance configs: {0}'.format(exception))
 
-    def __update_interfaces(self, spec_args: dict) -> None:
+    def __update_interfaces(self) -> None:
         config = self.__get_boot_config()
-        spec_interfaces: list[Any] = spec_args.get('interfaces')
+        param_interfaces: list[Any] = self.module.params.get('interfaces')
 
-        if config is None or spec_interfaces is None:
+        if config is None or param_interfaces is None:
             return
 
-        spec_interfaces = [drop_empty_strings(v) for v in spec_interfaces]
+        param_interfaces = [drop_empty_strings(v) for v in param_interfaces]
         remote_interfaces = [drop_empty_strings(v._serialize()) for v in config.interfaces]
 
-        if remote_interfaces == spec_interfaces:
+        if remote_interfaces == param_interfaces:
             return
 
-        config.interfaces = [ConfigInterface(**v) for v in spec_interfaces]
+        config.interfaces = [ConfigInterface(**v) for v in param_interfaces]
         config.save()
 
         self.register_action('Updated interfaces for instance {0} config {1}'
                              .format(self._instance.label, config.id))
 
-    def __update_instance(self, spec_args: dict) -> None:
+    def __update_instance(self) -> None:
         """Update instance handles all update functionality for the current instance"""
         should_update = False
 
-        spec_args = filter_null_values(spec_args)
+        params = filter_null_values(self.module.params)
 
-        for key, new_value in spec_args.items():
+        for key, new_value in params.items():
             if not hasattr(self._instance, key):
                 continue
 
@@ -438,22 +438,23 @@ class LinodeInstance(LinodeModuleBase):
             self._instance.save()
 
         # Update interfaces
-        self.__update_interfaces(spec_args)
+        self.__update_interfaces()
 
-    def __handle_instance(self, spec_args: dict) -> None:
+    def __handle_instance(self) -> None:
         """Updates the instance defined in kwargs"""
-        label = spec_args.get('label')
 
-        self._instance = self.get_instance_by_label(label)
+        label = self.module.params.get('label')
+
+        self._instance = self.__get_instance_by_label(label)
 
         if self._instance is None:
-            result = self.create_instance(spec_args)
+            result = self.__create_instance()
             self._instance = cast(Instance, result.get('instance'))
             self._root_pass = str(result.get('root_pass'))
 
             self.register_action('Created instance {0}'.format(label))
         else:
-            self.__update_instance(spec_args)
+            self.__update_instance()
 
         self._instance._api_get()
         inst_result = self._instance._raw_json
@@ -462,11 +463,11 @@ class LinodeInstance(LinodeModuleBase):
         self.results['instance'] = inst_result
         self.results['configs'] = paginated_list_to_json(self._instance.configs)
 
-    def __handle_instance_absent(self, spec_args: dict) -> None:
+    def __handle_instance_absent(self) -> None:
         """Destroys the instance defined in kwargs"""
-        label = spec_args.get('label')
+        label = self.module.params.get('label')
 
-        self._instance = self.get_instance_by_label(label)
+        self._instance = self.__get_instance_by_label(label)
 
         if self._instance is not None:
             self.results['instance'] = self._instance._raw_json
@@ -480,10 +481,10 @@ class LinodeInstance(LinodeModuleBase):
         state = kwargs.get('state')
 
         if state == 'absent':
-            self.__handle_instance_absent(kwargs)
+            self.__handle_instance_absent()
             return self.results
 
-        self.__handle_instance(kwargs)
+        self.__handle_instance()
 
         return self.results
 

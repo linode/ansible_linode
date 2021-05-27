@@ -139,7 +139,7 @@ linode_firewall_valid_filters = [
 
 
 class LinodeFirewallInfo(LinodeModuleBase):
-    """Configuration class for Linode Firewall resource"""
+    """Module for viewing info about a Linode Firewall"""
 
     def __init__(self) -> None:
         self.module_arg_spec = linode_firewall_info_spec
@@ -151,10 +151,10 @@ class LinodeFirewallInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def get_firewall_by_properties(self, spec_args: dict) -> Optional[Firewall]:
-        """Gets the Firewall with the given property in kwargs"""
+    def __get_matching_firewall(self) -> Optional[Firewall]:
+        """Gets the Firewall with the param properties"""
 
-        filter_items = {k: v for k, v in spec_args.items()
+        filter_items = {k: v for k, v in self.module.params.items()
                         if k in linode_firewall_valid_filters and v is not None}
 
         filter_statement = create_filter_and(Firewall, filter_items)
@@ -162,7 +162,7 @@ class LinodeFirewallInfo(LinodeModuleBase):
         try:
             # Special case because ID is not filterable
             if 'id' in filter_items.keys():
-                result = Firewall(self.client, spec_args.get('id'))
+                result = Firewall(self.client, self.module.params.get('id'))
                 result._api_get()  # Force lazy-loading
 
                 return result
@@ -176,7 +176,7 @@ class LinodeFirewallInfo(LinodeModuleBase):
     def exec_module(self, **kwargs: dict) -> Optional[dict]:
         """Entrypoint for Firewall info module"""
 
-        firewall = self.get_firewall_by_properties(kwargs)
+        firewall = self.__get_matching_firewall()
 
         if firewall is None:
             self.fail('failed to get firewall')

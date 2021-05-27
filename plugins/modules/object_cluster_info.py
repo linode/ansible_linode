@@ -93,7 +93,7 @@ linode_object_cluster_valid_filters = [
 
 
 class LinodeObjectStorageClustersInfo(LinodeModuleBase):
-    """Configuration class for Linode Object Storage Clusters resource"""
+    """Module for getting info about a Linode Object Storage Cluster"""
 
     def __init__(self) -> None:
         self.module_arg_spec = linode_object_cluster_info_spec
@@ -107,10 +107,8 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def get_clusters_by_property(self, spec_args: dict) -> Optional[List[ObjectStorageCluster]]:
-        """Gets a list of clusters with the given property in kwargs"""
-
-        filter_items = {k: v for k, v in spec_args.items()
+    def __get_matching_cluster(self) -> Optional[List[ObjectStorageCluster]]:
+        filter_items = {k: v for k, v in self.module.params.items()
                         if k in linode_object_cluster_valid_filters and v is not None}
 
         filter_statement = create_filter_and(ObjectStorageCluster, filter_items)
@@ -118,7 +116,7 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
         try:
             # Special case because ID is not filterable
             if 'id' in filter_items.keys():
-                result = ObjectStorageCluster(self.client, spec_args.get('id'))
+                result = ObjectStorageCluster(self.client, self.module.params.get('id'))
                 result._api_get()  # Force lazy-loading
 
                 return [result]
@@ -132,7 +130,7 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Constructs and calls the Linode Object Storage Clusters module"""
 
-        clusters = self.get_clusters_by_property(kwargs)
+        clusters = self.__get_matching_cluster()
 
         if clusters is None:
             return self.fail('failed to get clusters')

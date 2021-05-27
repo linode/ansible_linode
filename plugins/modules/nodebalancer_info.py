@@ -145,7 +145,7 @@ linode_nodebalancer_valid_filters = [
 ]
 
 class LinodeNodeBalancerInfo(LinodeModuleBase):
-    """Retrieves info about a Linode NodeBalancer"""
+    """Module for getting info about a Linode NodeBalancer"""
 
     def __init__(self) -> None:
         self.module_arg_spec = linode_nodebalancer_info_spec
@@ -159,10 +159,8 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def get_nodebalancer_by_property(self, spec_args: dict) -> Optional[NodeBalancer]:
-        """Gets the NodeBalancer with the given property in kwargs"""
-
-        filter_items = {k: v for k, v in spec_args.items()
+    def __get_matching_nodebalancer(self) -> Optional[NodeBalancer]:
+        filter_items = {k: v for k, v in self.module.params.items()
                         if k in linode_nodebalancer_valid_filters and v is not None}
 
         filter_statement = create_filter_and(NodeBalancer, filter_items)
@@ -170,7 +168,7 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
         try:
             # Special case because ID is not filterable
             if 'id' in filter_items.keys():
-                result = NodeBalancer(self.client, spec_args.get('id'))
+                result = NodeBalancer(self.client, self.module.params.get('id'))
                 result._api_get()  # Force lazy-loading
 
                 return result
@@ -181,9 +179,8 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get nodebalancer {0}'.format(exception))
 
-    def get_node_by_label(self, config: NodeBalancerConfig, label: str) \
+    def __get_node_by_label(self, config: NodeBalancerConfig, label: str) \
             -> Optional[NodeBalancerNode]:
-        """Gets the node within the given config by its label"""
         try:
             return config.nodes(NodeBalancerNode.label == label)[0]
         except IndexError:
@@ -195,7 +192,7 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for NodeBalancer Info module"""
 
-        node_balancer = self.get_nodebalancer_by_property(kwargs)
+        node_balancer = self.__get_matching_nodebalancer()
 
         if node_balancer is None:
             return self.fail('failed to get nodebalancer')

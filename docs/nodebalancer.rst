@@ -156,7 +156,7 @@ Examples
             nodes:
               - label: node1
                 address: 0.0.0.0:80
-                
+
     - name: Delete the NodeBalancer
       linode.cloud.nodebalancer:
         label: my-loadbalancer
