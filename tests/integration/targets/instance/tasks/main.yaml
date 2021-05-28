@@ -164,41 +164,43 @@
           - update_interface_noupdate.changed == false
 
   always:
-    - name: Delete a Linode instance
-      linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        label: '{{ create.instance.label }}'
-        state: absent
-      register: delete
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete
 
-    - name: Assert instance delete succeeded
-      assert:
-        that:
-          - delete.changed
-          - delete.instance.id == create.instance.id
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.instance.id == create.instance.id
 
-    - name: Delete a Linode instance
-      linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        label: '{{ create_interface.instance.label }}'
-        state: absent
-      register: delete_interface
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ create_interface.instance.label }}'
+            state: absent
+          register: delete_interface
 
-    - name: Assert instance delete succeeded
-      assert:
-        that:
-          - delete_interface.changed
-          - delete_interface.instance.id == create_interface.instance.id
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_interface.changed
+              - delete_interface.instance.id == create_interface.instance.id
 
-    - name: Delete a Linode instance
-      linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        label: '{{ update_nopass.instance.label }}'
-        state: absent
-      register: delete_nopass
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ update_nopass.instance.label }}'
+            state: absent
+          register: delete_nopass
 
-    - name: Assert instance delete succeeded
-      assert:
-        that:
-          - delete_nopass.changed
-          - delete_nopass.instance.id == update_nopass.instance.id
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_nopass.changed
+              - delete_nopass.instance.id == update_nopass.instance.id

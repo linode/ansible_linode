@@ -39,15 +39,17 @@
           - vlan_info.vlan.label == 'really-cool-vlan'
 
   always:
-    - name: Delete a Linode instance
-      linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        label: '{{ create_instance.instance.label }}'
-        state: absent
-      register: delete_instance
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ create_instance.instance.label }}'
+            state: absent
+          register: delete_instance
 
-    - name: Assert instance delete succeeded
-      assert:
-        that:
-          - delete_instance.changed
-          - delete_instance.instance.id == create_instance.instance.id
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_instance.changed
+              - delete_instance.instance.id == create_instance.instance.id

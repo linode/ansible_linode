@@ -78,42 +78,45 @@
           - create_access.key.bucket_access[1].permissions == 'read_only'
 
   always:
-    - name: Delete the S3 bucket
-      amazon.aws.s3_bucket:
-        s3_url: 'http://{{ info_by_id.clusters[0].domain }}/'
-        aws_access_key: '{{ create_key.key.access_key }}'
-        aws_secret_key: '{{ create_key.key.secret_key }}'
-        name: '{{ create_bucket.name }}'
-        state: absent
-      register: delete_bucket
+    - ignore_errors: yes
+      block:
+      - name: Delete the S3 bucket
+        amazon.aws.s3_bucket:
+          s3_url: 'http://{{ info_by_id.clusters[0].domain }}/'
+          aws_access_key: '{{ create_key.key.access_key }}'
+          aws_secret_key: '{{ create_key.key.secret_key }}'
+          name: '{{ create_bucket.name }}'
+          state: absent
+        register: delete_bucket
 
-    - name: Assert S3 bucket deleted
-      assert:
-        that:
-          - delete_bucket.changed
+      - name: Assert S3 bucket deleted
+        assert:
+          that:
+            - delete_bucket.changed
 
-    - name: Remove the key
-      linode.cloud.object_keys:
-        api_token: '{{ api_token }}'
-        label: '{{ create_key.key.label }}'
-        state: absent
-      register: delete
+      - name: Remove the key
+        linode.cloud.object_keys:
+          api_token: '{{ api_token }}'
+          label: '{{ create_key.key.label }}'
+          state: absent
+        register: delete
 
-    - name: Assert key destroyed
-      assert:
-        that:
-          - delete.changed
-          - '"REDACTED" in delete.key.secret_key'
+      - name: Assert key destroyed
+        assert:
+          that:
+            - delete.changed
+            - '"REDACTED" in delete.key.secret_key'
+            - false
 
-    - name: Remove the restricted key
-      linode.cloud.object_keys:
-        api_token: '{{ api_token }}'
-        label: '{{ create_access.key.label }}'
-        state: absent
-      register: delete_access
+      - name: Remove the restricted key
+        linode.cloud.object_keys:
+          api_token: '{{ api_token }}'
+          label: '{{ create_access.key.label }}'
+          state: absent
+        register: delete_access
 
-    - name: Assert restricted key destroyed
-      assert:
-        that:
-          - delete_access.changed
-          - '"REDACTED" in delete_access.key.secret_key'
+      - name: Assert restricted key destroyed
+        assert:
+          that:
+            - delete_access.changed
+            - '"REDACTED" in delete_access.key.secret_key'
