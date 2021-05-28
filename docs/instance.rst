@@ -111,6 +111,14 @@ Parameters
     The id of the Backup to restore to the new Instance. May not be provided if “image” is given.
 
 
+  wait (optional, bool, True)
+    Wait for the instance to have status `running` before returning.
+
+
+  wait_timeout (optional, int, 240)
+    The amount of time, in seconds, to wait for an instance to have status `running`.
+
+
   state (optional, str, None)
     The desired instance state.
 

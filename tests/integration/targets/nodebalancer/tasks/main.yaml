@@ -10,6 +10,7 @@
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
         private_ip: true
+        wait: false
         state: present
 
       register: node1_inst
@@ -29,6 +30,7 @@
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
         private_ip: true
+        wait: false
         state: present
 
       register: node2_inst
@@ -48,6 +50,7 @@
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
         private_ip: true
+        wait: false
         state: present
 
       register: node3_inst
