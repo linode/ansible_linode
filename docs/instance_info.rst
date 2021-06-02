@@ -163,6 +163,29 @@ Sample Response:
     ]
 
 
+**disks (always, list):**
+
+The disks tied to this Linode instance.
+
+`Linode Response Object Documentation <https://www.linode.com/docs/api/linode-instances/#disk-view>`_
+
+Sample Response:
+
+.. code-block:: JSON
+
+    [
+     {
+      "created": "xxxxx",
+      "filesystem": "ext4",
+      "id": "xxxxx",
+      "label": "test-disk",
+      "size": 10,
+      "status": "ready",
+      "updated": "xxxxx"
+     }
+    ]
+
+
 
 
 

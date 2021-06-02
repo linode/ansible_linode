@@ -78,6 +78,135 @@ Parameters
     An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See https://www.linode.com/docs/api/stackscripts/.
 
 
+  configs (optional, list, None)
+    A list of Instance configs to apply to the Linode.
+
+    See https://www.linode.com/docs/api/linode-instances/#configuration-profile-create
+
+
+    label (True, str, None)
+      The label to assign to this config.
+
+
+    comments (optional, str, None)
+      Arbitrary User comments on this Config.
+
+
+    devices (optional, list, None)
+      A map of devices to use in a Linode's configuration profile.
+
+
+      sda...sdh (optional, dict, None)
+        A device to be mapped to to this configuration.
+
+
+        disk_label (optional, str, None)
+          The label of the disk to attach to this Linode.
+
+
+        disk_id (optional, int, None)
+          The ID of the disk to attach to this Linode.
+
+
+        volume_id (optional, int, None)
+          The ID of the volume to attach to this Linode.
+
+
+
+
+    helpers (optional, dict, None)
+      Helpers enabled when booting to this Linode Config.
+
+
+      devtmpfs_automount (optional, bool, None)
+        Populates the /dev directory early during boot without udev.
+
+
+      distro (optional, bool, None)
+        Helps maintain correct inittab/upstart console device.
+
+
+      modules_dep (optional, bool, None)
+        Creates a modules dependency file for the Kernel you run.
+
+
+      network (optional, bool, None)
+        Automatically configures static networking.
+
+
+      updatedb_disabled (optional, bool, None)
+        Disables updatedb cron job to avoid disk thrashing.
+
+
+
+    kernel (optional, str, None)
+      A Kernel ID to boot a Linode with. Defaults to “linode/latest-64bit”.
+
+
+    memory_limit (optional, int, None)
+      Defaults to the total RAM of the Linode.
+
+
+    root_device (optional, int, None)
+      The root device to boot.
+
+
+    run_level (optional, str, None)
+      Defines the state of your Linode after booting.
+
+
+    virt_mode (optional, str, None)
+      Controls the virtualization mode.
+
+
+
+  disks (optional, list, None)
+    A list of Disks to create on the Linode.
+
+    See https://www.linode.com/docs/api/linode-instances/#disk-create
+
+
+    label (True, str, None)
+      The label to give this Disk.
+
+
+    size (optional, int, None)
+      The size of the Disk in MB.
+
+
+    authorized_keys (optional, list, None)
+      A list of SSH public key parts to deploy for the root user.
+
+
+    authorized_users (optional, list, None)
+      A list of usernames.
+
+
+    filesystem (optional, str, None)
+      The filesystem to create this disk with.
+
+
+    image (optional, str, None)
+      An Image ID to deploy the Disk from.
+
+
+    root_pass (optional, str, None)
+      The root user’s password on the newly-created Linode.
+
+
+    stackscript_data (optional, dict, None)
+      An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided.
+
+      See https://www.linode.com/docs/api/stackscripts/.
+
+
+    stackscript_id (optional, any, None)
+      The ID of the StackScript to use when creating the instance.
+
+      See https://www.linode.com/docs/api/stackscripts/
+
+
+
   interfaces (optional, list, None)
     A list of network interfaces to apply to the Linode.
 
@@ -262,6 +391,29 @@ Sample Response:
       "run_level": "default",
       "updated": "xxxxx",
       "virt_mode": "paravirt"
+     }
+    ]
+
+
+**disks (always, list):**
+
+The disks tied to this Linode instance.
+
+`Linode Response Object Documentation <https://www.linode.com/docs/api/linode-instances/#disk-view>`_
+
+Sample Response:
+
+.. code-block:: JSON
+
+    [
+     {
+      "created": "xxxxx",
+      "filesystem": "ext4",
+      "id": "xxxxx",
+      "label": "test-disk",
+      "size": 10,
+      "status": "ready",
+      "updated": "xxxxx"
      }
     ]
 

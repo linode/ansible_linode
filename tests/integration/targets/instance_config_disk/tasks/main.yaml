@@ -1,0 +1,191 @@
+- name: Run instance config disk integration tests
+  block:
+    - name: Create a Linode instance with explicit disks and config
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-dc-{{ ansible_date_time.epoch }}'
+        region: us-east
+        type: g6-standard-1
+        booted: false
+        disks:
+          - label: test-disk
+            filesystem: ext4
+            size: 10
+        configs:
+          - label: cool-config
+            comments: really cool config
+            kernel: linode/latest-64bit
+            memory_limit: 512
+            run_level: single
+            virt_mode: paravirt
+            helpers:
+              devtmpfs_automount: true
+              distro: true
+              modules_dep: true
+              network: true
+              updatedb_disabled: true
+            devices:
+              sda:
+                disk_label: test-disk
+        state: present
+      register: create
+
+    - assert:
+        that:
+          - create.changed
+          - create.disks[0].label == 'test-disk'
+          - create.disks[0].size == 10
+          - create.disks[0].filesystem == 'ext4'
+
+          - create.configs[0].comments == 'really cool config'
+          - create.configs[0].kernel == 'linode/latest-64bit'
+          - create.configs[0].memory_limit == 512
+          - create.configs[0].run_level == 'single'
+          - create.configs[0].virt_mode == 'paravirt'
+          - create.configs[0].helpers.devtmpfs_automount == true
+          - create.configs[0].helpers.distro == true
+          - create.configs[0].helpers.modules_dep == true
+          - create.configs[0].helpers.network == true
+          - create.configs[0].helpers.updatedb_disabled == true
+          - create.configs[0].label == 'cool-config'
+          - create.configs[0].devices.sda.disk_id != None
+
+    - name: Update the config
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-dc-{{ ansible_date_time.epoch }}'
+        region: us-east
+        type: g6-standard-1
+        booted: false
+        disks:
+          - label: test-disk
+            filesystem: ext4
+            size: 10
+        configs:
+          - label: cool-config
+            comments: really cool config but slightly different
+            helpers:
+              devtmpfs_automount: true
+              distro: true
+              modules_dep: true
+              network: true
+              updatedb_disabled: true
+            devices:
+              sda:
+                disk_label: test-disk
+        state: present
+      register: update_config
+
+    - assert:
+        that:
+          - update_config.changed
+          - update_config.disks[0].label == 'test-disk'
+          - update_config.disks[0].size == 10
+          - update_config.disks[0].filesystem == 'ext4'
+
+          - update_config.configs[0].comments == 'really cool config but slightly different'
+          - update_config.configs[0].label == 'cool-config'
+
+    - name: Delete the config and resize the disk
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create.instance.label }}'
+        region: us-east
+        type: g6-standard-1
+        booted: false
+        disks:
+          - label: test-disk
+            size: 11
+        state: present
+      register: resize
+
+    - assert:
+        that:
+          - resize.changed
+          - resize.configs|length == 0
+          - resize.disks[0].label == 'test-disk'
+          - resize.disks[0].size == 11
+
+    - name: Try to update the disk
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create.instance.label }}'
+        region: us-east
+        type: g6-standard-1
+        booted: false
+        disks:
+          - label: test-disk
+            size: 11
+            filesystem: ntfs
+        state: present
+      register: update_disk_fail
+      failed_when: '"failed to update disk" not in update_disk_fail.msg'
+
+    - name: Try to use conflicting params
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create.instance.label }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/alpine3.13
+        booted: false
+        disks:
+          - label: test-disk
+            size: 11
+        state: present
+      register: disk_conflict
+      failed_when: '"mutually exclusive" not in disk_conflict.msg'
+
+    - name: Boot the instance with a new config and disk
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create.instance.label }}'
+        region: us-east
+        type: g6-standard-1
+        booted: true
+        disks:
+          - label: test-disk
+            size: 11
+
+          - label: boot-disk
+            size: 4096
+            image: linode/alpine3.13
+
+        configs:
+          - label: boot-config
+            kernel: linode/latest-64bit
+            devices:
+              sda:
+                disk_label: boot-disk
+
+        boot_config_label: boot-config
+        state: present
+      register: boot
+
+    - assert:
+        that:
+          - boot.changed
+          - boot.instance.status == 'running'
+          - boot.disks[0].label == 'test-disk'
+          - boot.disks[0].size == 11
+          - boot.disks[1].label == 'boot-disk'
+          - boot.disks[1].size == 4096
+          - boot.configs[0].label == 'boot-config'
+          - boot.configs[0].kernel == 'linode/latest-64bit'
+          - boot.configs[0].devices.sda.disk_id != None
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.instance.id == create.instance.id
