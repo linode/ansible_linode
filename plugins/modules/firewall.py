@@ -355,7 +355,7 @@ linode_firewall_spec: dict = dict(
 )
 
 # Fields that can be updated on an existing Firewall
-linode_firewall_mutable: list[str] = [
+linode_firewall_mutable: List[str] = [
     'status',
     'tags'
 ]

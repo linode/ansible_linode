@@ -151,7 +151,7 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
             return self.fail(msg='failed to get object storage key {0}: {1}'
                              .format(label, exception))
 
-    def __create_key(self, label: str, bucket_access: Union[dict, list[dict]]) \
+    def __create_key(self, label: str, bucket_access: Union[dict, List[dict]]) \
             -> Optional[ObjectStorageKeys]:
         """Creates an Object Storage key with the given label and access"""
 
