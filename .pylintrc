@@ -10,4 +10,5 @@ disable=protected-access,
         assignment-from-no-return,
         too-many-arguments,
         too-few-public-methods,
-        duplicate-code
+        duplicate-code,
+        too-many-lines
