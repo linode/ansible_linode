@@ -106,7 +106,6 @@
           that:
             - delete.changed
             - '"REDACTED" in delete.key.secret_key'
-            - false
 
       - name: Remove the restricted key
         linode.cloud.object_keys:
