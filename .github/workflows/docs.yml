@@ -21,7 +21,7 @@ jobs:
           python-version: '3.x'
 
       - name: install dependencies
-        run: pip install -r requirements-dev.txt
+        run: pip install -r requirements-dev.txt ansible-core
 
       - name: make temp directory
         run: mkdir tmp
