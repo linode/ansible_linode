@@ -125,7 +125,7 @@ linode_volume_spec = dict(
 
 
 class LinodeVolume(LinodeModuleBase):
-    """Configuration class for Linode volume resource"""
+    """Module for creating and destroying Linode Volumes"""
 
     def __init__(self) -> None:
         self.module_arg_spec = linode_volume_spec
@@ -141,9 +141,7 @@ class LinodeVolume(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def get_volume_by_label(self, label: str) -> Optional[Volume]:
-        """Gets the volume with the given label"""
-
+    def __get_volume_by_label(self, label: str) -> Optional[Volume]:
         try:
             return self.client.volumes(Volume.label == label)[0]
         except IndexError:
@@ -151,33 +149,32 @@ class LinodeVolume(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get volume {0}: {1}'.format(label, exception))
 
-    def create_volume(self, spec_args: dict) -> Optional[Volume]:
-        """Creates a volume with the given kwargs"""
-
-        label = spec_args.pop('label')
-        region = spec_args.pop('region')
-        linode_id = spec_args.pop('linode_id')
-        size = spec_args.pop('size')
+    def __create_volume(self) -> Optional[Volume]:
+        params = self.module.params
+        label = params.pop('label')
+        region = params.pop('region')
+        linode_id = params.pop('linode_id')
+        size = params.pop('size')
 
         try:
-            return self.client.volume_create(label, region, linode_id, size, **spec_args)
+            return self.client.volume_create(label, region, linode_id, size, **params)
         except Exception as exception:
             return self.fail(msg='failed to create volume: {0}'.format(exception))
 
-    def __handle_volume(self, spec_args: dict) -> None:
-        """Updates the volume defined in kwargs"""
+    def __handle_volume(self) -> None:
+        params = self.module.params
 
-        label: str = spec_args.get('label')
-        size: int = spec_args.get('size')
-        linode_id: int = spec_args.get('linode_id')
-        config_id: int = spec_args.get('config_id')
-        attached: bool = spec_args.pop('attached')
+        label: str = params.get('label')
+        size: int = params.get('size')
+        linode_id: int = params.get('linode_id')
+        config_id: int = params.get('config_id')
+        attached: bool = params.pop('attached')
 
-        self._volume = self.get_volume_by_label(label)
+        self._volume = self.__get_volume_by_label(label)
 
         # Create the volume if it does not already exist
         if self._volume is None:
-            self._volume = self.create_volume(spec_args)
+            self._volume = self.__create_volume()
             self.register_action('Created volume {0}'.format(label))
 
         # Resize the volume if its size does not match
@@ -204,12 +201,10 @@ class LinodeVolume(LinodeModuleBase):
 
         self.results['volume'] = self._volume._raw_json
 
-    def __handle_volume_absent(self, spec_args: dict) -> None:
-        """Updates the volume for the absent state"""
+    def __handle_volume_absent(self) -> None:
+        label: str = self.module.params.get('label')
 
-        label: str = spec_args.get('label')
-
-        self._volume = self.get_volume_by_label(label)
+        self._volume = self.__get_volume_by_label(label)
 
         if self._volume is not None:
             self.results['volume'] = self._volume._raw_json
@@ -221,10 +216,10 @@ class LinodeVolume(LinodeModuleBase):
         state = kwargs.get('state')
 
         if state == 'absent':
-            self.__handle_volume_absent(kwargs)
+            self.__handle_volume_absent()
             return self.results
 
-        self.__handle_volume(kwargs)
+        self.__handle_volume()
 
         return self.results
 

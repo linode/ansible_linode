@@ -362,7 +362,7 @@ linode_firewall_mutable: list[str] = [
 
 
 class LinodeFirewall(LinodeModuleBase):
-    """Configuration class for a Linode firewall resource"""
+    """Module for creating and destroying Linode Firewalls"""
 
     def __init__(self) -> None:
         self.module_arg_spec = linode_firewall_spec
@@ -378,9 +378,7 @@ class LinodeFirewall(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec)
 
-    def get_firewall_by_label(self, label: str) -> Optional[Firewall]:
-        """Gets a Linode Firewall by label"""
-
+    def __get_firewall_by_label(self, label: str) -> Optional[Firewall]:
         try:
             return self.client.networking.firewalls(Firewall.label == label)[0]
         except IndexError:
@@ -388,18 +386,16 @@ class LinodeFirewall(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get firewall {0}: {1}'.format(label, exception))
 
-    def create_firewall(self, spec_args: dict) -> dict:
-        """Creates a Linode Firewall"""
+    def __create_firewall(self) -> dict:
+        params = copy.deepcopy(self.module.params)
 
-        spec_args = copy.deepcopy(spec_args)
-
-        label = spec_args.pop('label')
-        spec_args = {k: v for k, v in spec_args.items() if k in {
+        label = params.pop('label')
+        params = {k: v for k, v in params.items() if k in {
             'rules', 'tags'
         }}
 
         try:
-            result = self.client.networking.firewall_create(label, **spec_args)
+            result = self.client.networking.firewall_create(label, **params)
         except Exception as exception:
             self.fail(msg='failed to create firewall: {0}'.format(exception))
 
@@ -441,14 +437,14 @@ class LinodeFirewall(LinodeModuleBase):
         for device in device_map.values():
             self.__delete_device(device)
 
-    def __update_firewall(self, spec_args: dict) -> None:
+    def __update_firewall(self) -> None:
         """Handles all update functionality for the current Firewall"""
 
         # Update mutable values
         should_update = False
-        spec_args = filter_null_values(spec_args)
+        params = filter_null_values(self.module.params)
 
-        for key, new_value in spec_args.items():
+        for key, new_value in params.items():
             if not hasattr(self._firewall, key):
                 continue
 
@@ -466,37 +462,37 @@ class LinodeFirewall(LinodeModuleBase):
             self._firewall.save()
 
         # Update rules
-        if mapping_to_dict(self._firewall.rules) != spec_args.get('rules'):
-            self._firewall.update_rules(spec_args.get('rules'))
+        if mapping_to_dict(self._firewall.rules) != params.get('rules'):
+            self._firewall.update_rules(params.get('rules'))
             self.register_action('Updated Firewall rules')
 
         # Update devices
-        devices: Optional[List[Any]] = spec_args.get('devices')
+        devices: Optional[List[Any]] = params.get('devices')
         if devices is not None:
             self.__update_devices(devices)
 
-    def __handle_firewall(self, spec_args: dict) -> None:
-        """Updates the Firewall defined in spec_args"""
-        label = spec_args.get('label')
+    def __handle_firewall(self) -> None:
+        """Updates the Firewall"""
+        label = self.module.params.get('label')
 
-        self._firewall = self.get_firewall_by_label(label)
+        self._firewall = self.__get_firewall_by_label(label)
 
         if self._firewall is None:
-            self._firewall = self.create_firewall(spec_args)
+            self._firewall = self.__create_firewall()
             self.register_action('Created Firewall {0}'.format(label))
 
-        self.__update_firewall(spec_args)
+        self.__update_firewall()
 
         self._firewall._api_get()
 
         self.results['firewall'] = self._firewall._raw_json
         self.results['devices'] = paginated_list_to_json(self._firewall.devices)
 
-    def __handle_firewall_absent(self, spec_args: dict) -> None:
-        """Destroys the firewall defined in kwargs"""
-        label = spec_args.get('label')
+    def __handle_firewall_absent(self) -> None:
+        """Destroys the Firewall"""
+        label = self.module.params.get('label')
 
-        self._firewall = self.get_firewall_by_label(label)
+        self._firewall = self.__get_firewall_by_label(label)
 
         if self._firewall is not None:
             self.results['firewall'] = self._firewall._raw_json
@@ -510,10 +506,10 @@ class LinodeFirewall(LinodeModuleBase):
         state = kwargs.get('state')
 
         if state == 'absent':
-            self.__handle_firewall_absent(kwargs)
+            self.__handle_firewall_absent()
             return self.results
 
-        self.__handle_firewall(kwargs)
+        self.__handle_firewall()
         return self.results
 
 
