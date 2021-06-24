@@ -1,4 +1,4 @@
-- name: Run instance config disk integration tests
+- name: instance_config_disk
   block:
     - name: Create a Linode instance with explicit disks and config
       linode.cloud.instance:

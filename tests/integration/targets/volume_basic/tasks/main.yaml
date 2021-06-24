@@ -1,4 +1,4 @@
-- name: Run volume integration tests
+- name: volume_basic
   block:
     - name: Create Linode instance
       linode.cloud.instance:
@@ -8,7 +8,6 @@
         type: g6-standard-1
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
-        wait: false
         state: present
       register: create_inst
 

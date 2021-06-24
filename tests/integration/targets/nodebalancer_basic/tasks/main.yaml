@@ -1,0 +1,52 @@
+- name: nodebalancer_basic
+  block:
+    - name: create empty nodebalancer
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-empty-{{ ansible_date_time.epoch }}'
+        region: us-east
+        state: present
+      register: create_empty_nodebalancer
+
+    - name: Assert empty NodeBalancer is created
+      assert:
+        that:
+          - create_empty_nodebalancer.changed
+          - create_empty_nodebalancer.configs|length == 0
+
+    - name: update empty nodebalancer
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_empty_nodebalancer.node_balancer.label }}'
+        region: us-east
+        client_conn_throttle: 6
+        state: present
+      register: update_empty_nodebalancer
+
+    - name: Assert empty NodeBalancer is updated
+      assert:
+        that:
+          - update_empty_nodebalancer.changed
+          - update_empty_nodebalancer.node_balancer.client_conn_throttle == 6
+
+    - name: Assert empty NodeBalancer is created
+      assert:
+        that:
+          - create_empty_nodebalancer.changed
+          - create_empty_nodebalancer.configs|length == 0
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the empty NodeBalancer
+          linode.cloud.nodebalancer:
+            api_token: '{{ api_token }}'
+            label: '{{ create_empty_nodebalancer.node_balancer.label }}'
+            state: absent
+          register: delete_empty
+
+        - name: Assert empty NodeBalancer delete
+          assert:
+            that:
+              - delete_empty.changed
+              - delete_empty.node_balancer.id == delete_empty.node_balancer.id

@@ -1,0 +1,55 @@
+- name: instance_booted
+  block:
+    - name: Create a booted Linode instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        region: us-southeast
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        root_pass: Fn$$oobar123
+        private_ip: true
+        booted: true
+        state: present
+      register: create
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create.changed
+          - create.instance.status == 'running'
+          - create.instance.ipv4|length > 1
+
+    - name: Power off the instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{create.instance.label}}'
+        region: us-southeast
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        root_pass: Fn$$oobar123
+        private_ip: true
+        booted: false
+        state: present
+      register: create
+
+    - name: Assert instance offline
+      assert:
+        that:
+          - create.changed
+          - create.instance.status == 'offline'
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.instance.id == create.instance.id
