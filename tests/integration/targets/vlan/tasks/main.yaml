@@ -19,7 +19,6 @@
       assert:
         that:
           - create_instance.changed
-          - create_instance.instance.status == 'provisioning'
           - create_instance.instance.ipv4|length > 1
 
           - create_instance.configs[0].interfaces[0].purpose == 'vlan'

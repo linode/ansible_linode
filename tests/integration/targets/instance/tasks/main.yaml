@@ -1,6 +1,6 @@
 - name: Run instance integration tests
   block:
-    - name: Create a Linode instance
+    - name: Create a booted Linode instance
       linode.cloud.instance:
         api_token: '{{ api_token }}'
         label: 'ansible-test-{{ ansible_date_time.epoch }}'
@@ -9,6 +9,7 @@
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
         private_ip: true
+        booted: true
         state: present
       register: create
 
@@ -18,6 +19,25 @@
           - create.changed
           - create.instance.status == 'running'
           - create.instance.ipv4|length > 1
+
+    - name: Power off the instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{create.instance.label}}'
+        region: us-southeast
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        root_pass: Fn$$oobar123
+        private_ip: true
+        booted: false
+        state: present
+      register: create
+
+    - name: Assert instance offline
+      assert:
+        that:
+          - create.changed
+          - create.instance.status == 'offline'
 
     - name: Create a Linode instance without a root password
       linode.cloud.instance:
@@ -35,7 +55,6 @@
       assert:
         that:
           - create_nopass.changed
-          - create_nopass.instance.status == 'provisioning'
           - create_nopass.instance.ipv4|length > 1
 
     - name: Get info about the instance by id
@@ -114,7 +133,6 @@
       assert:
         that:
           - create_interface.changed
-          - create_interface.instance.status == 'provisioning'
           - create_interface.instance.ipv4|length > 1
 
           - create_interface.configs[0].interfaces[0].purpose == 'vlan'

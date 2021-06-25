@@ -140,6 +140,23 @@ configs:
       "virt_mode":"paravirt"
    }
 ]
+
+disks:
+  description: The disks tied to this Linode instance.
+  linode_api_docs: "https://www.linode.com/docs/api/linode-instances/#disk-view"
+  returned: always
+  type: list
+  sample: [
+  {
+    "created": "xxxxx",
+    "filesystem": "ext4",
+    "id": xxxxx,
+    "label": "test-disk",
+    "size": 10,
+    "status": "ready",
+    "updated": "xxxxx"
+  }
+]
 '''
 
 linode_instance_info_spec = dict(
@@ -163,7 +180,8 @@ class LinodeInstanceInfo(LinodeModuleBase):
         self.required_one_of: List[str] = []
         self.results: Dict[str, Any] = dict(
             instance=None,
-            configs=None
+            configs=None,
+            disks=None
         )
 
         super().__init__(module_arg_spec=self.module_arg_spec,
@@ -201,6 +219,7 @@ class LinodeInstanceInfo(LinodeModuleBase):
 
         self.results['instance'] = instance._raw_json
         self.results['configs'] = paginated_list_to_json(instance.configs)
+        self.results['disks'] = paginated_list_to_json(instance.disks)
 
         return self.results
 
