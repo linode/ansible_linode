@@ -1,4 +1,4 @@
-- name: Run Firewall integration tests
+- name: firewall_basic
   block:
     - name: Create a Linode Instance
       linode.cloud.instance:
@@ -7,7 +7,6 @@
         region: us-southeast
         type: g6-standard-1
         image: linode/alpine3.13
-        wait: false
         state: present
       register: create_instance
 
@@ -18,7 +17,6 @@
         region: us-southeast
         type: g6-standard-1
         image: linode/alpine3.13
-        wait: false
         state: present
       register: create_instance_2
 
@@ -134,7 +132,7 @@
         that:
           - update_devices_unchanged.changed == false
 
-    - name: Update a Linode Firewall rules
+    - name: Update Linode Firewall rules
       linode.cloud.firewall:
         api_token: '{{ api_token }}'
         api_version: v4beta

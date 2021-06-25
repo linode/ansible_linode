@@ -1,4 +1,4 @@
-- name: Run NodeBalancer integration tests
+- name: nodebalancer_populated
   block:
     # Create node instances
     - name: Create node1
@@ -10,7 +10,6 @@
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
         private_ip: true
-        wait: false
         state: present
 
       register: node1_inst
@@ -30,7 +29,6 @@
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
         private_ip: true
-        wait: false
         state: present
 
       register: node2_inst
@@ -50,7 +48,6 @@
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
         private_ip: true
-        wait: false
         state: present
 
       register: node3_inst
@@ -60,42 +57,6 @@
         that:
           - node3_inst.changed
           - node3_inst.instance.ipv4|length > 1
-
-    # Create NodeBalancer without configs/nodes
-    - name: create empty nodebalancer
-      linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        label: 'ansible-test-empty-{{ ansible_date_time.epoch }}'
-        region: us-east
-        state: present
-      register: create_empty_nodebalancer
-
-    - name: Assert empty NodeBalancer is created
-      assert:
-        that:
-          - create_empty_nodebalancer.changed
-          - create_empty_nodebalancer.configs|length == 0
-
-    - name: update empty nodebalancer
-      linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        label: '{{ create_empty_nodebalancer.node_balancer.label }}'
-        region: us-east
-        client_conn_throttle: 6
-        state: present
-      register: update_empty_nodebalancer
-
-    - name: Assert empty NodeBalancer is updated
-      assert:
-        that:
-          - update_empty_nodebalancer.changed
-          - update_empty_nodebalancer.node_balancer.client_conn_throttle == 6
-
-    - name: Assert empty NodeBalancer is created
-      assert:
-        that:
-          - create_empty_nodebalancer.changed
-          - create_empty_nodebalancer.configs|length == 0
 
     # Create populated NodeBalancers
     - name: Create a populated NodeBalancer

@@ -1,4 +1,4 @@
-- name: Run instance integration tests
+- name: vlan_basic
   block:
     - name: Create a Linode instance with interface
       linode.cloud.instance:

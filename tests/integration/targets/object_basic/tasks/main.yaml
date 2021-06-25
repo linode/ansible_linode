@@ -1,4 +1,4 @@
-- name: Run Object Storage integration tests
+- name: object_basic
   block:
     - name: Get info about clusters in us-east
       linode.cloud.object_cluster_info:

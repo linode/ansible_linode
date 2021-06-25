@@ -1,0 +1,92 @@
+- name: instance_basic
+  block:
+    - name: Create a Linode instance without a root password
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-nopass-{{ ansible_date_time.epoch }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        private_ip: true
+        wait: false
+        state: present
+      register: create
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create.changed
+          - create.instance.ipv4|length > 1
+
+    - name: Update the instance region and type (recreate disallowed)
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create.instance.label }}'
+        region: us-southeast
+        group: funny
+        type: g6-standard-2
+        image: linode/ubuntu20.04
+        private_ip: true
+        state: present
+      register: invalid_update
+      failed_when:
+        - invalid_update.changed == true
+
+    - name: Update the instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: '{{ create.instance.label }}'
+        region: us-east
+        group: funny
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        private_ip: true
+        state: present
+      register: update
+
+    - name: Assert update
+      assert:
+        that:
+          - update.instance.group == 'funny'
+
+    - name: Get info about the instance by id
+      linode.cloud.instance_info:
+        api_token: '{{ api_token }}'
+        id: '{{ create.instance.id }}'
+      register: info_id
+
+    - name: Assert instance info
+      assert:
+        that:
+          - info_id.instance.ipv4|length > 1
+          - info_id.instance.region == 'us-east'
+          - info_id.configs|length == 1
+
+    - name: Get info about the instance by label
+      linode.cloud.instance_info:
+        api_token: '{{ api_token }}'
+        label: '{{ create.instance.label }}'
+      register: info_label
+
+    - name: Assert instance info
+      assert:
+        that:
+          - info_label.instance.ipv4|length > 1
+          - info_label.instance.region == 'us-east'
+          - info_label.configs|length == 1
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ update.instance.label }}'
+            state: absent
+          register: delete_nopass
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_nopass.changed
+              - delete_nopass.instance.id == update.instance.id
