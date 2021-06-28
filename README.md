@@ -19,17 +19,22 @@ PEP440 is the schema used to describe the versions of Ansible.
 ### Modules
 Name | Description
 --- | ---
-[linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/master/docs/firewall.rst)|Create and destroy Firewalls.
-[linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/master/docs/firewall_info.rst)|Gather info about an existing Firewall.
-[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/master/docs/instance.rst)|Create and destroy Linodes.
-[linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/master/docs/instance_info.rst)|Gather info about an existing Linode instance.
-[linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/master/docs/nodebalancer.rst)|Create, destroy, and configure NodeBalancers.
-[linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/master/docs/nodebalancer_info.rst)|Gather info about an existing NodeBalancer.
-[linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/master/docs/object_cluster_info.rst)|Gather info about Object Storage clusters.
-[linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/master/docs/object_keys.rst)|Create and destroy Object Storage keys.
-[linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/master/docs/vlan_info.rst)|Gather info about an existing Linode VLAN.
-[linode.cloud.volume](https://github.com/linode/ansible_linode/blob/master/docs/volume.rst)|Create, destroy, and attach Linode volumes.
-[linode.cloud.volume_info](https://github.com/linode/ansible_linode/blob/master/docs/volume_info.rst)|Gather info about an existing Linode volume.
+[linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/master/docs/modules/firewall.rst)|Create and destroy Firewalls.
+[linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/firewall_info.rst)|Gather info about an existing Firewall.
+[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/master/docs/modules/instance.rst)|Create and destroy Linodes.
+[linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/instance_info.rst)|Gather info about an existing Linode instance.
+[linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/master/docs/modules/nodebalancer.rst)|Create, destroy, and configure NodeBalancers.
+[linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/nodebalancer_info.rst)|Gather info about an existing NodeBalancer.
+[linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/object_cluster_info.rst)|Gather info about Object Storage clusters.
+[linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/master/docs/modules/object_keys.rst)|Create and destroy Object Storage keys.
+[linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/vlan_info.rst)|Gather info about an existing Linode VLAN.
+[linode.cloud.volume](https://github.com/linode/ansible_linode/blob/master/docs/modules/volume.rst)|Create, destroy, and attach Linode volumes.
+[linode.cloud.volume_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/volume_info.rst)|Gather info about an existing Linode volume.
+
+### Inventory
+Name | Description
+--- | ---
+[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/master/docs/inventory/instance.rst)|Reads instance inventories from Linode.
 
 <!--end collection content-->
 
