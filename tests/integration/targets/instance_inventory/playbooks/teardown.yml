@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - ../../../integration_config.yml
+  tasks:
+    - name: Delete the linode instance
+      linode.cloud.instance:
+        label: 'ansible-test-inventory'
+        api_token: '{{ api_token }}'
+        type: g6-nanode-1
+        region: us-east
+        tags:
+          - ansible-inventory-node
+        state: absent
+
+    - name: Ensure test files are absent
+      file:
+        path: '../{{item}}.yml'
+        state: absent
+      loop:
+        - filter.instance.yml
+        - nofilter.instance.yml

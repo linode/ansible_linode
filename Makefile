@@ -15,12 +15,19 @@ install: clean build
 
 lint:
 	pylint plugins
-	mypy plugins
+
+	mypy plugins/modules
+	mypy plugins/inventory
 
 gendocs:
 	mkdir -p $(DOCS_PATH)
-	rm -f $(DOCS_PATH)/*
-	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH) plugins/modules/*.py
+
+	rm -rf $(DOCS_PATH)/*
+
+	mkdir -p $(DOCS_PATH)/modules $(DOCS_PATH)/inventory
+
+	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/modules plugins/modules/*.py
+	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
 
 integration-test: $(INTEGRATION_CONFIG)
 	ansible-test integration $(TEST_ARGS)
@@ -32,4 +39,4 @@ $(INTEGRATION_CONFIG):
 	  echo "LINODE_API_TOKEN must be set"; \
 	  exit 1; \
 	fi
-	echo "---\napi_token: $(LINODE_API_TOKEN)" >> $(INTEGRATION_CONFIG)
+	echo "api_token: $(LINODE_API_TOKEN)" >> $(INTEGRATION_CONFIG)
