@@ -348,7 +348,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def __get_nodebalancer_by_label(self, label: str) -> Optional[NodeBalancer]:
+    def _get_nodebalancer_by_label(self, label: str) -> Optional[NodeBalancer]:
         """Gets the NodeBalancer with the given label"""
 
         try:
@@ -358,7 +358,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get nodebalancer {0}: {1}'.format(label, exception))
 
-    def __get_node_by_label(self, config: NodeBalancerConfig, label: str) \
+    def _get_node_by_label(self, config: NodeBalancerConfig, label: str) \
             -> Optional[NodeBalancerNode]:
         """Gets the node within the given config by its label"""
         try:
@@ -369,7 +369,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
             return self.fail(msg='failed to get nodebalancer node {0}, {1}'
                              .format(label, exception))
 
-    def __create_nodebalancer(self) -> Optional[NodeBalancer]:
+    def _create_nodebalancer(self) -> Optional[NodeBalancer]:
         """Creates a NodeBalancer with the given kwargs"""
 
         params = self.module.params
@@ -381,7 +381,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to create nodebalancer: {0}'.format(exception))
 
-    def __create_config(self, node_balancer: NodeBalancer, config_params: dict) \
+    def _create_config(self, node_balancer: NodeBalancer, config_params: dict) \
             -> Optional[NodeBalancerConfig]:
         """Creates a config with the given kwargs within the given NodeBalancer"""
 
@@ -390,7 +390,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to create nodebalancer config: {0}'.format(exception))
 
-    def __create_node(self, config: NodeBalancerConfig, node_params: dict) \
+    def _create_node(self, config: NodeBalancerConfig, node_params: dict) \
             -> Optional[NodeBalancerNode]:
         """Creates a node with the given kwargs within the given config"""
 
@@ -401,38 +401,38 @@ class LinodeNodeBalancer(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to create nodebalancer node: {0}'.format(exception))
 
-    def __create_config_register(self, node_balancer: NodeBalancer, config_params: dict) \
+    def _create_config_register(self, node_balancer: NodeBalancer, config_params: dict) \
             -> NodeBalancerConfig:
         """Registers a create action for the given config"""
 
-        config = self.__create_config(node_balancer, config_params)
+        config = self._create_config(node_balancer, config_params)
         self.register_action('Created config: {0}'.format(config.id))
 
         return config
 
-    def __delete_config_register(self, config: NodeBalancerConfig) -> None:
+    def _delete_config_register(self, config: NodeBalancerConfig) -> None:
         """Registers a delete action for the given config"""
 
         self.register_action('Deleted config: {0}'.format(config.id))
         config.delete()
 
-    def __create_node_register(self, config: NodeBalancerConfig, node_params: dict) \
+    def _create_node_register(self, config: NodeBalancerConfig, node_params: dict) \
             -> NodeBalancerNode:
         """Registers a create action for the given node"""
 
-        node = self.__create_node(config, node_params)
+        node = self._create_node(config, node_params)
         self.register_action('Created Node: {0}'.format(node.id))
         cast(list, self.results['nodes']).append(node._raw_json)
 
         return node
 
-    def __delete_node_register(self, node: NodeBalancerNode) -> None:
+    def _delete_node_register(self, node: NodeBalancerNode) -> None:
         """Registers a delete action for the given node"""
 
         self.register_action('Deleted Node: {0}'.format(node.id))
         node.delete()
 
-    def __handle_config_nodes(self, config: NodeBalancerConfig, new_nodes: List[dict]) -> None:
+    def _handle_config_nodes(self, config: NodeBalancerConfig, new_nodes: List[dict]) -> None:
         """Updates the NodeBalancer nodes defined in new_nodes within the given config"""
 
         node_map = {}
@@ -454,15 +454,15 @@ class LinodeNodeBalancer(LinodeModuleBase):
                     del node_map[node_label]
                     continue
 
-                self.__delete_node_register(node_map[node_label])
+                self._delete_node_register(node_map[node_label])
 
-            self.__create_node_register(config, node)
+            self._create_node_register(config, node)
 
         for node in node_map.values():
-            self.__delete_node_register(node)
+            self._delete_node_register(node)
 
     @staticmethod
-    def __check_config_exists(target: Set[NodeBalancerConfig], config: dict) \
+    def _check_config_exists(target: Set[NodeBalancerConfig], config: dict) \
             -> Tuple[bool, Optional[NodeBalancerConfig]]:
         """Returns whether a config exists in the target set"""
 
@@ -475,31 +475,31 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         return False, None
 
-    def __handle_configs(self) -> None:
+    def _handle_configs(self) -> None:
         """Updates the configs defined in new_configs under this NodeBalancer"""
 
         new_configs = self.module.params.get('configs') or []
         remote_configs = set(self._node_balancer.configs)
 
         for config in new_configs:
-            config_exists, remote_config = self.__check_config_exists(remote_configs, config)
+            config_exists, remote_config = self._check_config_exists(remote_configs, config)
 
             if config_exists:
-                self.__handle_config_nodes(remote_config, config.get('nodes'))
+                self._handle_config_nodes(remote_config, config.get('nodes'))
                 remote_configs.remove(remote_config)
                 continue
 
-            new_config = self.__create_config_register(self._node_balancer, config)
-            self.__handle_config_nodes(new_config, config.get('nodes'))
+            new_config = self._create_config_register(self._node_balancer, config)
+            self._handle_config_nodes(new_config, config.get('nodes'))
 
         # Remove remaining configs
         for config in remote_configs:
-            self.__delete_config_register(config)
+            self._delete_config_register(config)
 
         cast(list, self.results['configs']) \
             .extend(paginated_list_to_json(self._node_balancer.configs))
 
-    def __update_nodebalancer(self) -> None:
+    def _update_nodebalancer(self) -> None:
         """Update instance handles all update functionality for the current nodebalancer"""
         should_update = False
 
@@ -534,32 +534,32 @@ class LinodeNodeBalancer(LinodeModuleBase):
         if should_update:
             self._node_balancer.save()
 
-    def __handle_nodebalancer(self) -> None:
+    def _handle_nodebalancer(self) -> None:
         """Updates the NodeBalancer defined in kwargs"""
 
         nb_label: str = self.module.params.get('label')
 
-        self._node_balancer = self.__get_nodebalancer_by_label(nb_label)
+        self._node_balancer = self._get_nodebalancer_by_label(nb_label)
 
         # Create NodeBalancer if doesn't exist
         if self._node_balancer is None:
-            self._node_balancer = self.__create_nodebalancer()
+            self._node_balancer = self._create_nodebalancer()
             self.register_action('Created NodeBalancer {}'.format(nb_label))
 
         if self._node_balancer is None:
             return self.fail('failed to create nodebalancer')
 
-        self.__update_nodebalancer()
+        self._update_nodebalancer()
         self._node_balancer._api_get()
 
         self.results['node_balancer'] = self._node_balancer._raw_json
 
-    def __handle_nodebalancer_absent(self) -> None:
+    def _handle_nodebalancer_absent(self) -> None:
         """Updates the NodeBalancer for the absent state"""
 
         label = self.module.params.get('label')
 
-        self._node_balancer = self.__get_nodebalancer_by_label(label)
+        self._node_balancer = self._get_nodebalancer_by_label(label)
 
         if self._node_balancer is not None:
             self.results['node_balancer'] = self._node_balancer._raw_json
@@ -571,11 +571,11 @@ class LinodeNodeBalancer(LinodeModuleBase):
         state = kwargs.get('state')
 
         if state == 'absent':
-            self.__handle_nodebalancer_absent()
+            self._handle_nodebalancer_absent()
             return self.results
 
-        self.__handle_nodebalancer()
-        self.__handle_configs()
+        self._handle_nodebalancer()
+        self._handle_configs()
 
         return self.results
 

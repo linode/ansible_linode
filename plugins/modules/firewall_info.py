@@ -151,7 +151,7 @@ class LinodeFirewallInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def __get_matching_firewall(self) -> Optional[Firewall]:
+    def _get_matching_firewall(self) -> Optional[Firewall]:
         """Gets the Firewall with the param properties"""
 
         filter_items = {k: v for k, v in self.module.params.items()
@@ -176,7 +176,7 @@ class LinodeFirewallInfo(LinodeModuleBase):
     def exec_module(self, **kwargs: dict) -> Optional[dict]:
         """Entrypoint for Firewall info module"""
 
-        firewall = self.__get_matching_firewall()
+        firewall = self._get_matching_firewall()
 
         if firewall is None:
             self.fail('failed to get firewall')

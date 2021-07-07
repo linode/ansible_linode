@@ -107,7 +107,7 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def __get_matching_cluster(self) -> Optional[List[ObjectStorageCluster]]:
+    def _get_matching_cluster(self) -> Optional[List[ObjectStorageCluster]]:
         filter_items = {k: v for k, v in self.module.params.items()
                         if k in linode_object_cluster_valid_filters and v is not None}
 
@@ -130,7 +130,7 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Constructs and calls the Linode Object Storage Clusters module"""
 
-        clusters = self.__get_matching_cluster()
+        clusters = self._get_matching_cluster()
 
         if clusters is None:
             return self.fail('failed to get clusters')

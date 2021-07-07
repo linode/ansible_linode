@@ -378,7 +378,7 @@ class LinodeFirewall(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec)
 
-    def __get_firewall_by_label(self, label: str) -> Optional[Firewall]:
+    def _get_firewall_by_label(self, label: str) -> Optional[Firewall]:
         try:
             return self.client.networking.firewalls(Firewall.label == label)[0]
         except IndexError:
@@ -386,7 +386,7 @@ class LinodeFirewall(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get firewall {0}: {1}'.format(label, exception))
 
-    def __create_firewall(self) -> dict:
+    def _create_firewall(self) -> dict:
         params = copy.deepcopy(self.module.params)
 
         label = params.pop('label')
@@ -401,17 +401,17 @@ class LinodeFirewall(LinodeModuleBase):
 
         return result
 
-    def __create_device(self, device_id: int, device_type: str, **spec_args: Any) -> None:
+    def _create_device(self, device_id: int, device_type: str, **spec_args: Any) -> None:
         self._firewall.device_create(device_id, device_type, **spec_args)
         self.register_action('Created device {0} of type {1}'.format(
             device_id, device_type))
 
-    def __delete_device(self, device: FirewallDevice) -> None:
+    def _delete_device(self, device: FirewallDevice) -> None:
         self.register_action('Deleted device {0} of type {1}'.format(
             device.entity.id, device.entity.type))
         device.delete()
 
-    def __update_devices(self, spec_devices: list) -> None:
+    def _update_devices(self, spec_devices: list) -> None:
         # Remove devices that are not present in config
         device_map = {}
 
@@ -429,15 +429,15 @@ class LinodeFirewall(LinodeModuleBase):
                     continue
 
                 # Recreate the device if the fields don't match
-                self.__delete_device(device_map[device_entity_id])
+                self._delete_device(device_map[device_entity_id])
 
-            self.__create_device(device_entity_id, device_entity_type)
+            self._create_device(device_entity_id, device_entity_type)
 
         # Delete unused devices
         for device in device_map.values():
-            self.__delete_device(device)
+            self._delete_device(device)
 
-    def __update_firewall(self) -> None:
+    def _update_firewall(self) -> None:
         """Handles all update functionality for the current Firewall"""
 
         # Update mutable values
@@ -469,30 +469,30 @@ class LinodeFirewall(LinodeModuleBase):
         # Update devices
         devices: Optional[List[Any]] = params.get('devices')
         if devices is not None:
-            self.__update_devices(devices)
+            self._update_devices(devices)
 
-    def __handle_firewall(self) -> None:
+    def _handle_firewall(self) -> None:
         """Updates the Firewall"""
         label = self.module.params.get('label')
 
-        self._firewall = self.__get_firewall_by_label(label)
+        self._firewall = self._get_firewall_by_label(label)
 
         if self._firewall is None:
-            self._firewall = self.__create_firewall()
+            self._firewall = self._create_firewall()
             self.register_action('Created Firewall {0}'.format(label))
 
-        self.__update_firewall()
+        self._update_firewall()
 
         self._firewall._api_get()
 
         self.results['firewall'] = self._firewall._raw_json
         self.results['devices'] = paginated_list_to_json(self._firewall.devices)
 
-    def __handle_firewall_absent(self) -> None:
+    def _handle_firewall_absent(self) -> None:
         """Destroys the Firewall"""
         label = self.module.params.get('label')
 
-        self._firewall = self.__get_firewall_by_label(label)
+        self._firewall = self._get_firewall_by_label(label)
 
         if self._firewall is not None:
             self.results['firewall'] = self._firewall._raw_json
@@ -506,10 +506,10 @@ class LinodeFirewall(LinodeModuleBase):
         state = kwargs.get('state')
 
         if state == 'absent':
-            self.__handle_firewall_absent()
+            self._handle_firewall_absent()
             return self.results
 
-        self.__handle_firewall()
+        self._handle_firewall()
         return self.results
 
 
