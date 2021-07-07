@@ -8,4 +8,4 @@
     - name: Test inventory without filter
       assert:
         that:
-          - "'ansible-test-inventory' in hostvars"
+          - "groups['cool_group'] | list | length > 0"

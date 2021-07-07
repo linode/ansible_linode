@@ -187,7 +187,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
     def _add_hostvars_for_instances(self) -> None:
         """Add hostvars for instances in the dynamic inventory."""
         for instance in self.instances:
-            hostvars = {'instance': instance._raw_json}
+            hostvars = instance._raw_json
             for hostvar_key in hostvars:
                 self.inventory.set_variable(
                     instance.label,

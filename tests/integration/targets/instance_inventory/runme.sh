@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#set -eux
+set -eux
 
 # Create testing instance
 ansible-playbook playbooks/setup_instance.yml "$@"
@@ -12,6 +12,10 @@ ANSIBLE_INVENTORY=nofilter.instance.yml ansible-playbook playbooks/test_inventor
 # Test an inventory with a filter
 ansible-playbook playbooks/create_inventory.yml --extra-vars "template=filter.instance.yml" "$@"
 ANSIBLE_INVENTORY=filter.instance.yml ansible-playbook playbooks/test_inventory_filter.yml "$@"
+
+# Test an inventory with keyed groups filter
+ansible-playbook playbooks/create_inventory.yml --extra-vars "template=keyedgroups.instance.yml" "$@"
+ANSIBLE_INVENTORY=keyedgroups.instance.yml ansible-playbook playbooks/test_inventory_keyedgroups.yml "$@"
 
 # Clean up
 ansible-playbook playbooks/teardown.yml "$@"
