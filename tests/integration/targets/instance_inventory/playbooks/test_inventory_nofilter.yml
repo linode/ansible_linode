@@ -9,3 +9,4 @@
       assert:
         that:
           - "'ansible-test-inventory' in hostvars"
+          - hostvars["ansible-test-inventory"].ansible_host|length > 0

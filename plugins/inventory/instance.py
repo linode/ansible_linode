@@ -183,6 +183,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         """Add instance names to their dynamic inventory groups."""
         for instance in self.instances:
             self.inventory.add_host(instance.label, group=instance.group)
+            self.inventory.set_variable(instance.label, 'ansible_host', instance.ipv4[0])
 
     def _add_hostvars_for_instances(self) -> None:
         """Add hostvars for instances in the dynamic inventory."""
