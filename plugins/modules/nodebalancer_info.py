@@ -159,7 +159,7 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def __get_matching_nodebalancer(self) -> Optional[NodeBalancer]:
+    def _get_matching_nodebalancer(self) -> Optional[NodeBalancer]:
         filter_items = {k: v for k, v in self.module.params.items()
                         if k in linode_nodebalancer_valid_filters and v is not None}
 
@@ -179,7 +179,7 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get nodebalancer {0}'.format(exception))
 
-    def __get_node_by_label(self, config: NodeBalancerConfig, label: str) \
+    def _get_node_by_label(self, config: NodeBalancerConfig, label: str) \
             -> Optional[NodeBalancerNode]:
         try:
             return config.nodes(NodeBalancerNode.label == label)[0]
@@ -192,7 +192,7 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for NodeBalancer Info module"""
 
-        node_balancer = self.__get_matching_nodebalancer()
+        node_balancer = self._get_matching_nodebalancer()
 
         if node_balancer is None:
             return self.fail('failed to get nodebalancer')

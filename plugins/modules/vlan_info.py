@@ -80,7 +80,7 @@ class LinodeVLANInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def __get_vlan_by_label(self, label: str) -> Optional[VLAN]:
+    def _get_vlan_by_label(self, label: str) -> Optional[VLAN]:
         try:
             return self.client.networking.vlans(VLAN.label == label)[0]
         except IndexError:
@@ -92,7 +92,7 @@ class LinodeVLANInfo(LinodeModuleBase):
         """Entrypoint for VLAN info module"""
 
         label: str = kwargs.get('label')
-        vlan = self.__get_vlan_by_label(label)
+        vlan = self._get_vlan_by_label(label)
 
         if vlan is None:
             self.fail('failed to get vlan')

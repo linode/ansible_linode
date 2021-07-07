@@ -187,7 +187,7 @@ class LinodeInstanceInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def __get_matching_instance(self) -> Optional[Instance]:
+    def _get_matching_instance(self) -> Optional[Instance]:
         params = self.module.params
 
         filter_items = {k: v for k, v in params.items()
@@ -212,7 +212,7 @@ class LinodeInstanceInfo(LinodeModuleBase):
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for instance info module"""
 
-        instance = self.__get_matching_instance()
+        instance = self._get_matching_instance()
 
         if instance is None:
             return self.fail('failed to get instance')

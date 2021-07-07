@@ -100,7 +100,7 @@ class LinodeVolumeInfo(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def __get_matching_volume(self, spec_args: dict) -> Optional[Volume]:
+    def _get_matching_volume(self, spec_args: dict) -> Optional[Volume]:
         filter_items = {k: v for k, v in spec_args.items()
                         if k in linode_volume_valid_filters and v is not None}
 
@@ -123,7 +123,7 @@ class LinodeVolumeInfo(LinodeModuleBase):
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for volume info module"""
 
-        volume = self.__get_matching_volume(kwargs)
+        volume = self._get_matching_volume(kwargs)
 
         if volume is None:
             self.fail('failed to get volume')

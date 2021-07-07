@@ -547,7 +547,7 @@ class LinodeInstance(LinodeModuleBase):
             module_arg_spec=self.module_arg_spec,
             mutually_exclusive=self.mutually_exclusive)
 
-    def __get_instance_by_label(self, label: str) -> Optional[Instance]:
+    def _get_instance_by_label(self, label: str) -> Optional[Instance]:
         """Gets a Linode instance by label"""
 
         try:
@@ -557,7 +557,7 @@ class LinodeInstance(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get instance {0}: {1}'.format(label, exception))
 
-    def __get_desired_instance_status(self) -> str:
+    def _get_desired_instance_status(self) -> str:
         booted = self.module.params.get('booted')
         disks = self.module.params.get('disks')
         configs = self.module.params.get('configs')
@@ -569,7 +569,7 @@ class LinodeInstance(LinodeModuleBase):
 
         return 'running'
 
-    def __get_boot_config(self) -> Optional[Config]:
+    def _get_boot_config(self) -> Optional[Config]:
         config_label = self.module.params.get('boot_config_label')
 
         if config_label is not None:
@@ -583,12 +583,12 @@ class LinodeInstance(LinodeModuleBase):
 
         return None
 
-    def __get_disk_by_label(self, label: str) -> Optional[Disk]:
+    def _get_disk_by_label(self, label: str) -> Optional[Disk]:
         # Find the disk with the matching label
         return next((disk for disk in self._instance.disks if disk.label == label), None)
 
     @staticmethod
-    def __device_to_param_mapping(device: Union[Disk, Volume]) -> Dict[str, int]:
+    def _device_to_param_mapping(device: Union[Disk, Volume]) -> Dict[str, int]:
         id_key = ''
 
         if isinstance(device, Volume):
@@ -601,16 +601,16 @@ class LinodeInstance(LinodeModuleBase):
             id_key: device.id
         }
 
-    def __compare_param_to_device(
+    def _compare_param_to_device(
             self, device_param: Dict[str, Any], device: Union[Disk, Volume]) -> bool:
         if device is None or device_param is None:
             return device == device_param
 
-        device_mapping = self.__device_to_param_mapping(device)
+        device_mapping = self._device_to_param_mapping(device)
 
         disk_label = device_param.get('disk_label')
         if disk_label is not None:
-            disk = self.__get_disk_by_label(disk_label)
+            disk = self._get_disk_by_label(disk_label)
             if disk is None:
                 self.fail('invalid disk specified')
 
@@ -620,7 +620,7 @@ class LinodeInstance(LinodeModuleBase):
 
         return filter_null_values(device_mapping) == filter_null_values(device_param)
 
-    def __create_instance(self) -> dict:
+    def _create_instance(self) -> dict:
         """Creates a Linode instance"""
         params = copy.deepcopy(self.module.params)
 
@@ -650,7 +650,7 @@ class LinodeInstance(LinodeModuleBase):
 
         return result
 
-    def __param_device_to_device(self, device: Dict[str, Any]) -> Union[Disk, Volume, None]:
+    def _param_device_to_device(self, device: Dict[str, Any]) -> Union[Disk, Volume, None]:
         if device is None:
             return None
 
@@ -659,7 +659,7 @@ class LinodeInstance(LinodeModuleBase):
         volume_id = device.get('volume_id')
 
         if disk_label is not None:
-            disk = self.__get_disk_by_label(disk_label)
+            disk = self._get_disk_by_label(disk_label)
             if disk is None:
                 self.fail('invalid disk label: {0}'.format(disk_label))
 
@@ -673,22 +673,22 @@ class LinodeInstance(LinodeModuleBase):
 
         return None
 
-    def __create_config_register(self, config_params: Dict[str, Any]) -> None:
+    def _create_config_register(self, config_params: Dict[str, Any]) -> None:
         device_params = config_params.pop('devices')
         devices = []
 
         for device_suffix in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']:
             device_dict = device_params.get('sd{0}'.format(device_suffix))
-            devices.append(self.__param_device_to_device(device_dict))
+            devices.append(self._param_device_to_device(device_dict))
 
         self._instance.config_create(devices=devices, **filter_null_values(config_params))
         self.register_action('Created config {0}'.format(config_params.get('label')))
 
-    def __delete_config_register(self, config: Config) -> None:
+    def _delete_config_register(self, config: Config) -> None:
         self.register_action('Deleted config {0}'.format(config.label))
         config.delete()
 
-    def __create_disk_register(self, **kwargs: Any) -> None:
+    def _create_disk_register(self, **kwargs: Any) -> None:
         size = kwargs.pop('size')
         result = self._instance.disk_create(size, **kwargs)
 
@@ -698,16 +698,16 @@ class LinodeInstance(LinodeModuleBase):
             disk = result
 
         # The disk must be ready before the next disk is created
-        self.__wait_for_disk_status(disk, {'ready'}, self.module.params.get('wait_timeout'))
+        self._wait_for_disk_status(disk, {'ready'}, self.module.params.get('wait_timeout'))
 
         self.register_action('Created disk {0}'.format(kwargs.get('label')))
 
-    def __delete_disk_register(self, disk: Disk) -> None:
+    def _delete_disk_register(self, disk: Disk) -> None:
         self.register_action('Deleted disk {0}'.format(disk.label))
         disk.delete()
 
-    def __wait_for_instance_status(self, instance: Instance, status: Set[str], timeout: int,
-                                   not_status: bool = False) -> None:
+    def _wait_for_instance_status(self, instance: Instance, status: Set[str], timeout: int,
+                                  not_status: bool = False) -> None:
         def poll_func() -> bool:
             return (instance.status in status) != not_status
 
@@ -724,7 +724,7 @@ class LinodeInstance(LinodeModuleBase):
         except polling.TimeoutException:
             self.fail('failed to wait for instance: timeout period expired')
 
-    def __wait_for_disk_status(
+    def _wait_for_disk_status(
             self, disk: Disk, status: Set[str], timeout: int, not_status: bool = False) \
             -> None:
         try:
@@ -736,8 +736,8 @@ class LinodeInstance(LinodeModuleBase):
         except polling.TimeoutException:
             self.fail('failed to wait for disk: timeout period expired')
 
-    def __update_interfaces(self) -> None:
-        config = self.__get_boot_config()
+    def _update_interfaces(self) -> None:
+        config = self._get_boot_config()
         param_interfaces: List[Any] = self.module.params.get('interfaces')
 
         if config is None or param_interfaces is None:
@@ -755,7 +755,7 @@ class LinodeInstance(LinodeModuleBase):
         self.register_action('Updated interfaces for instance {0} config {1}'
                              .format(self._instance.label, config.id))
 
-    def __update_config(self, config: Config, config_params: Dict[str, Any]) -> None:
+    def _update_config(self, config: Config, config_params: Dict[str, Any]) -> None:
         should_update = False
         params = filter_null_values(config_params)
 
@@ -768,7 +768,7 @@ class LinodeInstance(LinodeModuleBase):
             # Special diffing due to handling in linode_api4-python
             if key == 'devices':
                 for device_key, device in old_value.items():
-                    if not self.__compare_param_to_device(new_value[device_key], device):
+                    if not self._compare_param_to_device(new_value[device_key], device):
                         self.fail('failed to update config: {0} is a non-mutable field'
                                   .format('devices'))
 
@@ -787,7 +787,7 @@ class LinodeInstance(LinodeModuleBase):
         if should_update:
             config.save()
 
-    def __update_configs(self) -> None:
+    def _update_configs(self) -> None:
         current_configs = self._instance.configs
 
         if self.module.params.get('image') is not None:
@@ -803,17 +803,17 @@ class LinodeInstance(LinodeModuleBase):
             config_label = config['label']
 
             if config_label in config_map:
-                self.__update_config(config_map[config_label], config)
+                self._update_config(config_map[config_label], config)
 
                 del config_map[config_label]
                 continue
 
-            self.__create_config_register(config)
+            self._create_config_register(config)
 
         for config in config_map.values():
-            self.__delete_config_register(config)
+            self._delete_config_register(config)
 
-    def __update_disk(self, disk: Disk, disk_params: Dict[str, Any]) -> None:
+    def _update_disk(self, disk: Disk, disk_params: Dict[str, Any]) -> None:
         new_size = disk_params.pop('size')
 
         if disk.size != new_size:
@@ -821,7 +821,7 @@ class LinodeInstance(LinodeModuleBase):
             self.register_action('Resized disk {0}: {1} -> {2}'
                                  .format(disk.label, disk.size, new_size))
             disk._api_get()
-            self.__wait_for_disk_status(disk, {'ready'}, self.module.params.get('wait_timeout'))
+            self._wait_for_disk_status(disk, {'ready'}, self.module.params.get('wait_timeout'))
 
         for key, new_value in filter_null_values(disk_params).items():
             if not hasattr(disk, key):
@@ -831,7 +831,7 @@ class LinodeInstance(LinodeModuleBase):
             if new_value != old_value:
                 self.fail('failed to update disk: {0} is a non-mutable field'.format(key))
 
-    def __update_disks(self) -> None:
+    def _update_disks(self) -> None:
         current_disks = self._instance.disks
 
         # Instances with implicit disks should be ignored
@@ -849,17 +849,17 @@ class LinodeInstance(LinodeModuleBase):
             disk_label = disk['label']
 
             if disk_label in disk_map:
-                self.__update_disk(disk_map[disk_label], disk)
+                self._update_disk(disk_map[disk_label], disk)
 
                 del disk_map[disk_label]
                 continue
 
-            self.__create_disk_register(**disk)
+            self._create_disk_register(**disk)
 
         if len(disk_map.values()) > 0:
             self.fail('unable to update disks: disks must be removed manually')
 
-    def __update_instance(self) -> None:
+    def _update_instance(self) -> None:
         """Update instance handles all update functionality for the current instance"""
         should_update = False
 
@@ -899,14 +899,14 @@ class LinodeInstance(LinodeModuleBase):
             self._instance.save()
 
         # Update interfaces
-        self.__update_interfaces()
+        self._update_interfaces()
 
-    def __handle_instance_boot(self) -> None:
+    def _handle_instance_boot(self) -> None:
         boot_status = self.module.params.get('booted')
         should_poll = self.module.params.get('wait')
 
         # Wait for instance to not be busy
-        self.__wait_for_instance_status(
+        self._wait_for_instance_status(
             self._instance,
             {'running', 'offline'},
             self.module.params.get('wait_timeout'))
@@ -916,7 +916,7 @@ class LinodeInstance(LinodeModuleBase):
         desired_status = None
 
         if boot_status and self._instance.status != 'running':
-            self._instance.boot(self.__get_boot_config())
+            self._instance.boot(self._get_boot_config())
             self.register_action('Booted instance {0}'.format(self.module.params.get('label')))
             desired_status = {'running'}
 
@@ -926,26 +926,26 @@ class LinodeInstance(LinodeModuleBase):
             desired_status = {'offline'}
 
         if should_poll and desired_status is not None:
-            self.__wait_for_instance_status(
+            self._wait_for_instance_status(
                 self._instance,
                 desired_status,
                 self.module.params.get('wait_timeout'))
 
-    def __handle_present(self) -> None:
+    def _handle_present(self) -> None:
         """Updates the instance defined in kwargs"""
 
         label = self.module.params.get('label')
 
-        self._instance = self.__get_instance_by_label(label)
+        self._instance = self._get_instance_by_label(label)
 
         if self._instance is None:
-            result = self.__create_instance()
+            result = self._create_instance()
             self._instance = cast(Instance, result.get('instance'))
             self._root_pass = str(result.get('root_pass'))
 
             self.register_action('Created instance {0}'.format(label))
         else:
-            self.__update_instance()
+            self._update_instance()
 
         # Wait for Linode to not be busy if configs or disks need to be created
         # This eliminates the need for unnecessary polling
@@ -953,16 +953,16 @@ class LinodeInstance(LinodeModuleBase):
         configs = self.module.params.get('configs') or []
 
         if len(configs) > 0 or len(disks) > 0:
-            self.__wait_for_instance_status(
+            self._wait_for_instance_status(
                 self._instance,
                 {'offline', 'running'},
                 self.module.params.get('wait_timeout'))
 
-            self.__update_disks()
-            self.__update_configs()
+            self._update_disks()
+            self._update_configs()
 
         if self.module.params.get('booted') is not None:
-            self.__handle_instance_boot()
+            self._handle_instance_boot()
 
         self._instance._api_get()
         inst_result = self._instance._raw_json
@@ -972,11 +972,11 @@ class LinodeInstance(LinodeModuleBase):
         self.results['configs'] = paginated_list_to_json(self._instance.configs)
         self.results['disks'] = paginated_list_to_json(self._instance.disks)
 
-    def __handle_absent(self) -> None:
+    def _handle_absent(self) -> None:
         """Destroys the instance defined in kwargs"""
         label = self.module.params.get('label')
 
-        self._instance = self.__get_instance_by_label(label)
+        self._instance = self._get_instance_by_label(label)
 
         if self._instance is not None:
             self.results['instance'] = self._instance._raw_json
@@ -991,10 +991,10 @@ class LinodeInstance(LinodeModuleBase):
         state = kwargs.get('state')
 
         if state == 'absent':
-            self.__handle_absent()
+            self._handle_absent()
             return self.results
 
-        self.__handle_present()
+        self._handle_present()
 
         return self.results
 

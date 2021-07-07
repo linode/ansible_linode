@@ -141,7 +141,7 @@ class LinodeVolume(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
-    def __get_volume_by_label(self, label: str) -> Optional[Volume]:
+    def _get_volume_by_label(self, label: str) -> Optional[Volume]:
         try:
             return self.client.volumes(Volume.label == label)[0]
         except IndexError:
@@ -149,7 +149,7 @@ class LinodeVolume(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get volume {0}: {1}'.format(label, exception))
 
-    def __create_volume(self) -> Optional[Volume]:
+    def _create_volume(self) -> Optional[Volume]:
         params = self.module.params
         label = params.pop('label')
         region = params.pop('region')
@@ -161,7 +161,7 @@ class LinodeVolume(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to create volume: {0}'.format(exception))
 
-    def __handle_volume(self) -> None:
+    def _handle_volume(self) -> None:
         params = self.module.params
 
         label: str = params.get('label')
@@ -170,11 +170,11 @@ class LinodeVolume(LinodeModuleBase):
         config_id: int = params.get('config_id')
         attached: bool = params.pop('attached')
 
-        self._volume = self.__get_volume_by_label(label)
+        self._volume = self._get_volume_by_label(label)
 
         # Create the volume if it does not already exist
         if self._volume is None:
-            self._volume = self.__create_volume()
+            self._volume = self._create_volume()
             self.register_action('Created volume {0}'.format(label))
 
         # Resize the volume if its size does not match
@@ -201,10 +201,10 @@ class LinodeVolume(LinodeModuleBase):
 
         self.results['volume'] = self._volume._raw_json
 
-    def __handle_volume_absent(self) -> None:
+    def _handle_volume_absent(self) -> None:
         label: str = self.module.params.get('label')
 
-        self._volume = self.__get_volume_by_label(label)
+        self._volume = self._get_volume_by_label(label)
 
         if self._volume is not None:
             self.results['volume'] = self._volume._raw_json
@@ -216,10 +216,10 @@ class LinodeVolume(LinodeModuleBase):
         state = kwargs.get('state')
 
         if state == 'absent':
-            self.__handle_volume_absent()
+            self._handle_volume_absent()
             return self.results
 
-        self.__handle_volume()
+        self._handle_volume()
 
         return self.results
 
