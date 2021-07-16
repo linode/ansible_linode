@@ -2,5 +2,5 @@
 
 for f in plugins/modules/*.py
 do
-  ansible-specdoc -i "$f" -j > /dev/null || exit 1;
+  PYTHONWARNINGS="ignore" ansible-specdoc -i "$f" -j > /dev/null || exit 1;
 done
