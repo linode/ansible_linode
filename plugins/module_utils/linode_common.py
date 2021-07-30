@@ -20,7 +20,8 @@ except ImportError:
     HAS_LINODE = False
     HAS_LINODE_EXC = traceback.format_exc()
 
-ANSIBLE_USER_AGENT = 'Ansible/{0}'.format(ANSIBLE_VERSION)
+COLLECTION_USER_AGENT = 'ansible_linode (https://github.com/linode/ansible_linode) Ansible/{0}'\
+    .format(ANSIBLE_VERSION)
 
 LINODE_COMMON_ARGS = dict(
     api_token=dict(
@@ -122,7 +123,7 @@ class LinodeModuleBase:
             self._client = LinodeClient(
                 api_token,
                 base_url='https://api.linode.com/{0}'.format(api_version),
-                user_agent=ANSIBLE_USER_AGENT,
+                user_agent=COLLECTION_USER_AGENT,
             )
 
         return self._client

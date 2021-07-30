@@ -10,6 +10,9 @@ __metaclass__ = type
 import os
 from typing import List, Dict, Any, Optional, Tuple, Set
 
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common \
+    import COLLECTION_USER_AGENT
+
 from ansible.errors import AnsibleError, AnsibleParserError
 from ansible.module_utils.six import string_types
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
@@ -120,7 +123,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 'from plugin configuration or environment'
             ))
 
-        self.client = LinodeClient(api_token)
+        self.client = LinodeClient(
+            api_token,
+            user_agent=COLLECTION_USER_AGENT)
 
     def _get_instances_inventory(self, regions: List[str], types: List[str], tags: List[str]) \
             -> None:
