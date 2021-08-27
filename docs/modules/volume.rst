@@ -12,7 +12,7 @@ volume
 Synopsis
 --------
 
-Manage Linode volumes.
+Manage a Linode Volume.
 
 
 
@@ -20,42 +20,41 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- python >= 2.7
-- linode_api4 >= 3.0
+- python >= 3.0
 
 
 
 Parameters
 ----------
 
-  label (True, string, None)
-    The Volume’s label, which is also used in the filesystem_path of the resulting volume.
+  attached (False, bool, True)
+    If true, the volume will be attached to a Linode. Otherwise, the volume will be detached.
 
 
-  region (optional, str, None)
-    The location to deploy the volume in.
-
-    See https://api.linode.com/v4/regions
+  config_id (False, int, None)
+    When creating a Volume attached to a Linode, the ID of the Linode Config to include the new Volume in.
 
 
-  size (optional, int, None)
-    The size of this volume, in GB.
-
-    Be aware that volumes may only be resized up after creation.
+  label (False, str, None)
+    The Volume’s label, which is also used in the filesystem_path       of the resulting volume.
 
 
-  linode_id (optional, int, None)
+  linode_id (False, int, None)
     The Linode this volume should be attached to upon creation.
 
     If not given, the volume will be created without an attachment.
 
 
-  config_id (optional, int, None)
-    When creating a Volume attached to a Linode, the ID of the Linode Config to include the new Volume in.
+  region (False, str, None)
+    The location to deploy the volume in.
+
+    See https://api.linode.com/v4/regions
 
 
-  attached (optional, bool, None)
-    If true, the volume will be attached to a Linode. Otherwise, the volume will be detached.
+  size (False, int, None)
+    The size of this volume, in GB.
+
+    Be aware that volumes may only be resized up after creation.
 
 
 

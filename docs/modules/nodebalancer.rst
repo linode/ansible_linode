@@ -12,7 +12,7 @@ nodebalancer
 Synopsis
 --------
 
-Manage Linode NodeBalancers.
+Manage a Linode NodeBalancer.
 
 
 
@@ -20,114 +20,115 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- python >= 2.7
-- linode_api4 >= 3.0
+- python >= 3.0
 
 
 
 Parameters
 ----------
 
-  label (True, string, None)
-    The unique label to give this NodeBalancer
+  client_conn_throttle (False, int, None)
+    Throttle connections per second.
 
-
-  region (True, str, None)
-    The location to deploy the instance in.
-
-    See https://api.linode.com/v4/regions
+    Set to 0 (zero) to disable throttling.
 
 
   configs (False, list, None)
-    A list of configs to be added to the NodeBalancer.
+    A list of configs to apply to the NodeBalancer.
 
 
-    algorithm (optional, str, None)
-      What algorithm this NodeBalancer should use for routing traffic to backends.
+      algorithm (False, str, None)
+        What algorithm this NodeBalancer should use for routing traffic to backends.
 
 
-    check (optional, str, None)
-      The type of check to perform against backends to ensure they are serving requests.
-
-      This is used to determine if backends are up or down.
+      check (False, str, None)
+        The type of check to perform against backends to ensure they are serving requests.
 
 
-    check_attempts (optional, int, None)
-      How many times to attempt a check before considering a backend to be down.
+      check_attempts (False, int, None)
+        How many times to attempt a check before considering a backend to be down.
 
 
-    check_body (optional, str, None)
-      This value must be present in the response body of the check in order for it to pass.
+      check_body (False, str, )
+        This value must be present in the response body of the check in order for it to pass.
 
-      If this value is not present in the response body of a check request, the backend is considered to be down.
-
-
-    check_interval (optional, int, None)
-      How often, in seconds, to check that backends are up and serving requests.
+        If this value is not present in the response body of a check request, the backend is considered to be down.
 
 
-    check_passive (optional, bool, None)
-      If true, any response from this backend with a 5xx status code will be enough for it to be considered unhealthy and taken out of rotation.
+      check_interval (False, int, None)
+        How often, in seconds, to check that backends are up and serving requests.
 
 
-    check_path (optional, str, None)
-      The URL path to check on each backend. If the backend does not respond to this request it is considered to be down.
+      check_passive (False, bool, None)
+        If true, any response from this backend with a 5xx status code will be enough for it to be considered unhealthy and taken out of rotation.
 
 
-    check_timeout (optional, int, None)
-      How long, in seconds, to wait for a check attempt before considering it failed.
+      check_path (False, str, None)
+        The URL path to check on each backend. If the backend does not respond to this request it is considered to be down.
 
 
-    cipher_suite (optional, str, recommended)
-      What ciphers to use for SSL connections served by this NodeBalancer.
-
-      ``legacy`` is considered insecure and should only be used if necessary.
+      check_timeout (False, int, None)
+        How long, in seconds, to wait for a check attempt before considering it failed.
 
 
-    port (optional, int, None)
-      The port for the Config to listen on.
+      cipher_suite (False, str, recommended)
+        What ciphers to use for SSL connections served by this NodeBalancer.
 
 
-    protocol (optional, str, None)
-      The protocol this port is configured to serve.
+      nodes (False, list, None)
+        A list of nodes to apply to this config.
 
 
-    proxy_protocol (optional, str, None)
-      ProxyProtocol is a TCP extension that sends initial TCP connection information such as source/destination IPs and ports to backend devices.
+          address (True, str, None)
+            The private IP Address where this backend can be reached.
+
+            This must be a private IP address.
 
 
-    ssl_cert (optional, str, None)
-      The PEM-formatted public SSL certificate (or the combined PEM-formatted SSL certificate and Certificate Authority chain) that should be served on this NodeBalancerConfig’s port.
+          label (True, str, None)
+            The label for this node.
 
 
-    ssl_key (optional, str, None)
-      The PEM-formatted private key for the SSL certificate set in the ssl_cert field.
+          mode (False, str, None)
+            The mode this NodeBalancer should use when sending traffic to this backend.
 
 
-    stickiness (optional, str, None)
-      Controls how session stickiness is handled on this port.
+          weight (False, int, None)
+            Nodes with a higher weight will receive more traffic.
 
 
-    nodes (optional, list, None)
-      A list of Nodes to be created with the parent Config.
+
+      port (False, int, None)
+        The port this Config is for.
 
 
-      label (True, str, None)
-        The label to give to this Node.
+      protocol (False, str, None)
+        The protocol this port is configured to serve.
 
 
-      address (True, str, None)
-        The private IP Address where this backend can be reached.
+      proxy_protocol (False, str, None)
+        ProxyProtocol is a TCP extension that sends initial TCP connection information such as source/destination IPs and ports to backend devices.
 
 
-      mode (optional, str, None)
-        The mode this NodeBalancer should use when sending traffic to this backend.
+      ssl_cert (False, str, None)
+        The PEM-formatted public SSL certificate (or the combined PEM-formatted           SSL certificate and Certificate Authority chain) that should be served           on this NodeBalancerConfig’s port.
 
 
-      weight (optional, int, None)
-        Nodes with a higher weight will receive more traffic.
+      ssl_key (False, str, None)
+        The PEM-formatted private key for the SSL certificate set in the ssl_cert field.
 
 
+      stickiness (False, str, None)
+        Controls how session stickiness is handled on this port.
+
+
+
+  label (False, str, None)
+    The unique label to give this NodeBalancer.
+
+
+  region (False, str, None)
+    The ID of the Region to create this NodeBalancer in.
 
 
 

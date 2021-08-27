@@ -19,33 +19,33 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = '''
-module: object_cluster_info
-description: Get information about an Object Storage cluster.
-requirements:
-  - python >= 2.7
-  - linode_api4 >= 3.0
 author:
-  - Luke Murphy (@decentral1se)
-  - Charles Kenney (@charliekenney23)
-  - Phillip Campbell (@phillc)
-  - Lena Garber (@lbgarber)
+- Luke Murphy (@decentral1se)
+- Charles Kenney (@charliekenney23)
+- Phillip Campbell (@phillc)
+- Lena Garber (@lbgarber)
+description:
+- Get info about a Linode Object Storage Cluster.
+module: object_cluster_info
 options:
-  id:
-    description:
-      - The unique id given to the clusters
-    type: string
-  region:
-    description:
-      - The region the clusters are in
-    type: string
   domain:
-    description:
-      - The domain of the clusters
-    type: string
+    description: The domain of the clusters.
+    required: false
+    type: str
+  id:
+    description: The unique id given to the clusters.
+    required: false
+    type: str
+  region:
+    description: The region the clusters are in.
+    required: false
+    type: str
   static_site_domain:
-    description:
-      - The static-site domain of the clusters
-    type: string
+    description: The static-site domain of the clusters.
+    required: false
+    type: str
+requirements:
+- python >= 3.0
 '''
 
 EXAMPLES = '''
@@ -78,13 +78,40 @@ clusters:
 
 linode_object_cluster_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
-    state=dict(type='str', required=False),
-    label=dict(type='str', required=False),
+    state=dict(type='str', required=False, doc_hide=True),
+    label=dict(type='str', required=False, doc_hide=True),
 
-    id=dict(type='str', required=False),
-    region=dict(type='str', required=False),
-    domain=dict(type='str', required=False),
-    static_site_domain=dict(type='str', required=False)
+    id=dict(
+        type='str', required=False,
+        description='The unique id given to the clusters.'),
+
+    region=dict(
+        type='str', required=False,
+        description='The region the clusters are in.'),
+
+    domain=dict(
+        type='str', required=False,
+        description='The domain of the clusters.'),
+
+    static_site_domain=dict(
+        type='str', required=False,
+        description='The static-site domain of the clusters.')
+)
+
+specdoc_meta = dict(
+    description=[
+        'Get info about a Linode Object Storage Cluster.'
+    ],
+    requirements=[
+        'python >= 3.0'
+    ],
+    author=[
+        'Luke Murphy (@decentral1se)',
+        'Charles Kenney (@charliekenney23)',
+        'Phillip Campbell (@phillc)',
+        'Lena Garber (@lbgarber)'
+    ],
+    spec=linode_object_cluster_info_spec
 )
 
 linode_object_cluster_valid_filters = [

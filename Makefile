@@ -19,7 +19,10 @@ lint:
 	mypy plugins/modules
 	mypy plugins/inventory
 
-gendocs:
+gendocsspec:
+	./scripts/specdoc_generate.sh
+
+gendocsrst:
 	mkdir -p $(DOCS_PATH)
 
 	rm -rf $(DOCS_PATH)/*
@@ -28,6 +31,8 @@ gendocs:
 
 	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/modules plugins/modules/*.py
 	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
+
+gendocs: gendocsspec gendocsrst
 
 integration-test: $(INTEGRATION_CONFIG)
 	ansible-test integration $(TEST_ARGS)

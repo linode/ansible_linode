@@ -12,7 +12,7 @@ firewall_info
 Synopsis
 --------
 
-Get info about a Linode Firewall. This endpoint is currently in beta and will only function correctly if `api_version` is set to `v4beta`.
+Get info about a Linode Firewall.
 
 
 
@@ -20,20 +20,19 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- python >= 2.7
-- linode_api4 >= 5.1.0
+- python >= 3.0
 
 
 
 Parameters
 ----------
 
-  label (optional, string, None)
-    The Firewall’s label.
-
-
-  id (optional, int, None)
+  id (False, int, None)
     The unique id of the Firewall.
+
+
+  label (False, str, None)
+    The Firewall’s label.
 
 
 

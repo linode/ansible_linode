@@ -23,172 +23,168 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = '''
----
-module: nodebalancer
-description: Manage Linode NodeBalancers.
-requirements:
-  - python >= 2.7
-  - linode_api4 >= 3.0
 author:
-  - Luke Murphy (@decentral1se)
-  - Charles Kenney (@charliekenney23)
-  - Phillip Campbell (@phillc)
-  - Lena Garber (@lbgarber)
+- Luke Murphy (@decentral1se)
+- Charles Kenney (@charliekenney23)
+- Phillip Campbell (@phillc)
+- Lena Garber (@lbgarber)
+description:
+- Manage a Linode NodeBalancer.
+module: nodebalancer
 options:
-  label:
+  client_conn_throttle:
     description:
-      - The unique label to give this NodeBalancer
-    required: true
-    type: string
-  region:
-    description:
-      - The location to deploy the instance in.
-      - See U(https://api.linode.com/v4/regions)
-    required: true
-    type: str
-
-  configs:
-    description:
-      - A list of configs to be added to the NodeBalancer.
+    - Throttle connections per second.
+    - Set to 0 (zero) to disable throttling.
     required: false
-    type: list
+    type: int
+  configs:
+    description: A list of configs to apply to the NodeBalancer.
     elements: dict
+    required: false
     suboptions:
       algorithm:
-        description:
-          - What algorithm this NodeBalancer should use for routing traffic to backends.
         choices:
-          - roundrobin
-          - leastconn
-          - source
+        - roundrobin
+        - leastconn
+        - source
+        description: What algorithm this NodeBalancer should use for routing traffic
+          to backends.
+        required: false
         type: str
-
       check:
-        description:
-          - The type of check to perform against backends to ensure they are serving requests.
-          - This is used to determine if backends are up or down.
         choices:
-          - none
-          - connection
-          - http
-          - http_body
+        - none
+        - connection
+        - http
+        - http_body
+        description: The type of check to perform against backends to ensure they
+          are serving requests.
+        required: false
         type: str
-
       check_attempts:
-        description:
-          - How many times to attempt a check before considering a backend to be down.
+        description: How many times to attempt a check before considering a backend
+          to be down.
+        required: false
         type: int
-
       check_body:
+        default: ''
         description:
-          - This value must be present in the response body of the check in order for it to pass.
-          - If this value is not present in the response body of a check request, the backend is considered to be down.
+        - This value must be present in the response body of the check in order for
+          it to pass.
+        - If this value is not present in the response body of a check request, the
+          backend is considered to be down.
+        required: false
         type: str
-
       check_interval:
-        description:
-          - How often, in seconds, to check that backends are up and serving requests.
+        description: How often, in seconds, to check that backends are up and serving
+          requests.
+        required: false
         type: int
-
       check_passive:
-        description:
-          - If true, any response from this backend with a 5xx status code will be enough for it to be considered unhealthy and taken out of rotation.
+        description: If true, any response from this backend with a 5xx status code
+          will be enough for it to be considered unhealthy and taken out of rotation.
+        required: false
         type: bool
-
       check_path:
-        description:
-          - The URL path to check on each backend. If the backend does not respond to this request it is considered to be down.
+        description: The URL path to check on each backend. If the backend does not
+          respond to this request it is considered to be down.
+        required: false
         type: str
-
       check_timeout:
-        description:
-          - How long, in seconds, to wait for a check attempt before considering it failed.
+        description: How long, in seconds, to wait for a check attempt before considering
+          it failed.
+        required: false
         type: int
-
       cipher_suite:
-        description:
-          - What ciphers to use for SSL connections served by this NodeBalancer.
-          - C(legacy) is considered insecure and should only be used if necessary.
         choices:
-          - recommended
-          - legacy
+        - recommended
+        - legacy
         default: recommended
+        description: What ciphers to use for SSL connections served by this NodeBalancer.
+        required: false
         type: str
-
-      port:
-        description:
-          - The port for the Config to listen on.
-        type: int
-
-      protocol:
-        description:
-          - The protocol this port is configured to serve.
-        choices:
-          - http
-          - https
-          - tcp
-        type: str
-
-      proxy_protocol:
-        description:
-          - ProxyProtocol is a TCP extension that sends initial TCP connection information such as source/destination IPs and ports to backend devices.
-        choices:
-          - none
-          - v1
-          - v2
-        type: str
-
-      ssl_cert:
-        description:
-          - The PEM-formatted public SSL certificate (or the combined PEM-formatted SSL certificate and Certificate Authority chain) that should be served on this NodeBalancerConfig’s port.
-        type: str
-
-      ssl_key:
-        description:
-          - The PEM-formatted private key for the SSL certificate set in the ssl_cert field.
-        type: str
-
-      stickiness:
-        description:
-          - Controls how session stickiness is handled on this port.
-        choices:
-          - none
-          - table
-          - http_cookie
-        type: str
-
       nodes:
-        description:
-          - A list of Nodes to be created with the parent Config.
-        type: list
+        description: A list of nodes to apply to this config.
         elements: dict
+        required: false
         suboptions:
-          label:
-            description:
-              - The label to give to this Node.
-            type: str
-            required: true
-
           address:
             description:
-              - The private IP Address where this backend can be reached.
-            type: str
+            - The private IP Address where this backend can be reached.
+            - This must be a private IP address.
             required: true
-
-          mode:
-            description:
-              - The mode this NodeBalancer should use when sending traffic to this backend.
-            choices:
-              - accept
-              - reject
-              - drain
-              - backup
             type: str
-
+          label:
+            description: The label for this node.
+            required: true
+            type: str
+          mode:
+            choices:
+            - accept
+            - reject
+            - drain
+            - backup
+            description: The mode this NodeBalancer should use when sending traffic
+              to this backend.
+            required: false
+            type: str
           weight:
-            description:
-              - Nodes with a higher weight will receive more traffic.
+            description: Nodes with a higher weight will receive more traffic.
+            required: false
             type: int
+        type: list
+      port:
+        description: The port this Config is for.
+        required: false
+        type: int
+      protocol:
+        choices:
+        - http
+        - https
+        - tcp
+        description: The protocol this port is configured to serve.
+        required: false
+        type: str
+      proxy_protocol:
+        choices:
+        - none
+        - v1
+        - v2
+        description: ProxyProtocol is a TCP extension that sends initial TCP connection
+          information such as source/destination IPs and ports to backend devices.
+        required: false
+        type: str
+      ssl_cert:
+        description: "The PEM-formatted public SSL certificate (or the combined PEM-formatted\
+          \ SSL certificate and Certificate Authority chain) that should be served\
+          \ on this NodeBalancerConfig\u2019s port."
+        required: false
+        type: str
+      ssl_key:
+        description: The PEM-formatted private key for the SSL certificate set in
+          the ssl_cert field.
+        required: false
+        type: str
+      stickiness:
+        choices:
+        - none
+        - table
+        - http_cookie
+        description: Controls how session stickiness is handled on this port.
+        required: false
+        type: str
+    type: list
+  label:
+    description: The unique label to give this NodeBalancer.
+    required: false
+    type: str
+  region:
+    description: The ID of the Region to create this NodeBalancer in.
+    required: false
+    type: str
+requirements:
+- python >= 3.0
 '''
 
 EXAMPLES = '''
@@ -292,35 +288,148 @@ nodes:
 '''
 
 linode_nodes_spec = dict(
-    label=dict(type='str', required=True),
-    address=dict(type='str', required=True),
-    weight=dict(type='int', required=False),
-    mode=dict(type='str', required=False),
+    label=dict(
+        type='str', required=True,
+        description='The label for this node.'),
+
+    address=dict(
+        type='str', required=True,
+        description=[
+            'The private IP Address where this backend can be reached.',
+            'This must be a private IP address.'
+        ]),
+
+    weight=dict(
+        type='int', required=False,
+        description='Nodes with a higher weight will receive more traffic.',
+    ),
+
+    mode=dict(
+        type='str', required=False,
+        description='The mode this NodeBalancer should use when sending traffic to this backend.',
+        choices=['accept', 'reject', 'drain', 'backup']),
+
 )
 
 linode_configs_spec = dict(
-    algorithm=dict(type='str', required=False),
-    check=dict(type='str', required=False),
-    check_attempts=dict(type='int', required=False),
-    check_body=dict(type='str', required=False, default=''),
-    check_interval=dict(type='int', required=False),
-    check_passive=dict(type='bool', required=False),
-    check_path=dict(type='str', required=False),
-    check_timeout=dict(type='int', required=False),
-    cipher_suite=dict(type='str', required=False, default='recommended'),
-    port=dict(type='int', required=False),
-    protocol=dict(type='str', required=False),
-    proxy_protocol=dict(type='str', required=False),
-    ssl_cert=dict(type='str', required=False),
-    ssl_key=dict(type='str', required=False),
-    stickiness=dict(type='str', required=False),
-    nodes=dict(type='list', required=False, elements='dict', options=linode_nodes_spec)
+    algorithm=dict(
+        type='str', required=False,
+        description='What algorithm this NodeBalancer should use for routing traffic to backends.',
+        choices=['roundrobin', 'leastconn', 'source']),
+
+    check=dict(
+        type='str', required=False,
+        description='The type of check to perform against backends to ensure they are '
+                    'serving requests.',
+        choices=['none', 'connection', 'http', 'http_body']),
+
+    check_attempts=dict(
+        type='int', required=False,
+        description='How many times to attempt a check before considering a backend to be down.'),
+
+    check_body=dict(
+        type='str', required=False, default='',
+        description=[
+            'This value must be present in the response body of the check in order for it to pass.',
+            'If this value is not present in the response body of a check request, the backend is '
+            'considered to be down.'
+        ]),
+
+    check_interval=dict(
+        type='int', required=False,
+        description='How often, in seconds, to check that backends are up and serving requests.'),
+
+    check_passive=dict(
+        type='bool', required=False,
+        description='If true, any response from this backend with a 5xx status code will be enough '
+                    'for it to be considered unhealthy and taken out of rotation.'),
+
+    check_path=dict(
+        type='str', required=False,
+        description='The URL path to check on each backend. If the backend does '
+                    'not respond to this request it is considered to be down.'),
+
+    check_timeout=dict(
+        type='int', required=False,
+        description='How long, in seconds, to wait for a check attempt before considering it '
+                    'failed.'),
+
+    cipher_suite=dict(
+        type='str', required=False, default='recommended',
+        description='What ciphers to use for SSL connections served by this NodeBalancer.',
+        choices=['recommended', 'legacy']),
+
+    port=dict(
+        type='int', required=False,
+        description='The port this Config is for.'),
+
+    protocol=dict(
+        type='str', required=False,
+        description='The protocol this port is configured to serve.',
+        choices=['http', 'https', 'tcp']),
+
+    proxy_protocol=dict(
+        type='str', required=False,
+        description='ProxyProtocol is a TCP extension that sends initial TCP connection '
+                    'information such as source/destination IPs and ports to backend devices.',
+        choices=['none', 'v1', 'v2']),
+
+    ssl_cert=dict(
+        type='str', required=False,
+        description='The PEM-formatted public SSL certificate (or the combined '
+                    'PEM-formatted SSL certificate and Certificate Authority chain) '
+                    'that should be served on this NodeBalancerConfig’s port.'),
+
+    ssl_key=dict(
+        type='str', required=False,
+        description='The PEM-formatted private key for the SSL certificate '
+                    'set in the ssl_cert field.'),
+
+    stickiness=dict(
+        type='str', required=False,
+        description='Controls how session stickiness is handled on this port.',
+        choices=['none', 'table', 'http_cookie']),
+
+    nodes=dict(
+        type='list', required=False, elements='dict', options=linode_nodes_spec,
+        description='A list of nodes to apply to this config.')
 )
 
 linode_nodebalancer_spec = dict(
-    client_conn_throttle=dict(type='int'),
-    region=dict(type='str'),
-    configs=dict(type='list', elements='dict', options=linode_configs_spec)
+    label=dict(
+        type='str',
+        description='The unique label to give this NodeBalancer.'),
+
+    client_conn_throttle=dict(
+        type='int',
+        description=[
+            'Throttle connections per second.',
+            'Set to 0 (zero) to disable throttling.'
+        ]),
+
+    region=dict(
+        type='str',
+        description='The ID of the Region to create this NodeBalancer in.'),
+
+    configs=dict(
+        type='list', elements='dict', options=linode_configs_spec,
+        description='A list of configs to apply to the NodeBalancer.')
+)
+
+specdoc_meta = dict(
+    description=[
+        'Manage a Linode NodeBalancer.'
+    ],
+    requirements=[
+        'python >= 3.0'
+    ],
+    author=[
+        'Luke Murphy (@decentral1se)',
+        'Charles Kenney (@charliekenney23)',
+        'Phillip Campbell (@phillc)',
+        'Lena Garber (@lbgarber)'
+    ],
+    spec=linode_nodebalancer_spec
 )
 
 linode_nodebalancer_mutable: Set[str] = {

@@ -20,33 +20,32 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- python >= 2.7
-- linode_api4 >= 3.0
+- python >= 3.0
 
 
 
 Parameters
 ----------
 
-  label (True, string, None)
-    The unique label to give this key
-
-
   access (False, list, None)
     A list of access permissions to give the key.
 
 
-    cluster (True, str, None)
-      The id of the cluster that the provided bucket exists under.
+      bucket_name (True, str, None)
+        The name of the bucket to set the key's permissions for.
 
 
-    bucket_name (True, str, None)
-      The name of the bucket to set the key's permissions for.
+      cluster (True, str, None)
+        The id of the cluster that the provided bucket exists under.
 
 
-    permissions (True, str, None)
-      The permissions to give the key.
+      permissions (True, str, None)
+        The permissions to give the key.
 
+
+
+  label (False, str, None)
+    The unique label to give this key.
 
 
 
