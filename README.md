@@ -1,6 +1,6 @@
 # Linode Ansible Collection
 [![Ansible Galaxy](https://img.shields.io/badge/galaxy-linode.cloud-660198.svg?style=flat)](https://galaxy.ansible.com/linode/cloud/) 
-![Build](https://img.shields.io/github/workflow/status/linode/ansible_linode/Run%20Integration%20Tests/master?label=tests)
+![Build](https://img.shields.io/github/workflow/status/linode/ansible_linode/Run%20Integration%20Tests/main?label=tests)
 ![Code Quality](https://img.shields.io/lgtm/grade/python/github/linode/ansible_linode?label=code%20quality)
 
 The Ansible Linode Collection contains various plugins for managing Linode services.
@@ -19,22 +19,22 @@ PEP440 is the schema used to describe the versions of Ansible.
 ### Modules
 Name | Description
 --- | ---
-[linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/master/docs/modules/firewall.rst)|Create and destroy Firewalls.
-[linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/firewall_info.rst)|Gather info about an existing Firewall.
-[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/master/docs/modules/instance.rst)|Create and destroy Linodes.
-[linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/instance_info.rst)|Gather info about an existing Linode instance.
-[linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/master/docs/modules/nodebalancer.rst)|Create, destroy, and configure NodeBalancers.
-[linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/nodebalancer_info.rst)|Gather info about an existing NodeBalancer.
-[linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/object_cluster_info.rst)|Gather info about Object Storage clusters.
-[linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/master/docs/modules/object_keys.rst)|Create and destroy Object Storage keys.
-[linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/vlan_info.rst)|Gather info about an existing Linode VLAN.
-[linode.cloud.volume](https://github.com/linode/ansible_linode/blob/master/docs/modules/volume.rst)|Create, destroy, and attach Linode volumes.
-[linode.cloud.volume_info](https://github.com/linode/ansible_linode/blob/master/docs/modules/volume_info.rst)|Gather info about an existing Linode volume.
+[linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall.rst)|Create and destroy Firewalls.
+[linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall_info.rst)|Gather info about an existing Firewall.
+[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance.rst)|Create and destroy Linodes.
+[linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance_info.rst)|Gather info about an existing Linode instance.
+[linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer.rst)|Create, destroy, and configure NodeBalancers.
+[linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer_info.rst)|Gather info about an existing NodeBalancer.
+[linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/object_cluster_info.rst)|Gather info about Object Storage clusters.
+[linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/main/docs/modules/object_keys.rst)|Create and destroy Object Storage keys.
+[linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/vlan_info.rst)|Gather info about an existing Linode VLAN.
+[linode.cloud.volume](https://github.com/linode/ansible_linode/blob/main/docs/modules/volume.rst)|Create, destroy, and attach Linode volumes.
+[linode.cloud.volume_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/volume_info.rst)|Gather info about an existing Linode volume.
 
 ### Inventory
 Name | Description
 --- | ---
-[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/master/docs/inventory/instance.rst)|Reads instance inventories from Linode.
+[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/main/docs/inventory/instance.rst)|Reads instance inventories from Linode.
 
 <!--end collection content-->
 
