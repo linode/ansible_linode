@@ -46,7 +46,6 @@ options:
     required: false
     type: str
   booted:
-    default: true
     description:
     - Whether the new Instance should be booted.
     - This will default to True if the Instance is deployed from an Image or Backup.
@@ -773,7 +772,7 @@ linode_instance_spec = dict(
         ]),
 
     booted=dict(
-        type='bool', default=True,
+        type='bool',
         description=[
             'Whether the new Instance should be booted.',
             'This will default to True if the Instance is deployed from an Image or Backup.'

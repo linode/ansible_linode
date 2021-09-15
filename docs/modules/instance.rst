@@ -41,7 +41,7 @@ Parameters
     The label of the config to boot from.
 
 
-  booted (False, bool, True)
+  booted (False, bool, None)
     Whether the new Instance should be booted.
 
     This will default to True if the Instance is deployed from an Image or Backup.
