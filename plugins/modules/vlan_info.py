@@ -18,23 +18,21 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = '''
----
-module: vlan_info
-description: Get info about a Linode VLAN. \
-This endpoint is currently in beta and will only function correctly if `api_version` is set to `v4beta`.
-requirements:
-  - python >= 2.7
-  - linode_api4 >= 3.0
 author:
-  - Luke Murphy (@decentral1se)
-  - Charles Kenney (@charliekenney23)
-  - Phillip Campbell (@phillc)
-  - Lena Garber (@lbgarber)
+- Luke Murphy (@decentral1se)
+- Charles Kenney (@charliekenney23)
+- Phillip Campbell (@phillc)
+- Lena Garber (@lbgarber)
+description:
+- Get info about a Linode VLAN.
+module: vlan_info
 options:
   label:
-    description:
-      - The VLAN’s label.
-    type: string
+    description: "The VLAN\u2019s label."
+    required: true
+    type: str
+requirements:
+- python >= 3.0
 '''
 
 EXAMPLES = '''
@@ -61,9 +59,27 @@ vlan:
 
 linode_vlan_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
-    state=dict(type='str', required=False),
+    state=dict(type='str', required=False, doc_hide=True),
 
-    label=dict(type='str', required=True)
+    label=dict(
+        type='str', required=True,
+        description='The VLAN’s label.')
+)
+
+specdoc_meta = dict(
+    description=[
+        'Get info about a Linode VLAN.'
+    ],
+    requirements=[
+        'python >= 3.0'
+    ],
+    author=[
+        'Luke Murphy (@decentral1se)',
+        'Charles Kenney (@charliekenney23)',
+        'Phillip Campbell (@phillc)',
+        'Lena Garber (@lbgarber)'
+    ],
+    spec=linode_vlan_info_spec
 )
 
 

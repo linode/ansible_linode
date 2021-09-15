@@ -12,7 +12,7 @@ instance_info
 Synopsis
 --------
 
-Get info about a Linode instance.
+Get info about a Linode Instance.
 
 
 
@@ -20,20 +20,19 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- python >= 2.7
-- linode_api4 >= 3.0
+- python >= 3.0
 
 
 
 Parameters
 ----------
 
-  label (optional, string, None)
+  id (False, int, None)
     The instance’s label.
 
 
-  id (optional, int, None)
-    The unique id of the instance.
+  label (False, str, None)
+    The unique ID of the Instance.
 
 
 

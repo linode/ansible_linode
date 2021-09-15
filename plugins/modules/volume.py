@@ -18,46 +18,54 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = '''
----
-module: volume
-description: Manage Linode volumes.
-requirements:
-  - python >= 2.7
-  - linode_api4 >= 3.0
 author:
-  - Luke Murphy (@decentral1se)
-  - Charles Kenney (@charliekenney23)
-  - Phillip Campbell (@phillc)
-  - Lena Garber (@lbgarber)
+- Luke Murphy (@decentral1se)
+- Charles Kenney (@charliekenney23)
+- Phillip Campbell (@phillc)
+- Lena Garber (@lbgarber)
+description:
+- Manage a Linode Volume.
+module: volume
 options:
+  attached:
+    default: true
+    description: If true, the volume will be attached to a Linode. Otherwise, the
+      volume will be detached.
+    required: false
+    type: bool
+  config_id:
+    default: null
+    description: When creating a Volume attached to a Linode, the ID of the Linode
+      Config to include the new Volume in.
+    required: false
+    type: int
   label:
+    description: "The Volume\u2019s label, which is also used in the filesystem_path\
+      \ of the resulting volume."
+    required: false
+    type: str
+  linode_id:
+    default: null
     description:
-      - The Volume’s label, which is also used in the filesystem_path of the resulting volume.
-    required: true
-    type: string
+    - The Linode this volume should be attached to upon creation.
+    - If not given, the volume will be created without an attachment.
+    required: false
+    type: int
   region:
     description:
-      - The location to deploy the volume in.
-      - See U(https://api.linode.com/v4/regions)
+    - The location to deploy the volume in.
+    - See U(https://api.linode.com/v4/regions)
+    required: false
     type: str
   size:
+    default: null
     description:
-      - The size of this volume, in GB. 
-      - Be aware that volumes may only be resized up after creation.
+    - The size of this volume, in GB.
+    - Be aware that volumes may only be resized up after creation.
+    required: false
     type: int
-  linode_id:
-    description:
-      - The Linode this volume should be attached to upon creation. 
-      - If not given, the volume will be created without an attachment.
-    type: int
-  config_id:
-    description:
-      - When creating a Volume attached to a Linode, the ID of the Linode Config to include the new Volume in.
-    type: int
-  attached:
-    description:
-      - If true, the volume will be attached to a Linode. Otherwise, the volume will be detached.
-    type: bool
+requirements:
+- python >= 3.0
 '''
 
 EXAMPLES = '''
@@ -116,11 +124,57 @@ volume:
 '''
 
 linode_volume_spec = dict(
-    config_id=dict(type='int', required=False, default=None),
-    linode_id=dict(type='int', required=False, default=None),
-    region=dict(type='str', required=False),
-    size=dict(type='int', required=False, default=None),
-    attached=dict(type='bool', required=False, default=True)
+    label=dict(
+        type='str',
+        description='The Volume’s label, which is also used in the '
+                    'filesystem_path of the resulting volume.'),
+
+    config_id=dict(
+        type='int', default=None,
+        description='When creating a Volume attached to a Linode, the ID of the Linode Config '
+                    'to include the new Volume in.'),
+
+    linode_id=dict(
+        type='int', default=None,
+        description=[
+            'The Linode this volume should be attached to upon creation.',
+            'If not given, the volume will be created without an attachment.'
+        ]),
+
+    region=dict(
+        type='str',
+        description=[
+            'The location to deploy the volume in.',
+            'See U(https://api.linode.com/v4/regions)'
+        ]),
+
+    size=dict(
+        type='int', default=None,
+        description=[
+            'The size of this volume, in GB.',
+            'Be aware that volumes may only be resized up after creation.'
+        ]),
+
+    attached=dict(
+        type='bool', default=True,
+        description='If true, the volume will be attached to a Linode. '
+                    'Otherwise, the volume will be detached.')
+)
+
+specdoc_meta = dict(
+    description=[
+        'Manage a Linode Volume.'
+    ],
+    requirements=[
+        'python >= 3.0'
+    ],
+    author=[
+        'Luke Murphy (@decentral1se)',
+        'Charles Kenney (@charliekenney23)',
+        'Phillip Campbell (@phillc)',
+        'Lena Garber (@lbgarber)'
+    ],
+    spec=linode_volume_spec
 )
 
 

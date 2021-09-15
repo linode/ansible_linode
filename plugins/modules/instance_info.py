@@ -20,26 +20,27 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = '''
----
-module: instance_info
-description: Get info about a Linode instance.
-requirements:
-  - python >= 2.7
-  - linode_api4 >= 3.0
 author:
-  - Luke Murphy (@decentral1se)
-  - Charles Kenney (@charliekenney23)
-  - Phillip Campbell (@phillc)
-  - Lena Garber (@lbgarber)
+- Luke Murphy (@decentral1se)
+- Charles Kenney (@charliekenney23)
+- Phillip Campbell (@phillc)
+- Lena Garber (@lbgarber)
+description:
+- Get info about a Linode Instance.
+module: instance_info
 options:
-  label:
-    description:
-      - The instance’s label.
-    type: string
   id:
     description:
-      - The unique id of the instance.
+    - "The instance\u2019s label."
+    required: false
     type: int
+  label:
+    description:
+    - The unique ID of the Instance.
+    required: false
+    type: str
+requirements:
+- python >= 3.0
 '''
 
 EXAMPLES = '''
@@ -161,16 +162,40 @@ disks:
 
 linode_instance_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
-    state=dict(type='str', required=False),
+    state=dict(type='str', required=False, doc_hide=True),
 
-    id=dict(type='int', required=False),
-    label=dict(type='str', required=False)
+    id=dict(
+        type='int', required=False,
+        description=[
+            'The instance’s label.'
+        ]),
+
+    label=dict(
+        type='str', required=False,
+        description=[
+            'The unique ID of the Instance.'
+        ])
+)
+
+specdoc_meta = dict(
+    description=[
+        'Get info about a Linode Instance.'
+    ],
+    requirements=[
+        'python >= 3.0'
+    ],
+    author=[
+        'Luke Murphy (@decentral1se)',
+        'Charles Kenney (@charliekenney23)',
+        'Phillip Campbell (@phillc)',
+        'Lena Garber (@lbgarber)'
+    ],
+    spec=linode_instance_info_spec
 )
 
 linode_instance_valid_filters = [
     'id', 'label'
 ]
-
 
 class LinodeInstanceInfo(LinodeModuleBase):
     """Module for getting info about a Linode Instance"""

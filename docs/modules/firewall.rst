@@ -12,7 +12,7 @@ firewall
 Synopsis
 --------
 
-Manage Linode Firewalls. This endpoint is currently in beta and will only function correctly if `api_version` is set to `v4beta`.
+Manage Linode Firewalls.
 
 
 
@@ -20,114 +20,133 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- python >= 2.7
-- linode_api4 >= 5.1.0
+- python >= 3.0
 
 
 
 Parameters
 ----------
 
-  label (True, str, None)
-    The unique label to give this Firewall.
-
-
-  status (optional, str, None)
-    The status of this Firewall.
-
-
-  devices (optional, list, None)
+  devices (False, list, None)
     The devices that are attached to this Firewall.
 
 
-    id (True, str, None)
-      The unique ID of the device to attach to this Firewall.
+      id (True, int, None)
+        The unique ID of the device to attach to this Firewall.
 
 
-    type (optional, str, linode)
-      The type of device to be attached to this Firewall.
-
-
-
-  rules (optional, dict, None)
-    The inbound and outbound access rules to apply to the Firewall.
-
-
-    inbound_policy (True, str, None)
-      The default behavior for inbound traffic.
-
-
-    outbound_policy (True, str, None)
-      The default behavior for outbound traffic.
-
-
-    inbound (optional, list, None)
-      A list of rules for inbound traffic.
-
-
-      label (True, str, None)
-        The label of this rule.
-
-
-      action (True, str, None)
-        Controls whether traffic is accepted or dropped by this rule.
-
-
-      description (optional, str, None)
-        The description of this rule.
-
-
-      addresses (optional, list, None)
-        Allowed IPv4 or IPv6 addresses.
-
-
-        ipv4 (optional, list, None)
-          A list of IPv4 addresses or networks.
-
-          Must be in IP/mask format.
-
-
-        ipv6 (optional, list, None)
-          A list of IPv4 addresses or networks.
-
-          Must be in IP/mask format.
+      type (False, str, linode)
+        The type of device to be attached to this Firewall.
 
 
 
-
-    outbound (optional, list, None)
-      A list of rules for outbound traffic.
-
-
-      label (True, str, None)
-        The label of this rule.
+  label (False, str, None)
+    The unique label to give this Firewall.
 
 
-      action (True, str, None)
-        Controls whether traffic is accepted or dropped by this rule.
+  rules (False, dict, None)
+    The inbound and outbound access rules to apply to this Firewall.
 
 
-      description (optional, str, None)
-        The description of this rule.
+      inbound (False, list, None)
+        A list of rules for inbound traffic.
 
 
-      addresses (optional, list, None)
-        Allowed IPv4 or IPv6 addresses.
+          action (True, str, None)
+            Controls whether traffic is accepted or dropped by this rule.
 
 
-        ipv4 (optional, list, None)
-          A list of IPv4 addresses or networks.
-
-          Must be in IP/mask format.
+          addresses (False, dict, None)
+            Allowed IPv4 or IPv6 addresses.
 
 
-        ipv6 (optional, list, None)
-          A list of IPv4 addresses or networks.
+              ipv4 (False, list, None)
+                A list of IPv4 addresses or networks.
 
-          Must be in IP/mask format.
+                Must be in IP/mask format.
+
+
+              ipv6 (False, list, None)
+                A list of IPv4 addresses or networks.
+
+                Must be in IP/mask format.
 
 
 
+          description (False, str, None)
+            A description for this rule.
+
+
+          label (True, str, None)
+            The label of this rule.
+
+
+          ports (False, str, None)
+            A string representing the port or ports on which traffic will be allowed.
+
+            See https://www.linode.com/docs/api/networking/#firewall-create
+
+
+          protocol (False, str, None)
+            The type of network traffic to allow.
+
+
+
+      inbound_policy (False, str, None)
+        The default behavior for inbound traffic.
+
+
+      outbound (False, list, None)
+        A list of rules for outbound traffic.
+
+
+          action (True, str, None)
+            Controls whether traffic is accepted or dropped by this rule.
+
+
+          addresses (False, dict, None)
+            Allowed IPv4 or IPv6 addresses.
+
+
+              ipv4 (False, list, None)
+                A list of IPv4 addresses or networks.
+
+                Must be in IP/mask format.
+
+
+              ipv6 (False, list, None)
+                A list of IPv4 addresses or networks.
+
+                Must be in IP/mask format.
+
+
+
+          description (False, str, None)
+            A description for this rule.
+
+
+          label (True, str, None)
+            The label of this rule.
+
+
+          ports (False, str, None)
+            A string representing the port or ports on which traffic will be allowed.
+
+            See https://www.linode.com/docs/api/networking/#firewall-create
+
+
+          protocol (False, str, None)
+            The type of network traffic to allow.
+
+
+
+      outbound_policy (False, str, None)
+        The default behavior for outbound traffic.
+
+
+
+  status (False, str, None)
+    The status of this Firewall.
 
 
 

@@ -18,48 +18,43 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = '''
-module: object_keys
-description: Manage Linode Object Storage Keys.
-requirements:
-  - python >= 2.7
-  - linode_api4 >= 3.0
 author:
-  - Luke Murphy (@decentral1se)
-  - Charles Kenney (@charliekenney23)
-  - Phillip Campbell (@phillc)
-  - Lena Garber (@lbgarber)
+- Luke Murphy (@decentral1se)
+- Charles Kenney (@charliekenney23)
+- Phillip Campbell (@phillc)
+- Lena Garber (@lbgarber)
+description:
+- Manage Linode Object Storage Keys.
+module: object_keys
 options:
-  label:
-    description:
-      - The unique label to give this key
-    required: true
-    type: string
   access:
-    description:
-      - A list of access permissions to give the key.
-    required: false
-    type: list
+    description: A list of access permissions to give the key.
     elements: dict
+    required: false
     suboptions:
-      cluster:
-        description:
-          - The id of the cluster that the provided bucket exists under.
-        type: str
-        required: true
       bucket_name:
-        description:
-          - The name of the bucket to set the key's permissions for.
-        type: str
+        description: The name of the bucket to set the key's permissions for.
         required: true
+        type: str
+      cluster:
+        description: The id of the cluster that the provided bucket exists under.
+        required: true
+        type: str
       permissions:
-        description:
-          - The permissions to give the key.
-        type: str
-        required: true
         choices:
-          - read_only
-          - write_only
-          - read_write
+        - read_only
+        - write_only
+        - read_write
+        description: The permissions to give the key.
+        required: true
+        type: str
+    type: list
+  label:
+    description: The unique label to give this key.
+    required: false
+    type: str
+requirements:
+- python >= 3.0
 '''
 
 EXAMPLES = '''
@@ -106,15 +101,45 @@ key:
 '''
 
 linode_access_spec = dict(
-    cluster=dict(type='str', required=True),
-    bucket_name=dict(type='str', required=True),
-    permissions=dict(type='str', required=True)
+    cluster=dict(
+        type='str', required=True,
+        description='The id of the cluster that the provided bucket exists under.'),
+
+    bucket_name=dict(
+        type='str', required=True,
+        description='The name of the bucket to set the key\'s permissions for.'),
+
+    permissions=dict(
+        type='str', required=True,
+        description='The permissions to give the key.',
+        choices=['read_only', 'write_only', 'read_write'])
 )
 
 linode_object_keys_spec = dict(
-    access=dict(type='list', required=False, elements='dict', options=linode_access_spec)
+    label=dict(
+        type='str',
+        description='The unique label to give this key.'),
+
+    access=dict(
+        type='list', elements='dict', options=linode_access_spec,
+        description='A list of access permissions to give the key.')
 )
 
+specdoc_meta = dict(
+    description=[
+        'Manage Linode Object Storage Keys.'
+    ],
+    requirements=[
+        'python >= 3.0'
+    ],
+    author=[
+        'Luke Murphy (@decentral1se)',
+        'Charles Kenney (@charliekenney23)',
+        'Phillip Campbell (@phillc)',
+        'Lena Garber (@lbgarber)'
+    ],
+    spec=linode_object_keys_spec
+)
 
 class LinodeObjectStorageKeys(LinodeModuleBase):
     """Module for creating and destroying Linode Object Storage Keys"""

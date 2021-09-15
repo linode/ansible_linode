@@ -12,7 +12,7 @@ volume_info
 Synopsis
 --------
 
-Get info about a Linode volume.
+Get info about a Linode Volume.
 
 
 
@@ -20,20 +20,19 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- python >= 2.7
-- linode_api4 >= 3.0
+- python >= 3.0
 
 
 
 Parameters
 ----------
 
-  label (optional, string, None)
-    The Volume’s label.
+  id (False, int, None)
+    The ID of the Volume.
 
 
-  id (optional, int, None)
-    The unique id of the volume.
+  label (False, str, None)
+    The label of the Volume.
 
 
 

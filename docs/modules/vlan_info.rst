@@ -12,7 +12,7 @@ vlan_info
 Synopsis
 --------
 
-Get info about a Linode VLAN. This endpoint is currently in beta and will only function correctly if `api_version` is set to `v4beta`.
+Get info about a Linode VLAN.
 
 
 
@@ -20,15 +20,14 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- python >= 2.7
-- linode_api4 >= 3.0
+- python >= 3.0
 
 
 
 Parameters
 ----------
 
-  label (optional, string, None)
+  label (True, str, None)
     The VLAN’s label.
 
 

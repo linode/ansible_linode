@@ -18,187 +18,156 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = '''
----
-module: firewall
-description: 
-  - Manage Linode Firewalls. \
-This endpoint is currently in beta and will only function \
-correctly if `api_version` is set to `v4beta`. 
-requirements:
-  - python >= 2.7
-  - linode_api4 >= 5.1.0
 author:
-  - Luke Murphy (@decentral1se)
-  - Charles Kenney (@charliekenney23)
-  - Phillip Campbell (@phillc)
-  - Lena Garber (@lbgarber)
+- Luke Murphy (@decentral1se)
+- Charles Kenney (@charliekenney23)
+- Phillip Campbell (@phillc)
+- Lena Garber (@lbgarber)
+description:
+- Manage Linode Firewalls.
+module: firewall
 options:
-  label:
-    description:
-      - The unique label to give this Firewall.
-    required: true
-    type: str
-    
-  status:
-    description:
-      - The status of this Firewall.
-    type: str
-    choices:
-      - enabled
-      - disabled
-      - deleted
-
   devices:
     description:
-      - The devices that are attached to this Firewall.
-    type: list
+    - The devices that are attached to this Firewall.
     elements: dict
+    required: false
     suboptions:
-        id:
-          description:
-            - The unique ID of the device to attach to this Firewall.
-          type: str
-          required: true
-        type:
-          description:
-            - The type of device to be attached to this Firewall.
-          type: str
-          choices:
-            - linode
-          default: linode
-          
+      id:
+        description:
+        - The unique ID of the device to attach to this Firewall.
+        required: true
+        type: int
+      type:
+        default: linode
+        description:
+        - The type of device to be attached to this Firewall.
+        required: false
+        type: str
+    type: list
+  label:
+    description:
+    - The unique label to give this Firewall.
+    required: false
+    type: str
   rules:
     description:
-      - The inbound and outbound access rules to apply to the Firewall.
-    type: dict
+    - The inbound and outbound access rules to apply to this Firewall.
+    required: false
     suboptions:
-      inbound_policy:
-        description:
-          - The default behavior for inbound traffic.
-        type: str
-        required: true
-        choices:
-          - ACCEPT
-          - DROP
-        
-      outbound_policy:
-        description:
-          - The default behavior for outbound traffic.
-        type: str
-        required: true
-        choices:
-          - ACCEPT
-          - DROP
-          
       inbound:
         description:
-          - A list of rules for inbound traffic.
-        type: list
+        - A list of rules for inbound traffic.
         elements: dict
+        required: false
         suboptions:
-          label:
-            description:
-              - The label of this rule.
-            type: str
-            required: true
           action:
-            description:
-              - Controls whether traffic is accepted or dropped by this rule.
-            type: str
-            choices:
-              - ACCEPT
-              - DROP
+            description: &id001
+            - Controls whether traffic is accepted or dropped by this rule.
             required: true
-          description:
-            description:
-              - The description of this rule.
             type: str
           addresses:
-            description:
-              - Allowed IPv4 or IPv6 addresses.
-            type: list
-            elements: dict
+            description: &id002
+            - Allowed IPv4 or IPv6 addresses.
+            required: false
             suboptions:
               ipv4:
-                description:
-                  - A list of IPv4 addresses or networks. 
-                  - Must be in IP/mask format.
-                type: list
+                description: &id003
+                - A list of IPv4 addresses or networks.
+                - Must be in IP/mask format.
                 elements: str
+                required: false
+                type: list
               ipv6:
-                description:
-                  - A list of IPv4 addresses or networks. 
-                  - Must be in IP/mask format.
-                type: list
+                description: &id004
+                - A list of IPv4 addresses or networks.
+                - Must be in IP/mask format.
                 elements: str
-            ports:
-              description:
-                - A string representing the port or ports on which traffic will be allowed.
-                - See U(https://www.linode.com/docs/api/networking/#firewall-create)
-              type: str
-            protocol:
-              description:
-                - The type of network traffic to allow.
-              type: str
-              choices:
-                - TCP
-                - UDP
-                - ICMP
-                
+                required: false
+                type: list
+            type: dict
+          description:
+            description: &id005
+            - A description for this rule.
+            required: false
+            type: str
+          label:
+            description: &id006
+            - The label of this rule.
+            required: true
+            type: str
+          ports:
+            description: &id007
+            - A string representing the port or ports on which traffic will be allowed.
+            - See U(https://www.linode.com/docs/api/networking/#firewall-create)
+            required: false
+            type: str
+          protocol:
+            description: &id008
+            - The type of network traffic to allow.
+            required: false
+            type: str
+        type: list
+      inbound_policy:
+        description:
+        - The default behavior for inbound traffic.
+        required: false
+        type: str
       outbound:
         description:
-          - A list of rules for outbound traffic.
-        type: list
+        - A list of rules for outbound traffic.
         elements: dict
+        required: false
         suboptions:
-          label:
-            description:
-              - The label of this rule.
-            type: str
-            required: true
           action:
-            description:
-              - Controls whether traffic is accepted or dropped by this rule.
-            type: str
-            choices:
-              - ACCEPT
-              - DROP
+            description: *id001
             required: true
-          description:
-            description:
-              - The description of this rule.
             type: str
           addresses:
-            description:
-              - Allowed IPv4 or IPv6 addresses.
-            type: list
-            elements: dict
+            description: *id002
+            required: false
             suboptions:
               ipv4:
-                description:
-                  - A list of IPv4 addresses or networks. 
-                  - Must be in IP/mask format.
-                type: list
+                description: *id003
                 elements: str
+                required: false
+                type: list
               ipv6:
-                description:
-                  - A list of IPv4 addresses or networks. 
-                  - Must be in IP/mask format.
-                type: list
+                description: *id004
                 elements: str
-            ports:
-              description:
-                - A string representing the port or ports on which traffic will be allowed.
-                - See U(https://www.linode.com/docs/api/networking/#firewall-create)
-              type: str
-            protocol:
-              description:
-                - The type of network traffic to allow.
-              type: str
-              choices:
-                - TCP
-                - UDP
-                - ICMP
+                required: false
+                type: list
+            type: dict
+          description:
+            description: *id005
+            required: false
+            type: str
+          label:
+            description: *id006
+            required: true
+            type: str
+          ports:
+            description: *id007
+            required: false
+            type: str
+          protocol:
+            description: *id008
+            required: false
+            type: str
+        type: list
+      outbound_policy:
+        description:
+        - The default behavior for outbound traffic.
+        required: false
+        type: str
+    type: dict
+  status:
+    description:
+    - The status of this Firewall.
+    required: false
+    type: str
+requirements:
+- python >= 3.0
 '''
 
 EXAMPLES = '''
@@ -322,37 +291,111 @@ except ImportError:
     pass
 
 linode_firewall_addresses_spec: dict = dict(
-    ipv4=dict(type='list', elements='str'),
-    ipv6=dict(type='list', elements='str')
+    ipv4=dict(type='list', elements='str',
+              description=[
+                  'A list of IPv4 addresses or networks.',
+                  'Must be in IP/mask format.'
+              ]),
+    ipv6=dict(type='list', elements='str',
+              description=[
+                  'A list of IPv4 addresses or networks.',
+                  'Must be in IP/mask format.'
+              ])
 )
 
 linode_firewall_rule_spec: dict = dict(
-    label=dict(type='str', required=True),
-    action=dict(type='str', required=True),
-    addresses=dict(type='dict', options=linode_firewall_addresses_spec),
-    description=dict(type='str'),
-    ports=dict(type='str'),
-    protocol=dict(type='str')
+    label=dict(type='str', required=True,
+               description=[
+                   'The label of this rule.'
+               ]),
+    action=dict(type='str', required=True,
+                description=[
+                    'Controls whether traffic is accepted or dropped by this rule.'
+                ]),
+    addresses=dict(type='dict', options=linode_firewall_addresses_spec,
+                   description=[
+                       'Allowed IPv4 or IPv6 addresses.'
+                   ]),
+    description=dict(type='str',
+                     description=[
+                         'A description for this rule.'
+                     ]),
+    ports=dict(type='str',
+               description=[
+                   'A string representing the port or ports on which traffic will be allowed.',
+                   'See U(https://www.linode.com/docs/api/networking/#firewall-create)'
+               ]),
+    protocol=dict(type='str',
+                  description=[
+                      'The type of network traffic to allow.'
+                  ])
 )
 
 linode_firewall_rules_spec: dict = dict(
-    inbound=dict(type='list', elements='dict', options=linode_firewall_rule_spec),
-    inbound_policy=dict(type='str'),
-    outbound=dict(type='list', elements='dict', options=linode_firewall_rule_spec),
-    outbound_policy=dict(type='str'),
+    inbound=dict(type='list', elements='dict', options=linode_firewall_rule_spec,
+                 description=[
+                     'A list of rules for inbound traffic.'
+                 ]),
+    inbound_policy=dict(type='str',
+                        description=[
+                            'The default behavior for inbound traffic.'
+                        ]),
+    outbound=dict(type='list', elements='dict', options=linode_firewall_rule_spec,
+                  description=[
+                      'A list of rules for outbound traffic.'
+                  ]),
+    outbound_policy=dict(type='str',
+                         description=[
+                             'The default behavior for outbound traffic.'
+                         ]),
 )
 
 linode_firewall_device_spec: dict = dict(
-    id=dict(type='int', required=True),
-    type=dict(type='str', default='linode')
+    id=dict(type='int', required=True,
+            description=[
+                'The unique ID of the device to attach to this Firewall.'
+            ]),
+    type=dict(type='str', default='linode',
+              description=[
+                  'The type of device to be attached to this Firewall.'
+              ])
 )
 
 linode_firewall_spec: dict = dict(
-    label=dict(type='str'),
-    devices=dict(type='list', elements='dict', options=linode_firewall_device_spec),
-    rules=dict(type='dict', options=linode_firewall_rules_spec),
-    status=dict(type='str')
+    label=dict(type='str',
+               description=[
+                    'The unique label to give this Firewall.'
+                ]),
+    devices=dict(type='list', elements='dict', options=linode_firewall_device_spec,
+                 description=[
+                     'The devices that are attached to this Firewall.'
+                 ]),
+    rules=dict(type='dict', options=linode_firewall_rules_spec,
+               description=[
+                   'The inbound and outbound access rules to apply to this Firewall.'
+               ]),
+    status=dict(type='str',
+                description=[
+                    'The status of this Firewall.'
+                ])
 )
+
+specdoc_meta = dict(
+    description=[
+        'Manage Linode Firewalls.'
+    ],
+    requirements=[
+        'python >= 3.0'
+    ],
+    author=[
+        'Luke Murphy (@decentral1se)',
+        'Charles Kenney (@charliekenney23)',
+        'Phillip Campbell (@phillc)',
+        'Lena Garber (@lbgarber)'
+    ],
+    spec=linode_firewall_spec
+)
+
 
 # Fields that can be updated on an existing Firewall
 linode_firewall_mutable: List[str] = [
