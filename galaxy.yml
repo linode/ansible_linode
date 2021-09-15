@@ -13,7 +13,7 @@ tags:
   - linode
   - cloud
 repository: https://github.com/linode/ansible_linode
-documentation: https://github.com/linode/ansible_linode/tree/master/README.md
+documentation: https://github.com/linode/ansible_linode/tree/main/README.md
 homepage: https://github.com/linode/ansible_linode
 issues: https://github.com/linode/ansible_linode/issues
 build_ignore:
