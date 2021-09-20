@@ -36,7 +36,7 @@ DOCUMENTATION = r'''
         - constructed
     options:
         plugin:
-            description: marks this as an instance of the 'linode' plugin
+            description: Marks this as an instance of the 'linode' plugin
             required: true
             choices: ['linode', 'linode.cloud.instance']
         api_token:

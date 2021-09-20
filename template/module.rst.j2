@@ -41,9 +41,9 @@ The below requirements are needed on the host that executes this module.
 {%     set req = spec.required | default("optional") %}
 {%     set typ = spec.type | default("any") %}
 {%     set def_val = spec.default | default("None") %}
-  {{ "    " * level }}{{ name }} ({{ req }}, {{ typ }}, {{ def_val }})
+  {{ "    " * level }}**{{ name }} (required={{ req }}, type={{ typ }}, default={{ def_val }}):**
 {%     for para in spec.description %}
-    {{ "    " * level }}{{ para | rst_ify }}
+    {{ "    " * level }}\• {{ para | rst_ify }}
 
 {%     endfor %}
 
@@ -58,17 +58,6 @@ Parameters
 ----------
 
 {{ option_desc(options, 0) }}
-{% endif %}
-
-
-{% if notes -%}
-Notes
------
-
-.. note::
-{%   for note in notes %}
-   - {{ note | rst_ify }}
-{%   endfor %}
 {% endif %}
 
 
@@ -111,7 +100,7 @@ Examples
 {%     set typ = spec.type | default("any") %}
 {%     set sample = spec.sample %}
 {%     set api_docs = spec.linode_api_docs %}
-{{ "  " * level }}**{{ name }} ({{ ret }}, {{ typ }}):**
+{{ "  " * level }}**{{ name }} (returned={{ ret }}, type={{ typ }}):**
 
 {%     for para in spec.description %}
 {{ "  " * level }}{{ para | rst_ify }}

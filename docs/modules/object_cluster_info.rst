@@ -27,22 +27,20 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  domain (False, str, None)
-    The domain of the clusters.
+  **domain (required=False, type=str, default=None):**
+    \• The domain of the clusters.
 
 
-  id (False, str, None)
-    The unique id given to the clusters.
+  **id (required=False, type=str, default=None):**
+    \• The unique id given to the clusters.
 
 
-  region (False, str, None)
-    The region the clusters are in.
+  **region (required=False, type=str, default=None):**
+    \• The region the clusters are in.
 
 
-  static_site_domain (False, str, None)
-    The static-site domain of the clusters.
-
-
+  **static_site_domain (required=False, type=str, default=None):**
+    \• The static-site domain of the clusters.
 
 
 
@@ -70,7 +68,7 @@ Examples
 Return Values
 -------------
 
-**clusters (always, list):**
+**clusters (returned=always, type=list):**
 
 The Object Storage clusters in JSON serialized form.
 

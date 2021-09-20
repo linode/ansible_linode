@@ -27,27 +27,25 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  access (False, list, None)
-    A list of access permissions to give the key.
+  **access (required=False, type=list, default=None):**
+    \• A list of access permissions to give the key.
 
 
-      bucket_name (True, str, None)
-        The name of the bucket to set the key's permissions for.
+      **bucket_name (required=True, type=str, default=None):**
+        \• The name of the bucket to set the key's permissions for.
 
 
-      cluster (True, str, None)
-        The id of the cluster that the provided bucket exists under.
+      **cluster (required=True, type=str, default=None):**
+        \• The id of the cluster that the provided bucket exists under.
 
 
-      permissions (True, str, None)
-        The permissions to give the key.
+      **permissions (required=True, type=str, default=None):**
+        \• The permissions to give the key.
 
 
 
-  label (False, str, None)
-    The unique label to give this key.
-
-
+  **label (required=False, type=str, default=None):**
+    \• The unique label to give this key.
 
 
 
@@ -86,7 +84,7 @@ Examples
 Return Values
 -------------
 
-**key (always, dict):**
+**key (returned=always, type=dict):**
 
 The Object Storage key in JSON serialized form.
 

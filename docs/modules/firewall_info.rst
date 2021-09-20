@@ -27,14 +27,12 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  id (False, int, None)
-    The unique id of the Firewall.
+  **id (required=False, type=int, default=None):**
+    \• The unique id of the Firewall.
 
 
-  label (False, str, None)
-    The Firewall’s label.
-
-
+  **label (required=False, type=str, default=None):**
+    \• The Firewall’s label.
 
 
 
@@ -62,7 +60,7 @@ Examples
 Return Values
 -------------
 
-**firewall (always, dict):**
+**firewall (returned=always, type=dict):**
 
 The Firewall description in JSON serialized form.
 
@@ -119,7 +117,7 @@ Sample Response:
     }
 
 
-**devices (always, list):**
+**devices (returned=always, type=list):**
 
 A list of Firewall devices JSON serialized form.
 

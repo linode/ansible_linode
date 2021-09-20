@@ -27,22 +27,20 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  domain (False, str, None)
-    The name of the parent Domain.
+  **domain (required=False, type=str, default=None):**
+    \• The name of the parent Domain.
 
 
-  domain_id (False, int, None)
-    The ID of the parent Domain.
+  **domain_id (required=False, type=int, default=None):**
+    \• The ID of the parent Domain.
 
 
-  id (False, int, None)
-    The unique id of the subdomain.
+  **id (required=False, type=int, default=None):**
+    \• The unique id of the subdomain.
 
 
-  name (False, str, None)
-    The name of the subdomain.
-
-
+  **name (required=False, type=str, default=None):**
+    \• The name of the subdomain.
 
 
 
@@ -72,7 +70,7 @@ Examples
 Return Values
 -------------
 
-**record (always, dict):**
+**record (returned=always, type=dict):**
 
 The domain record in JSON serialized form.
 

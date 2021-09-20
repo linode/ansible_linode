@@ -27,14 +27,12 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  id (False, int, None)
-    The instance’s label.
+  **id (required=False, type=int, default=None):**
+    \• The instance’s label.
 
 
-  label (False, str, None)
-    The unique ID of the Instance.
-
-
+  **label (required=False, type=str, default=None):**
+    \• The unique ID of the Instance.
 
 
 
@@ -62,7 +60,7 @@ Examples
 Return Values
 -------------
 
-**instance (always, dict):**
+**instance (returned=always, type=dict):**
 
 The instance description in JSON serialized form.
 
@@ -114,7 +112,7 @@ Sample Response:
     }
 
 
-**configs (always, list):**
+**configs (returned=always, type=list):**
 
 The configs tied to this Linode instance.
 
@@ -162,7 +160,7 @@ Sample Response:
     ]
 
 
-**disks (always, list):**
+**disks (returned=always, type=list):**
 
 The disks tied to this Linode instance.
 
