@@ -24,7 +24,7 @@ body:
     id: components
     attributes:
       label: Effected Components
-      description: What ansible components are causing the bug? (firewall, instnace)
+      description: What Ansible components are causing the bug? (firewall, instance)
 
   - type: textarea
     id: expected
