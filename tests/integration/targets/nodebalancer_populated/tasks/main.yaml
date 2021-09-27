@@ -291,19 +291,6 @@
               - delete_populated.changed
               - delete_populated.node_balancer.id == update_populated_config.node_balancer.id
 
-        - name: Delete the empty NodeBalancer
-          linode.cloud.nodebalancer:
-            api_token: '{{ api_token }}'
-            label: '{{ create_empty_nodebalancer.node_balancer.label }}'
-            state: absent
-          register: delete_empty
-
-        - name: Assert empty NodeBalancer delete
-          assert:
-            that:
-              - delete_empty.changed
-              - delete_empty.node_balancer.id == delete_empty.node_balancer.id
-
         - name: Delete node1
           linode.cloud.instance:
             api_token: '{{ api_token }}'
