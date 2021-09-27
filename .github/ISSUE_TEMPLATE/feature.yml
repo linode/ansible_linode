@@ -1,0 +1,24 @@
+name: Enhancement
+description: Request a feature
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What would you like this feature to do in detail?
+    validations:
+      required: true
+
+  - type: textarea
+    id: components
+    attributes:
+      label: New/Affected Components
+      description: What components will be created or changed?
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example Ansible Config
+      description: How would you use this feature in some example config?
