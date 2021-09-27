@@ -1,0 +1,93 @@
+- name: domain_basic
+  block:
+    - name: Create a domain
+      linode.cloud.domain:
+        api_token: '{{ api_token }}'
+        description: 'really cool domain'
+        domain: 'ansible-test-domain-{{ ansible_date_time.epoch }}.com'
+        expire_sec: 300
+        master_ips:
+          - '127.0.0.1'
+        refresh_sec: 3600
+        retry_sec: 7200
+        soa_email: 'realemail@example.com'
+        status: 'active'
+        ttl_sec: 14400
+        type: 'master'
+        state: present
+      register: create
+
+    - assert:
+        that:
+          - create.domain.description == 'really cool domain'
+          - create.domain.expire_sec == 300
+          - create.domain.master_ips[0] == '127.0.0.1'
+          - create.domain.refresh_sec == 3600
+          - create.domain.retry_sec == 7200
+          - create.domain.soa_email == 'realemail@example.com'
+          - create.domain.status == 'active'
+          - create.domain.ttl_sec == 14400
+          - create.domain.type == 'master'
+
+    - name: Update a domain
+      linode.cloud.domain:
+        api_token: '{{ api_token }}'
+        description: 'really cool'
+        domain: '{{ create.domain.domain }}'
+        expire_sec: 14400
+        master_ips:
+          - '127.0.0.2'
+        refresh_sec: 300
+        retry_sec: 28800
+        soa_email: 'cool@example.com'
+        status: 'disabled'
+        ttl_sec: 604800
+        type: 'slave'
+        state: present
+      register: update
+
+    - assert:
+        that:
+          - update.domain.description == 'really cool'
+          - update.domain.expire_sec == 14400
+          - update.domain.master_ips[0] == '127.0.0.2'
+          - update.domain.refresh_sec == 300
+          - update.domain.retry_sec == 28800
+          - update.domain.soa_email == 'cool@example.com'
+          - update.domain.status == 'disabled'
+          - update.domain.ttl_sec == 604800
+          - update.domain.type == 'slave'
+
+    - name: Get domain info
+      linode.cloud.domain_info:
+        api_token: '{{ api_token }}'
+        domain: '{{ create.domain.domain }}'
+      register: info
+
+    - assert:
+        that:
+          - info.domain.description == 'really cool'
+          - info.domain.expire_sec == 14400
+          - info.domain.master_ips[0] == '127.0.0.2'
+          - info.domain.refresh_sec == 300
+          - info.domain.retry_sec == 28800
+          - info.domain.soa_email == 'cool@example.com'
+          - info.domain.status == 'disabled'
+          - info.domain.ttl_sec == 604800
+          - info.domain.type == 'slave'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the domain
+          linode.cloud.domain:
+            api_token: '{{ api_token }}'
+            domain: '{{ create.domain.domain }}'
+            state: absent
+          register: delete
+
+        - name: Assert domain delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.domain.id == create.domain.id

@@ -19,6 +19,10 @@ PEP440 is the schema used to describe the versions of Ansible.
 ### Modules
 Name | Description
 --- | ---
+[linode.cloud.domain](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain.rst)|Create and destroy domains.
+[linode.cloud.domain_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain_info.rst)|Gather info about an existing domain.
+[linode.cloud.domain_record](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain_record.rst)|Create and destroy domain records.
+[linode.cloud.domain_record_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain_record_info.rst)|Gather info about an existing domain record.
 [linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall.rst)|Create and destroy Firewalls.
 [linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall_info.rst)|Gather info about an existing Firewall.
 [linode.cloud.instance](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance.rst)|Create and destroy Linodes.
