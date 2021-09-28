@@ -27,72 +27,70 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  domain (False, str, None)
-    The name of the parent Domain.
+  **domain (required=False, type=str, default=None):**
+    \• The name of the parent Domain.
 
 
-  domain_id (False, int, None)
-    The ID of the parent Domain.
+  **domain_id (required=False, type=int, default=None):**
+    \• The ID of the parent Domain.
 
 
-  label (False, str, None)
+  **label (required=False, type=str, default=None):**
 
-  name (True, str, None)
-    The name of this Record.
-
-
-  port (False, int, None)
-    The port this Record points to.
-
-    Only valid and required for SRV record requests.
+  **name (required=True, type=str, default=None):**
+    \• The name of this Record.
 
 
-  priority (False, int, None)
-    The priority of the target host for this Record.
+  **port (required=False, type=int, default=None):**
+    \• The port this Record points to.
 
-    Lower values are preferred.
-
-    Only valid for MX and SRV record requests.
-
-    Required for SRV record requests.
+    \• Only valid and required for SRV record requests.
 
 
-  protocol (False, str, None)
-    The protocol this Record’s service communicates with.
+  **priority (required=False, type=int, default=None):**
+    \• The priority of the target host for this Record.
 
-    An underscore (_) is prepended automatically to the submitted value for this property.
+    \• Lower values are preferred.
 
+    \• Only valid for MX and SRV record requests.
 
-  service (False, str, None)
-    An underscore (_) is prepended and a period (.) is appended automatically to the submitted value for this property.
-
-    Only valid and required for SRV record requests.
-
-    The name of the service.
+    \• Required for SRV record requests.
 
 
-  tag (False, str, None)
-    The tag portion of a CAA record.
+  **protocol (required=False, type=str, default=None):**
+    \• The protocol this Record’s service communicates with.
 
-    Only valid and required for CAA record requests.
-
-
-  target (False, str, None)
-    The target for this Record.
+    \• An underscore (_) is prepended automatically to the submitted value for this property.
 
 
-  ttl_sec (False, int, None)
-    The amount of time in seconds that this Domain’s records may be cached       by resolvers or other domain servers.
+  **service (required=False, type=str, default=None):**
+    \• An underscore (_) is prepended and a period (.) is appended automatically to the submitted value for this property.
+
+    \• Only valid and required for SRV record requests.
+
+    \• The name of the service.
 
 
-  type (False, str, None)
-    The type of Record this is in the DNS system.
+  **tag (required=False, type=str, default=None):**
+    \• The tag portion of a CAA record.
+
+    \• Only valid and required for CAA record requests.
 
 
-  weight (False, int, None)
-    The relative weight of this Record used in the case of identical priority.
+  **target (required=False, type=str, default=None):**
+    \• The target for this Record.
 
 
+  **ttl_sec (required=False, type=int, default=None):**
+    \• The amount of time in seconds that this Domain’s records may be cached       by resolvers or other domain servers.
+
+
+  **type (required=False, type=str, default=None):**
+    \• The type of Record this is in the DNS system.
+
+
+  **weight (required=False, type=int, default=None):**
+    \• The relative weight of this Record used in the case of identical priority.
 
 
 
@@ -126,7 +124,7 @@ Examples
 Return Values
 -------------
 
-**record (always, dict):**
+**record (returned=always, type=dict):**
 
 The domain record in JSON serialized form.
 

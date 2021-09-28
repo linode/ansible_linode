@@ -27,54 +27,52 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  axfr_ips (False, list, None)
-    The list of IPs that may perform a zone transfer for this Domain.
+  **axfr_ips (required=False, type=list, default=None):**
+    \• The list of IPs that may perform a zone transfer for this Domain.
 
 
-  description (False, str, None)
-    The list of IPs that may perform a zone transfer for this Domain.
+  **description (required=False, type=str, default=None):**
+    \• The list of IPs that may perform a zone transfer for this Domain.
 
 
-  domain (True, str, None)
-    The domain this Domain represents.
+  **domain (required=True, type=str, default=None):**
+    \• The domain this Domain represents.
 
 
-  expire_sec (False, int, None)
-    The amount of time in seconds that may pass before this Domain is no longer authoritative.
+  **expire_sec (required=False, type=int, default=None):**
+    \• The amount of time in seconds that may pass before this Domain is no longer authoritative.
 
 
-  master_ips (False, list, None)
-    The IP addresses representing the master DNS for this Domain.
+  **master_ips (required=False, type=list, default=None):**
+    \• The IP addresses representing the master DNS for this Domain.
 
 
-  refresh_sec (False, int, None)
-    The amount of time in seconds before this Domain should be refreshed.
+  **refresh_sec (required=False, type=int, default=None):**
+    \• The amount of time in seconds before this Domain should be refreshed.
 
 
-  retry_sec (False, int, None)
-    The interval, in seconds, at which a failed refresh should be retried.
+  **retry_sec (required=False, type=int, default=None):**
+    \• The interval, in seconds, at which a failed refresh should be retried.
 
 
-  soa_email (False, str, None)
-    The Start of Authority email address.
+  **soa_email (required=False, type=str, default=None):**
+    \• The Start of Authority email address.
 
 
-  status (False, str, None)
-    Used to control whether this Domain is currently being rendered.
+  **status (required=False, type=str, default=None):**
+    \• Used to control whether this Domain is currently being rendered.
 
 
-  tags (False, list, None)
-    An array of tags applied to this object.
+  **tags (required=False, type=list, default=None):**
+    \• An array of tags applied to this object.
 
 
-  ttl_sec (False, int, None)
-    the amount of time in seconds that this Domain’s records may       be cached by resolvers or other domain servers.
+  **ttl_sec (required=False, type=int, default=None):**
+    \• the amount of time in seconds that this Domain’s records may       be cached by resolvers or other domain servers.
 
 
-  type (False, str, None)
-    Whether this Domain represents the authoritative source of information for the domain it describes (master), or whether it is a read-only copy of a master (slave).
-
-
+  **type (required=False, type=str, default=None):**
+    \• Whether this Domain represents the authoritative source of information for the domain it describes (master), or whether it is a read-only copy of a master (slave).
 
 
 
@@ -105,7 +103,7 @@ Examples
 Return Values
 -------------
 
-**domain (always, dict):**
+**domain (returned=always, type=dict):**
 
 The domain in JSON serialized form.
 
@@ -137,7 +135,7 @@ Sample Response:
     }
 
 
-**records (always, list):**
+**records (returned=always, type=list):**
 
 A list of records associated with the domain in JSON serialized form.
 

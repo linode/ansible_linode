@@ -27,14 +27,12 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  domain (False, str, None)
-    The unique id of the Domain.
+  **domain (required=False, type=str, default=None):**
+    \• The unique id of the Domain.
 
 
-  id (False, int, None)
-    The unique domain name of the Domain.
-
-
+  **id (required=False, type=int, default=None):**
+    \• The unique domain name of the Domain.
 
 
 
@@ -62,7 +60,7 @@ Examples
 Return Values
 -------------
 
-**domain (always, dict):**
+**domain (returned=always, type=dict):**
 
 The domain in JSON serialized form.
 
@@ -94,7 +92,7 @@ Sample Response:
     }
 
 
-**records (always, list):**
+**records (returned=always, type=list):**
 
 A list of records associated with the domain in JSON serialized form.
 

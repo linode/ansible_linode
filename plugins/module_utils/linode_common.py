@@ -43,11 +43,14 @@ LINODE_COMMON_ARGS = dict(
 )
 
 LINODE_TAG_ARGS = dict(
-    tags=dict(type='list'),
+    tags=dict(type='list',
+              description='The tags to assign to this resource.'),
 )
 
 LINODE_LABEL_ARGS = dict(
-    label=dict(type='str', required=True),
+    label=dict(
+        type='str', required=True,
+        description='The label to assign to this resource.'),
 )
 
 

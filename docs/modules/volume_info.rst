@@ -27,14 +27,12 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  id (False, int, None)
-    The ID of the Volume.
+  **id (required=False, type=int, default=None):**
+    \• The ID of the Volume.
 
 
-  label (False, str, None)
-    The label of the Volume.
-
-
+  **label (required=False, type=str, default=None):**
+    \• The label of the Volume.
 
 
 
@@ -62,7 +60,7 @@ Examples
 Return Values
 -------------
 
-**volume (always, dict):**
+**volume (returned=always, type=dict):**
 
 The volume in JSON serialized form.
 

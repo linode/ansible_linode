@@ -27,10 +27,8 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  label (True, str, None)
-    The VLAN’s label.
-
-
+  **label (required=True, type=str, default=None):**
+    \• The VLAN’s label.
 
 
 
@@ -54,7 +52,7 @@ Examples
 Return Values
 -------------
 
-**vlan (always, dict):**
+**vlan (returned=always, type=dict):**
 
 The VLAN in JSON serialized form.
 

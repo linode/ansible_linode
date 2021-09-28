@@ -34,62 +34,60 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  plugin (True, any, None)
-    marks this as an instance of the 'linode' plugin
+  **plugin (required=True, type=any, default=None):**
+    \• Marks this as an instance of the 'linode' plugin
 
 
-  api_token (True, any, None)
-    The Linode account personal access token.
+  **api_token (required=True, type=any, default=None):**
+    \• The Linode account personal access token.
 
 
-  regions (optional, list, [])
-    Populate inventory with instances in this region.
+  **regions (required=optional, type=list, default=[]):**
+    \• Populate inventory with instances in this region.
 
 
-  tags (optional, list, [])
-    Populate inventory only with instances which have at least one of the tags listed here.
+  **tags (required=optional, type=list, default=[]):**
+    \• Populate inventory only with instances which have at least one of the tags listed here.
 
 
-  types (optional, list, [])
-    Populate inventory with instances with this type.
+  **types (required=optional, type=list, default=[]):**
+    \• Populate inventory with instances with this type.
 
 
-  strict (optional, bool, False)
-    If ``yes`` make invalid entries a fatal error, otherwise skip and continue.
+  **strict (required=optional, type=bool, default=False):**
+    \• If ``yes`` make invalid entries a fatal error, otherwise skip and continue.
 
-    Since it is possible to use facts in the expressions they might not always be available and we ignore those errors by default.
-
-
-  compose (optional, dict, {})
-    Create vars from jinja2 expressions.
+    \• Since it is possible to use facts in the expressions they might not always be available and we ignore those errors by default.
 
 
-  groups (optional, dict, {})
-    Add hosts to group based on Jinja2 conditionals.
+  **compose (required=optional, type=dict, default={}):**
+    \• Create vars from jinja2 expressions.
 
 
-  keyed_groups (optional, list, [])
-    Add hosts to group based on the values of a variable.
+  **groups (required=optional, type=dict, default={}):**
+    \• Add hosts to group based on Jinja2 conditionals.
 
 
-  use_extra_vars (optional, bool, False)
-    Merge extra vars into the available variables for composition (highest precedence).
+  **keyed_groups (required=optional, type=list, default=[]):**
+    \• Add hosts to group based on the values of a variable.
 
 
-  leading_separator (optional, boolean, True)
-    Use in conjunction with keyed_groups.
-
-    By default, a keyed group that does not have a prefix or a separator provided will have a name that starts with an underscore.
-
-    This is because the default prefix is "" and the default separator is "_".
-
-    Set this option to False to omit the leading underscore (or other separator) if no prefix is given.
-
-    If the group name is derived from a mapping the separator is still used to concatenate the items.
-
-    To not use a separator in the group name at all, set the separator for the keyed group to an empty string instead.
+  **use_extra_vars (required=optional, type=bool, default=False):**
+    \• Merge extra vars into the available variables for composition (highest precedence).
 
 
+  **leading_separator (required=optional, type=boolean, default=True):**
+    \• Use in conjunction with keyed_groups.
+
+    \• By default, a keyed group that does not have a prefix or a separator provided will have a name that starts with an underscore.
+
+    \• This is because the default prefix is "" and the default separator is "_".
+
+    \• Set this option to False to omit the leading underscore (or other separator) if no prefix is given.
+
+    \• If the group name is derived from a mapping the separator is still used to concatenate the items.
+
+    \• To not use a separator in the group name at all, set the separator for the keyed group to an empty string instead.
 
 
 

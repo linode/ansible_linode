@@ -27,110 +27,108 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  client_conn_throttle (False, int, None)
-    Throttle connections per second.
+  **client_conn_throttle (required=False, type=int, default=None):**
+    \• Throttle connections per second.
 
-    Set to 0 (zero) to disable throttling.
-
-
-  configs (False, list, None)
-    A list of configs to apply to the NodeBalancer.
+    \• Set to 0 (zero) to disable throttling.
 
 
-      algorithm (False, str, None)
-        What algorithm this NodeBalancer should use for routing traffic to backends.
+  **configs (required=False, type=list, default=None):**
+    \• A list of configs to apply to the NodeBalancer.
 
 
-      check (False, str, None)
-        The type of check to perform against backends to ensure they are serving requests.
+      **algorithm (required=False, type=str, default=None):**
+        \• What algorithm this NodeBalancer should use for routing traffic to backends.
 
 
-      check_attempts (False, int, None)
-        How many times to attempt a check before considering a backend to be down.
+      **check (required=False, type=str, default=None):**
+        \• The type of check to perform against backends to ensure they are serving requests.
 
 
-      check_body (False, str, )
-        This value must be present in the response body of the check in order for it to pass.
-
-        If this value is not present in the response body of a check request, the backend is considered to be down.
+      **check_attempts (required=False, type=int, default=None):**
+        \• How many times to attempt a check before considering a backend to be down.
 
 
-      check_interval (False, int, None)
-        How often, in seconds, to check that backends are up and serving requests.
+      **check_body (required=False, type=str, default=):**
+        \• This value must be present in the response body of the check in order for it to pass.
+
+        \• If this value is not present in the response body of a check request, the backend is considered to be down.
 
 
-      check_passive (False, bool, None)
-        If true, any response from this backend with a 5xx status code will be enough for it to be considered unhealthy and taken out of rotation.
+      **check_interval (required=False, type=int, default=None):**
+        \• How often, in seconds, to check that backends are up and serving requests.
 
 
-      check_path (False, str, None)
-        The URL path to check on each backend. If the backend does not respond to this request it is considered to be down.
+      **check_passive (required=False, type=bool, default=None):**
+        \• If true, any response from this backend with a 5xx status code will be enough for it to be considered unhealthy and taken out of rotation.
 
 
-      check_timeout (False, int, None)
-        How long, in seconds, to wait for a check attempt before considering it failed.
+      **check_path (required=False, type=str, default=None):**
+        \• The URL path to check on each backend. If the backend does not respond to this request it is considered to be down.
 
 
-      cipher_suite (False, str, recommended)
-        What ciphers to use for SSL connections served by this NodeBalancer.
+      **check_timeout (required=False, type=int, default=None):**
+        \• How long, in seconds, to wait for a check attempt before considering it failed.
 
 
-      nodes (False, list, None)
-        A list of nodes to apply to this config.
+      **cipher_suite (required=False, type=str, default=recommended):**
+        \• What ciphers to use for SSL connections served by this NodeBalancer.
 
 
-          address (True, str, None)
-            The private IP Address where this backend can be reached.
-
-            This must be a private IP address.
+      **nodes (required=False, type=list, default=None):**
+        \• A list of nodes to apply to this config.
 
 
-          label (True, str, None)
-            The label for this node.
+          **address (required=True, type=str, default=None):**
+            \• The private IP Address where this backend can be reached.
+
+            \• This must be a private IP address.
 
 
-          mode (False, str, None)
-            The mode this NodeBalancer should use when sending traffic to this backend.
+          **label (required=True, type=str, default=None):**
+            \• The label for this node.
 
 
-          weight (False, int, None)
-            Nodes with a higher weight will receive more traffic.
+          **mode (required=False, type=str, default=None):**
+            \• The mode this NodeBalancer should use when sending traffic to this backend.
 
 
-
-      port (False, int, None)
-        The port this Config is for.
-
-
-      protocol (False, str, None)
-        The protocol this port is configured to serve.
-
-
-      proxy_protocol (False, str, None)
-        ProxyProtocol is a TCP extension that sends initial TCP connection information such as source/destination IPs and ports to backend devices.
-
-
-      ssl_cert (False, str, None)
-        The PEM-formatted public SSL certificate (or the combined PEM-formatted           SSL certificate and Certificate Authority chain) that should be served           on this NodeBalancerConfig’s port.
-
-
-      ssl_key (False, str, None)
-        The PEM-formatted private key for the SSL certificate set in the ssl_cert field.
-
-
-      stickiness (False, str, None)
-        Controls how session stickiness is handled on this port.
+          **weight (required=False, type=int, default=None):**
+            \• Nodes with a higher weight will receive more traffic.
 
 
 
-  label (False, str, None)
-    The unique label to give this NodeBalancer.
+      **port (required=False, type=int, default=None):**
+        \• The port this Config is for.
 
 
-  region (False, str, None)
-    The ID of the Region to create this NodeBalancer in.
+      **protocol (required=False, type=str, default=None):**
+        \• The protocol this port is configured to serve.
 
 
+      **proxy_protocol (required=False, type=str, default=None):**
+        \• ProxyProtocol is a TCP extension that sends initial TCP connection information such as source/destination IPs and ports to backend devices.
+
+
+      **ssl_cert (required=False, type=str, default=None):**
+        \• The PEM-formatted public SSL certificate (or the combined PEM-formatted           SSL certificate and Certificate Authority chain) that should be served           on this NodeBalancerConfig’s port.
+
+
+      **ssl_key (required=False, type=str, default=None):**
+        \• The PEM-formatted private key for the SSL certificate set in the ssl_cert field.
+
+
+      **stickiness (required=False, type=str, default=None):**
+        \• Controls how session stickiness is handled on this port.
+
+
+
+  **label (required=False, type=str, default=None):**
+    \• The unique label to give this NodeBalancer.
+
+
+  **region (required=False, type=str, default=None):**
+    \• The ID of the Region to create this NodeBalancer in.
 
 
 
@@ -170,7 +168,7 @@ Examples
 Return Values
 -------------
 
-**nodebalancer (always, dict):**
+**nodebalancer (returned=always, type=dict):**
 
 The NodeBalancer in JSON serialized form.
 
@@ -199,7 +197,7 @@ Sample Response:
     }
 
 
-**configs (always, list):**
+**configs (returned=always, type=list):**
 
 A list of configs applied to the NodeBalancer.
 
@@ -238,7 +236,7 @@ Sample Response:
     ]
 
 
-**nodes (always, list):**
+**nodes (returned=always, type=list):**
 
 A list of all nodes associated with the NodeBalancer.
 
