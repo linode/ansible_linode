@@ -57,6 +57,10 @@ Parameters
     \• Be aware that volumes may only be resized up after creation.
 
 
+  **wait_timeout (required=False, type=int, default=240):**
+    \• The amount of time, in seconds, to wait for a volume to have the active status.
+
+
 
 
 
