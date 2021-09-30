@@ -6,8 +6,9 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import Optional, cast, Any
+from typing import Optional, cast, Any, Set
 
+import polling
 from linode_api4 import Volume
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -62,6 +63,12 @@ options:
     description:
     - The size of this volume, in GB.
     - Be aware that volumes may only be resized up after creation.
+    required: false
+    type: int
+  wait_timeout:
+    default: 240
+    description: The amount of time, in seconds, to wait for a volume to have the
+      active status.
     required: false
     type: int
 requirements:
@@ -158,7 +165,13 @@ linode_volume_spec = dict(
     attached=dict(
         type='bool', default=True,
         description='If true, the volume will be attached to a Linode. '
-                    'Otherwise, the volume will be detached.')
+                    'Otherwise, the volume will be detached.'),
+
+    wait_timeout=dict(
+        type='int', default=240,
+        description='The amount of time, in seconds, to wait for a volume to '
+                    'have the active status.'
+        )
 )
 
 specdoc_meta = dict(
@@ -215,6 +228,28 @@ class LinodeVolume(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to create volume: {0}'.format(exception))
 
+    def _wait_for_volume_status(self, volume: Volume, status: Set[str], timeout: int) -> None:
+        def poll_func() -> bool:
+            volume._api_get()
+            return volume.status in status
+
+        # Initial attempt
+        if poll_func():
+            return
+
+        try:
+            polling.poll(
+                poll_func,
+                step=5,
+                timeout=timeout,
+            )
+        except polling.TimeoutException:
+            self.fail('failed to wait for volume status: timeout period expired')
+
+    def _wait_for_volume_active(self) -> None:
+        self._wait_for_volume_status(self._volume, {'active'},
+                                     self.module.params.get('wait_timeout'))
+
     def _handle_volume(self) -> None:
         params = self.module.params
 
@@ -231,11 +266,17 @@ class LinodeVolume(LinodeModuleBase):
             self._volume = self._create_volume()
             self.register_action('Created volume {0}'.format(label))
 
+        # Ensure volume is active before continuing
+        self._wait_for_volume_active()
+
         # Resize the volume if its size does not match
         if size is not None and self._volume.size != size:
             self._volume.resize(size)
             self.register_action('Resized volume {0} to size {1}'
                                  .format(label, size))
+
+            # Wait for resize to complete
+            self._wait_for_volume_active()
 
         # Attach the volume to a Linode
         if linode_id is not None and self._volume.linode_id != linode_id:
