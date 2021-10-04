@@ -27,6 +27,7 @@ author:
 - Lena Garber (@lbgarber)
 description:
 - Manage Linode Domain Records.
+- 'NOTE: Domain records are identified by their name, target, and type.'
 module: domain_record
 options:
   domain:
@@ -43,7 +44,7 @@ options:
     type: str
   name:
     description: The name of this Record.
-    required: true
+    required: false
     type: str
   port:
     description:
@@ -66,6 +67,10 @@ options:
       property.
     required: false
     type: str
+  record_id:
+    description: The id of the record to modify.
+    required: false
+    type: int
   service:
     description:
     - An underscore (_) is prepended and a period (.) is appended automatically to
@@ -81,6 +86,7 @@ options:
     required: false
     type: str
   target:
+    default: ''
     description:
     - The target for this Record.
     required: false
@@ -105,7 +111,7 @@ requirements:
 '''
 
 EXAMPLES = '''
-- name: Create a A record
+- name: Create an A record
   linode.cloud.domain_record:
     domain: my-domain.com
     name: my-subdomain
@@ -152,7 +158,10 @@ linode_domain_record_spec = dict(
     domain=dict(type='str',
                 description='The name of the parent Domain.'),
 
-    name=dict(type='str', required=True,
+    record_id=dict(type='int',
+                   description='The id of the record to modify.'),
+
+    name=dict(type='str',
               description='The name of this Record.'),
     port=dict(type='int',
               description=[
@@ -187,7 +196,7 @@ linode_domain_record_spec = dict(
     target=dict(type='str',
                 description=[
                     'The target for this Record.'
-                ]),
+                ], default=''),
     ttl_sec=dict(type='int',
                  description=[
                      'The amount of time in seconds that this Domain’s '
@@ -203,7 +212,8 @@ linode_domain_record_spec = dict(
 
 specdoc_meta = dict(
     description=[
-        'Manage Linode Domain Records.'
+        'Manage Linode Domain Records.',
+        'NOTE: Domain records are identified by their name, target, and type.'
     ],
     requirements=[
         'python >= 3.0'
@@ -223,7 +233,6 @@ linode_domain_record_mutable: Set[str] = {
     'protocol',
     'service',
     'tag',
-    'target',
     'ttl_sec',
     'weight'
 }
@@ -234,7 +243,9 @@ class LinodeDomainRecord(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.module_arg_spec = linode_domain_record_spec
-        self.required_one_of: List[List[str]] = [['domain', 'domain_id']]
+        self.required_one_of: List[List[str]] = [['domain', 'domain_id'], ['name', 'record_id']]
+        self.mutually_exclusive: List[List[str]] = [['name', 'record_id']]
+        self.required_together: List[List[str]] = [['name', 'type']]
         self.results = dict(
             changed=False,
             actions=[],
@@ -245,12 +256,17 @@ class LinodeDomainRecord(LinodeModuleBase):
         self._record: Optional[DomainRecord] = None
 
         super().__init__(module_arg_spec=self.module_arg_spec,
-                         required_one_of=self.required_one_of)
+                         required_one_of=self.required_one_of,
+                         mutually_exclusive=self.mutually_exclusive,
+                         required_together=self.required_together)
 
-    def _get_record_by_name(self, domain: Domain, name: str) -> Optional[DomainRecord]:
+    def _get_record_by_fields(self, domain: Domain, name: str, rtype: str, target: str) \
+            -> Optional[DomainRecord]:
         try:
             for record in domain.records:
-                if record.name == name:
+                if record.name == name \
+                        and record.type == rtype \
+                        and record.target == target:
                     return record
 
             return None
@@ -282,6 +298,28 @@ class LinodeDomainRecord(LinodeModuleBase):
 
         return None
 
+    def _get_record_from_params(self) -> Optional[DomainRecord]:
+        params = self.module.params
+
+        record_id = params.get('record_id')
+        record_name = params.get('name')
+
+        if record_id is not None:
+            record = DomainRecord(self.client, record_id, self._domain.id)
+            record._api_get()
+            return record
+
+        if record_name is not None:
+            record_type = params.get('type')
+            record_target = params.get('target')
+
+            record = self._get_record_by_fields(self._domain,
+                                                record_name, record_type,
+                                                record_target)
+            return record
+
+        return None
+
     def _create_record(self) -> Optional[DomainRecord]:
         params = self.module.params
         record_type = params.pop('type')
@@ -304,6 +342,9 @@ class LinodeDomainRecord(LinodeModuleBase):
             if not hasattr(self._record, key):
                 continue
 
+            if key in {'name', 'record', 'target'}:
+                continue
+
             old_value = getattr(self._record, key)
 
             if new_value != old_value:
@@ -324,16 +365,20 @@ class LinodeDomainRecord(LinodeModuleBase):
 
     def _handle_domain_record(self) -> None:
         params = self.module.params
-        record_name = params.get('name')
 
         self._domain = self._get_domain_from_params()
         if self._domain is None:
             return self.fail('invalid domain specified')
 
-        self._record = self._get_record_by_name(self._domain, record_name)
+        record_name = params.get('name')
+        record_id = params.get('record_id')
 
-        # Create the record if it does not already exist
-        if self._record is None:
+        self._record = self._get_record_from_params()
+
+        if self._record is None and record_id is not None:
+            return self.fail('record with id {0} does not exist'.format(record_id))
+
+        if self._record is None and record_name is not None:
             self._record = self._create_record()
 
         self._update_record()
@@ -344,19 +389,19 @@ class LinodeDomainRecord(LinodeModuleBase):
         self.results['record'] = self._record._raw_json
 
     def _handle_domain_record_absent(self) -> None:
-        record_name = self.module.params.get('name')
-
         self._domain = self._get_domain_from_params()
         if self._domain is None:
             return self.fail('invalid domain specified')
 
-        self._record = self._get_record_by_name(self._domain, record_name)
+        self._record = self._get_record_from_params()
 
         if self._record is not None:
+            recordid = self._record.id
+
             self.results['record'] = self._record._raw_json
 
             self._record.delete()
-            self.register_action('Deleted domain record {0}'.format(record_name))
+            self.register_action('Deleted domain record {0}'.format(recordid))
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Domain record module"""

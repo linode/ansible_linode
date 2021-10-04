@@ -40,7 +40,7 @@ Parameters
 
 
   **name (required=False, type=str, default=None):**
-    \• The name of the subdomain.
+    \• The name of the domain record.
 
 
 
@@ -54,10 +54,12 @@ Examples
 .. code-block:: yaml+jinja
 
     
-    - name: Get info about a domain record by name
+    - name: Get info about domain records by name
       linode.cloud.domain_record_info:
         domain: my-domain.com
         name: my-subdomain
+        type: A
+        target: 0.0.0.0
 
     - name: Get info about a domain record by id
       linode.cloud.domain_info:
@@ -70,9 +72,9 @@ Examples
 Return Values
 -------------
 
-**record (returned=always, type=dict):**
+**records (returned=always, type=list):**
 
-The domain record in JSON serialized form.
+The domain records in JSON serialized form.
 
 `Linode Response Object Documentation <https://www.linode.com/docs/api/domains/#domain-record-view>`_
 
@@ -80,21 +82,23 @@ Sample Response:
 
 .. code-block:: JSON
 
-    {
-     "created": "xxxxx",
-     "id": "xxxxx",
-     "name": "xxxx",
-     "port": 0,
-     "priority": 0,
-     "protocol": null,
-     "service": null,
-     "tag": null,
-     "target": "127.0.0.1",
-     "ttl_sec": 3600,
-     "type": "A",
-     "updated": "xxxxx",
-     "weight": 55
-    }
+    [
+     {
+      "created": "xxxxx",
+      "id": "xxxxx",
+      "name": "xxxx",
+      "port": 0,
+      "priority": 0,
+      "protocol": null,
+      "service": null,
+      "tag": null,
+      "target": "127.0.0.1",
+      "ttl_sec": 3600,
+      "type": "A",
+      "updated": "xxxxx",
+      "weight": 55
+     }
+    ]
 
 
 

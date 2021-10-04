@@ -39,9 +39,7 @@
       linode.cloud.domain_record:
         api_token: '{{ api_token }}'
         domain: '{{ domain_create.domain.domain }}'
-        name: 'sub'
-        type: 'A'
-        target: '127.0.0.4'
+        record_id: '{{ record_create.record.id }}'
         ttl_sec: 14400
         weight: 62
         state: present
@@ -49,9 +47,10 @@
 
     - assert:
         that:
+          - record_update.record.id == record_create.record.id
           - record_update.record.name == 'sub'
           - record_update.record.type == 'A'
-          - record_update.record.target == '127.0.0.4'
+          - record_update.record.target == '127.0.0.1'
           - record_update.record.ttl_sec == 14400
           - record_update.record.weight == 62
 
@@ -64,11 +63,11 @@
 
     - assert:
         that:
-          - record_info.record.name == 'sub'
-          - record_info.record.type == 'A'
-          - record_info.record.target == '127.0.0.4'
-          - record_info.record.ttl_sec == 14400
-          - record_info.record.weight == 62
+          - record_info.record[0].name == 'sub'
+          - record_info.record[0].type == 'A'
+          - record_info.record[0].target == '127.0.0.1'
+          - record_info.record[0].ttl_sec == 14400
+          - record_info.record[0].weight == 62
 
     - name: Get info about the record by id
       linode.cloud.domain_record_info:
@@ -79,11 +78,11 @@
 
     - assert:
         that:
-          - record_info_id.record.name == 'sub'
-          - record_info_id.record.type == 'A'
-          - record_info_id.record.target == '127.0.0.4'
-          - record_info_id.record.ttl_sec == 14400
-          - record_info_id.record.weight == 62
+          - record_info_id.record[0].name == 'sub'
+          - record_info_id.record[0].type == 'A'
+          - record_info_id.record[0].target == '127.0.0.1'
+          - record_info_id.record[0].ttl_sec == 14400
+          - record_info_id.record[0].weight == 62
 
     - name: Create a domain record by domain id
       linode.cloud.domain_record:
@@ -115,6 +114,46 @@
         that:
           - domain_info.records|length == 2
 
+    - name: Create a duplicate record with a different target
+      linode.cloud.domain_record:
+        api_token: '{{ api_token }}'
+        domain: '{{ domain_create.domain.domain }}'
+        name: 'sub'
+        type: 'A'
+        target: '127.0.0.2'
+        ttl_sec: 3600
+        weight: 55
+        state: present
+      register: record_dupe_create
+
+    - assert:
+        that:
+          - record_dupe_create.record.name == 'sub'
+          - record_dupe_create.record.type == 'A'
+          - record_dupe_create.record.target == '127.0.0.2'
+          - record_dupe_create.record.ttl_sec == 3600
+          - record_dupe_create.record.weight == 55
+
+    - name: Update the record by id
+      linode.cloud.domain_record:
+        api_token: '{{ api_token }}'
+        domain: '{{ domain_create.domain.domain }}'
+        record_id: '{{ record_dupe_create.record.id }}'
+        ttl_sec: 300
+        weight: 55
+        state: present
+      register: record_dupe_update
+
+    - assert:
+        that:
+          - record_dupe_update.changed == true
+          - record_dupe_update.record.name == 'sub'
+          - record_dupe_update.record.type == 'A'
+          - record_dupe_update.record.target == '127.0.0.2'
+          - record_dupe_update.record.ttl_sec == 300
+          - record_dupe_update.record.weight == 55
+
+
   always:
     - ignore_errors: yes
       block:
@@ -122,7 +161,7 @@
           linode.cloud.domain_record:
             api_token: '{{ api_token }}'
             domain: '{{ domain_create.domain.domain }}'
-            name: '{{ record_create.record.name }}'
+            record_id: '{{ record_create.record.id }}'
             state: absent
           register: record_delete
 
@@ -135,7 +174,7 @@
           linode.cloud.domain_record:
             api_token: '{{ api_token }}'
             domain: '{{ domain_create.domain.domain }}'
-            name: '{{ record2_create.record.name }}'
+            record_id: '{{ record2_create.record.id }}'
             state: absent
           register: record2_delete
 
@@ -143,6 +182,19 @@
             that:
               - record2_delete.changed
               - record2_delete.record.id == record2_create.record.id
+
+        - name: Delete the duplicated record
+          linode.cloud.domain_record:
+            api_token: '{{ api_token }}'
+            domain: '{{ domain_create.domain.domain }}'
+            record_id: '{{ record_dupe_create.record.id }}'
+            state: absent
+          register: record_dupe_delete
+
+        - assert:
+            that:
+              - record_dupe_delete.changed
+              - record_dupe_delete.record.id == record_dupe_delete.record.id
 
         - name: Delete the domain
           linode.cloud.domain:
