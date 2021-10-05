@@ -6,7 +6,7 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import List, Any, Optional
+from typing import List, Any, Optional, Dict
 
 from linode_api4 import Domain, DomainRecord
 
@@ -42,7 +42,7 @@ options:
     required: false
     type: int
   name:
-    description: The name of the subdomain.
+    description: The name of the domain record.
     required: false
     type: str
 requirements:
@@ -50,10 +50,12 @@ requirements:
 '''
 
 EXAMPLES = '''
-- name: Get info about a domain record by name
+- name: Get info about domain records by name
   linode.cloud.domain_record_info:
     domain: my-domain.com
     name: my-subdomain
+    type: A
+    target: 0.0.0.0
 
 - name: Get info about a domain record by id
   linode.cloud.domain_info:
@@ -62,12 +64,12 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-record:
-  description: The domain record in JSON serialized form.
+records:
+  description: The domain records in JSON serialized form.
   linode_api_docs: "https://www.linode.com/docs/api/domains/#domain-record-view"
   returned: always
-  type: dict
-  sample: {
+  type: list
+  sample: [{
    "created":"xxxxx",
    "id":xxxxx,
    "name":"xxxx",
@@ -81,7 +83,7 @@ record:
    "type":"A",
    "updated":"xxxxx",
    "weight":55
-}
+}]
 '''
 
 linode_domain_record_info_spec = dict(
@@ -96,8 +98,9 @@ linode_domain_record_info_spec = dict(
 
     id=dict(type='int',
             description='The unique id of the subdomain.'),
+
     name=dict(type='str',
-              description='The name of the subdomain.'),
+              description='The name of the domain record.'),
 )
 
 specdoc_meta = dict(
@@ -123,8 +126,8 @@ class LinodeDomainRecordInfo(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = linode_domain_record_info_spec
         self.required_one_of: List[List[str]] = [['domain_id', 'domain'], ['id', 'name']]
-        self.results = dict(
-            record=None
+        self.results: Dict[Any, Any] = dict(
+            records=[]
         )
 
         super().__init__(module_arg_spec=self.module_arg_spec,
@@ -153,31 +156,33 @@ class LinodeDomainRecordInfo(LinodeModuleBase):
 
         return None
 
-    def _get_record_by_name(self, domain: Domain, name: str) -> Optional[DomainRecord]:
+    def _get_records_by_name(self, domain: Domain, name: str) -> Optional[List[DomainRecord]]:
         try:
+            result = []
+
             for record in domain.records:
                 if record.name == name:
-                    return record
+                    result.append(record)
 
-            return None
+            return result
         except IndexError:
-            return None
+            return []
         except Exception as exception:
             return self.fail(msg='failed to get domain record {0}: {1}'.format(name, exception))
 
-    def _get_record_from_params(self, domain: Domain) -> Optional[DomainRecord]:
+    def _get_records_from_params(self, domain: Domain) -> List[DomainRecord]:
         record_id = self.module.params.get('id')
         record_name = self.module.params.get('name')
 
         if record_name is not None:
-            return self._get_record_by_name(domain, record_name)
+            return self._get_records_by_name(domain, record_name)
 
         if record_id is not None:
             result = DomainRecord(self.client, record_id, domain.id)
             result._api_get()
-            return result
+            return [result]
 
-        return None
+        return []
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for domain record info module"""
@@ -186,11 +191,11 @@ class LinodeDomainRecordInfo(LinodeModuleBase):
         if domain is None:
             return self.fail('failed to get domain')
 
-        record = self._get_record_from_params(domain)
-        if record is None:
-            return self.fail('failed to get record')
+        records = self._get_records_from_params(domain)
+        if records is None:
+            return self.fail('failed to get records')
 
-        self.results['record'] = record._raw_json
+        self.results['record'] = paginated_list_to_json(records)
 
         return self.results
 

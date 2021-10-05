@@ -14,6 +14,8 @@ Synopsis
 
 Manage Linode Domain Records.
 
+NOTE: Domain records are identified by their name, target, and type.
+
 
 
 Requirements
@@ -37,7 +39,7 @@ Parameters
 
   **label (required=False, type=str, default=None):**
 
-  **name (required=True, type=str, default=None):**
+  **name (required=False, type=str, default=None):**
     \• The name of this Record.
 
 
@@ -63,6 +65,10 @@ Parameters
     \• An underscore (_) is prepended automatically to the submitted value for this property.
 
 
+  **record_id (required=False, type=int, default=None):**
+    \• The id of the record to modify.
+
+
   **service (required=False, type=str, default=None):**
     \• An underscore (_) is prepended and a period (.) is appended automatically to the submitted value for this property.
 
@@ -77,7 +83,7 @@ Parameters
     \• Only valid and required for CAA record requests.
 
 
-  **target (required=False, type=str, default=None):**
+  **target (required=False, type=str, default=):**
     \• The target for this Record.
 
 
@@ -104,7 +110,7 @@ Examples
 .. code-block:: yaml+jinja
 
     
-    - name: Create a A record
+    - name: Create an A record
       linode.cloud.domain_record:
         domain: my-domain.com
         name: my-subdomain
