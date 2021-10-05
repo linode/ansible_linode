@@ -104,16 +104,6 @@
           - record2_create.record.ttl_sec == 7200
           - record2_create.record.weight == 32
 
-    - name: Get all domain records
-      linode.cloud.domain_info:
-        api_token: '{{ api_token }}'
-        domain: '{{ domain_create.domain.domain }}'
-      register: domain_info
-
-    - assert:
-        that:
-          - domain_info.records|length == 2
-
     - name: Create a duplicate record with a different target
       linode.cloud.domain_record:
         api_token: '{{ api_token }}'
@@ -153,6 +143,15 @@
           - record_dupe_update.record.ttl_sec == 300
           - record_dupe_update.record.weight == 55
 
+    - name: Get all domain records
+      linode.cloud.domain_info:
+        api_token: '{{ api_token }}'
+        domain: '{{ domain_create.domain.domain }}'
+      register: domain_info
+
+    - assert:
+        that:
+          - domain_info.records|length == 3
 
   always:
     - ignore_errors: yes
@@ -174,7 +173,9 @@
           linode.cloud.domain_record:
             api_token: '{{ api_token }}'
             domain: '{{ domain_create.domain.domain }}'
-            record_id: '{{ record2_create.record.id }}'
+            name: '{{ record2_create.record.name }}'
+            type: '{{ record2_create.record.type }}'
+            target: '{{ record2_create.record.target }}'
             state: absent
           register: record2_delete
 
