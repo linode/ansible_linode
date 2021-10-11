@@ -13,6 +13,9 @@ from linode_api4 import Volume
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
     'supported_by': 'Linode'
@@ -72,7 +75,7 @@ options:
     required: false
     type: int
 requirements:
-- python >= 3.0
+- python >= 3
 '''
 
 EXAMPLES = '''
@@ -178,15 +181,8 @@ specdoc_meta = dict(
     description=[
         'Manage a Linode Volume.'
     ],
-    requirements=[
-        'python >= 3.0'
-    ],
-    author=[
-        'Luke Murphy (@decentral1se)',
-        'Charles Kenney (@charliekenney23)',
-        'Phillip Campbell (@phillc)',
-        'Lena Garber (@lbgarber)'
-    ],
+    requirements=global_requirements,
+    author=global_authors,
     spec=linode_volume_spec
 )
 

@@ -10,6 +10,8 @@ from typing import List, Optional, Any
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     create_filter_and
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
 
 # pylint: disable=unused-import
 from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList, and_
@@ -38,7 +40,7 @@ options:
     required: false
     type: str
 requirements:
-- python >= 3.0
+- python >= 3
 '''
 
 EXAMPLES = '''
@@ -147,15 +149,8 @@ specdoc_meta = dict(
     description=[
         'Get info about a Linode NodeBalancer.'
     ],
-    requirements=[
-        'python >= 3.0'
-    ],
-    author=[
-        'Luke Murphy (@decentral1se)',
-        'Charles Kenney (@charliekenney23)',
-        'Phillip Campbell (@phillc)',
-        'Lena Garber (@lbgarber)'
-    ],
+    requirements=global_requirements,
+    author=global_authors,
     spec=linode_nodebalancer_info_spec
 )
 
