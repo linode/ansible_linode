@@ -13,6 +13,8 @@ from linode_api4 import Domain, DomainRecord
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     filter_null_values, paginated_list_to_json
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
 
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
@@ -107,7 +109,7 @@ options:
     required: false
     type: int
 requirements:
-- python >= 3.0
+- python >= 3
 '''
 
 EXAMPLES = '''
@@ -215,15 +217,8 @@ specdoc_meta = dict(
         'Manage Linode Domain Records.',
         'NOTE: Domain records are identified by their name, target, and type.'
     ],
-    requirements=[
-        'python >= 3.0'
-    ],
-    author=[
-        'Luke Murphy (@decentral1se)',
-        'Charles Kenney (@charliekenney23)',
-        'Phillip Campbell (@phillc)',
-        'Lena Garber (@lbgarber)'
-    ],
+    requirements=global_requirements,
+    author=global_authors,
     spec=linode_domain_record_spec
 )
 

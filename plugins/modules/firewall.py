@@ -11,6 +11,8 @@ from typing import Optional, List, Any
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     filter_null_values, mapping_to_dict, paginated_list_to_json
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
 
 ANSIBLE_METADATA = {
     'metadata_version': '1.1',
@@ -167,7 +169,7 @@ options:
     required: false
     type: str
 requirements:
-- python >= 3.0
+- python >= 3
 '''
 
 EXAMPLES = '''
@@ -384,15 +386,8 @@ specdoc_meta = dict(
     description=[
         'Manage Linode Firewalls.'
     ],
-    requirements=[
-        'python >= 3.0'
-    ],
-    author=[
-        'Luke Murphy (@decentral1se)',
-        'Charles Kenney (@charliekenney23)',
-        'Phillip Campbell (@phillc)',
-        'Lena Garber (@lbgarber)'
-    ],
+    requirements=global_requirements,
+    author=global_authors,
     spec=linode_firewall_spec
 )
 
