@@ -1,6 +1,6 @@
 name: Run Documentation Validation
 
-on: [ push, pull_request ]
+on: pull_request
 
 jobs:
   run-docs-validation:
@@ -21,7 +21,7 @@ jobs:
           python-version: '3.x'
 
       - name: install dependencies
-        run: pip install -r requirements-dev.txt -r requirements.txt ansible-core
+        run: pip install -r requirements-dev.txt -r requirements.txt
 
       - name: install collection
         run: make install
@@ -39,7 +39,7 @@ jobs:
         working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
       - name: compare results
-        run: diff -qr docs tmp/docs
+        run: diff -r docs tmp/docs
         working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
       - name: clean up
