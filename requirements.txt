@@ -1,2 +1,2 @@
-linode-api4==5.1.1
+linode-api4==5.2.1
 polling==0.3.2
