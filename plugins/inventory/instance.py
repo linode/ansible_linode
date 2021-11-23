@@ -24,7 +24,7 @@ DOCUMENTATION = r'''
       - Luke Murphy (@decentral1se)
       - Lena Garber (@LBGarber)
     requirements:
-        - python >= 2.7
+        - python >= 3
         - linode_api4 >= 2.0.0
     description:
         - Reads instance inventories from Linode.

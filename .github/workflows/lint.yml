@@ -1,6 +1,6 @@
 name: Run Linter
 
-on: [ push, pull_request ]
+on: pull_request
 
 jobs:
   lint:
@@ -15,7 +15,7 @@ jobs:
           python-version: '3.x'
 
       - name: install dependencies
-        run: pip3 install -r requirements-dev.txt -r requirements.txt ansible
+        run: pip3 install -r requirements-dev.txt -r requirements.txt
 
       - name: run linter
         run: make lint
