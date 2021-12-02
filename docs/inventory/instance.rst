@@ -72,6 +72,35 @@ Parameters
     \• Add hosts to group based on the values of a variable.
 
 
+      **parent_group (required=optional, type=str, default=None):**
+        \• parent group for keyed group
+
+
+      **prefix (required=optional, type=str, default=):**
+        \• A keyed group name will start with this prefix
+
+
+      **separator (required=optional, type=str, default=_):**
+        \• separator used to build the keyed group name
+
+
+      **key (required=optional, type=str, default=None):**
+        \• The key from input dictionary used to generate groups
+
+
+      **default_value (required=optional, type=str, default=None):**
+        \• The default value when the host variable's value is an empty string.
+
+        \• This option is mutually exclusive with ``trailing_separator``.
+
+
+      **trailing_separator (required=optional, type=bool, default=True):**
+        \• Set this option to *False* to omit the ``separator`` after the host variable when the value is an empty string.
+
+        \• This option is mutually exclusive with ``default_value``.
+
+
+
   **use_extra_vars (required=optional, type=bool, default=False):**
     \• Merge extra vars into the available variables for composition (highest precedence).
 
