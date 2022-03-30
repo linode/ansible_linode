@@ -29,27 +29,28 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **domain (required=False, type=str, default=None):**
+
+  **domain (type=str):**
     \• The name of the parent Domain.
 
 
-  **domain_id (required=False, type=int, default=None):**
+  **domain_id (type=int):**
     \• The ID of the parent Domain.
 
 
-  **label (required=False, type=str, default=None):**
+  **label (type=str):**
 
-  **name (required=False, type=str, default=None):**
+  **name (type=str):**
     \• The name of this Record.
 
 
-  **port (required=False, type=int, default=None):**
+  **port (type=int):**
     \• The port this Record points to.
 
     \• Only valid and required for SRV record requests.
 
 
-  **priority (required=False, type=int, default=None):**
+  **priority (type=int):**
     \• The priority of the target host for this Record.
 
     \• Lower values are preferred.
@@ -59,17 +60,17 @@ Parameters
     \• Required for SRV record requests.
 
 
-  **protocol (required=False, type=str, default=None):**
+  **protocol (type=str):**
     \• The protocol this Record’s service communicates with.
 
     \• An underscore (_) is prepended automatically to the submitted value for this property.
 
 
-  **record_id (required=False, type=int, default=None):**
+  **record_id (type=int):**
     \• The id of the record to modify.
 
 
-  **service (required=False, type=str, default=None):**
+  **service (type=str):**
     \• An underscore (_) is prepended and a period (.) is appended automatically to the submitted value for this property.
 
     \• Only valid and required for SRV record requests.
@@ -77,25 +78,25 @@ Parameters
     \• The name of the service.
 
 
-  **tag (required=False, type=str, default=None):**
+  **tag (type=str):**
     \• The tag portion of a CAA record.
 
     \• Only valid and required for CAA record requests.
 
 
-  **target (required=False, type=str, default=):**
+  **target (type=str):**
     \• The target for this Record.
 
 
-  **ttl_sec (required=False, type=int, default=None):**
+  **ttl_sec (type=int):**
     \• The amount of time in seconds that this Domain’s records may be cached       by resolvers or other domain servers.
 
 
-  **type (required=False, type=str, default=None):**
+  **type (type=str):**
     \• The type of Record this is in the DNS system.
 
 
-  **weight (required=False, type=int, default=None):**
+  **weight (type=int):**
     \• The relative weight of this Record used in the case of identical priority.
 
 

@@ -181,7 +181,7 @@ options:
     type: list
   label:
     description: The unique label to give this NodeBalancer.
-    required: false
+    required: true
     type: str
   region:
     description: The ID of the Region to create this NodeBalancer in.
@@ -214,7 +214,7 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-nodebalancer:
+node_balancer:
   description: The NodeBalancer in JSON serialized form.
   linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses"
   returned: always
@@ -402,7 +402,9 @@ linode_configs_spec = dict(
 linode_nodebalancer_spec = dict(
     label=dict(
         type='str',
-        description='The unique label to give this NodeBalancer.'),
+        description='The unique label to give this NodeBalancer.',
+        required=True,
+    ),
 
     client_conn_throttle=dict(
         type='int',
@@ -413,7 +415,8 @@ linode_nodebalancer_spec = dict(
 
     region=dict(
         type='str',
-        description='The ID of the Region to create this NodeBalancer in.'),
+        description='The ID of the Region to create this NodeBalancer in.',
+    ),
 
     configs=dict(
         type='list', elements='dict', options=linode_configs_spec,
@@ -528,7 +531,6 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         node = self._create_node(config, node_params)
         self.register_action('Created Node: {0}'.format(node.id))
-        cast(list, self.results['nodes']).append(node._raw_json)
 
         return node
 
@@ -556,7 +558,6 @@ class LinodeNodeBalancer(LinodeModuleBase):
                     filter_null_values(node), node_map[node_label]._raw_json)
 
                 if node_match == remote_node_match:
-                    cast(list, self.results['nodes']).append(node_map[node_label]._raw_json)
                     del node_map[node_label]
                     continue
 
@@ -591,12 +592,14 @@ class LinodeNodeBalancer(LinodeModuleBase):
             config_exists, remote_config = self._check_config_exists(remote_configs, config)
 
             if config_exists:
-                self._handle_config_nodes(remote_config, config.get('nodes'))
+                if config.get('nodes') is not None:
+                    self._handle_config_nodes(remote_config, config.get('nodes'))
                 remote_configs.remove(remote_config)
                 continue
 
             new_config = self._create_config_register(self._node_balancer, config)
-            self._handle_config_nodes(new_config, config.get('nodes'))
+            if config.get('nodes') is not None:
+                self._handle_config_nodes(new_config, config.get('nodes'))
 
         # Remove remaining configs
         for config in remote_configs:
@@ -659,6 +662,12 @@ class LinodeNodeBalancer(LinodeModuleBase):
         self._node_balancer._api_get()
 
         self.results['node_balancer'] = self._node_balancer._raw_json
+
+        # Append all nodes to the result
+        for config in self._node_balancer.configs:
+            for node in config.nodes:
+                node._api_get()
+                cast(list, self.results['nodes']).append(node._raw_json)
 
     def _handle_nodebalancer_absent(self) -> None:
         """Updates the NodeBalancer for the absent state"""

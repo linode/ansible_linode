@@ -34,78 +34,81 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **plugin (required=True, type=any, default=None):**
+  **plugin (Required, type=any):**
     \• Marks this as an instance of the 'linode' plugin
 
+    \• Options: `linode`, `linode.cloud.instance`
 
-  **api_token (required=True, type=any, default=None):**
+
+  **api_token (Required, type=any):**
     \• The Linode account personal access token.
 
 
-  **regions (required=optional, type=list, default=[]):**
+
+  **regions (type=list):**
     \• Populate inventory with instances in this region.
 
 
-  **tags (required=optional, type=list, default=[]):**
+  **tags (type=list):**
     \• Populate inventory only with instances which have at least one of the tags listed here.
 
 
-  **types (required=optional, type=list, default=[]):**
+  **types (type=list):**
     \• Populate inventory with instances with this type.
 
 
-  **strict (required=optional, type=bool, default=False):**
+  **strict (type=bool):**
     \• If ``yes`` make invalid entries a fatal error, otherwise skip and continue.
 
     \• Since it is possible to use facts in the expressions they might not always be available and we ignore those errors by default.
 
 
-  **compose (required=optional, type=dict, default={}):**
+  **compose (type=dict):**
     \• Create vars from jinja2 expressions.
 
 
-  **groups (required=optional, type=dict, default={}):**
+  **groups (type=dict):**
     \• Add hosts to group based on Jinja2 conditionals.
 
 
-  **keyed_groups (required=optional, type=list, default=[]):**
+  **keyed_groups (type=list):**
     \• Add hosts to group based on the values of a variable.
 
 
-      **parent_group (required=optional, type=str, default=None):**
+      **parent_group (type=str):**
         \• parent group for keyed group
 
 
-      **prefix (required=optional, type=str, default=):**
+      **prefix (type=str):**
         \• A keyed group name will start with this prefix
 
 
-      **separator (required=optional, type=str, default=_):**
+      **separator (type=str, default=_):**
         \• separator used to build the keyed group name
 
 
-      **key (required=optional, type=str, default=None):**
+      **key (type=str):**
         \• The key from input dictionary used to generate groups
 
 
-      **default_value (required=optional, type=str, default=None):**
+      **default_value (type=str):**
         \• The default value when the host variable's value is an empty string.
 
         \• This option is mutually exclusive with ``trailing_separator``.
 
 
-      **trailing_separator (required=optional, type=bool, default=True):**
+      **trailing_separator (type=bool, default=True):**
         \• Set this option to *False* to omit the ``separator`` after the host variable when the value is an empty string.
 
         \• This option is mutually exclusive with ``default_value``.
 
 
 
-  **use_extra_vars (required=optional, type=bool, default=False):**
+  **use_extra_vars (type=bool):**
     \• Merge extra vars into the available variables for composition (highest precedence).
 
 
-  **leading_separator (required=optional, type=boolean, default=True):**
+  **leading_separator (type=boolean, default=True):**
     \• Use in conjunction with keyed_groups.
 
     \• By default, a keyed group that does not have a prefix or a separator provided will have a name that starts with an underscore.

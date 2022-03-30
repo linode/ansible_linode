@@ -27,24 +27,13 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **access (required=False, type=list, default=None):**
+
+  **access (type=list):**
     \• A list of access permissions to give the key.
 
 
-      **bucket_name (required=True, type=str, default=None):**
-        \• The name of the bucket to set the key's permissions for.
 
-
-      **cluster (required=True, type=str, default=None):**
-        \• The id of the cluster that the provided bucket exists under.
-
-
-      **permissions (required=True, type=str, default=None):**
-        \• The permissions to give the key.
-
-
-
-  **label (required=False, type=str, default=None):**
+  **label (type=str):**
     \• The unique label to give this key.
 
 

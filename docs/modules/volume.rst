@@ -27,37 +27,38 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **attached (required=False, type=bool, default=True):**
+
+  **attached (type=bool, default=True):**
     \• If true, the volume will be attached to a Linode. Otherwise, the volume will be detached.
 
 
-  **config_id (required=False, type=int, default=None):**
+  **config_id (type=int):**
     \• When creating a Volume attached to a Linode, the ID of the Linode Config to include the new Volume in.
 
 
-  **label (required=False, type=str, default=None):**
+  **label (type=str):**
     \• The Volume’s label, which is also used in the filesystem_path       of the resulting volume.
 
 
-  **linode_id (required=False, type=int, default=None):**
+  **linode_id (type=int):**
     \• The Linode this volume should be attached to upon creation.
 
     \• If not given, the volume will be created without an attachment.
 
 
-  **region (required=False, type=str, default=None):**
+  **region (type=str):**
     \• The location to deploy the volume in.
 
     \• See https://api.linode.com/v4/regions
 
 
-  **size (required=False, type=int, default=None):**
+  **size (type=int):**
     \• The size of this volume, in GB.
 
     \• Be aware that volumes may only be resized up after creation.
 
 
-  **wait_timeout (required=False, type=int, default=240):**
+  **wait_timeout (type=int, default=240):**
     \• The amount of time, in seconds, to wait for a volume to have the active status.
 
 

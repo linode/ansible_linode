@@ -27,19 +27,20 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **domain (required=False, type=str, default=None):**
+
+  **domain (type=str):**
     \• The name of the parent Domain.
 
 
-  **domain_id (required=False, type=int, default=None):**
+  **domain_id (type=int):**
     \• The ID of the parent Domain.
 
 
-  **id (required=False, type=int, default=None):**
+  **id (type=int):**
     \• The unique id of the subdomain.
 
 
-  **name (required=False, type=str, default=None):**
+  **name (type=str):**
     \• The name of the domain record.
 
 

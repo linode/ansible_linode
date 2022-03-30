@@ -36,20 +36,27 @@ The below requirements are needed on the host that executes this module.
 {% endif %}
 
 
-{% macro option_desc(opts, level) %}
-{%   for name, spec in opts.items() %}
-{%     set req = spec.required | default("optional") %}
+{% macro option_desc(opts, level, require_exclusive) %}
+{%   for name, spec in opts.items()  %}
+{%     set req = spec.required %}
 {%     set typ = spec.type | default("any") %}
-{%     set def_val = spec.default | default("None") %}
-  {{ "    " * level }}**{{ name }} (required={{ req }}, type={{ typ }}, default={{ def_val }}):**
+{%     set def_val = spec.default %}
+{% if (req and require_exclusive) or (not req and not require_exclusive) %}
+  {{ "    " * level }}**{{ name }} ({% if req %}Required, {% endif %}type={{ typ }}{% if def_val %}, default={{ def_val }}{% endif %}):**
 {%     for para in spec.description %}
     {{ "    " * level }}\• {{ para | rst_ify }}
 
 {%     endfor %}
+{% if spec.choices %}
+    {{ "    " * level }}\• Options: {% for c in spec.choices %}`{{ c }}`{% if not loop.last %}, {% endif %}{% endfor %}
+
+
+{% endif %}
 
 {%     if spec.suboptions %}
-{{ option_desc(spec.suboptions, level + 1) }}
+{{ option_desc(spec.suboptions, level + 1, require_exclusive) }}
 {%     endif %}
+{% endif %}
 {%   endfor %}
 {% endmacro %}
 
@@ -57,7 +64,8 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-{{ option_desc(options, 0) }}
+{{ option_desc(options, 0, True) }}
+{{ option_desc(options, 0, False) }}
 {% endif %}
 
 

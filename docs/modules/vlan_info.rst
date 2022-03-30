@@ -27,8 +27,9 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **label (required=True, type=str, default=None):**
+  **label (Required, type=str):**
     \• The VLAN’s label.
+
 
 
 

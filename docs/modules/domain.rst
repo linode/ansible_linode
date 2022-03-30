@@ -27,51 +27,52 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **axfr_ips (required=False, type=list, default=None):**
-    \• The list of IPs that may perform a zone transfer for this Domain.
-
-
-  **description (required=False, type=str, default=None):**
-    \• The list of IPs that may perform a zone transfer for this Domain.
-
-
-  **domain (required=True, type=str, default=None):**
+  **domain (Required, type=str):**
     \• The domain this Domain represents.
 
 
-  **expire_sec (required=False, type=int, default=None):**
+
+  **axfr_ips (type=list):**
+    \• The list of IPs that may perform a zone transfer for this Domain.
+
+
+  **description (type=str):**
+    \• The list of IPs that may perform a zone transfer for this Domain.
+
+
+  **expire_sec (type=int):**
     \• The amount of time in seconds that may pass before this Domain is no longer authoritative.
 
 
-  **master_ips (required=False, type=list, default=None):**
+  **master_ips (type=list):**
     \• The IP addresses representing the master DNS for this Domain.
 
 
-  **refresh_sec (required=False, type=int, default=None):**
+  **refresh_sec (type=int):**
     \• The amount of time in seconds before this Domain should be refreshed.
 
 
-  **retry_sec (required=False, type=int, default=None):**
+  **retry_sec (type=int):**
     \• The interval, in seconds, at which a failed refresh should be retried.
 
 
-  **soa_email (required=False, type=str, default=None):**
+  **soa_email (type=str):**
     \• The Start of Authority email address.
 
 
-  **status (required=False, type=str, default=None):**
+  **status (type=str):**
     \• Used to control whether this Domain is currently being rendered.
 
 
-  **tags (required=False, type=list, default=None):**
+  **tags (type=list):**
     \• An array of tags applied to this object.
 
 
-  **ttl_sec (required=False, type=int, default=None):**
+  **ttl_sec (type=int):**
     \• the amount of time in seconds that this Domain’s records may       be cached by resolvers or other domain servers.
 
 
-  **type (required=False, type=str, default=None):**
+  **type (type=str):**
     \• Whether this Domain represents the authoritative source of information for the domain it describes (master), or whether it is a read-only copy of a master (slave).
 
 
