@@ -254,8 +254,8 @@ EXAMPLES = '''
     
 - name: Attach the Instance to the NodeBalancer
   linode.cloud.nodebalancer_node:
-    nodebalancer_id = nodebalancer_result.node_balancer.id
-    config_id = nodebalancer_result.configs[0].id
+    nodebalancer_id: nodebalancer_result.node_balancer.id
+    config_id: nodebalancer_result.configs[0].id
     
     label: my-node
     
