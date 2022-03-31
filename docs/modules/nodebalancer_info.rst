@@ -61,7 +61,7 @@ Examples
 Return Values
 -------------
 
-**nodebalancer (returned=always, type=dict):**
+**node_balancer (returned=always, type=dict):**
 
 The NodeBalancer in JSON serialized form.
 

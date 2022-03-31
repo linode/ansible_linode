@@ -87,7 +87,7 @@ Parameters
 
 
       **nodes (type=list):**
-        \• A list of nodes to apply to this config.
+        \• A list of nodes to apply to this config. These can alternatively be configured through the nodebalancer_node module.
 
 
           **mode (type=str):**

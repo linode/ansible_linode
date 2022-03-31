@@ -41,7 +41,8 @@ MODULE_SPEC = dict(
 
     address=dict(
         type='str',
-        description='The private IP Address where this backend can be reached. This must be a private IP address.',
+        description='The private IP Address where this backend can be reached. '
+                    'This must be a private IP address.',
     ),
 
     state=dict(
@@ -127,7 +128,8 @@ class LinodeNodeBalancerNode(LinodeModuleBase):
 
             return node
         except Exception as exception:
-            return self.fail(msg='failed to create node {0}: {1}'.format(self.module.params.get('label'), exception))
+            return self.fail(msg='failed to create node {0}: {1}'
+                             .format(self.module.params.get('label'), exception))
 
     def _update_node(self, node: linode_api4.NodeBalancerNode) -> None:
         """Handles all update functionality for the current Node"""

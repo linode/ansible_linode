@@ -109,7 +109,8 @@ options:
         required: false
         type: str
       nodes:
-        description: A list of nodes to apply to this config.
+        description: A list of nodes to apply to this config. These can alternatively
+          be configured through the nodebalancer_node module.
         elements: dict
         required: false
         suboptions:
