@@ -97,9 +97,11 @@ Examples
         config_id: nodebalancer_result.configs[0].id
         
         label: my-node
-        
+
         # Use the private ip address of the instance
         address: '{{ instance_result.instance.ipv4[1] }}:80'
+
+        state: present
 
 
 

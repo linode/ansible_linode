@@ -29,7 +29,7 @@ Name | Description
 [linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance_info.rst)|Gather info about an existing Linode instance.
 [linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer.rst)|Create, destroy, and configure NodeBalancers.
 [linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer_info.rst)|Gather info about an existing NodeBalancer.
-[linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer_node.rst)|Manage NodeBalancer nodes.
+[linode.cloud.nodebalancer_node](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer_node.rst)|Manage NodeBalancer nodes.
 [linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/object_cluster_info.rst)|Gather info about Object Storage clusters.
 [linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/main/docs/modules/object_keys.rst)|Create and destroy Object Storage keys.
 [linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/vlan_info.rst)|Gather info about an existing Linode VLAN.
