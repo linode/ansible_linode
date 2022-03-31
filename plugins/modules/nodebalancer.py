@@ -396,7 +396,8 @@ linode_configs_spec = dict(
 
     nodes=dict(
         type='list', required=False, elements='dict', options=linode_nodes_spec,
-        description='A list of nodes to apply to this config.')
+        description='A list of nodes to apply to this config. '
+                    'These can alternatively be configured through the nodebalancer_node module.')
 )
 
 linode_nodebalancer_spec = dict(
