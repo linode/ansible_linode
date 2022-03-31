@@ -665,12 +665,6 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         self.results['node_balancer'] = self._node_balancer._raw_json
 
-        # Append all nodes to the result
-        for config in self._node_balancer.configs:
-            for node in config.nodes:
-                node._api_get()
-                cast(list, self.results['nodes']).append(node._raw_json)
-
     def _handle_nodebalancer_absent(self) -> None:
         """Updates the NodeBalancer for the absent state"""
 
@@ -693,6 +687,12 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         self._handle_nodebalancer()
         self._handle_configs()
+
+        # Append all nodes to the result
+        for config in self._node_balancer.configs:
+            for node in config.nodes:
+                node._api_get()
+                cast(list, self.results['nodes']).append(node._raw_json)
 
         return self.results
 
