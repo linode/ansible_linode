@@ -27,11 +27,12 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **id (required=False, type=int, default=None):**
+
+  **id (type=int):**
     \• The ID of this NodeBalancer.
 
 
-  **label (required=False, type=str, default=None):**
+  **label (type=str):**
     \• The label of this NodeBalancer.
 
 
@@ -60,7 +61,7 @@ Examples
 Return Values
 -------------
 
-**nodebalancer (returned=always, type=dict):**
+**node_balancer (returned=always, type=dict):**
 
 The NodeBalancer in JSON serialized form.
 

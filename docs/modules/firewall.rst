@@ -27,125 +27,106 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **devices (required=False, type=list, default=None):**
+
+  **devices (type=list):**
     \• The devices that are attached to this Firewall.
 
 
-      **id (required=True, type=int, default=None):**
-        \• The unique ID of the device to attach to this Firewall.
-
-
-      **type (required=False, type=str, default=linode):**
+      **type (type=str, default=linode):**
         \• The type of device to be attached to this Firewall.
 
 
 
-  **label (required=False, type=str, default=None):**
+  **label (type=str):**
     \• The unique label to give this Firewall.
 
 
-  **rules (required=False, type=dict, default=None):**
+  **rules (type=dict):**
     \• The inbound and outbound access rules to apply to this Firewall.
 
 
-      **inbound (required=False, type=list, default=None):**
+      **inbound (type=list):**
         \• A list of rules for inbound traffic.
 
 
-          **action (required=True, type=str, default=None):**
-            \• Controls whether traffic is accepted or dropped by this rule.
-
-
-          **addresses (required=False, type=dict, default=None):**
+          **addresses (type=dict):**
             \• Allowed IPv4 or IPv6 addresses.
 
 
-              **ipv4 (required=False, type=list, default=None):**
+              **ipv4 (type=list):**
                 \• A list of IPv4 addresses or networks.
 
                 \• Must be in IP/mask format.
 
 
-              **ipv6 (required=False, type=list, default=None):**
+              **ipv6 (type=list):**
                 \• A list of IPv4 addresses or networks.
 
                 \• Must be in IP/mask format.
 
 
 
-          **description (required=False, type=str, default=None):**
+          **description (type=str):**
             \• A description for this rule.
 
 
-          **label (required=True, type=str, default=None):**
-            \• The label of this rule.
-
-
-          **ports (required=False, type=str, default=None):**
+          **ports (type=str):**
             \• A string representing the port or ports on which traffic will be allowed.
 
             \• See https://www.linode.com/docs/api/networking/#firewall-create
 
 
-          **protocol (required=False, type=str, default=None):**
+          **protocol (type=str):**
             \• The type of network traffic to allow.
 
 
 
-      **inbound_policy (required=False, type=str, default=None):**
+      **inbound_policy (type=str):**
         \• The default behavior for inbound traffic.
 
 
-      **outbound (required=False, type=list, default=None):**
+      **outbound (type=list):**
         \• A list of rules for outbound traffic.
 
 
-          **action (required=True, type=str, default=None):**
-            \• Controls whether traffic is accepted or dropped by this rule.
-
-
-          **addresses (required=False, type=dict, default=None):**
+          **addresses (type=dict):**
             \• Allowed IPv4 or IPv6 addresses.
 
 
-              **ipv4 (required=False, type=list, default=None):**
+              **ipv4 (type=list):**
                 \• A list of IPv4 addresses or networks.
 
                 \• Must be in IP/mask format.
 
 
-              **ipv6 (required=False, type=list, default=None):**
+              **ipv6 (type=list):**
                 \• A list of IPv4 addresses or networks.
 
                 \• Must be in IP/mask format.
 
 
 
-          **description (required=False, type=str, default=None):**
+          **description (type=str):**
             \• A description for this rule.
 
 
-          **label (required=True, type=str, default=None):**
-            \• The label of this rule.
-
-
-          **ports (required=False, type=str, default=None):**
+          **ports (type=str):**
             \• A string representing the port or ports on which traffic will be allowed.
 
             \• See https://www.linode.com/docs/api/networking/#firewall-create
 
 
-          **protocol (required=False, type=str, default=None):**
+          **protocol (type=str):**
             \• The type of network traffic to allow.
 
 
 
-      **outbound_policy (required=False, type=str, default=None):**
+      **outbound_policy (type=str):**
         \• The default behavior for outbound traffic.
 
 
 
-  **status (required=False, type=str, default=None):**
+  **status (type=str):**
     \• The status of this Firewall.
 
 

@@ -1,6 +1,7 @@
 """This module contains helper functions for various Linode modules."""
 from typing import Tuple, Any, Optional, cast
 
+import linode_api4
 from linode_api4 import and_, MappedObject
 from linode_api4.objects.filtering import Filter, FilterableAttribute, FilterableMetaclass
 
@@ -70,3 +71,34 @@ def mapping_to_dict(obj: Any) -> Any:
         return [mapping_to_dict(value) for value in obj]
 
     return obj
+
+
+def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, register_func: Any):
+    """Handles updates for a linode_api4 object"""
+
+    obj._api_get()
+
+    # Update mutable values
+    should_update = False
+    params = filter_null_values(params)
+
+    for key, new_value in params.items():
+        if not hasattr(obj, key):
+            continue
+
+        old_value = getattr(obj, key)
+
+        if new_value != old_value:
+            if key in mutable_fields:
+                setattr(obj, key, new_value)
+                register_func('Updated {0}: "{1}" -> "{2}"'.
+                                     format(key, old_value, new_value))
+
+                should_update = True
+                continue
+
+            raise RuntimeError(
+                'failed to update: {} is a non-updatable field'.format(key))
+
+    if should_update:
+        obj.save()

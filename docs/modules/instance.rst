@@ -27,246 +27,237 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **authorized_keys (required=False, type=list, default=None):**
+
+  **authorized_keys (type=list):**
     \• A list of SSH public key parts to deploy for the root user.
 
 
-  **backup_id (required=False, type=int, default=None):**
+  **backup_id (type=int):**
     \• The id of the Backup to restore to the new Instance.
 
     \• May not be provided if “image” is given.
 
 
-  **boot_config_label (required=False, type=str, default=None):**
+  **boot_config_label (type=str):**
     \• The label of the config to boot from.
 
 
-  **booted (required=False, type=bool, default=None):**
+  **booted (type=bool):**
     \• Whether the new Instance should be booted.
 
     \• This will default to True if the Instance is deployed from an Image or Backup.
 
 
-  **configs (required=False, type=list, default=None):**
+  **configs (type=list):**
     \• A list of Instance configs to apply to the Linode.
 
     \• See https://www.linode.com/docs/api/linode-instances/#configuration-profile-create
 
 
-      **comments (required=False, type=str, default=None):**
+      **comments (type=str):**
         \• Arbitrary User comments on this Config.
 
 
-      **devices (required=False, type=dict, default=None):**
+      **devices (type=dict):**
         \• The devices to map to this configuration.
 
 
-          **sda (required=False, type=dict, default=None):**
+          **sda (type=dict):**
 
-              **disk_id (required=False, type=int, default=None):**
+              **disk_id (type=int):**
                 \• The ID of the disk to attach to this Linode.
 
 
-              **disk_label (required=False, type=str, default=None):**
+              **disk_label (type=str):**
                 \• The label of the disk to attach to this Linode.
 
 
-              **volume_id (required=False, type=int, default=None):**
+              **volume_id (type=int):**
                 \• The ID of the volume to attach to this Linode.
 
 
 
-          **sdb (required=False, type=dict, default=None):**
+          **sdb (type=dict):**
 
-              **disk_id (required=False, type=int, default=None):**
+              **disk_id (type=int):**
                 \• The ID of the disk to attach to this Linode.
 
 
-              **disk_label (required=False, type=str, default=None):**
+              **disk_label (type=str):**
                 \• The label of the disk to attach to this Linode.
 
 
-              **volume_id (required=False, type=int, default=None):**
+              **volume_id (type=int):**
                 \• The ID of the volume to attach to this Linode.
 
 
 
-          **sdc (required=False, type=dict, default=None):**
+          **sdc (type=dict):**
 
-              **disk_id (required=False, type=int, default=None):**
+              **disk_id (type=int):**
                 \• The ID of the disk to attach to this Linode.
 
 
-              **disk_label (required=False, type=str, default=None):**
+              **disk_label (type=str):**
                 \• The label of the disk to attach to this Linode.
 
 
-              **volume_id (required=False, type=int, default=None):**
+              **volume_id (type=int):**
                 \• The ID of the volume to attach to this Linode.
 
 
 
-          **sdd (required=False, type=dict, default=None):**
+          **sdd (type=dict):**
 
-              **disk_id (required=False, type=int, default=None):**
+              **disk_id (type=int):**
                 \• The ID of the disk to attach to this Linode.
 
 
-              **disk_label (required=False, type=str, default=None):**
+              **disk_label (type=str):**
                 \• The label of the disk to attach to this Linode.
 
 
-              **volume_id (required=False, type=int, default=None):**
+              **volume_id (type=int):**
                 \• The ID of the volume to attach to this Linode.
 
 
 
-          **sde (required=False, type=dict, default=None):**
+          **sde (type=dict):**
 
-              **disk_id (required=False, type=int, default=None):**
+              **disk_id (type=int):**
                 \• The ID of the disk to attach to this Linode.
 
 
-              **disk_label (required=False, type=str, default=None):**
+              **disk_label (type=str):**
                 \• The label of the disk to attach to this Linode.
 
 
-              **volume_id (required=False, type=int, default=None):**
+              **volume_id (type=int):**
                 \• The ID of the volume to attach to this Linode.
 
 
 
-          **sdf (required=False, type=dict, default=None):**
+          **sdf (type=dict):**
 
-              **disk_id (required=False, type=int, default=None):**
+              **disk_id (type=int):**
                 \• The ID of the disk to attach to this Linode.
 
 
-              **disk_label (required=False, type=str, default=None):**
+              **disk_label (type=str):**
                 \• The label of the disk to attach to this Linode.
 
 
-              **volume_id (required=False, type=int, default=None):**
+              **volume_id (type=int):**
                 \• The ID of the volume to attach to this Linode.
 
 
 
-          **sdg (required=False, type=dict, default=None):**
+          **sdg (type=dict):**
 
-              **disk_id (required=False, type=int, default=None):**
+              **disk_id (type=int):**
                 \• The ID of the disk to attach to this Linode.
 
 
-              **disk_label (required=False, type=str, default=None):**
+              **disk_label (type=str):**
                 \• The label of the disk to attach to this Linode.
 
 
-              **volume_id (required=False, type=int, default=None):**
+              **volume_id (type=int):**
                 \• The ID of the volume to attach to this Linode.
 
 
 
-          **sdh (required=False, type=dict, default=None):**
+          **sdh (type=dict):**
 
-              **disk_id (required=False, type=int, default=None):**
+              **disk_id (type=int):**
                 \• The ID of the disk to attach to this Linode.
 
 
-              **disk_label (required=False, type=str, default=None):**
+              **disk_label (type=str):**
                 \• The label of the disk to attach to this Linode.
 
 
-              **volume_id (required=False, type=int, default=None):**
+              **volume_id (type=int):**
                 \• The ID of the volume to attach to this Linode.
 
 
 
 
-      **helpers (required=False, type=dict, default=None):**
+      **helpers (type=dict):**
         \• Helpers enabled when booting to this Linode Config.
 
 
-          **devtmpfs_automount (required=False, type=bool, default=None):**
+          **devtmpfs_automount (type=bool):**
             \• Populates the /dev directory early during boot without udev.
 
 
-          **distro (required=False, type=bool, default=None):**
+          **distro (type=bool):**
             \• Helps maintain correct inittab/upstart console device.
 
 
-          **modules_dep (required=False, type=bool, default=None):**
+          **modules_dep (type=bool):**
             \• Creates a modules dependency file for the Kernel you run.
 
 
-          **network (required=False, type=bool, default=None):**
+          **network (type=bool):**
             \• Automatically configures static networking.
 
 
-          **updatedb_disabled (required=False, type=bool, default=None):**
+          **updatedb_disabled (type=bool):**
             \• Disables updatedb cron job to avoid disk thrashing.
 
 
 
-      **kernel (required=False, type=str, default=None):**
+      **kernel (type=str):**
         \• A Kernel ID to boot a Linode with. Defaults to “linode/latest-64bit”          .
 
 
-      **label (required=True, type=str, default=None):**
-        \• The label to assign to this config.
-
-
-      **memory_limit (required=False, type=int, default=None):**
+      **memory_limit (type=int):**
         \• Defaults to the total RAM of the Linode.
 
 
-      **root_device (required=False, type=str, default=None):**
+      **root_device (type=str):**
         \• The root device to boot.
 
 
-      **run_level (required=False, type=str, default=None):**
+      **run_level (type=str):**
         \• Defines the state of your Linode after booting.
 
 
-      **virt_mode (required=False, type=str, default=None):**
+      **virt_mode (type=str):**
         \• Controls the virtualization mode.
 
+        \• Options: `paravirt`, `fullvirt`
 
 
-  **disks (required=False, type=list, default=None):**
+
+  **disks (type=list):**
     \• A list of Disks to create on the Linode.
 
     \• See https://www.linode.com/docs/api/linode-instances/#disk-create
 
 
-      **authorized_keys (required=False, type=list, default=None):**
+      **authorized_keys (type=list):**
         \• A list of SSH public key parts to deploy for the root user.
 
 
-      **authorized_users (required=False, type=list, default=None):**
+      **authorized_users (type=list):**
         \• A list of usernames.
 
 
-      **filesystem (required=False, type=str, default=None):**
+      **filesystem (type=str):**
         \• The filesystem to create this disk with.
 
 
-      **image (required=False, type=str, default=None):**
+      **image (type=str):**
         \• An Image ID to deploy the Disk from.
 
 
-      **label (required=True, type=str, default=None):**
-        \• The label to give this Disk.
-
-
-      **root_pass (required=False, type=str, default=None):**
+      **root_pass (type=str):**
         \• The root user’s password on the newly-created Linode.
 
 
-      **size (required=True, type=int, default=None):**
-        \• The size of the Disk in MB.
-
-
-      **stackscript_data (required=False, type=dict, default=None):**
+      **stackscript_data (type=dict):**
         \• An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance.
 
         \• Only valid when a stackscript_id is provided.
@@ -274,14 +265,14 @@ Parameters
         \• See https://www.linode.com/docs/api/stackscripts/
 
 
-      **stackscript_id (required=False, type=int, default=None):**
+      **stackscript_id (type=int):**
         \• The ID of the StackScript to use when creating the instance.
 
         \• See https://www.linode.com/docs/api/stackscripts/
 
 
 
-  **group (required=False, type=str, default=None):**
+  **group (type=str):**
     \• The group that the instance should be marked under.
 
     \• Please note, that group labelling is deprecated but still supported.
@@ -289,21 +280,21 @@ Parameters
     \• The encouraged method for marking instances is to use tags.
 
 
-  **image (required=False, type=str, default=None):**
+  **image (type=str):**
     \• The image ID to deploy the instance disk from.
 
 
-  **interfaces (required=False, type=list, default=None):**
+  **interfaces (type=list):**
     \• A list of network interfaces to apply to the Linode.
 
     \• See https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema.
 
 
-      **ipam_address (required=False, type=str, default=None):**
+      **ipam_address (type=str):**
         \• This Network Interface’s private IP address in Classless           Inter-Domain Routing (CIDR) notation.
 
 
-      **label (required=False, type=str, default=None):**
+      **label (type=str):**
         \• The name of this interface.
 
         \• Required for vlan purpose interfaces.
@@ -311,22 +302,18 @@ Parameters
         \• Must be an empty string or null for public purpose interfaces.
 
 
-      **purpose (required=True, type=str, default=None):**
-        \• The type of interface.
 
-
-
-  **private_ip (required=False, type=bool, default=None):**
+  **private_ip (type=bool):**
     \• If true, the created Linode will have private networking enabled.
 
 
-  **region (required=False, type=str, default=None):**
+  **region (type=str):**
     \• The location to deploy the instance in.
 
     \• See https://api.linode.com/v4/regions
 
 
-  **root_pass (required=False, type=str, default=None):**
+  **root_pass (type=str):**
     \• The password for the root user.
 
     \• If not specified, one will be generated.
@@ -334,7 +321,7 @@ Parameters
     \• This generated password will be available in the task success JSON.
 
 
-  **stackscript_data (required=False, type=dict, default=None):**
+  **stackscript_data (type=dict):**
     \• An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance.
 
     \• Only valid when a stackscript_id is provided.
@@ -342,21 +329,21 @@ Parameters
     \• See https://www.linode.com/docs/api/stackscripts/.
 
 
-  **stackscript_id (required=False, type=int, default=None):**
+  **stackscript_id (type=int):**
     \• The ID of the StackScript to use when creating the instance.
 
     \• See https://www.linode.com/docs/api/stackscripts/.
 
 
-  **type (required=False, type=str, default=None):**
+  **type (type=str):**
     \• The unique label to give this instance.
 
 
-  **wait (required=False, type=bool, default=True):**
+  **wait (type=bool, default=True):**
     \• Wait for the instance to have status `running` before returning.
 
 
-  **wait_timeout (required=False, type=int, default=240):**
+  **wait_timeout (type=int, default=240):**
     \• The amount of time, in seconds, to wait for an instance to have status `running`.
 
 

@@ -116,6 +116,8 @@ class LinodeModuleBase:
         self.results['changed'] = True
         self.results['actions'].append(description)
 
+
+
     @property
     def client(self) -> LinodeClient:
         """Creates a 'client' property that is used to access the Linode API."""

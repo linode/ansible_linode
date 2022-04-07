@@ -86,6 +86,9 @@
 
       register: create_populated_nodebalancer
 
+    - debug:
+        var: create_populated_nodebalancer
+
     - name: Assert populated NodeBalancer is created
       assert:
         that:

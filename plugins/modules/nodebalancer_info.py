@@ -54,8 +54,7 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-
-nodebalancer:
+node_balancer:
   description: The NodeBalancer in JSON serialized form.
   linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses"
   returned: always

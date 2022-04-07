@@ -27,19 +27,20 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **domain (required=False, type=str, default=None):**
+
+  **domain (type=str):**
     \• The domain of the clusters.
 
 
-  **id (required=False, type=str, default=None):**
+  **id (type=str):**
     \• The unique id given to the clusters.
 
 
-  **region (required=False, type=str, default=None):**
+  **region (type=str):**
     \• The region the clusters are in.
 
 
-  **static_site_domain (required=False, type=str, default=None):**
+  **static_site_domain (type=str):**
     \• The static-site domain of the clusters.
 
 
