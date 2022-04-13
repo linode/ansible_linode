@@ -1,0 +1,60 @@
+- name: firewall_basic
+  block:
+    - name: Create a Linode Instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        region: us-southeast
+        type: g6-standard-1
+        image: linode/alpine3.13
+        state: present
+      register: inst
+
+    - name: Create a Linode Firewall
+      linode.cloud.firewall:
+        api_token: '{{ api_token }}'
+        api_version: v4beta
+        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        devices: []
+        rules:
+          inbound: []
+          inbound_policy: DROP
+          outbound: []
+          outbound_policy: DROP
+        state: present
+      register: fw
+
+    - name: Add Device to Linode Firewall
+      linode.cloud.firewall_device:
+        api_token: '{{ api_token }}'
+        api_version: v4beta
+        firewall_id: fw.firewall.id
+        firewall_device_id: inst.instance.id
+        firewall_device_type: 'linode'
+        state: present
+      register: fw_device
+
+    - name: Assert firewall created
+      assert:
+        that:
+          - fw_device.changed
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.firewall_device:
+            api_token: '{{ api_token }}'
+            firewall_id: '{{ fw.firewall.id }}'
+            firewall_device_id: '{{ inst.instance.id }}'
+            firewall_device_type: 'linode'
+            state: absent
+
+        - linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ inst.instance.label }}'
+            state: absent
+
+        - linode.cloud.firewall:
+            api_token: '{{ api_token }}'
+            label: '{{ fw.firewall.label }}'
+            state: absent

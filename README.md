@@ -25,6 +25,7 @@ Name | Description
 [linode.cloud.domain_record_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain_record_info.rst)|Gather info about an existing domain record.
 [linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall.rst)|Create and destroy Firewalls.
 [linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall_info.rst)|Gather info about an existing Firewall.
+[linode.cloud.firewall_device](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall_device.rst)|Manage Firewall Devices.
 [linode.cloud.instance](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance.rst)|Create and destroy Linodes.
 [linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance_info.rst)|Gather info about an existing Linode instance.
 [linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer.rst)|Create, destroy, and configure NodeBalancers.
