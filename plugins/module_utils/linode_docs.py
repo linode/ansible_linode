@@ -4,7 +4,8 @@ global_authors = [
         'Luke Murphy (@decentral1se)',
         'Charles Kenney (@charliekenney23)',
         'Phillip Campbell (@phillc)',
-        'Lena Garber (@lbgarber)'
+        'Lena Garber (@lbgarber)',
+        'Jacob Riddle (@jriddle)'
 ]
 
 global_requirements = [

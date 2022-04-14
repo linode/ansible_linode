@@ -1,4 +1,4 @@
-- name: firewall_basic
+- name: firewall_device_basic
   block:
     - name: Create a Linode Instance
       linode.cloud.instance:
@@ -28,13 +28,13 @@
       linode.cloud.firewall_device:
         api_token: '{{ api_token }}'
         api_version: v4beta
-        firewall_id: fw.firewall.id
-        firewall_device_id: inst.instance.id
-        firewall_device_type: 'linode'
+        firewall_id: '{{ fw.firewall.id }}'
+        device_id: '{{ inst.instance.id }}'
+        device_type: 'linode'
         state: present
       register: fw_device
 
-    - name: Assert firewall created
+    - name: Assert firewall device added
       assert:
         that:
           - fw_device.changed
@@ -45,8 +45,8 @@
         - linode.cloud.firewall_device:
             api_token: '{{ api_token }}'
             firewall_id: '{{ fw.firewall.id }}'
-            firewall_device_id: '{{ inst.instance.id }}'
-            firewall_device_type: 'linode'
+            device_id: '{{ inst.instance.id }}'
+            device_type: 'linode'
             state: absent
 
         - linode.cloud.instance:

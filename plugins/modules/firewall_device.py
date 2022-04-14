@@ -25,16 +25,22 @@ MODULE_SPEC = dict(
         description='The ID of the Firewall that contains this device.',
         ),
 
-    firewall_device_id=dict(
+    device_id=dict(
         type='int', required=True,
         description='The ID for this Firewall Device. This will be the ID of the Linode Entity.',
     ),
 
-    firewall_device_type=dict(
+    device_type=dict(
         type='str', required=True,
         description='The type of Linode Entity. Currently only supports linode.',
         choices=['linode'],
     ),
+
+    label=dict(
+        type='str',
+        required=False,
+        doc_hide=True,
+    )
 )
 
 specdoc_meta = dict(
@@ -65,7 +71,7 @@ class LinodeFirewallDevice(LinodeModuleBase):
         try:
             params = self.module.params
             firewall_id = params['firewall_id']
-            device_id = params['firewall_device_id']
+            device_id = params['device_id']
 
             firewall = linode_api4.Firewall(self.client, firewall_id)
             for device in firewall.devices:
@@ -76,13 +82,13 @@ class LinodeFirewallDevice(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get device {0}: {1}'.format(device_id, exception))
 
-    def _create_node(self) -> linode_api4.FirewallDevice:
+    def _create_device(self) -> linode_api4.FirewallDevice:
         try:
             params = copy.deepcopy(self.module.params)
 
             firewall_id = params['firewall_id']
-            device_id = params['firewall_device_id']
-            device_type = params['firewall_device_type']
+            device_id = params['device_id']
+            device_type = params['device_type']
 
             firewall = linode_api4.Firewall(self.client, firewall_id)
 
@@ -93,7 +99,7 @@ class LinodeFirewallDevice(LinodeModuleBase):
             return device
         except Exception as exception:
             return self.fail(msg='failed to create firewall device {0}: {1}'
-                             .format(self.module.params.get('firewall_device_id'), exception))
+                             .format(self.module.params.get('device_id'), exception))
 
     def _handle_present(self) -> None:
         device = self._get_device()
@@ -115,7 +121,7 @@ class LinodeFirewallDevice(LinodeModuleBase):
 
             device.delete()
             self.register_action('Deleted firewall device {0}'
-                                 .format(self.module.params.get('firewall_device_id')))
+                                 .format(self.module.params.get('device_id')))
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for firewall_device module"""
@@ -148,20 +154,21 @@ description:
 - Manage Linode Firewall Devices.
 module: firewall_device
 options:
+  device_id:
+    description: The ID for this Firewall Device. This will be the ID of the Linode
+      Entity.
+    required: true
+    type: int
+  device_type:
+    choices:
+    - linode
+    description: The type of Linode Entity. Currently only supports linode.
+    required: true
+    type: str
   firewall_id:
     description: The ID of the Firewall that contains this device.
     required: true
     type: int
-  firewall_device_id:
-    description: The ID for this Firewall Device. This will be the ID of the Linode Entity.
-    required: true
-    type: int
-  firewall_device_type:
-    choices:
-    - linode
-    description: The ID of the Firewall that contains this device.
-    required: true
-    type: string
 requirements:
 - python >= 3
 '''
@@ -186,9 +193,9 @@ EXAMPLES = '''
 
 - name: Attach the instance to the Firewall
   linode.cloud.firewall_device:
-    firewall_id: firewall_result.firewall.id
-    firewall_device_id: instance_result.instance.id
-    firewall_device_type: 'linode'
+    firewall_id: '{{ firewall_result.firewall.id }}'
+    device_id: '{{ instance_result.instance.id }}'
+    device_type: 'linode'
     state: present
 '''
 

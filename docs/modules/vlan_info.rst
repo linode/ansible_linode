@@ -93,4 +93,5 @@ Authors
 - Charles Kenney (@charliekenney23)
 - Phillip Campbell (@phillc)
 - Lena Garber (@lbgarber)
+- Jacob Riddle (@jriddle)
 

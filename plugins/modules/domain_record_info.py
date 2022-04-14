@@ -27,6 +27,7 @@ author:
 - Charles Kenney (@charliekenney23)
 - Phillip Campbell (@phillc)
 - Lena Garber (@lbgarber)
+- Jacob Riddle (@jriddle)
 description:
 - Get info about a Linode Domain Records.
 module: domain_record_info
