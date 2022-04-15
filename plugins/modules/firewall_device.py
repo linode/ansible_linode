@@ -72,10 +72,11 @@ class LinodeFirewallDevice(LinodeModuleBase):
             params = self.module.params
             firewall_id = params['firewall_id']
             entity_id = params['entity_id']
+            entity_type = params['entity_type']
 
             firewall = linode_api4.Firewall(self.client, firewall_id)
             for device in firewall.devices:
-                if device.id == entity_id:
+                if device.entity.id == entity_id and device.entity.type == entity_type:
                     return device
 
             return None

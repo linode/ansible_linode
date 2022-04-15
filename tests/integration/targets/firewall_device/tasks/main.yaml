@@ -39,6 +39,21 @@
         that:
           - fw_device.changed
 
+    - name: Add Existing Device to Linode Firewall
+      linode.cloud.firewall_device:
+        api_token: '{{ api_token }}'
+        api_version: v4beta
+        firewall_id: '{{ fw.firewall.id }}'
+        entity_id: '{{ inst.instance.id }}'
+        entity_type: 'linode'
+        state: present
+      register: fw_device2
+
+    - name: Assert firewall device not added
+      assert:
+        that:
+          - not fw_device2.changed
+
   always:
     - ignore_errors: yes
       block:
