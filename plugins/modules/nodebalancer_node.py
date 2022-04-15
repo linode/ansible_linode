@@ -186,6 +186,7 @@ author:
 - Charles Kenney (@charliekenney23)
 - Phillip Campbell (@phillc)
 - Lena Garber (@lbgarber)
+- Jacob Riddle (@jriddle)
 description:
 - Manage Linode NodeBalancer Nodes.
 module: nodebalancer_node
