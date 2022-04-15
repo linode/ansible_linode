@@ -27,11 +27,11 @@ The below requirements are needed on the host that executes this module.
 Parameters
 ----------
 
-  **device_id (Required, type=int):**
+  **entity_id (Required, type=int):**
     \• The ID for this Firewall Device. This will be the ID of the Linode Entity.
 
 
-  **device_type (Required, type=str):**
+  **entity_type (Required, type=str):**
     \• The type of Linode Entity. Currently only supports linode.
 
     \• Options: `linode`
@@ -73,8 +73,8 @@ Examples
     - name: Attach the instance to the Firewall
       linode.cloud.firewall_device:
         firewall_id: '{{ firewall_result.firewall.id }}'
-        device_id: '{{ instance_result.instance.id }}'
-        device_type: 'linode'
+        entity_id: '{{ instance_result.instance.id }}'
+        entity_type: 'linode'
         state: present
 
 

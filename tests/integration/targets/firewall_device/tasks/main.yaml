@@ -1,4 +1,4 @@
-- name: firewall_device_basic
+- name: firewall_device
   block:
     - name: Create a Linode Instance
       linode.cloud.instance:
@@ -29,8 +29,8 @@
         api_token: '{{ api_token }}'
         api_version: v4beta
         firewall_id: '{{ fw.firewall.id }}'
-        device_id: '{{ inst.instance.id }}'
-        device_type: 'linode'
+        entity_id: '{{ inst.instance.id }}'
+        entity_type: 'linode'
         state: present
       register: fw_device
 
@@ -45,8 +45,8 @@
         - linode.cloud.firewall_device:
             api_token: '{{ api_token }}'
             firewall_id: '{{ fw.firewall.id }}'
-            device_id: '{{ inst.instance.id }}'
-            device_type: 'linode'
+            entity_id: '{{ inst.instance.id }}'
+            entity_type: 'linode'
             state: absent
 
         - linode.cloud.instance:
