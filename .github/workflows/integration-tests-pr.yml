@@ -33,7 +33,7 @@ jobs:
         with:
           ref: 'refs/pull/${{ github.event.client_payload.pull_request.number }}/merge'
 
-      - run: make TEST_ARGS="${{ github.event.client_payload.slash_command.tests }}" test
+      - run: make TEST_ARGS="-v ${{ github.event.client_payload.slash_command.tests }}" test
         if: ${{ steps.validate-tests.outputs.match == '' }}
         env:
           LINODE_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
