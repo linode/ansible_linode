@@ -22,385 +22,6 @@ ANSIBLE_METADATA = {
     'supported_by': 'Linode'
 }
 
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Manage Linode Instances.
-module: instance
-options:
-  authorized_keys:
-    description: A list of SSH public key parts to deploy for the root user.
-    elements: str
-    required: false
-    type: list
-  backup_id:
-    description:
-    - The id of the Backup to restore to the new Instance.
-    - "May not be provided if \u201Cimage\u201D is given."
-    required: false
-    type: int
-  boot_config_label:
-    description: The label of the config to boot from.
-    required: false
-    type: str
-  booted:
-    description:
-    - Whether the new Instance should be booted.
-    - This will default to True if the Instance is deployed from an Image or Backup.
-    required: false
-    type: bool
-  configs:
-    description:
-    - A list of Instance configs to apply to the Linode.
-    - See U(https://www.linode.com/docs/api/linode-instances/#configuration-profile-create)
-    elements: dict
-    required: false
-    suboptions:
-      comments:
-        description: Arbitrary User comments on this Config.
-        required: false
-        type: str
-      devices:
-        description: The devices to map to this configuration.
-        required: false
-        suboptions:
-          sda:
-            description: []
-            required: false
-            suboptions:
-              disk_id:
-                description: The ID of the disk to attach to this Linode.
-                required: false
-                type: int
-              disk_label:
-                description: The label of the disk to attach to this Linode.
-                required: false
-                type: str
-              volume_id:
-                description: The ID of the volume to attach to this Linode.
-                required: false
-                type: int
-            type: dict
-          sdb:
-            description: []
-            required: false
-            suboptions:
-              disk_id:
-                description: The ID of the disk to attach to this Linode.
-                required: false
-                type: int
-              disk_label:
-                description: The label of the disk to attach to this Linode.
-                required: false
-                type: str
-              volume_id:
-                description: The ID of the volume to attach to this Linode.
-                required: false
-                type: int
-            type: dict
-          sdc:
-            description: []
-            required: false
-            suboptions:
-              disk_id:
-                description: The ID of the disk to attach to this Linode.
-                required: false
-                type: int
-              disk_label:
-                description: The label of the disk to attach to this Linode.
-                required: false
-                type: str
-              volume_id:
-                description: The ID of the volume to attach to this Linode.
-                required: false
-                type: int
-            type: dict
-          sdd:
-            description: []
-            required: false
-            suboptions:
-              disk_id:
-                description: The ID of the disk to attach to this Linode.
-                required: false
-                type: int
-              disk_label:
-                description: The label of the disk to attach to this Linode.
-                required: false
-                type: str
-              volume_id:
-                description: The ID of the volume to attach to this Linode.
-                required: false
-                type: int
-            type: dict
-          sde:
-            description: []
-            required: false
-            suboptions:
-              disk_id:
-                description: The ID of the disk to attach to this Linode.
-                required: false
-                type: int
-              disk_label:
-                description: The label of the disk to attach to this Linode.
-                required: false
-                type: str
-              volume_id:
-                description: The ID of the volume to attach to this Linode.
-                required: false
-                type: int
-            type: dict
-          sdf:
-            description: []
-            required: false
-            suboptions:
-              disk_id:
-                description: The ID of the disk to attach to this Linode.
-                required: false
-                type: int
-              disk_label:
-                description: The label of the disk to attach to this Linode.
-                required: false
-                type: str
-              volume_id:
-                description: The ID of the volume to attach to this Linode.
-                required: false
-                type: int
-            type: dict
-          sdg:
-            description: []
-            required: false
-            suboptions:
-              disk_id:
-                description: The ID of the disk to attach to this Linode.
-                required: false
-                type: int
-              disk_label:
-                description: The label of the disk to attach to this Linode.
-                required: false
-                type: str
-              volume_id:
-                description: The ID of the volume to attach to this Linode.
-                required: false
-                type: int
-            type: dict
-          sdh:
-            description: []
-            required: false
-            suboptions:
-              disk_id:
-                description: The ID of the disk to attach to this Linode.
-                required: false
-                type: int
-              disk_label:
-                description: The label of the disk to attach to this Linode.
-                required: false
-                type: str
-              volume_id:
-                description: The ID of the volume to attach to this Linode.
-                required: false
-                type: int
-            type: dict
-        type: dict
-      helpers:
-        description: Helpers enabled when booting to this Linode Config.
-        required: false
-        suboptions:
-          devtmpfs_automount:
-            description: Populates the /dev directory early during boot without udev.
-            required: false
-            type: bool
-          distro:
-            description: Helps maintain correct inittab/upstart console device.
-            required: false
-            type: bool
-          modules_dep:
-            description: Creates a modules dependency file for the Kernel you run.
-            required: false
-            type: bool
-          network:
-            description: Automatically configures static networking.
-            required: false
-            type: bool
-          updatedb_disabled:
-            description: Disables updatedb cron job to avoid disk thrashing.
-            required: false
-            type: bool
-        type: dict
-      kernel:
-        description: "A Kernel ID to boot a Linode with. Defaults to \u201Clinode/latest-64bit\u201D\
-          ."
-        required: false
-        type: str
-      label:
-        description: The label to assign to this config.
-        required: true
-        type: str
-      memory_limit:
-        description: Defaults to the total RAM of the Linode.
-        required: false
-        type: int
-      root_device:
-        description: The root device to boot.
-        required: false
-        type: str
-      run_level:
-        description: Defines the state of your Linode after booting.
-        required: false
-        type: str
-      virt_mode:
-        choices:
-        - paravirt
-        - fullvirt
-        description: Controls the virtualization mode.
-        required: false
-        type: str
-    type: list
-  disks:
-    description:
-    - A list of Disks to create on the Linode.
-    - See U(https://www.linode.com/docs/api/linode-instances/#disk-create)
-    elements: dict
-    required: false
-    suboptions:
-      authorized_keys:
-        description: A list of SSH public key parts to deploy for the root user.
-        elements: str
-        required: false
-        type: list
-      authorized_users:
-        description: A list of usernames.
-        elements: str
-        required: false
-        type: list
-      filesystem:
-        description: The filesystem to create this disk with.
-        required: false
-        type: str
-      image:
-        description: An Image ID to deploy the Disk from.
-        required: false
-        type: str
-      label:
-        description: The label to give this Disk.
-        required: true
-        type: str
-      root_pass:
-        description: "The root user\u2019s password on the newly-created Linode."
-        required: false
-        type: str
-      size:
-        description: The size of the Disk in MB.
-        required: true
-        type: int
-      stackscript_data:
-        description:
-        - An object containing arguments to any User Defined Fields present in the
-          StackScript used when creating the instance.
-        - Only valid when a stackscript_id is provided.
-        - See U(https://www.linode.com/docs/api/stackscripts/)
-        required: false
-        type: dict
-      stackscript_id:
-        description:
-        - The ID of the StackScript to use when creating the instance.
-        - See U(https://www.linode.com/docs/api/stackscripts/)
-        required: false
-        type: int
-    type: list
-  group:
-    description:
-    - The group that the instance should be marked under.
-    - Please note, that group labelling is deprecated but still supported.
-    - The encouraged method for marking instances is to use tags.
-    required: false
-    type: str
-  image:
-    description: The image ID to deploy the instance disk from.
-    required: false
-    type: str
-  interfaces:
-    description:
-    - A list of network interfaces to apply to the Linode.
-    - See U(https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema).
-    elements: dict
-    required: false
-    suboptions:
-      ipam_address:
-        description: "This Network Interface\u2019s private IP address in Classless\
-          \ Inter-Domain Routing (CIDR) notation."
-        required: false
-        type: str
-      label:
-        description:
-        - The name of this interface.
-        - Required for vlan purpose interfaces.
-        - Must be an empty string or null for public purpose interfaces.
-        required: false
-        type: str
-      purpose:
-        choices:
-        - public
-        - vlan
-        description: The type of interface.
-        required: true
-        type: str
-    type: list
-  private_ip:
-    description: If true, the created Linode will have private networking enabled.
-    required: false
-    type: bool
-  region:
-    description:
-    - The location to deploy the instance in.
-    - See U(https://api.linode.com/v4/regions)
-    required: false
-    type: str
-  root_pass:
-    description:
-    - The password for the root user.
-    - If not specified, one will be generated.
-    - This generated password will be available in the task success JSON.
-    required: false
-    type: str
-  stackscript_data:
-    description:
-    - An object containing arguments to any User Defined Fields present in the StackScript
-      used when creating the instance.
-    - Only valid when a stackscript_id is provided.
-    - See U(https://www.linode.com/docs/api/stackscripts/).
-    required: false
-    type: dict
-  stackscript_id:
-    description:
-    - The ID of the StackScript to use when creating the instance.
-    - See U(https://www.linode.com/docs/api/stackscripts/).
-    required: false
-    type: int
-  type:
-    description:
-    - The unique label to give this instance.
-    required: false
-    type: str
-  wait:
-    default: true
-    description: Wait for the instance to have status `running` before returning.
-    required: false
-    type: bool
-  wait_timeout:
-    default: 240
-    description: The amount of time, in seconds, to wait for an instance to have status
-      `running`.
-    required: false
-    type: int
-requirements:
-- python >= 3
-'''
-
 EXAMPLES = '''
 - name: Create a new Linode instance.
   linode.cloud.instance:
@@ -573,7 +194,7 @@ linode_instance_disk_spec = dict(
         type='int',
         description=[
             'The ID of the StackScript to use when creating the instance.',
-            'See U(https://www.linode.com/docs/api/stackscripts/)'
+            'See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).'
         ]),
 
     stackscript_data=dict(
@@ -582,7 +203,7 @@ linode_instance_disk_spec = dict(
             'An object containing arguments to any User Defined Fields present in '
             'the StackScript used when creating the instance.',
             'Only valid when a stackscript_id is provided.',
-            'See U(https://www.linode.com/docs/api/stackscripts/)'
+            'See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).'
         ])
 )
 
@@ -705,7 +326,7 @@ linode_instance_spec = dict(
         type='str',
         description=[
             'The location to deploy the instance in.',
-            'See U(https://api.linode.com/v4/regions)']),
+            'See the [Linode API documentation](https://api.linode.com/v4/regions).']),
 
     image=dict(
         type='str',
@@ -727,7 +348,7 @@ linode_instance_spec = dict(
         type='int',
         description=[
             'The ID of the StackScript to use when creating the instance.',
-            'See U(https://www.linode.com/docs/api/stackscripts/).'
+            'See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).'
         ]),
 
     stackscript_data=dict(
@@ -736,7 +357,7 @@ linode_instance_spec = dict(
             'An object containing arguments to any User Defined Fields present in '
             'the StackScript used when creating the instance.',
             'Only valid when a stackscript_id is provided.',
-            'See U(https://www.linode.com/docs/api/stackscripts/).'
+            'See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).'
         ]),
 
     private_ip=dict(
@@ -756,21 +377,21 @@ linode_instance_spec = dict(
         type='list', elements='dict', options=linode_instance_config_spec,
         description=[
             'A list of Instance configs to apply to the Linode.',
-            'See U(https://www.linode.com/docs/api/linode-instances/#configuration-profile-create)'
+            'See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create).'
         ]),
 
     disks=dict(
         type='list', elements='dict', options=linode_instance_disk_spec,
         description=[
             'A list of Disks to create on the Linode.',
-            'See U(https://www.linode.com/docs/api/linode-instances/#disk-create)'
+            'See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#disk-create).'
         ]),
 
     interfaces=dict(
         type='list', elements='dict', options=linode_instance_interface_spec,
         description=[
             'A list of network interfaces to apply to the Linode.',
-            'See U(https://www.linode.com/docs/api/linode-instances/'
+            'See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/'
             '#linode-create__request-body-schema).'
         ]),
 
@@ -798,13 +419,57 @@ linode_instance_spec = dict(
         )
 )
 
+specdoc_examples = [
+    '''
+- name: Create a new Linode instance.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-east
+    image: linode/ubuntu20.04
+    root_pass: verysecurepassword!!!
+    private_ip: false
+    authorized_keys:
+      - "ssh-rsa ..."
+    stackscript_id: 1337
+    stackscript_data:
+      variable: value
+    group: app
+    tags:
+      - env=prod
+    state: present''',
+    '''
+- name: Delete a Linode instance.
+  linode.cloud.instance:
+    label: my-linode
+    state: absent'''
+]
+
 specdoc_meta = dict(
     description=[
-        'Manage Linode Instances.'
+        'Manage Linode Instances, Configs, and Disks.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_instance_spec
+    spec=linode_instance_spec,
+    examples=specdoc_examples,
+    return_values=dict(
+        instance=dict(
+            description=['The instance description in JSON serialized form.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#linode-view__responses',
+            type='dict',
+        ),
+        configs=dict(
+            description=['A list of configs tied to this Linode Instance.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses',
+            type='list',
+        ),
+        disks=dict(
+            description=['A list of disks tied to this Linode Instance.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#disk-view__responses',
+            type='list'
+        )
+    )
 )
 
 # Fields that can be updated on an existing instance

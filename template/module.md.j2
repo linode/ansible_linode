@@ -1,0 +1,38 @@
+# {{ module }}
+
+{% if description %}
+{% for line in description %}
+{{ line }}
+
+{% endfor %}
+{% endif %}
+
+## Examples
+
+{% for example in examples %}```yaml{{ example }}
+```
+
+{% endfor %}
+
+## Parameters
+
+{% macro options_display(opts, level) %}
+{% for name, spec in opts.items() %}
+{% set required_text = '**(Required)**' if spec.required else '' %}
+{{ "    " * level }}- `{{ name }}`{% if spec.description %} - {{ required_text }} {% for line in spec.description %}{{ line }} {% endfor %}{% endif %}
+
+{% if spec.suboptions %}{{ options_display(spec.suboptions, level + 1) }}{% endif %}
+{% endfor %}
+{% endmacro %}
+
+{{ options_display(options, 0) }}
+
+## Return Values
+
+{% for name, spec in return_values.items() %}
+- `{{ name }}`{% if spec.description %} - {% for line in spec.description %}{{ line }}{% endfor %}{% endif %}
+
+{% if spec.docs_url %}
+    - See the [Linode API response documentation]({{spec.docs_url}}) for a list of returned fields
+{% endif %}
+{% endfor %}
