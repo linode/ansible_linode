@@ -32,7 +32,20 @@
 {% for name, spec in return_values.items() %}
 - `{{ name }}`{% if spec.description %} - {% for line in spec.description %}{{ line }}{% endfor %}{% endif %}
 
+{% if spec.sample %}
+
+    - Sample Response:
+{% for sample in spec.sample %}
+        ```json
+{% for line in sample.split('\n') %}
+        {{ line }}
+{% endfor %}
+        ```
+{% endfor %}
+{% endif %}
 {% if spec.docs_url %}
     - See the [Linode API response documentation]({{spec.docs_url}}) for a list of returned fields
 {% endif %}
+
+
 {% endfor %}
