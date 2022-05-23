@@ -29,7 +29,7 @@ gendocs:
 
 	mkdir -p $(DOCS_PATH)/modules $(DOCS_PATH)/inventory
 
-	./scripts/specdoc_generate.sh
+	DOCS_PATH=$(DOCS_PATH) ./scripts/specdoc_generate.sh
 	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
 
 integration-test: $(INTEGRATION_CONFIG)
