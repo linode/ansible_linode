@@ -14,206 +14,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Manage Linode Firewalls.
-module: firewall
-options:
-  devices:
-    description:
-    - The devices that are attached to this Firewall.
-    elements: dict
-    required: false
-    suboptions:
-      id:
-        description:
-        - The unique ID of the device to attach to this Firewall.
-        required: true
-        type: int
-      type:
-        default: linode
-        description:
-        - The type of device to be attached to this Firewall.
-        required: false
-        type: str
-    type: list
-  label:
-    description:
-    - The unique label to give this Firewall.
-    required: false
-    type: str
-  rules:
-    description:
-    - The inbound and outbound access rules to apply to this Firewall.
-    required: false
-    suboptions:
-      inbound:
-        description:
-        - A list of rules for inbound traffic.
-        elements: dict
-        required: false
-        suboptions:
-          action:
-            description: &id001
-            - Controls whether traffic is accepted or dropped by this rule.
-            required: true
-            type: str
-          addresses:
-            description: &id002
-            - Allowed IPv4 or IPv6 addresses.
-            required: false
-            suboptions:
-              ipv4:
-                description: &id003
-                - A list of IPv4 addresses or networks.
-                - Must be in IP/mask format.
-                elements: str
-                required: false
-                type: list
-              ipv6:
-                description: &id004
-                - A list of IPv4 addresses or networks.
-                - Must be in IP/mask format.
-                elements: str
-                required: false
-                type: list
-            type: dict
-          description:
-            description: &id005
-            - A description for this rule.
-            required: false
-            type: str
-          label:
-            description: &id006
-            - The label of this rule.
-            required: true
-            type: str
-          ports:
-            description: &id007
-            - A string representing the port or ports on which traffic will be allowed.
-            - See U(https://www.linode.com/docs/api/networking/#firewall-create)
-            required: false
-            type: str
-          protocol:
-            description: &id008
-            - The type of network traffic to allow.
-            required: false
-            type: str
-        type: list
-      inbound_policy:
-        description:
-        - The default behavior for inbound traffic.
-        required: false
-        type: str
-      outbound:
-        description:
-        - A list of rules for outbound traffic.
-        elements: dict
-        required: false
-        suboptions:
-          action:
-            description: *id001
-            required: true
-            type: str
-          addresses:
-            description: *id002
-            required: false
-            suboptions:
-              ipv4:
-                description: *id003
-                elements: str
-                required: false
-                type: list
-              ipv6:
-                description: *id004
-                elements: str
-                required: false
-                type: list
-            type: dict
-          description:
-            description: *id005
-            required: false
-            type: str
-          label:
-            description: *id006
-            required: true
-            type: str
-          ports:
-            description: *id007
-            required: false
-            type: str
-          protocol:
-            description: *id008
-            required: false
-            type: str
-        type: list
-      outbound_policy:
-        description:
-        - The default behavior for outbound traffic.
-        required: false
-        type: str
-    type: dict
-  status:
-    description:
-    - The status of this Firewall.
-    required: false
-    type: str
-requirements:
-- python >= 3
-'''
-
 EXAMPLES = '''
-- name: Create a Linode Firewall
-  linode.cloud.firewall:
-    api_version: v4beta
-    label: 'my-firewall'
-    devices:
-      - id: 123
-        type: linode
-    rules:
-      inbound_policy: DROP
-      inbound:
-        - label: allow-http-in
-          addresses:
-            ipv4:
-              - 0.0.0.0/0
-            ipv6:
-              - 'ff00::/8'
-          description: Allow inbound HTTP and HTTPS connections.
-          ports: '80,443'
-          protocol: TCP
-          action: ACCEPT
-
-      outbound_policy: DROP
-      outbound:
-        - label: allow-http-out
-          addresses:
-            ipv4:
-              - 0.0.0.0/0
-            ipv6:
-              - 'ff00::/8'
-          description: Allow outbound HTTP and HTTPS connections.
-          ports: '80,443'
-          protocol: TCP
-          action: ACCEPT
-    state: present
-    
-- name: Delete a Linode Firewall
-  linode.cloud.firewall:
-    api_version: v4beta
-    label: 'my-firewall'
-    state: absent
 '''
 
 RETURN = '''
@@ -389,7 +190,121 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_firewall_spec
+    spec=linode_firewall_spec,
+    examples=['''
+- name: Create a Linode Firewall
+  linode.cloud.firewall:
+    api_version: v4beta
+    label: 'my-firewall'
+    devices:
+      - id: 123
+        type: linode
+    rules:
+      inbound_policy: DROP
+      inbound:
+        - label: allow-http-in
+          addresses:
+            ipv4:
+              - 0.0.0.0/0
+            ipv6:
+              - 'ff00::/8'
+          description: Allow inbound HTTP and HTTPS connections.
+          ports: '80,443'
+          protocol: TCP
+          action: ACCEPT
+
+      outbound_policy: DROP
+      outbound:
+        - label: allow-http-out
+          addresses:
+            ipv4:
+              - 0.0.0.0/0
+            ipv6:
+              - 'ff00::/8'
+          description: Allow outbound HTTP and HTTPS connections.
+          ports: '80,443'
+          protocol: TCP
+          action: ACCEPT
+    state: present''', '''
+- name: Delete a Linode Firewall
+  linode.cloud.firewall:
+    api_version: v4beta
+    label: 'my-firewall'
+    state: absent'''],
+    return_values=dict(
+        firewall=dict(
+            description='The Firewall description in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/networking/#firewall-view',
+            type='dict',
+            sample=['''{
+  "created": "2018-01-01T00:01:01",
+  "id": 123,
+  "label": "firewall123",
+  "rules": {
+    "inbound": [
+      {
+        "action": "ACCEPT",
+        "addresses": {
+          "ipv4": [
+            "192.0.2.0/24"
+          ],
+          "ipv6": [
+            "2001:DB8::/32"
+          ]
+        },
+        "description": "An example firewall rule description.",
+        "label": "firewallrule123",
+        "ports": "22-24, 80, 443",
+        "protocol": "TCP"
+      }
+    ],
+    "inbound_policy": "DROP",
+    "outbound": [
+      {
+        "action": "ACCEPT",
+        "addresses": {
+          "ipv4": [
+            "192.0.2.0/24"
+          ],
+          "ipv6": [
+            "2001:DB8::/32"
+          ]
+        },
+        "description": "An example firewall rule description.",
+        "label": "firewallrule123",
+        "ports": "22-24, 80, 443",
+        "protocol": "TCP"
+      }
+    ],
+    "outbound_policy": "DROP"
+  },
+  "status": "enabled",
+  "tags": [
+    "example tag",
+    "another example"
+  ],
+  "updated": "2018-01-02T00:01:01"
+}''']
+        ),
+        devices=dict(
+            description='A list of Firewall devices JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/networking/#firewall-device-view',
+            type='list',
+            sample=['''[
+  {
+    "created": "2018-01-01T00:01:01",
+    "entity": {
+      "id": 123,
+      "label": "my-linode",
+      "type": "linode",
+      "url": "/v4/linode/instances/123"
+    },
+    "id": 123,
+    "updated": "2018-01-02T00:01:01"
+  }
+]''']
+        )
+    )
 )
 
 

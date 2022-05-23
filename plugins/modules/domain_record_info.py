@@ -16,54 +16,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Get info about a Linode Domain Records.
-module: domain_record_info
-options:
-  domain:
-    description: The name of the parent Domain.
-    required: false
-    type: str
-  domain_id:
-    description: The ID of the parent Domain.
-    required: false
-    type: int
-  id:
-    description: The unique id of the subdomain.
-    required: false
-    type: int
-  name:
-    description: The name of the domain record.
-    required: false
-    type: str
-requirements:
-- python >= 3
-'''
-
 EXAMPLES = '''
-- name: Get info about domain records by name
-  linode.cloud.domain_record_info:
-    domain: my-domain.com
-    name: my-subdomain
-    type: A
-    target: 0.0.0.0
-
-- name: Get info about a domain record by id
-  linode.cloud.domain_info:
-    domain: my-domain.com
-    id: 12345
 '''
 
 RETURN = '''
@@ -112,7 +65,41 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_domain_record_info_spec
+    spec=linode_domain_record_info_spec,
+    examples=['''
+- name: Get info about domain records by name
+  linode.cloud.domain_record_info:
+    domain: my-domain.com
+    name: my-subdomain
+    type: A
+    target: 0.0.0.0
+''', '''
+- name: Get info about a domain record by id
+  linode.cloud.domain_info:
+    domain: my-domain.com
+    id: 12345'''],
+    return_values=dict(
+        record=dict(
+            description='The domain records in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
+            type='dict',
+            sample=['''{
+  "created": "2018-01-01T00:01:01",
+  "id": 123456,
+  "name": "test",
+  "port": 80,
+  "priority": 50,
+  "protocol": null,
+  "service": null,
+  "tag": null,
+  "target": "192.0.2.0",
+  "ttl_sec": 604800,
+  "type": "A",
+  "updated": "2018-01-01T00:01:01",
+  "weight": 50
+}''']
+        )
+    )
 )
 
 

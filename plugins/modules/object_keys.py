@@ -15,95 +15,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Manage Linode Object Storage Keys.
-module: object_keys
-options:
-  access:
-    description: A list of access permissions to give the key.
-    elements: dict
-    required: false
-    suboptions:
-      bucket_name:
-        description: The name of the bucket to set the key's permissions for.
-        required: true
-        type: str
-      cluster:
-        description: The id of the cluster that the provided bucket exists under.
-        required: true
-        type: str
-      permissions:
-        choices:
-        - read_only
-        - write_only
-        - read_write
-        description: The permissions to give the key.
-        required: true
-        type: str
-    type: list
-  label:
-    description: The unique label to give this key.
-    required: false
-    type: str
-requirements:
-- python >= 3
-'''
-
-EXAMPLES = '''
-- name: Create an Object Storage key
-  linode.cloud.object_keys:
-    label: 'my-fullaccess-key'
-    state: present
-    
-- name: Create a limited Object Storage key
-  linode.cloud.object_keys:
-    label: 'my-limited-key'
-    access:
-      - cluster: us-east-1
-        bucket_name: my-bucket
-        permissions: read_write
-    state: present
-    
-- name: Remove an object storage key
-  linode.cloud.object_keys:
-    label: 'my-key'
-    state: absent
-'''
-
-RETURN = '''
-key:
-  description: The Object Storage key in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/object-storage/#object-storage-key-view__responses"
-  returned: always
-  type: dict
-  sample: {
-   "access_key":"xxxxxxxxxxxxxxxxx",
-   "bucket_access":[
-      {
-         "bucket_name":"my-bucket",
-         "cluster":"us-east-1",
-         "permissions":"read_write"
-      }
-   ],
-   "id":xxxxx,
-   "label":"my-key",
-   "limited":true,
-   "secret_key":"xxxxxxxxxxxxxxxxxxxxxxxxxxx"
-}
-'''
-
 linode_access_spec = dict(
     cluster=dict(
         type='str', required=True,
@@ -135,7 +46,47 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_object_keys_spec
+    spec=linode_object_keys_spec,
+    examples=['''
+- name: Create an Object Storage key
+  linode.cloud.object_keys:
+    label: 'my-fullaccess-key'
+    state: present''',
+              '''
+- name: Create a limited Object Storage key
+  linode.cloud.object_keys:
+    label: 'my-limited-key'
+    access:
+      - cluster: us-east-1
+        bucket_name: my-bucket
+        permissions: read_write
+    state: present''',
+              '''
+- name: Remove an object storage key
+  linode.cloud.object_keys:
+    label: 'my-key'
+    state: absent'''],
+    return_values=dict(
+        key=dict(
+            description='The Object Storage key in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/object-storage/#object-storage-key-view__responses',
+            type='dict',
+            sample=['''{
+  "access_key": "KVAKUTGBA4WTR2NSJQ81",
+  "bucket_access": [
+    {
+      "bucket_name": "example-bucket",
+      "cluster": "ap-south-1",
+      "permissions": "read_only"
+    }
+  ],
+  "id": 123,
+  "label": "my-key",
+  "limited": true,
+  "secret_key": "OiA6F5r0niLs3QA2stbyq7mY5VCV7KqOzcmitmHw"
+}''']
+        )
+    )
 )
 
 class LinodeObjectStorageKeys(LinodeModuleBase):

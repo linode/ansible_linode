@@ -15,65 +15,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Get info about a Linode Volume.
-module: volume_info
-options:
-  id:
-    description: The ID of the Volume.
-    required: false
-    type: int
-  label:
-    description: The label of the Volume.
-    required: false
-    type: str
-requirements:
-- python >= 3
-'''
-
-EXAMPLES = '''
-- name: Get info about a volume by label
-  linode.cloud.volume_info:
-    label: example-volume
-    
-- name: Get info about a volume by id
-  linode.cloud.volume_info:
-    id: 12345
-'''
-
-RETURN = '''
-volume:
-  description: The volume in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/volumes/#volume-view__responses"
-  returned: always
-  type: dict
-  sample: {
-   "created":"",
-   "filesystem_path":"/dev/disk/by-id/xxxxxx",
-   "id":xxxxxx,
-   "label":"xxxxxx",
-   "linode_id":xxxxxx,
-   "linode_label":"xxxxxx",
-   "region":"us-east",
-   "size":30,
-   "status":"creating",
-   "tags":[],
-   "updated":"2021-03-05T19:05:33"
-}
-'''
-
 linode_volume_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
     state=dict(type='str', required=False, doc_hide=True),
@@ -93,7 +34,39 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_volume_info_spec
+    spec=linode_volume_info_spec,
+    examples=['''
+- name: Get info about a volume by label
+  linode.cloud.volume_info:
+    label: example-volume
+    
+- name: Get info about a volume by id
+  linode.cloud.volume_info:
+    id: 12345'''],
+    return_values=dict(
+        volume=dict(
+            description='The volume in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/volumes/#volume-view__responses',
+            type='dict',
+            sample=['''{
+  "created": "2018-01-01T00:01:01",
+  "filesystem_path": "/dev/disk/by-id/scsi-0Linode_Volume_my-volume",
+  "hardware_type": "nvme",
+  "id": 12345,
+  "label": "my-volume",
+  "linode_id": 12346,
+  "linode_label": "linode123",
+  "region": "us-east",
+  "size": 30,
+  "status": "active",
+  "tags": [
+    "example tag",
+    "another example"
+  ],
+  "updated": "2018-01-01T00:01:01"
+}''']
+        )
+    )
 )
 
 linode_volume_valid_filters = [
