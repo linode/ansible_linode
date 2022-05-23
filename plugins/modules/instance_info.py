@@ -16,11 +16,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
 DOCUMENTATION = '''
 author:
 - Luke Murphy (@decentral1se)
@@ -46,123 +41,6 @@ requirements:
 - python >= 3
 '''
 
-EXAMPLES = '''
-- name: Get info about an instance by label
-  linode.cloud.instance_info:
-    label: 'my-instance'
-    
-- name: Get info about an instance by id
-  linode.cloud.instance_info:
-    id: 12345
-'''
-
-RETURN = '''
-instance:
-  description: The instance description in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/linode-instances/#linode-view__responses"
-  returned: always
-  type: dict
-  sample: {
-    "alerts": {
-      "cpu": 90,
-      "io": 10000,
-      "network_in": 10,
-      "network_out": 10,
-      "transfer_quota": 80
-    },
-    "backups": {
-      "enabled": false,
-      "schedule": {
-        "day": null,
-        "window": null
-      }
-    },
-    "created": "xxxx-xx-xxTxx:xx:xx",
-    "group": "app",
-    "hypervisor": "kvm",
-    "id": xxxxxx,
-    "image": "linode/ubuntu20.04",
-    "ipv4": [
-      "xxx.xxx.xxx.xxx"
-    ],
-    "ipv6": "xxxx:xxxx::xxxx:xxxx:xxxx:xxxx/64",
-    "label": "my-linode",
-    "region": "us-east",
-    "specs": {
-      "disk": 25600,
-      "memory": 1024,
-      "transfer": 1000,
-      "vcpus": 1
-    },
-    "status": "running",
-    "tags": ["env=prod"],
-    "type": "g6-nanode-1",
-    "updated": "xxxx-xx-xxTxx:xx:xx",
-    "watchdog_enabled": true
-  }
-  
-configs:
-  description: The configs tied to this Linode instance.
-  linode_api_docs: "https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses"
-  returned: always
-  type: list
-  sample: [
-   {
-      "comments":"",
-      "created":"xxxxx",
-      "devices":{
-         "sda":null,
-         "sdb":{
-            "disk_id":xxxxx,
-            "volume_id":null
-         },
-         "sdc":null,
-         "sdd":null,
-         "sde":null,
-         "sdf":null,
-         "sdg":null,
-         "sdh":null
-      },
-      "helpers":{
-         "devtmpfs_automount":true,
-         "distro":true,
-         "modules_dep":true,
-         "network":true,
-         "updatedb_disabled":true
-      },
-      "id":xxxxx,
-      "initrd":null,
-      "interfaces":[
-         
-      ],
-      "kernel":"linode/grub2",
-      "label":"My Ubuntu 20.04 LTS Disk Profile",
-      "memory_limit":0,
-      "root_device":"/dev/sda",
-      "run_level":"default",
-      "updated":"xxxxx",
-      "virt_mode":"paravirt"
-   }
-]
-
-disks:
-  description: The disks tied to this Linode instance.
-  linode_api_docs: "https://www.linode.com/docs/api/linode-instances/#disk-view"
-  returned: always
-  type: list
-  sample: [
-  {
-    "created": "xxxxx",
-    "filesystem": "ext4",
-    "id": xxxxx,
-    "label": "test-disk",
-    "size": 10,
-    "status": "ready",
-    "updated": "xxxxx"
-  }
-]
-'''
-
 linode_instance_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
     state=dict(type='str', required=False, doc_hide=True),
@@ -186,7 +64,145 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_instance_info_spec
+    spec=linode_instance_info_spec,
+    examples=['''
+- name: Get info about an instance by label
+  linode.cloud.instance_info:
+    label: 'my-instance' ''', '''
+- name: Get info about an instance by id
+  linode.cloud.instance_info:
+    id: 12345'''],
+    return_values=dict(
+        instance=dict(
+            description=['The instance description in JSON serialized form.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#linode-view__responses',
+            type='dict',
+            sample=['''{
+  "alerts": {
+    "cpu": 180,
+    "io": 10000,
+    "network_in": 10,
+    "network_out": 10,
+    "transfer_quota": 80
+  },
+  "backups": {
+    "enabled": true,
+    "last_successful": "2018-01-01T00:01:01",
+    "schedule": {
+      "day": "Saturday",
+      "window": "W22"
+    }
+  },
+  "created": "2018-01-01T00:01:01",
+  "group": "Linode-Group",
+  "hypervisor": "kvm",
+  "id": 123,
+  "image": "linode/debian10",
+  "ipv4": [
+    "203.0.113.1",
+    "192.0.2.1"
+  ],
+  "ipv6": "c001:d00d::1337/128",
+  "label": "linode123",
+  "region": "us-east",
+  "specs": {
+    "disk": 81920,
+    "memory": 4096,
+    "transfer": 4000,
+    "vcpus": 2
+  },
+  "status": "running",
+  "tags": [
+    "example tag",
+    "another example"
+  ],
+  "type": "g6-standard-1",
+  "updated": "2018-01-01T00:01:01",
+  "watchdog_enabled": true
+}''']
+        ),
+        configs=dict(
+            description=['A list of configs tied to this Linode Instance.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses',
+            type='list',
+            sample=['''[
+  {
+    "comments": "This is my main Config",
+    "devices": {
+      "sda": {
+        "disk_id": 124458,
+        "volume_id": null
+      },
+      "sdb": {
+        "disk_id": 124458,
+        "volume_id": null
+      },
+      "sdc": {
+        "disk_id": 124458,
+        "volume_id": null
+      },
+      "sdd": {
+        "disk_id": 124458,
+        "volume_id": null
+      },
+      "sde": {
+        "disk_id": 124458,
+        "volume_id": null
+      },
+      "sdf": {
+        "disk_id": 124458,
+        "volume_id": null
+      },
+      "sdg": {
+        "disk_id": 124458,
+        "volume_id": null
+      },
+      "sdh": {
+        "disk_id": 124458,
+        "volume_id": null
+      }
+    },
+    "helpers": {
+      "devtmpfs_automount": false,
+      "distro": true,
+      "modules_dep": true,
+      "network": true,
+      "updatedb_disabled": true
+    },
+    "id": 23456,
+    "interfaces": [
+      {
+        "ipam_address": "10.0.0.1/24",
+        "label": "example-interface",
+        "purpose": "vlan"
+      }
+    ],
+    "kernel": "linode/latest-64bit",
+    "label": "My Config",
+    "memory_limit": 2048,
+    "root_device": "/dev/sda",
+    "run_level": "default",
+    "virt_mode": "paravirt"
+  }
+]''']
+        ),
+        disks=dict(
+            description=['A list of disks tied to this Linode Instance.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#disk-view__responses',
+            type='list',
+            sample=['''[
+  {
+    "created": "2018-01-01T00:01:01",
+    "filesystem": "ext4",
+    "id": 25674,
+    "label": "Debian 9 Disk",
+    "size": 48640,
+    "status": "ready",
+    "updated": "2018-01-01T00:01:01"
+  }
+]''']
+        )
+    )
 )
 
 linode_instance_valid_filters = [

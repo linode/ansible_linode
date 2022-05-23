@@ -21,278 +21,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 # pylint: disable=unused-import
 from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Manage a Linode NodeBalancer.
-module: nodebalancer
-options:
-  client_conn_throttle:
-    description:
-    - Throttle connections per second.
-    - Set to 0 (zero) to disable throttling.
-    required: false
-    type: int
-  configs:
-    description: A list of configs to apply to the NodeBalancer.
-    elements: dict
-    required: false
-    suboptions:
-      algorithm:
-        choices:
-        - roundrobin
-        - leastconn
-        - source
-        description: What algorithm this NodeBalancer should use for routing traffic
-          to backends.
-        required: false
-        type: str
-      check:
-        choices:
-        - none
-        - connection
-        - http
-        - http_body
-        description: The type of check to perform against backends to ensure they
-          are serving requests.
-        required: false
-        type: str
-      check_attempts:
-        description: How many times to attempt a check before considering a backend
-          to be down.
-        required: false
-        type: int
-      check_body:
-        default: ''
-        description:
-        - This value must be present in the response body of the check in order for
-          it to pass.
-        - If this value is not present in the response body of a check request, the
-          backend is considered to be down.
-        required: false
-        type: str
-      check_interval:
-        description: How often, in seconds, to check that backends are up and serving
-          requests.
-        required: false
-        type: int
-      check_passive:
-        description: If true, any response from this backend with a 5xx status code
-          will be enough for it to be considered unhealthy and taken out of rotation.
-        required: false
-        type: bool
-      check_path:
-        description: The URL path to check on each backend. If the backend does not
-          respond to this request it is considered to be down.
-        required: false
-        type: str
-      check_timeout:
-        description: How long, in seconds, to wait for a check attempt before considering
-          it failed.
-        required: false
-        type: int
-      cipher_suite:
-        choices:
-        - recommended
-        - legacy
-        default: recommended
-        description: What ciphers to use for SSL connections served by this NodeBalancer.
-        required: false
-        type: str
-      nodes:
-        description: A list of nodes to apply to this config. These can alternatively
-          be configured through the nodebalancer_node module.
-        elements: dict
-        required: false
-        suboptions:
-          address:
-            description:
-            - The private IP Address where this backend can be reached.
-            - This must be a private IP address.
-            required: true
-            type: str
-          label:
-            description: The label for this node.
-            required: true
-            type: str
-          mode:
-            choices:
-            - accept
-            - reject
-            - drain
-            - backup
-            description: The mode this NodeBalancer should use when sending traffic
-              to this backend.
-            required: false
-            type: str
-          weight:
-            description: Nodes with a higher weight will receive more traffic.
-            required: false
-            type: int
-        type: list
-      port:
-        description: The port this Config is for.
-        required: false
-        type: int
-      protocol:
-        choices:
-        - http
-        - https
-        - tcp
-        description: The protocol this port is configured to serve.
-        required: false
-        type: str
-      proxy_protocol:
-        choices:
-        - none
-        - v1
-        - v2
-        description: ProxyProtocol is a TCP extension that sends initial TCP connection
-          information such as source/destination IPs and ports to backend devices.
-        required: false
-        type: str
-      ssl_cert:
-        description: "The PEM-formatted public SSL certificate (or the combined PEM-formatted\
-          \ SSL certificate and Certificate Authority chain) that should be served\
-          \ on this NodeBalancerConfig\u2019s port."
-        required: false
-        type: str
-      ssl_key:
-        description: The PEM-formatted private key for the SSL certificate set in
-          the ssl_cert field.
-        required: false
-        type: str
-      stickiness:
-        choices:
-        - none
-        - table
-        - http_cookie
-        description: Controls how session stickiness is handled on this port.
-        required: false
-        type: str
-    type: list
-  label:
-    description: The unique label to give this NodeBalancer.
-    required: true
-    type: str
-  region:
-    description: The ID of the Region to create this NodeBalancer in.
-    required: false
-    type: str
-requirements:
-- python >= 3
-'''
-
-EXAMPLES = '''
-- name: Create a Linode NodeBalancer
-  linode.cloud.nodebalancer:
-    label: my-loadbalancer
-    region: us-east
-    tags: [ prod-env ]
-    state: present
-    configs:
-      - port: 80
-        protocol: http
-        algorithm: roundrobin
-        nodes:
-          - label: node1
-            address: 0.0.0.0:80
-
-- name: Delete the NodeBalancer
-  linode.cloud.nodebalancer:
-    label: my-loadbalancer
-    region: us-east
-    state: absent
-'''
-
-RETURN = '''
-node_balancer:
-  description: The NodeBalancer in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses"
-  returned: always
-  type: dict
-  sample: {
-      "client_conn_throttle": 0,
-      "created": "",
-      "hostname": "xxxx.newark.nodebalancer.linode.com",
-      "id": xxxxxx,
-      "ipv4": "xxx.xxx.xxx.xxx",
-      "ipv6": "xxxx:xxxx::xxxx:xxxx:xxxx:xxxx",
-      "label": "my-loadbalancer",
-      "region": "us-east",
-      "tags": [
-
-      ],
-      "transfer": {
-        "in": 0,
-        "out": 0,
-        "total": 0
-      },
-      "updated": ""
-    }
-
-configs:
-  description: A list of configs applied to the NodeBalancer.
-  linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#config-view__responses"
-  returned: always
-  type: list
-  sample: [
-      {
-        "algorithm": "roundrobin",
-        "check": "none",
-        "check_attempts": 3,
-        "check_body": "",
-        "check_interval": 0,
-        "check_passive": true,
-        "check_path": "",
-        "check_timeout": 30,
-        "cipher_suite": "recommended",
-        "id": xxxxxx,
-        "nodebalancer_id": xxxxxx,
-        "nodes_status": {
-          "down": 1,
-          "up": 0
-        },
-        "port": 80,
-        "protocol": "http",
-        "proxy_protocol": "none",
-        "ssl_cert": null,
-        "ssl_commonname": "",
-        "ssl_fingerprint": "",
-        "ssl_key": null,
-        "stickiness": "none"
-      }
-    ]
-
-nodes:
-  description: A list of all nodes associated with the NodeBalancer.
-  linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#node-view__responses"
-  returned: always
-  type: list
-  sample: [
-      {
-        "address": "xxx.xxx.xxx.xx:80",
-        "config_id": xxxxxx,
-        "id": xxxxxx,
-        "label": "node1",
-        "mode": "accept",
-        "nodebalancer_id": xxxxxx,
-        "status": "Unknown",
-        "weight": 1
-      }
-    ]
-'''
-
 linode_nodes_spec = dict(
     label=dict(
         type='str', required=True,
@@ -432,7 +160,102 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_nodebalancer_spec
+    spec=linode_nodebalancer_spec,
+    examples=['''
+- name: Create a Linode NodeBalancer
+  linode.cloud.nodebalancer:
+    label: my-loadbalancer
+    region: us-east
+    tags: [ prod-env ]
+    state: present
+    configs:
+      - port: 80
+        protocol: http
+        algorithm: roundrobin
+        nodes:
+          - label: node1
+            address: 0.0.0.0:80''', '''
+- name: Delete the NodeBalancer
+  linode.cloud.nodebalancer:
+    label: my-loadbalancer
+    region: us-east
+    state: absent'''],
+    return_values=dict(
+        node_balancer=dict(
+            description='The NodeBalancer in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses',
+            type='dict',
+            sample=['''{
+  "client_conn_throttle": 0,
+  "created": "2018-01-01T00:01:01",
+  "hostname": "192.0.2.1.ip.linodeusercontent.com",
+  "id": 12345,
+  "ipv4": "12.34.56.78",
+  "ipv6": null,
+  "label": "balancer12345",
+  "region": "us-east",
+  "tags": [
+    "example tag",
+    "another example"
+  ],
+  "transfer": {
+    "in": 28.91200828552246,
+    "out": 3.5487728118896484,
+    "total": 32.46078109741211
+  },
+  "updated": "2018-03-01T00:01:01"
+}''']
+        ),
+        configs=dict(
+            description='A list of configs applied to the NodeBalancer.',
+            docs_url='https://www.linode.com/docs/api/nodebalancers/#config-view__responses',
+            type='list',
+            sample=['''[
+  {
+    "algorithm": "roundrobin",
+    "check": "http_body",
+    "check_attempts": 3,
+    "check_body": "it works",
+    "check_interval": 90,
+    "check_passive": true,
+    "check_path": "/test",
+    "check_timeout": 10,
+    "cipher_suite": "recommended",
+    "id": 4567,
+    "nodebalancer_id": 12345,
+    "nodes_status": {
+      "down": 0,
+      "up": 4
+    },
+    "port": 80,
+    "protocol": "http",
+    "proxy_protocol": "none",
+    "ssl_cert": null,
+    "ssl_commonname": null,
+    "ssl_fingerprint": null,
+    "ssl_key": null,
+    "stickiness": "http_cookie"
+  }
+]''']
+        ),
+        nodes=dict(
+            description='A list of configs applied to the NodeBalancer.',
+            docs_url='https://www.linode.com/docs/api/nodebalancers/#node-view',
+            type='list',
+            sample=['''[
+  {
+    "address": "192.168.210.120:80",
+    "config_id": 4567,
+    "id": 54321,
+    "label": "node54321",
+    "mode": "accept",
+    "nodebalancer_id": 12345,
+    "status": "UP",
+    "weight": 50
+  }
+]''']
+        )
+    )
 )
 
 linode_nodebalancer_mutable: Set[str] = {
