@@ -12,12 +12,11 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
+from ansible_collections.linode.cloud.plugins.modules.nodebalancer import specdoc_meta \
+    as nodebalancer_specdoc_meta
 
 # pylint: disable=unused-import
 from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList, and_
-
-from ansible_collections.linode.cloud.plugins.modules.nodebalancer import specdoc_meta \
-    as nodebalancer_specdoc_meta
 
 linode_nodebalancer_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements

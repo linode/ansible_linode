@@ -84,7 +84,8 @@ specdoc_meta = dict(
     return_values=dict(
         key=dict(
             description='The Object Storage key in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/object-storage/#object-storage-key-view__responses',
+            docs_url='https://www.linode.com/docs/api/object-storage/#object-storage'
+                     '-key-view__responses',
             type='dict',
             sample=result_key_samples
         )

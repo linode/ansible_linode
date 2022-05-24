@@ -239,14 +239,16 @@ linode_instance_spec = dict(
         type='list', elements='dict', options=linode_instance_config_spec,
         description=[
             'A list of Instance configs to apply to the Linode.',
-            'See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create).'
+            'See the [Linode API documentation](https://www.linode.com/docs'
+            '/api/linode-instances/#configuration-profile-create).'
         ]),
 
     disks=dict(
         type='list', elements='dict', options=linode_instance_disk_spec,
         description=[
             'A list of Disks to create on the Linode.',
-            'See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#disk-create).'
+            'See the [Linode API documentation](https://www.linode.com/'
+            'docs/api/linode-instances/#disk-create).'
         ]),
 
     interfaces=dict(
@@ -438,7 +440,8 @@ specdoc_meta = dict(
         ),
         configs=dict(
             description=['A list of configs tied to this Linode Instance.'],
-            docs_url='https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses',
+            docs_url='https://www.linode.com/docs/api/linode-instances/'
+                     '#configuration-profile-view__responses',
             type='list',
             sample=result_configs_samples
         ),
