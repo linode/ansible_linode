@@ -40,19 +40,11 @@ linode_object_keys_spec = dict(
         description='A list of access permissions to give the key.')
 )
 
-specdoc_meta = dict(
-    description=[
-        'Manage Linode Object Storage Keys.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=linode_object_keys_spec,
-    examples=['''
+specdoc_examples = ['''
 - name: Create an Object Storage key
   linode.cloud.object_keys:
     label: 'my-fullaccess-key'
-    state: present''',
-              '''
+    state: present''', '''
 - name: Create a limited Object Storage key
   linode.cloud.object_keys:
     label: 'my-limited-key'
@@ -60,18 +52,13 @@ specdoc_meta = dict(
       - cluster: us-east-1
         bucket_name: my-bucket
         permissions: read_write
-    state: present''',
-              '''
+    state: present''', '''
 - name: Remove an object storage key
   linode.cloud.object_keys:
     label: 'my-key'
-    state: absent'''],
-    return_values=dict(
-        key=dict(
-            description='The Object Storage key in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/object-storage/#object-storage-key-view__responses',
-            type='dict',
-            sample=['''{
+    state: absent''']
+
+result_key_samples = ['''{
   "access_key": "KVAKUTGBA4WTR2NSJQ81",
   "bucket_access": [
     {
@@ -85,6 +72,21 @@ specdoc_meta = dict(
   "limited": true,
   "secret_key": "OiA6F5r0niLs3QA2stbyq7mY5VCV7KqOzcmitmHw"
 }''']
+
+specdoc_meta = dict(
+    description=[
+        'Manage Linode Object Storage Keys.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=linode_object_keys_spec,
+    examples=specdoc_examples,
+    return_values=dict(
+        key=dict(
+            description='The Object Storage key in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/object-storage/#object-storage-key-view__responses',
+            type='dict',
+            sample=result_key_samples
         )
     )
 )

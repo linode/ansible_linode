@@ -281,8 +281,7 @@ linode_instance_spec = dict(
         )
 )
 
-specdoc_examples = [
-    '''
+specdoc_examples = ['''
 - name: Create a new Linode instance.
   linode.cloud.instance:
     label: my-linode
@@ -299,28 +298,13 @@ specdoc_examples = [
     group: app
     tags:
       - env=prod
-    state: present''',
-    '''
+    state: present''', '''
 - name: Delete a Linode instance.
   linode.cloud.instance:
     label: my-linode
-    state: absent'''
-]
+    state: absent''']
 
-specdoc_meta = dict(
-    description=[
-        'Manage Linode Instances, Configs, and Disks.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=linode_instance_spec,
-    examples=specdoc_examples,
-    return_values=dict(
-        instance=dict(
-            description=['The instance description in JSON serialized form.'],
-            docs_url='https://www.linode.com/docs/api/linode-instances/#linode-view__responses',
-            type='dict',
-            sample=['''{
+result_instance_samples = ['''{
   "alerts": {
     "cpu": 180,
     "io": 10000,
@@ -363,12 +347,8 @@ specdoc_meta = dict(
   "updated": "2018-01-01T00:01:01",
   "watchdog_enabled": true
 }''']
-        ),
-        configs=dict(
-            description=['A list of configs tied to this Linode Instance.'],
-            docs_url='https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses',
-            type='list',
-            sample=['''[
+
+result_configs_samples = ['''[
   {
     "comments": "This is my main Config",
     "devices": {
@@ -428,12 +408,8 @@ specdoc_meta = dict(
     "virt_mode": "paravirt"
   }
 ]''']
-        ),
-        disks=dict(
-            description=['A list of disks tied to this Linode Instance.'],
-            docs_url='https://www.linode.com/docs/api/linode-instances/#disk-view__responses',
-            type='list',
-            sample=['''[
+
+result_disks_samples = ['''[
   {
     "created": "2018-01-01T00:01:01",
     "filesystem": "ext4",
@@ -444,6 +420,33 @@ specdoc_meta = dict(
     "updated": "2018-01-01T00:01:01"
   }
 ]''']
+
+specdoc_meta = dict(
+    description=[
+        'Manage Linode Instances, Configs, and Disks.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=linode_instance_spec,
+    examples=specdoc_examples,
+    return_values=dict(
+        instance=dict(
+            description=['The instance description in JSON serialized form.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#linode-view__responses',
+            type='dict',
+            sample=result_instance_samples
+        ),
+        configs=dict(
+            description=['A list of configs tied to this Linode Instance.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses',
+            type='list',
+            sample=result_configs_samples
+        ),
+        disks=dict(
+            description=['A list of disks tied to this Linode Instance.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#disk-view__responses',
+            type='list',
+            sample=result_disks_samples
         )
     )
 )

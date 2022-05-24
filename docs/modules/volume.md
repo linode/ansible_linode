@@ -13,26 +13,34 @@ Manage a Linode Volume.
     size: 30
     linode_id: 12345
     state: present
+```
 
+```yaml
 - name: Create an unattached volume
   linode.cloud.volume:
     label: example-volume
     region: us-east
     size: 30
     state: present
+```
 
+```yaml
 - name: Resize a volume
   linode.cloud.volume:
     label: example-volume
     size: 50
     state: present
+```
 
+```yaml
 - name: Detach a volume
   linode.cloud.volume:
     label: example-volume
     attached: false
     state: present
+```
 
+```yaml
 - name: Delete a volume
   linode.cloud.volume:
     label: example-volume

@@ -5,34 +5,7 @@ Manage Linode Firewall Devices.
 
 ## Examples
 
-```yaml
-- name: Create a Firewall
-  linode.cloud.firewall:
-    label: my-firewall
-    rules:
-      inbound_policy: DROP
-    state: present
-  register: firewall_result
-```
-
-```yaml
-- name: Create an Instance
-  linode.cloud.instance:
-    label: my-instance
-    region: us-east
-    private_ip: true
-    type: g6-standard-1
-    state: present
-  register: instance_result
-```
-
-```yaml
-- name: Attach the instance to the Firewall
-  linode.cloud.firewall_device:
-    firewall_id: '{{ firewall_result.firewall.id }}'
-    entity_id: '{{ instance_result.instance.id }}'
-    entity_type: 'linode'
-    state: present
+```yaml["\n- name: Create a Firewall\n  linode.cloud.firewall:\n    label: my-firewall\n    rules:\n      inbound_policy: DROP\n    state: present\n  register: firewall_result\n\n- name: Create an Instance\n  linode.cloud.instance:\n    label: my-instance\n    region: us-east\n    private_ip: true\n    type: g6-standard-1\n    state: present\n  register: instance_result\n\n- name: Attach the instance to the Firewall\n  linode.cloud.firewall_device:\n    firewall_id: '{{ firewall_result.firewall.id }}'\n    entity_id: '{{ instance_result.instance.id }}'\n    entity_type: 'linode'\n    state: present"]
 ```
 
 

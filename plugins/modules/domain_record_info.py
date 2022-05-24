@@ -16,31 +16,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-EXAMPLES = '''
-'''
-
-RETURN = '''
-records:
-  description: The domain records in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/domains/#domain-record-view"
-  returned: always
-  type: list
-  sample: [{
-   "created":"xxxxx",
-   "id":xxxxx,
-   "name":"xxxx",
-   "port":0,
-   "priority":0,
-   "protocol":null,
-   "service":null,
-   "tag":null,
-   "target":"127.0.0.1",
-   "ttl_sec":3600,
-   "type":"A",
-   "updated":"xxxxx",
-   "weight":55
-}]
-'''
+from ansible_collections.linode.cloud.plugins.modules.domain_record import specdoc_meta \
+    as domain_record_specdoc_meta
 
 linode_domain_record_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
@@ -59,31 +36,19 @@ linode_domain_record_info_spec = dict(
               description='The name of the domain record.'),
 )
 
-specdoc_meta = dict(
-    description=[
-        'Get info about a Linode Domain Records.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=linode_domain_record_info_spec,
-    examples=['''
+specdoc_examples = ['''
 - name: Get info about domain records by name
   linode.cloud.domain_record_info:
     domain: my-domain.com
     name: my-subdomain
     type: A
-    target: 0.0.0.0
-''', '''
+    target: 0.0.0.0''', '''
 - name: Get info about a domain record by id
   linode.cloud.domain_info:
     domain: my-domain.com
-    id: 12345'''],
-    return_values=dict(
-        record=dict(
-            description='The domain records in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
-            type='dict',
-            sample=['''{
+    id: 12345''']
+
+result_record_samples = ['''{
   "created": "2018-01-01T00:01:01",
   "id": 123456,
   "name": "test",
@@ -98,8 +63,16 @@ specdoc_meta = dict(
   "updated": "2018-01-01T00:01:01",
   "weight": 50
 }''']
-        )
-    )
+
+specdoc_meta = dict(
+    description=[
+        'Get info about a Linode Domain Records.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=linode_domain_record_info_spec,
+    examples=specdoc_examples,
+    return_values=domain_record_specdoc_meta['return_values']
 )
 
 

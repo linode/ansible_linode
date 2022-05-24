@@ -11,7 +11,9 @@ Manage Linode Domains.
     domain: my-domain.com
     type: master
     state: present
+```
 
+```yaml
 - name: Delete a domain
   linode.cloud.domain:
     domain: my-domain.com
@@ -42,7 +44,6 @@ Manage Linode Domains.
 
     - Sample Response:
         ```json
-        
         {
           "axfr_ips": [],
           "description": null,

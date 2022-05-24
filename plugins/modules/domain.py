@@ -59,31 +59,18 @@ linode_domain_spec = dict(
     group=dict(type='str', doc_hide=True)
 )
 
-specdoc_meta = dict(
-    description=[
-        'Manage Linode Domains.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=linode_domain_spec,
-    examples=['''
+specdoc_examples = ['''
 - name: Create a domain 
   linode.cloud.domain:
     domain: my-domain.com
     type: master
-    state: present
-
+    state: present''', '''
 - name: Delete a domain
   linode.cloud.domain:
     domain: my-domain.com
-    state: absent'''],
-    return_values=dict(
-        domain=dict(
-            description='The domain in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/domains/#domain-view',
-            type='dict',
-            sample=['''
-{
+    state: absent''']
+
+result_domain_samples = ['''{
   "axfr_ips": [],
   "description": null,
   "domain": "example.org",
@@ -102,12 +89,8 @@ specdoc_meta = dict(
   "ttl_sec": 300,
   "type": "master"
 }''']
-        ),
-        records=dict(
-            description='The domain record in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
-            type='list',
-            sample=['''[
+
+result_records_samples = ['''[
   {
     "created": "2018-01-01T00:01:01",
     "id": 123456,
@@ -124,6 +107,27 @@ specdoc_meta = dict(
     "weight": 50
   }
 ]''']
+
+specdoc_meta = dict(
+    description=[
+        'Manage Linode Domains.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=linode_domain_spec,
+    examples=specdoc_examples,
+    return_values=dict(
+        domain=dict(
+            description='The domain in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/domains/#domain-view',
+            type='dict',
+            sample=result_domain_samples
+        ),
+        records=dict(
+            description='The domain record in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
+            type='list',
+            sample=result_records_samples
         )
     )
 )

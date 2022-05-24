@@ -77,16 +77,7 @@ linode_domain_record_spec = dict(
                             'used in the case of identical priority.')
 )
 
-specdoc_meta = dict(
-    description=[
-        'Manage Linode Domain Records.',
-        'NOTE: Domain records are identified by their name, target, and type.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=linode_domain_record_spec,
-    examples=[
-        '''
+specdoc_examples = ['''
 - name: Create an A record
   linode.cloud.domain_record:
     domain: my-domain.com
@@ -98,13 +89,9 @@ specdoc_meta = dict(
   linode.cloud.domain:
     domain: my-domain.com
     name: my-subdomain
-    state: absent'''],
-    return_values=dict(
-        record=dict(
-            description='View a single Record on this Domain.',
-            docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
-            type='dict',
-            sample=['''{
+    state: absent''']
+
+result_record_samples = ['''{
   "created": "2018-01-01T00:01:01",
   "id": 123456,
   "name": "test",
@@ -119,6 +106,22 @@ specdoc_meta = dict(
   "updated": "2018-01-01T00:01:01",
   "weight": 50
 }''']
+
+specdoc_meta = dict(
+    description=[
+        'Manage Linode Domain Records.',
+        'NOTE: Domain records are identified by their name, target, and type.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=linode_domain_record_spec,
+    examples=specdoc_examples,
+    return_values=dict(
+        record=dict(
+            description='View a single Record on this Domain.',
+            docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
+            type='dict',
+            sample=result_record_samples
         )
     )
 )

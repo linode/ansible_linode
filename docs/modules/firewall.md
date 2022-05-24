@@ -8,7 +8,6 @@ Manage Linode Firewalls.
 ```yaml
 - name: Create a Linode Firewall
   linode.cloud.firewall:
-    api_version: v4beta
     label: 'my-firewall'
     devices:
       - id: 123
@@ -45,7 +44,6 @@ Manage Linode Firewalls.
 ```yaml
 - name: Delete a Linode Firewall
   linode.cloud.firewall:
-    api_version: v4beta
     label: 'my-firewall'
     state: absent
 ```

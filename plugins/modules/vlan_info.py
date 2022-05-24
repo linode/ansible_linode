@@ -24,23 +24,12 @@ linode_vlan_info_spec = dict(
         description='The VLAN’s label.')
 )
 
-specdoc_meta = dict(
-    description=[
-        'Get info about a Linode VLAN.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=linode_vlan_info_spec,
-    examples=['''
+specdoc_examples = ['''
 - name: Get info about a VLAN by label
   linode.cloud.vlan_info:
-    label: example-vlan'''],
-    return_values=dict(
-        vlan=dict(
-            description='The VLAN in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/networking/#vlans-list__response-samples',
-            type='dict',
-            sample=['''{
+    label: example-vlan''']
+
+result_vlan_samples = ['''{
   "created": "2020-01-01T00:01:01",
   "label": "vlan-example",
   "linodes": [
@@ -49,6 +38,21 @@ specdoc_meta = dict(
   ],
   "region": "ap-west"
 }''']
+
+specdoc_meta = dict(
+    description=[
+        'Get info about a Linode VLAN.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=linode_vlan_info_spec,
+    examples=specdoc_examples,
+    return_values=dict(
+        vlan=dict(
+            description='The VLAN in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/networking/#vlans-list__response-samples',
+            type='dict',
+            sample=result_vlan_samples
         )
     )
 )

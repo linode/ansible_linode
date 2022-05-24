@@ -16,6 +16,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
+from ansible_collections.linode.cloud.plugins.modules.domain import specdoc_meta \
+    as domain_specdoc_meta
+
 linode_domain_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
     state=dict(type='str', required=False, doc_hide=True),
@@ -27,27 +30,15 @@ linode_domain_info_spec = dict(
                 description='The unique id of the Domain.')
 )
 
-specdoc_meta = dict(
-    description=[
-        'Get info about a Linode Domain.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=linode_domain_info_spec,
-    examples=['''
+specdoc_examples = ['''
 - name: Get info about a domain by domain
   linode.cloud.domain_info:
-    domain: my-domain.com
-
+    domain: my-domain.com''', '''
 - name: Get info about a domain by id
   linode.cloud.domain_info:
-    id: 12345'''],
-    return_values=dict(
-        domain=dict(
-            description='The domain in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/domains/#domain-view',
-            type='dict',
-            sample=['''{
+    id: 12345''']
+
+result_domain_samples = ['''{
   "axfr_ips": [],
   "description": null,
   "domain": "example.org",
@@ -66,12 +57,8 @@ specdoc_meta = dict(
   "ttl_sec": 300,
   "type": "master"
 }''']
-        ),
-        records=dict(
-            description='The domain record in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
-            type='list',
-            sample=['''[
+
+result_records_samples = ['''[
   {
     "created": "2018-01-01T00:01:01",
     "id": 123456,
@@ -88,8 +75,16 @@ specdoc_meta = dict(
     "weight": 50
   }
 ]''']
-        )
-    )
+
+specdoc_meta = dict(
+    description=[
+        'Get info about a Linode Domain.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=linode_domain_info_spec,
+    examples=specdoc_examples,
+    return_values=domain_specdoc_meta['return_values']
 )
 
 linode_domain_valid_filters = [

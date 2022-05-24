@@ -37,6 +37,24 @@ linode_object_cluster_info_spec = dict(
         description='The static-site domain of the clusters.')
 )
 
+specdoc_examples = ['''
+- name: Get info about clusters in us-east
+  linode.cloud.object_cluster_info:
+    region: us-east''', '''
+- name: Get info about the cluster with id us-east-1
+  linode.cloud.object_cluster_info:
+    id: us-east-1''']
+
+result_clusters_samples = ['''[
+  {
+    "domain": "us-east-1.linodeobjects.com",
+    "id": "us-east-1",
+    "region": "us-east",
+    "static_site_domain": "website-us-east-1.linodeobjects.com",
+    "status": "available"
+  }
+]''']
+
 specdoc_meta = dict(
     description=[
         'Get info about a Linode Object Storage Cluster.'
@@ -44,25 +62,13 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_object_cluster_info_spec,
-    examples=['''
-- name: Get info about clusters in us-east
-  linode.cloud.object_cluster_info:
-    region: us-east''', '''
-- name: Get info about the cluster with id us-east-1
-  linode.cloud.object_cluster_info:
-    id: us-east-1'''],
+    examples=specdoc_examples,
     return_values=dict(
         clusters=dict(
             description='The Object Storage clusters in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/object-storage/#cluster-view__responses',
             type='list',
-            sample=['''{
-  "domain": "us-east-1.linodeobjects.com",
-  "id": "us-east-1",
-  "region": "us-east",
-  "static_site_domain": "website-us-east-1.linodeobjects.com",
-  "status": "available"
-}''']
+            sample=result_clusters_samples
         )
     )
 )

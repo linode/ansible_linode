@@ -9,7 +9,9 @@ Get info about a Linode Domain.
 - name: Get info about a domain by domain
   linode.cloud.domain_info:
     domain: my-domain.com
+```
 
+```yaml
 - name: Get info about a domain by id
   linode.cloud.domain_info:
     id: 12345

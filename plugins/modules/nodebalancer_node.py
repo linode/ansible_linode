@@ -59,14 +59,7 @@ MODULE_SPEC = dict(
     ),
 )
 
-specdoc_meta = dict(
-    description=[
-        'Manage Linode NodeBalancer Nodes.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=MODULE_SPEC,
-    examples=['''
+specdoc_examples = ['''
 - name: Create a NodeBalancer
   linode.cloud.nodebalancer:
     label: my-nodebalancer
@@ -97,13 +90,9 @@ specdoc_meta = dict(
     # Use the private ip address of the instance
     address: '{{ instance_result.instance.ipv4[1] }}:80'
 
-    state: present'''],
-    return_values=dict(
-        node=dict(
-            description='The NodeBalancer Node in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/nodebalancers/#node-view__responses',
-            type='dict',
-            sample=['''{
+    state: present''']
+
+result_node_samples = ['''{
   "address": "123.123.123.123:80",
   "config_id": 12345,
   "id": 12345,
@@ -113,6 +102,21 @@ specdoc_meta = dict(
   "status": "Unknown",
   "weight": 10
 }''']
+
+specdoc_meta = dict(
+    description=[
+        'Manage Linode NodeBalancer Nodes.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=MODULE_SPEC,
+    examples=specdoc_examples,
+    return_values=dict(
+        node=dict(
+            description='The NodeBalancer Node in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/nodebalancers/#node-view__responses',
+            type='dict',
+            sample=result_node_samples
         )
     )
 )

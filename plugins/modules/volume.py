@@ -81,51 +81,36 @@ linode_volume_spec = dict(
         )
 )
 
-specdoc_meta = dict(
-    description=[
-        'Manage a Linode Volume.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=linode_volume_spec,
-    examples=['''
+specdoc_examples = ['''
 - name: Create a volume attached to an instance
   linode.cloud.volume:
     label: example-volume
     region: us-east
     size: 30
     linode_id: 12345
-    state: present
-
+    state: present''', '''
 - name: Create an unattached volume
   linode.cloud.volume:
     label: example-volume
     region: us-east
     size: 30
-    state: present
-
+    state: present''', '''
 - name: Resize a volume
   linode.cloud.volume:
     label: example-volume
     size: 50
-    state: present
-
+    state: present''', '''
 - name: Detach a volume
   linode.cloud.volume:
     label: example-volume
     attached: false
-    state: present
-
+    state: present''', '''
 - name: Delete a volume
   linode.cloud.volume:
     label: example-volume
-    state: absent'''],
-    return_values=dict(
-        volume=dict(
-            description='The volume in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/volumes/#volume-view__responses',
-            type='dict',
-            sample=['''{
+    state: absent''']
+
+result_volume_samples = ['''{
   "created": "2018-01-01T00:01:01",
   "filesystem_path": "/dev/disk/by-id/scsi-0Linode_Volume_my-volume",
   "hardware_type": "nvme",
@@ -142,6 +127,21 @@ specdoc_meta = dict(
   ],
   "updated": "2018-01-01T00:01:01"
 }''']
+
+specdoc_meta = dict(
+    description=[
+        'Manage a Linode Volume.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=linode_volume_spec,
+    examples=specdoc_examples,
+    return_values=dict(
+        volume=dict(
+            description='The volume in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/volumes/#volume-view__responses',
+            type='dict',
+            sample=result_volume_samples
         )
     )
 )

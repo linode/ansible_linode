@@ -154,14 +154,7 @@ linode_nodebalancer_spec = dict(
         description='A list of configs to apply to the NodeBalancer.')
 )
 
-specdoc_meta = dict(
-    description=[
-        'Manage a Linode NodeBalancer.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=linode_nodebalancer_spec,
-    examples=['''
+specdoc_examples = ['''
 - name: Create a Linode NodeBalancer
   linode.cloud.nodebalancer:
     label: my-loadbalancer
@@ -179,13 +172,9 @@ specdoc_meta = dict(
   linode.cloud.nodebalancer:
     label: my-loadbalancer
     region: us-east
-    state: absent'''],
-    return_values=dict(
-        node_balancer=dict(
-            description='The NodeBalancer in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses',
-            type='dict',
-            sample=['''{
+    state: absent''']
+
+result_node_balancer_samples = ['''{
   "client_conn_throttle": 0,
   "created": "2018-01-01T00:01:01",
   "hostname": "192.0.2.1.ip.linodeusercontent.com",
@@ -205,12 +194,8 @@ specdoc_meta = dict(
   },
   "updated": "2018-03-01T00:01:01"
 }''']
-        ),
-        configs=dict(
-            description='A list of configs applied to the NodeBalancer.',
-            docs_url='https://www.linode.com/docs/api/nodebalancers/#config-view__responses',
-            type='list',
-            sample=['''[
+
+result_configs_samples = ['''[
   {
     "algorithm": "roundrobin",
     "check": "http_body",
@@ -237,12 +222,8 @@ specdoc_meta = dict(
     "stickiness": "http_cookie"
   }
 ]''']
-        ),
-        nodes=dict(
-            description='A list of configs applied to the NodeBalancer.',
-            docs_url='https://www.linode.com/docs/api/nodebalancers/#node-view',
-            type='list',
-            sample=['''[
+
+result_nodes_samples = ['''[
   {
     "address": "192.168.210.120:80",
     "config_id": 4567,
@@ -254,6 +235,33 @@ specdoc_meta = dict(
     "weight": 50
   }
 ]''']
+
+specdoc_meta = dict(
+    description=[
+        'Manage a Linode NodeBalancer.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=linode_nodebalancer_spec,
+    examples=specdoc_examples,
+    return_values=dict(
+        node_balancer=dict(
+            description='The NodeBalancer in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses',
+            type='dict',
+            sample=result_node_balancer_samples
+        ),
+        configs=dict(
+            description='A list of configs applied to the NodeBalancer.',
+            docs_url='https://www.linode.com/docs/api/nodebalancers/#config-view__responses',
+            type='list',
+            sample=result_configs_samples
+        ),
+        nodes=dict(
+            description='A list of configs applied to the NodeBalancer.',
+            docs_url='https://www.linode.com/docs/api/nodebalancers/#node-view',
+            type='list',
+            sample=result_nodes_samples
         )
     )
 )

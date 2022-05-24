@@ -12,7 +12,6 @@ Get info about a Linode Domain Records.
     name: my-subdomain
     type: A
     target: 0.0.0.0
-
 ```
 
 ```yaml
@@ -34,7 +33,7 @@ Get info about a Linode Domain Records.
 
 ## Return Values
 
-- `record` - The domain records in JSON serialized form.
+- `record` - View a single Record on this Domain.
 
     - Sample Response:
         ```json

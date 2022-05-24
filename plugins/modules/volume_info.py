@@ -15,6 +15,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
+from ansible_collections.linode.cloud.plugins.modules.volume import specdoc_meta \
+    as volume_specdoc_meta
+
 linode_volume_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
     state=dict(type='str', required=False, doc_hide=True),
@@ -28,6 +31,15 @@ linode_volume_info_spec = dict(
         description='The label of the Volume.')
 )
 
+specdoc_examples = ['''
+- name: Get info about a volume by label
+  linode.cloud.volume_info:
+    label: example-volume
+    
+- name: Get info about a volume by id
+  linode.cloud.volume_info:
+    id: 12345''']
+
 specdoc_meta = dict(
     description=[
         'Get info about a Linode Volume.'
@@ -35,38 +47,8 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_volume_info_spec,
-    examples=['''
-- name: Get info about a volume by label
-  linode.cloud.volume_info:
-    label: example-volume
-    
-- name: Get info about a volume by id
-  linode.cloud.volume_info:
-    id: 12345'''],
-    return_values=dict(
-        volume=dict(
-            description='The volume in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/volumes/#volume-view__responses',
-            type='dict',
-            sample=['''{
-  "created": "2018-01-01T00:01:01",
-  "filesystem_path": "/dev/disk/by-id/scsi-0Linode_Volume_my-volume",
-  "hardware_type": "nvme",
-  "id": 12345,
-  "label": "my-volume",
-  "linode_id": 12346,
-  "linode_label": "linode123",
-  "region": "us-east",
-  "size": 30,
-  "status": "active",
-  "tags": [
-    "example tag",
-    "another example"
-  ],
-  "updated": "2018-01-01T00:01:01"
-}''']
-        )
-    )
+    examples=specdoc_examples,
+    return_values=volume_specdoc_meta['return_values']
 )
 
 linode_volume_valid_filters = [

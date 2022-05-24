@@ -184,17 +184,9 @@ linode_firewall_spec: dict = dict(
                 ])
 )
 
-specdoc_meta = dict(
-    description=[
-        'Manage Linode Firewalls.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=linode_firewall_spec,
-    examples=['''
+specdoc_examples = ['''
 - name: Create a Linode Firewall
   linode.cloud.firewall:
-    api_version: v4beta
     label: 'my-firewall'
     devices:
       - id: 123
@@ -228,15 +220,10 @@ specdoc_meta = dict(
     state: present''', '''
 - name: Delete a Linode Firewall
   linode.cloud.firewall:
-    api_version: v4beta
     label: 'my-firewall'
-    state: absent'''],
-    return_values=dict(
-        firewall=dict(
-            description='The Firewall description in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/networking/#firewall-view',
-            type='dict',
-            sample=['''{
+    state: absent''']
+
+result_firewall_samples = ['''{
   "created": "2018-01-01T00:01:01",
   "id": 123,
   "label": "firewall123",
@@ -285,12 +272,8 @@ specdoc_meta = dict(
   ],
   "updated": "2018-01-02T00:01:01"
 }''']
-        ),
-        devices=dict(
-            description='A list of Firewall devices JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/networking/#firewall-device-view',
-            type='list',
-            sample=['''[
+
+result_devices_samples = ['''[
   {
     "created": "2018-01-01T00:01:01",
     "entity": {
@@ -303,6 +286,27 @@ specdoc_meta = dict(
     "updated": "2018-01-02T00:01:01"
   }
 ]''']
+
+specdoc_meta = dict(
+    description=[
+        'Manage Linode Firewalls.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=linode_firewall_spec,
+    examples=specdoc_examples,
+    return_values=dict(
+        firewall=dict(
+            description='The Firewall description in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/networking/#firewall-view',
+            type='dict',
+            sample=result_firewall_samples
+        ),
+        devices=dict(
+            description='A list of Firewall devices JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/networking/#firewall-device-view',
+            type='list',
+            sample=result_devices_samples
         )
     )
 )

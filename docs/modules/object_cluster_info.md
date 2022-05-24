@@ -33,13 +33,15 @@ Get info about a Linode Object Storage Cluster.
 
     - Sample Response:
         ```json
-        {
-          "domain": "us-east-1.linodeobjects.com",
-          "id": "us-east-1",
-          "region": "us-east",
-          "static_site_domain": "website-us-east-1.linodeobjects.com",
-          "status": "available"
-        }
+        [
+          {
+            "domain": "us-east-1.linodeobjects.com",
+            "id": "us-east-1",
+            "region": "us-east",
+            "static_site_domain": "website-us-east-1.linodeobjects.com",
+            "status": "available"
+          }
+        ]
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/object-storage/#cluster-view__responses) for a list of returned fields
 

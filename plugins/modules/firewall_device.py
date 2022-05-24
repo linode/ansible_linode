@@ -38,21 +38,15 @@ MODULE_SPEC = dict(
     )
 )
 
-specdoc_meta = dict(
-    description=[
-        'Manage Linode Firewall Devices.'
-    ],
-    requirements=global_requirements,
-    author=global_authors,
-    spec=MODULE_SPEC,
-    examples=['''
+specdoc_examples = [['''
 - name: Create a Firewall
   linode.cloud.firewall:
     label: my-firewall
     rules:
       inbound_policy: DROP
     state: present
-  register: firewall_result''', '''
+  register: firewall_result
+
 - name: Create an Instance
   linode.cloud.instance:
     label: my-instance
@@ -60,19 +54,16 @@ specdoc_meta = dict(
     private_ip: true
     type: g6-standard-1
     state: present
-  register: instance_result''', '''
+  register: instance_result
+
 - name: Attach the instance to the Firewall
   linode.cloud.firewall_device:
     firewall_id: '{{ firewall_result.firewall.id }}'
     entity_id: '{{ instance_result.instance.id }}'
     entity_type: 'linode'
-    state: present'''],
-    return_values=dict(
-        device=dict(
-            description='The Firewall Device in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/networking/#firewall-device-view__responses',
-            type='dict',
-            sample=['''{
+    state: present''']]
+
+result_device_samples = ['''{
   "created": "2018-01-01T00:01:01",
   "entity": {
     "id": 123,
@@ -83,6 +74,21 @@ specdoc_meta = dict(
   "id": 123,
   "updated": "2018-01-02T00:01:01"
 }''']
+
+specdoc_meta = dict(
+    description=[
+        'Manage Linode Firewall Devices.'
+    ],
+    requirements=global_requirements,
+    author=global_authors,
+    spec=MODULE_SPEC,
+    examples=specdoc_examples,
+    return_values=dict(
+        device=dict(
+            description='The Firewall Device in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/networking/#firewall-device-view__responses',
+            type='dict',
+            sample=result_device_samples
         )
     )
 )
