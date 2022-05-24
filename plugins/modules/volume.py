@@ -78,7 +78,11 @@ linode_volume_spec = dict(
         type='int', default=240,
         description='The amount of time, in seconds, to wait for a volume to '
                     'have the active status.'
-        )
+        ),
+
+    state=dict(type='str',
+               description='The desired state of the target.',
+               choices=['present', 'absent'], required=True),
 )
 
 specdoc_examples = ['''

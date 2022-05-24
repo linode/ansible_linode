@@ -222,6 +222,10 @@ linode_instance_spec = dict(
             'See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).'
         ]),
 
+    state=dict(type='str',
+               description='The desired state of the target.',
+               choices=['present', 'absent'], required=True),
+
     private_ip=dict(
         type='bool',
         description='If true, the created Linode will have private networking enabled.'),

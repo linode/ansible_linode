@@ -18,7 +18,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 
 linode_domain_record_spec = dict(
     # Unused for domain record objects
-    label=dict(type='str', required=False),
+    label=dict(type='str', required=False, doc_hide=True),
 
     domain_id=dict(type='int',
                    description='The ID of the parent Domain.'),
@@ -55,6 +55,9 @@ linode_domain_record_spec = dict(
                      'Only valid and required for SRV record requests.',
                      'The name of the service.'
                  ]),
+    state=dict(type='str',
+               description='The desired state of the target.',
+               choices=['present', 'absent'], required=True),
     tag=dict(type='str',
              description=[
                  'The tag portion of a CAA record.',

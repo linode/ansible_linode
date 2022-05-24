@@ -181,7 +181,10 @@ linode_firewall_spec: dict = dict(
     status=dict(type='str',
                 description=[
                     'The status of this Firewall.'
-                ])
+                ]),
+    state=dict(type='str',
+               description='The desired state of the target.',
+               choices=['present', 'absent'], required=True),
 )
 
 specdoc_examples = ['''

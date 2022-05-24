@@ -15,7 +15,8 @@ Get info about a Linode VLAN.
 ## Parameters
 
 
-- `label` - **(Required)** The VLAN’s label. 
+
+- `label` (`str`) - **(Required)** The VLAN’s label.  
 
 
 ## Return Values

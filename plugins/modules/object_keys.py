@@ -37,7 +37,11 @@ linode_object_keys_spec = dict(
 
     access=dict(
         type='list', elements='dict', options=linode_access_spec,
-        description='A list of access permissions to give the key.')
+        description='A list of access permissions to give the key.'),
+
+    state=dict(type='str',
+               description='The desired state of the target.',
+               choices=['present', 'absent'], required=True),
 )
 
 specdoc_examples = ['''

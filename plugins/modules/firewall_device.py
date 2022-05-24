@@ -35,7 +35,11 @@ MODULE_SPEC = dict(
         type='str',
         required=False,
         doc_hide=True,
-    )
+    ),
+
+    state=dict(type='str',
+               description='The desired state of the target.',
+               choices=['present', 'absent'], required=True),
 )
 
 specdoc_examples = [['''

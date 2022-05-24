@@ -19,8 +19,9 @@ Get info about a Linode Volume.
 ## Parameters
 
 
-- `id` -  The ID of the Volume. 
-- `label` -  The label of the Volume. 
+
+- `id` (`int`) -  The ID of the Volume.  
+- `label` (`str`) -  The label of the Volume.  
 
 
 ## Return Values

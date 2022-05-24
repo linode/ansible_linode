@@ -36,81 +36,83 @@ Manage Linode Instances, Configs, and Disks.
 ## Parameters
 
 
-- `type` -  The unique label to give this instance. 
-- `region` -  The location to deploy the instance in. See the [Linode API documentation](https://api.linode.com/v4/regions). 
-- `image` -  The image ID to deploy the instance disk from. 
-- `authorized_keys` -  A list of SSH public key parts to deploy for the root user. 
-- `root_pass` -  The password for the root user. If not specified, one will be generated. This generated password will be available in the task success JSON. 
-- `stackscript_id` -  The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/). 
-- `stackscript_data` -  An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/). 
-- `private_ip` -  If true, the created Linode will have private networking enabled. 
-- `group` -  The group that the instance should be marked under. Please note, that group labelling is deprecated but still supported. The encouraged method for marking instances is to use tags. 
-- `boot_config_label` -  The label of the config to boot from. 
-- `configs` -  A list of Instance configs to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create). 
-    - `comments` -  Arbitrary User comments on this Config. 
-    - `devices` -  The devices to map to this configuration. 
-        - `sda`
-            - `disk_label` -  The label of the disk to attach to this Linode. 
-            - `disk_id` -  The ID of the disk to attach to this Linode. 
-            - `volume_id` -  The ID of the volume to attach to this Linode. 
-        - `sdb`
-            - `disk_label` -  The label of the disk to attach to this Linode. 
-            - `disk_id` -  The ID of the disk to attach to this Linode. 
-            - `volume_id` -  The ID of the volume to attach to this Linode. 
-        - `sdc`
-            - `disk_label` -  The label of the disk to attach to this Linode. 
-            - `disk_id` -  The ID of the disk to attach to this Linode. 
-            - `volume_id` -  The ID of the volume to attach to this Linode. 
-        - `sdd`
-            - `disk_label` -  The label of the disk to attach to this Linode. 
-            - `disk_id` -  The ID of the disk to attach to this Linode. 
-            - `volume_id` -  The ID of the volume to attach to this Linode. 
-        - `sde`
-            - `disk_label` -  The label of the disk to attach to this Linode. 
-            - `disk_id` -  The ID of the disk to attach to this Linode. 
-            - `volume_id` -  The ID of the volume to attach to this Linode. 
-        - `sdf`
-            - `disk_label` -  The label of the disk to attach to this Linode. 
-            - `disk_id` -  The ID of the disk to attach to this Linode. 
-            - `volume_id` -  The ID of the volume to attach to this Linode. 
-        - `sdg`
-            - `disk_label` -  The label of the disk to attach to this Linode. 
-            - `disk_id` -  The ID of the disk to attach to this Linode. 
-            - `volume_id` -  The ID of the volume to attach to this Linode. 
-        - `sdh`
-            - `disk_label` -  The label of the disk to attach to this Linode. 
-            - `disk_id` -  The ID of the disk to attach to this Linode. 
-            - `volume_id` -  The ID of the volume to attach to this Linode. 
-    - `helpers` -  Helpers enabled when booting to this Linode Config. 
-        - `devtmpfs_automount` -  Populates the /dev directory early during boot without udev. 
-        - `distro` -  Helps maintain correct inittab/upstart console device. 
-        - `modules_dep` -  Creates a modules dependency file for the Kernel you run. 
-        - `network` -  Automatically configures static networking. 
-        - `updatedb_disabled` -  Disables updatedb cron job to avoid disk thrashing. 
-    - `kernel` -  A Kernel ID to boot a Linode with. Defaults to “linode/latest-64bit”. 
-    - `label` - **(Required)** The label to assign to this config. 
-    - `memory_limit` -  Defaults to the total RAM of the Linode. 
-    - `root_device` -  The root device to boot. 
-    - `run_level` -  Defines the state of your Linode after booting. 
-    - `virt_mode` -  Controls the virtualization mode. 
-- `disks` -  A list of Disks to create on the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#disk-create). 
-    - `authorized_keys` -  A list of SSH public key parts to deploy for the root user. 
-    - `authorized_users` -  A list of usernames. 
-    - `filesystem` -  The filesystem to create this disk with. 
-    - `image` -  An Image ID to deploy the Disk from. 
-    - `label` - **(Required)** The label to give this Disk. 
-    - `root_pass` -  The root user’s password on the newly-created Linode. 
-    - `size` - **(Required)** The size of the Disk in MB. 
-    - `stackscript_id` -  The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/). 
-    - `stackscript_data` -  An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/). 
-- `interfaces` -  A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema). 
-    - `purpose` - **(Required)** The type of interface. 
-    - `label` -  The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces. 
-    - `ipam_address` -  This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation. 
-- `booted` -  Whether the new Instance should be booted. This will default to True if the Instance is deployed from an Image or Backup. 
-- `backup_id` -  The id of the Backup to restore to the new Instance. May not be provided if “image” is given. 
-- `wait` -  Wait for the instance to have status `running` before returning. 
-- `wait_timeout` -  The amount of time, in seconds, to wait for an instance to have status `running`. 
+
+- `state` (`str`) - **(Required)** The desired state of the target.  (Choices:  `present` `absent`)
+- `type` (`str`) -  The unique label to give this instance.  
+- `region` (`str`) -  The location to deploy the instance in. See the [Linode API documentation](https://api.linode.com/v4/regions).  
+- `image` (`str`) -  The image ID to deploy the instance disk from.  
+- `authorized_keys` (`list`) -  A list of SSH public key parts to deploy for the root user.  
+- `root_pass` (`str`) -  The password for the root user. If not specified, one will be generated. This generated password will be available in the task success JSON.  
+- `stackscript_id` (`int`) -  The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).  
+- `stackscript_data` (`dict`) -  An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).  
+- `private_ip` (`bool`) -  If true, the created Linode will have private networking enabled.  
+- `group` (`str`) -  The group that the instance should be marked under. Please note, that group labelling is deprecated but still supported. The encouraged method for marking instances is to use tags.  
+- `boot_config_label` (`str`) -  The label of the config to boot from.  
+- `configs` (`list`) -  A list of Instance configs to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create).  
+    - `label` (`str`) - **(Required)** The label to assign to this config.  
+    - `comments` (`str`) -  Arbitrary User comments on this Config.  
+    - `devices` (`dict`) -  The devices to map to this configuration.  
+        - `sda` (`dict`)
+            - `disk_label` (`str`) -  The label of the disk to attach to this Linode.  
+            - `disk_id` (`int`) -  The ID of the disk to attach to this Linode.  
+            - `volume_id` (`int`) -  The ID of the volume to attach to this Linode.  
+        - `sdb` (`dict`)
+            - `disk_label` (`str`) -  The label of the disk to attach to this Linode.  
+            - `disk_id` (`int`) -  The ID of the disk to attach to this Linode.  
+            - `volume_id` (`int`) -  The ID of the volume to attach to this Linode.  
+        - `sdc` (`dict`)
+            - `disk_label` (`str`) -  The label of the disk to attach to this Linode.  
+            - `disk_id` (`int`) -  The ID of the disk to attach to this Linode.  
+            - `volume_id` (`int`) -  The ID of the volume to attach to this Linode.  
+        - `sdd` (`dict`)
+            - `disk_label` (`str`) -  The label of the disk to attach to this Linode.  
+            - `disk_id` (`int`) -  The ID of the disk to attach to this Linode.  
+            - `volume_id` (`int`) -  The ID of the volume to attach to this Linode.  
+        - `sde` (`dict`)
+            - `disk_label` (`str`) -  The label of the disk to attach to this Linode.  
+            - `disk_id` (`int`) -  The ID of the disk to attach to this Linode.  
+            - `volume_id` (`int`) -  The ID of the volume to attach to this Linode.  
+        - `sdf` (`dict`)
+            - `disk_label` (`str`) -  The label of the disk to attach to this Linode.  
+            - `disk_id` (`int`) -  The ID of the disk to attach to this Linode.  
+            - `volume_id` (`int`) -  The ID of the volume to attach to this Linode.  
+        - `sdg` (`dict`)
+            - `disk_label` (`str`) -  The label of the disk to attach to this Linode.  
+            - `disk_id` (`int`) -  The ID of the disk to attach to this Linode.  
+            - `volume_id` (`int`) -  The ID of the volume to attach to this Linode.  
+        - `sdh` (`dict`)
+            - `disk_label` (`str`) -  The label of the disk to attach to this Linode.  
+            - `disk_id` (`int`) -  The ID of the disk to attach to this Linode.  
+            - `volume_id` (`int`) -  The ID of the volume to attach to this Linode.  
+    - `helpers` (`dict`) -  Helpers enabled when booting to this Linode Config.  
+        - `devtmpfs_automount` (`bool`) -  Populates the /dev directory early during boot without udev.  
+        - `distro` (`bool`) -  Helps maintain correct inittab/upstart console device.  
+        - `modules_dep` (`bool`) -  Creates a modules dependency file for the Kernel you run.  
+        - `network` (`bool`) -  Automatically configures static networking.  
+        - `updatedb_disabled` (`bool`) -  Disables updatedb cron job to avoid disk thrashing.  
+    - `kernel` (`str`) -  A Kernel ID to boot a Linode with. Defaults to “linode/latest-64bit”.  
+    - `memory_limit` (`int`) -  Defaults to the total RAM of the Linode.  
+    - `root_device` (`str`) -  The root device to boot.  
+    - `run_level` (`str`) -  Defines the state of your Linode after booting.  
+    - `virt_mode` (`str`) -  Controls the virtualization mode.  (Choices:  `paravirt` `fullvirt`)
+- `disks` (`list`) -  A list of Disks to create on the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#disk-create).  
+    - `label` (`str`) - **(Required)** The label to give this Disk.  
+    - `size` (`int`) - **(Required)** The size of the Disk in MB.  
+    - `authorized_keys` (`list`) -  A list of SSH public key parts to deploy for the root user.  
+    - `authorized_users` (`list`) -  A list of usernames.  
+    - `filesystem` (`str`) -  The filesystem to create this disk with.  
+    - `image` (`str`) -  An Image ID to deploy the Disk from.  
+    - `root_pass` (`str`) -  The root user’s password on the newly-created Linode.  
+    - `stackscript_id` (`int`) -  The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).  
+    - `stackscript_data` (`dict`) -  An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).  
+- `interfaces` (`list`) -  A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema).  
+    - `purpose` (`str`) - **(Required)** The type of interface.  (Choices:  `public` `vlan`)
+    - `label` (`str`) -  The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces.  
+    - `ipam_address` (`str`) -  This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.  
+- `booted` (`bool`) -  Whether the new Instance should be booted. This will default to True if the Instance is deployed from an Image or Backup.  
+- `backup_id` (`int`) -  The id of the Backup to restore to the new Instance. May not be provided if “image” is given.  
+- `wait` (`bool`) -  Wait for the instance to have status `running` before returning.  ( Default: `True`)
+- `wait_timeout` (`int`) -  The amount of time, in seconds, to wait for an instance to have status `running`.  ( Default: `240`)
 
 
 ## Return Values

@@ -21,8 +21,9 @@ Get info about a Linode Domain.
 ## Parameters
 
 
-- `id` -  The unique domain name of the Domain. 
-- `domain` -  The unique id of the Domain. 
+
+- `id` (`int`) -  The unique domain name of the Domain.  
+- `domain` (`str`) -  The unique id of the Domain.  
 
 
 ## Return Values

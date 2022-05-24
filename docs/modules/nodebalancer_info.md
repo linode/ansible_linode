@@ -21,8 +21,9 @@ Get info about a Linode NodeBalancer.
 ## Parameters
 
 
-- `id` -  The ID of this NodeBalancer. 
-- `label` -  The label of this NodeBalancer. 
+
+- `id` (`int`) -  The ID of this NodeBalancer.  
+- `label` (`str`) -  The label of this NodeBalancer.  
 
 
 ## Return Values

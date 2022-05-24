@@ -43,13 +43,14 @@ Manage Linode NodeBalancer Nodes.
 ## Parameters
 
 
-- `nodebalancer_id` - **(Required)** The ID of the NodeBalancer that contains this node. 
-- `config_id` - **(Required)** The ID of the NodeBalancer Config that contains this node. 
-- `label` - **(Required)** The label for this node. This is used to identify nodes within a config. 
-- `address` -  The private IP Address where this backend can be reached. This must be a private IP address. 
-- `state` - **(Required)** Whether the NodeBalancer node should be present or absent. 
-- `mode` -  The mode this NodeBalancer should use when sending traffic to this backend. 
-- `weight` -  Nodes with a higher weight will receive more traffic. 
+
+- `nodebalancer_id` (`int`) - **(Required)** The ID of the NodeBalancer that contains this node.  
+- `config_id` (`int`) - **(Required)** The ID of the NodeBalancer Config that contains this node.  
+- `label` (`str`) - **(Required)** The label for this node. This is used to identify nodes within a config.  
+- `state` (`str`) - **(Required)** Whether the NodeBalancer node should be present or absent.  (Choices:  `present` `absent`)
+- `address` (`str`) -  The private IP Address where this backend can be reached. This must be a private IP address.  
+- `mode` (`str`) -  The mode this NodeBalancer should use when sending traffic to this backend.  (Choices:  `accept` `reject` `drain` `backup`)
+- `weight` (`int`) -  Nodes with a higher weight will receive more traffic.  
 
 
 ## Return Values

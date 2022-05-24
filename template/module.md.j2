@@ -16,14 +16,19 @@
 
 ## Parameters
 
-{% macro options_display(opts, level) %}
+{% macro options_display_req(opts, level, required) %}
 {% for name, spec in opts.items() %}
+{% if not spec.doc_hide and ((spec.required and required) or (not spec.required and not required)) %}
 {% set required_text = '**(Required)**' if spec.required else '' %}
-{{ "    " * level }}- `{{ name }}`{% if spec.description %} - {{ required_text }} {% for line in spec.description %}{{ line }} {% endfor %}{% endif %}
+{% set type_text = '(`%s`)' % spec.type if spec.type else '' %}
+{{ "    " * level }}- `{{ name }}` {{type_text}}{% if spec.description %} - {{ required_text }} {% for line in spec.description %}{{ line }} {% endfor %} {% if spec.default or spec.choices %}({% if spec.choices %}Choices: {% for choice in spec.choices %} `{{ choice }}`{% endfor %}{% endif %}{% if spec.default %} Default: `{{ spec.default }}`{% endif %}){% endif %}{% endif %}
 
 {% if spec.suboptions %}{{ options_display(spec.suboptions, level + 1) }}{% endif %}
+{% endif %}
 {% endfor %}
 {% endmacro %}
+
+{% macro options_display(opts, level) %}{{ options_display_req(opts, level, True) }}{{ options_display_req(opts, level, False) }}{% endmacro %}
 
 {{ options_display(options, 0) }}
 

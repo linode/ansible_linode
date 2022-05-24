@@ -149,6 +149,10 @@ linode_nodebalancer_spec = dict(
         description='The ID of the Region to create this NodeBalancer in.',
     ),
 
+    state=dict(type='str',
+               description='The desired state of the target.',
+               choices=['present', 'absent'], required=True),
+
     configs=dict(
         type='list', elements='dict', options=linode_configs_spec,
         description='A list of configs to apply to the NodeBalancer.')
