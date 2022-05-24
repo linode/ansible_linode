@@ -3,6 +3,10 @@
 Get info about a Linode Instance.
 
 
+- [Examples](#examples)
+- [Parameters](#parameters)
+- [Return Values](#return-values)
+
 ## Examples
 
 ```yaml

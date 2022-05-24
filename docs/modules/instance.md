@@ -3,6 +3,10 @@
 Manage Linode Instances, Configs, and Disks.
 
 
+- [Examples](#examples)
+- [Parameters](#parameters)
+- [Return Values](#return-values)
+
 ## Examples
 
 ```yaml

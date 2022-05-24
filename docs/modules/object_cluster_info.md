@@ -3,6 +3,10 @@
 Get info about a Linode Object Storage Cluster.
 
 
+- [Examples](#examples)
+- [Parameters](#parameters)
+- [Return Values](#return-values)
+
 ## Examples
 
 ```yaml

@@ -3,6 +3,10 @@
 Manage Linode Firewalls.
 
 
+- [Examples](#examples)
+- [Parameters](#parameters)
+- [Return Values](#return-values)
+
 ## Examples
 
 ```yaml

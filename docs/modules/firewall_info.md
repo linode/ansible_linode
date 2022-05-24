@@ -3,6 +3,10 @@
 Get info about a Linode Firewall.
 
 
+- [Examples](#examples)
+- [Parameters](#parameters)
+- [Return Values](#return-values)
+
 ## Examples
 
 ```yaml

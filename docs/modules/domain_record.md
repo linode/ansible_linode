@@ -5,6 +5,10 @@ Manage Linode Domain Records.
 NOTE: Domain records are identified by their name, target, and type.
 
 
+- [Examples](#examples)
+- [Parameters](#parameters)
+- [Return Values](#return-values)
+
 ## Examples
 
 ```yaml

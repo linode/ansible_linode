@@ -3,6 +3,10 @@
 Manage Linode Object Storage Keys.
 
 
+- [Examples](#examples)
+- [Parameters](#parameters)
+- [Return Values](#return-values)
+
 ## Examples
 
 ```yaml
