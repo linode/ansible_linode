@@ -24,11 +24,17 @@ linode_nodebalancer_info_spec = dict(
 
     id=dict(
         type='int', required=False,
-        description='The ID of this NodeBalancer.'),
+        description=[
+            'The ID of this NodeBalancer.',
+            'Optional if `label` is defined.'
+        ]),
 
     label=dict(
         type='str', required=False,
-        description='The label of this NodeBalancer.')
+        description=[
+            'The label of this NodeBalancer.',
+            'Optional if `id` is defined.'
+        ])
 )
 
 specdoc_examples = ['''

@@ -30,10 +30,10 @@ Get info about a Linode Domain Records.
 
 
 
-- `domain_id` (`int`) -  The ID of the parent Domain.  
-- `domain` (`str`) -  The name of the parent Domain.  
-- `id` (`int`) -  The unique id of the subdomain.  
-- `name` (`str`) -  The name of the domain record.  
+- `domain_id` (`int`) -  The ID of the parent Domain. Optional if `domain` is defined.  
+- `domain` (`str`) -  The name of the parent Domain. Optional if `domain_id` is defined.  
+- `id` (`int`) -  The unique id of the subdomain. Optional if `name` is defined.  
+- `name` (`str`) -  The name of the domain record. Optional if `id` is defined.  
 
 
 ## Return Values

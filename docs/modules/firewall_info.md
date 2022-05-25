@@ -26,8 +26,8 @@ Get info about a Linode Firewall.
 
 
 
-- `id` (`int`) -  The unique id of the Firewall.  
-- `label` (`str`) -  The Firewall’s label.  
+- `id` (`int`) -  The unique id of the Firewall. Optional if `label` is defined.  
+- `label` (`str`) -  The Firewall’s label. Optional if `id` is defined.  
 
 
 ## Return Values

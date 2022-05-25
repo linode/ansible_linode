@@ -25,15 +25,27 @@ linode_domain_record_info_spec = dict(
     label=dict(type='str', required=False, doc_hide=True),
 
     domain_id=dict(type='int',
-                   description='The ID of the parent Domain.'),
+                   description=[
+                       'The ID of the parent Domain.',
+                       'Optional if `domain` is defined.'
+                   ]),
     domain=dict(type='str',
-                description='The name of the parent Domain.'),
+                description=[
+                    'The name of the parent Domain.',
+                    'Optional if `domain_id` is defined.'
+                ]),
 
     id=dict(type='int',
-            description='The unique id of the subdomain.'),
+            description=[
+                'The unique id of the subdomain.',
+                'Optional if `name` is defined.'
+            ]),
 
     name=dict(type='str',
-              description='The name of the domain record.'),
+              description=[
+                  'The name of the domain record.',
+                  'Optional if `id` is defined.'
+              ]),
 )
 
 specdoc_examples = ['''

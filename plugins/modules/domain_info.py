@@ -25,9 +25,15 @@ linode_domain_info_spec = dict(
     label=dict(type='str', required=False, doc_hide=True),
 
     id=dict(type='int', required=False,
-            description='The unique domain name of the Domain.'),
+            description=[
+                'The unique domain name of the Domain.',
+                'Optional if `domain` is defined.'
+            ]),
     domain=dict(type='str', required=False,
-                description='The unique id of the Domain.')
+                description=[
+                    'The unique id of the Domain.',
+                    'Optional if `id` is defined.'
+                ])
 )
 
 specdoc_examples = ['''

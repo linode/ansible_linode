@@ -26,8 +26,8 @@ Get info about a Linode Instance.
 
 
 
-- `id` (`int`) -  The instance’s label.  
-- `label` (`str`) -  The unique ID of the Instance.  
+- `id` (`int`) -  The instance’s label. Optional if `label` is defined.  
+- `label` (`str`) -  The unique ID of the Instance. Optional if `id` is defined.  
 
 
 ## Return Values

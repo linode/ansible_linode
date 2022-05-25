@@ -25,11 +25,13 @@ linode_firewall_info_spec = dict(
 
     id=dict(type='int', required=False,
             description=[
-                'The unique id of the Firewall.'
+                'The unique id of the Firewall.',
+                'Optional if `label` is defined.'
             ]),
     label=dict(type='str', required=False,
                description=[
-                   'The Firewall’s label.'
+                   'The Firewall’s label.',
+                   'Optional if `id` is defined.'
                ])
 )
 

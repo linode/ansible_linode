@@ -24,11 +24,17 @@ linode_volume_info_spec = dict(
 
     id=dict(
         type='int', required=False,
-        description='The ID of the Volume.'),
+        description=[
+            'The ID of the Volume.',
+            'Optional if `label` is defined.'
+        ]),
 
     label=dict(
         type='str', required=False,
-        description='The label of the Volume.')
+        description=[
+            'The label of the Volume.',
+            'Optional if `id` is defined.'
+        ])
 )
 
 specdoc_examples = ['''

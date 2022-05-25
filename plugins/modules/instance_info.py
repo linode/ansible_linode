@@ -19,31 +19,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 from ansible_collections.linode.cloud.plugins.modules.instance import specdoc_meta \
     as instance_specdoc_meta
 
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Get info about a Linode Instance.
-module: instance_info
-options:
-  id:
-    description:
-    - "The instance\u2019s label."
-    required: false
-    type: int
-  label:
-    description:
-    - The unique ID of the Instance.
-    required: false
-    type: str
-requirements:
-- python >= 3
-'''
-
 linode_instance_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
     state=dict(type='str', required=False, doc_hide=True),
@@ -51,13 +26,15 @@ linode_instance_info_spec = dict(
     id=dict(
         type='int', required=False,
         description=[
-            'The instance’s label.'
+            'The instance’s label.',
+            'Optional if `label` is defined.'
         ]),
 
     label=dict(
         type='str', required=False,
         description=[
-            'The unique ID of the Instance.'
+            'The unique ID of the Instance.',
+            'Optional if `id` is defined.'
         ])
 )
 
