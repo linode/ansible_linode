@@ -20,12 +20,22 @@ Get info about a Linode Volume.
 ```
 
 
+
+
+
+
+
+
+
 ## Parameters
 
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `id` | `int` | Optional | The ID of the Volume. Optional if `label` is defined.   |
+| `label` | `str` | Optional | The label of the Volume. Optional if `id` is defined.   |
 
 
-- `id` (`int`) -  The ID of the Volume. Optional if `label` is defined.  
-- `label` (`str`) -  The label of the Volume. Optional if `id` is defined.  
+
 
 
 ## Return Values

@@ -22,12 +22,22 @@ Get info about a Linode Firewall.
 ```
 
 
+
+
+
+
+
+
+
 ## Parameters
 
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `id` | `int` | Optional | The unique id of the Firewall. Optional if `label` is defined.   |
+| `label` | `str` | Optional | The Firewall’s label. Optional if `id` is defined.   |
 
 
-- `id` (`int`) -  The unique id of the Firewall. Optional if `label` is defined.  
-- `label` (`str`) -  The Firewall’s label. Optional if `id` is defined.  
+
 
 
 ## Return Values

@@ -53,37 +53,90 @@ Manage Linode Firewalls.
 ```
 
 
+
+
+
+
+
+
+
 ## Parameters
 
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present` `absent`) |
+| `label` | `str` | Optional | The unique label to give this Firewall.   |
+| [`devices` (sub-options)](#devices) | `list` | Optional | The devices that are attached to this Firewall.   |
+| [`rules` (sub-options)](#rules) | `dict` | Optional | The inbound and outbound access rules to apply to this Firewall.   |
+| `status` | `str` | Optional | The status of this Firewall.   |
 
 
-- `state` (`str`) - **(Required)** The desired state of the target.  (Choices:  `present` `absent`)
-- `label` (`str`) -  The unique label to give this Firewall.  
-- `devices` (`list`) -  The devices that are attached to this Firewall.  
-    - `id` (`int`) - **(Required)** The unique ID of the device to attach to this Firewall.  
-    - `type` (`str`) -  The type of device to be attached to this Firewall.  ( Default: `linode`)
-- `rules` (`dict`) -  The inbound and outbound access rules to apply to this Firewall.  
-    - `inbound` (`list`) -  A list of rules for inbound traffic.  
-        - `label` (`str`) - **(Required)** The label of this rule.  
-        - `action` (`str`) - **(Required)** Controls whether traffic is accepted or dropped by this rule.  
-        - `addresses` (`dict`) -  Allowed IPv4 or IPv6 addresses.  
-            - `ipv4` (`list`) -  A list of IPv4 addresses or networks. Must be in IP/mask format.  
-            - `ipv6` (`list`) -  A list of IPv4 addresses or networks. Must be in IP/mask format.  
-        - `description` (`str`) -  A description for this rule.  
-        - `ports` (`str`) -  A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)  
-        - `protocol` (`str`) -  The type of network traffic to allow.  
-    - `inbound_policy` (`str`) -  The default behavior for inbound traffic.  
-    - `outbound` (`list`) -  A list of rules for outbound traffic.  
-        - `label` (`str`) - **(Required)** The label of this rule.  
-        - `action` (`str`) - **(Required)** Controls whether traffic is accepted or dropped by this rule.  
-        - `addresses` (`dict`) -  Allowed IPv4 or IPv6 addresses.  
-            - `ipv4` (`list`) -  A list of IPv4 addresses or networks. Must be in IP/mask format.  
-            - `ipv6` (`list`) -  A list of IPv4 addresses or networks. Must be in IP/mask format.  
-        - `description` (`str`) -  A description for this rule.  
-        - `ports` (`str`) -  A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)  
-        - `protocol` (`str`) -  The type of network traffic to allow.  
-    - `outbound_policy` (`str`) -  The default behavior for outbound traffic.  
-- `status` (`str`) -  The status of this Firewall.  
+
+
+
+### devices
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `id` | `int` | **Required** | The unique ID of the device to attach to this Firewall.   |
+| `type` | `str` | Optional | The type of device to be attached to this Firewall.  ( Default: `linode`) |
+
+
+
+
+
+### rules
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| [`inbound` (sub-options)](#inbound) | `list` | Optional | A list of rules for inbound traffic.   |
+| `inbound_policy` | `str` | Optional | The default behavior for inbound traffic.   |
+| [`outbound` (sub-options)](#outbound) | `list` | Optional | A list of rules for outbound traffic.   |
+| `outbound_policy` | `str` | Optional | The default behavior for outbound traffic.   |
+
+
+
+
+
+### inbound
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `label` | `str` | **Required** | The label of this rule.   |
+| `action` | `str` | **Required** | Controls whether traffic is accepted or dropped by this rule.   |
+| [`addresses` (sub-options)](#addresses) | `dict` | Optional | Allowed IPv4 or IPv6 addresses.   |
+| `description` | `str` | Optional | A description for this rule.   |
+| `ports` | `str` | Optional | A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)   |
+| `protocol` | `str` | Optional | The type of network traffic to allow.   |
+
+
+
+
+
+### addresses
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `ipv4` | `list` | Optional | A list of IPv4 addresses or networks. Must be in IP/mask format.   |
+| `ipv6` | `list` | Optional | A list of IPv4 addresses or networks. Must be in IP/mask format.   |
+
+
+
+
+
+### outbound
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `label` | `str` | **Required** | The label of this rule.   |
+| `action` | `str` | **Required** | Controls whether traffic is accepted or dropped by this rule.   |
+| [`addresses` (sub-options)](#addresses) | `dict` | Optional | Allowed IPv4 or IPv6 addresses.   |
+| `description` | `str` | Optional | A description for this rule.   |
+| `ports` | `str` | Optional | A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)   |
+| `protocol` | `str` | Optional | The type of network traffic to allow.   |
+
+
+
 
 
 ## Return Values

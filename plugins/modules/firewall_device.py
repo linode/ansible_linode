@@ -42,7 +42,7 @@ MODULE_SPEC = dict(
                choices=['present', 'absent'], required=True),
 )
 
-specdoc_examples = [['''
+specdoc_examples = ['''
 - name: Create a Firewall
   linode.cloud.firewall:
     label: my-firewall
@@ -65,7 +65,7 @@ specdoc_examples = [['''
     firewall_id: '{{ firewall_result.firewall.id }}'
     entity_id: '{{ instance_result.instance.id }}'
     entity_type: 'linode'
-    state: present''']]
+    state: present''']
 
 result_device_samples = ['''{
   "created": "2018-01-01T00:01:01",

@@ -22,14 +22,24 @@ Get info about a Linode Object Storage Cluster.
 ```
 
 
+
+
+
+
+
+
+
 ## Parameters
 
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `id` | `str` | Optional | The unique id given to the clusters.   |
+| `region` | `str` | Optional | The region the clusters are in.   |
+| `domain` | `str` | Optional | The domain of the clusters.   |
+| `static_site_domain` | `str` | Optional | The static-site domain of the clusters.   |
 
 
-- `id` (`str`) -  The unique id given to the clusters.  
-- `region` (`str`) -  The region the clusters are in.  
-- `domain` (`str`) -  The domain of the clusters.  
-- `static_site_domain` (`str`) -  The static-site domain of the clusters.  
+
 
 
 ## Return Values

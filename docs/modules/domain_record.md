@@ -30,24 +30,34 @@ NOTE: Domain records are identified by their name, target, and type.
 ```
 
 
+
+
+
+
+
+
+
 ## Parameters
 
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present` `absent`) |
+| `domain_id` | `int` | Optional | The ID of the parent Domain.   |
+| `domain` | `str` | Optional | The name of the parent Domain.   |
+| `record_id` | `int` | Optional | The id of the record to modify.   |
+| `name` | `str` | Optional | The name of this Record.   |
+| `port` | `int` | Optional | The port this Record points to. Only valid and required for SRV record requests.   |
+| `priority` | `int` | Optional | The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.   |
+| `protocol` | `str` | Optional | The protocol this Record’s service communicates with. An underscore (_) is prepended automatically to the submitted value for this property.   |
+| `service` | `str` | Optional | An underscore (_) is prepended and a period (.) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests. The name of the service.   |
+| `tag` | `str` | Optional | The tag portion of a CAA record. Only valid and required for CAA record requests.   |
+| `target` | `str` | Optional | The target for this Record.   |
+| `ttl_sec` | `int` | Optional | The amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.   |
+| `type` | `str` | Optional | The type of Record this is in the DNS system.   |
+| `weight` | `int` | Optional | The relative weight of this Record used in the case of identical priority.   |
 
 
-- `state` (`str`) - **(Required)** The desired state of the target.  (Choices:  `present` `absent`)
-- `domain_id` (`int`) -  The ID of the parent Domain.  
-- `domain` (`str`) -  The name of the parent Domain.  
-- `record_id` (`int`) -  The id of the record to modify.  
-- `name` (`str`) -  The name of this Record.  
-- `port` (`int`) -  The port this Record points to. Only valid and required for SRV record requests.  
-- `priority` (`int`) -  The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.  
-- `protocol` (`str`) -  The protocol this Record’s service communicates with. An underscore (_) is prepended automatically to the submitted value for this property.  
-- `service` (`str`) -  An underscore (_) is prepended and a period (.) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests. The name of the service.  
-- `tag` (`str`) -  The tag portion of a CAA record. Only valid and required for CAA record requests.  
-- `target` (`str`) -  The target for this Record.  
-- `ttl_sec` (`int`) -  The amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.  
-- `type` (`str`) -  The type of Record this is in the DNS system.  
-- `weight` (`int`) -  The relative weight of this Record used in the case of identical priority.  
+
 
 
 ## Return Values
