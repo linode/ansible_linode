@@ -52,7 +52,7 @@ linode_domain_record_info_spec = dict(
 
 specdoc_meta = dict(
     description=[
-        'Get info about a Linode Domain Records.'
+        'Get info about a Linode Domain Record.'
     ],
     requirements=global_requirements,
     author=global_authors,
