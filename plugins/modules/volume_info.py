@@ -18,9 +18,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume_info as docs
 
-from ansible_collections.linode.cloud.plugins.modules.volume import specdoc_meta \
-    as volume_specdoc_meta
-
 linode_volume_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
     state=dict(type='str', required=False, doc_hide=True),
