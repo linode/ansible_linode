@@ -1,0 +1,13 @@
+- name: firewall_basic
+  block:
+    - name: Create a Linode LKE cluster
+      linode.cloud.lke_cluster:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        region: us-southeast
+        k8s_version: 1.23
+        node_pools:
+          - type: g6-standard-1
+            count: 3
+        state: present
+      register: create_cluster

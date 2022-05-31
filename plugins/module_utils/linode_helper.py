@@ -1,8 +1,8 @@
 """This module contains helper functions for various Linode modules."""
-from typing import Tuple, Any, Optional, cast
+from typing import Tuple, Any, Optional, cast, Dict
 
 import linode_api4
-from linode_api4 import and_, MappedObject
+from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode
 from linode_api4.objects.filtering import Filter, FilterableAttribute, FilterableMetaclass
 
 
@@ -88,6 +88,14 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
 
         old_value = getattr(obj, key)
 
+        if type(old_value) in {
+            linode_api4.objects.linode.Type,
+            linode_api4.objects.linode.Region,
+            linode_api4.objects.linode.Image,
+            linode_api4.objects.lke.KubeVersion
+        }:
+            old_value = old_value.id
+
         if new_value != old_value:
             if key in mutable_fields:
                 setattr(obj, key, new_value)
@@ -98,7 +106,23 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
                 continue
 
             raise RuntimeError(
-                'failed to update: {} is a non-updatable field'.format(key))
+                'failed to update {} -> {}: {} is a non-updatable field'.format(old_value, new_value, key))
 
     if should_update:
         obj.save()
+
+
+def jsonify_node_pool(pool: LKENodePool) -> Dict[str, Any]:
+    result = pool._raw_json
+
+    result['nodes'] = [jsonify_node_pool_node(node) for node in pool.nodes]
+
+    return result
+
+
+def jsonify_node_pool_node(node: LKENodePoolNode) -> Dict[str, Any]:
+    return {
+        'id': node.id,
+        'instance_id': node.instance_id,
+        'status': node.status,
+    }
