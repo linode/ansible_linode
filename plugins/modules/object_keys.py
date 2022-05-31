@@ -15,6 +15,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.object_keys as docs
+
 linode_access_spec = dict(
     cluster=dict(
         type='str', required=True,
@@ -44,39 +46,6 @@ linode_object_keys_spec = dict(
                choices=['present', 'absent'], required=True),
 )
 
-specdoc_examples = ['''
-- name: Create an Object Storage key
-  linode.cloud.object_keys:
-    label: 'my-fullaccess-key'
-    state: present''', '''
-- name: Create a limited Object Storage key
-  linode.cloud.object_keys:
-    label: 'my-limited-key'
-    access:
-      - cluster: us-east-1
-        bucket_name: my-bucket
-        permissions: read_write
-    state: present''', '''
-- name: Remove an object storage key
-  linode.cloud.object_keys:
-    label: 'my-key'
-    state: absent''']
-
-result_key_samples = ['''{
-  "access_key": "KVAKUTGBA4WTR2NSJQ81",
-  "bucket_access": [
-    {
-      "bucket_name": "example-bucket",
-      "cluster": "ap-south-1",
-      "permissions": "read_only"
-    }
-  ],
-  "id": 123,
-  "label": "my-key",
-  "limited": true,
-  "secret_key": "OiA6F5r0niLs3QA2stbyq7mY5VCV7KqOzcmitmHw"
-}''']
-
 specdoc_meta = dict(
     description=[
         'Manage Linode Object Storage Keys.'
@@ -84,14 +53,14 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_object_keys_spec,
-    examples=specdoc_examples,
+    examples=docs.specdoc_examples,
     return_values=dict(
         key=dict(
             description='The Object Storage key in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/object-storage/#object-storage'
                      '-key-view__responses',
             type='dict',
-            sample=result_key_samples
+            sample=docs.result_key_samples
         )
     )
 )

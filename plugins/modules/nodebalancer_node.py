@@ -18,6 +18,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_node as docs
+
 MODULE_SPEC = dict(
     nodebalancer_id=dict(
         type='int', required=True,
@@ -59,50 +61,6 @@ MODULE_SPEC = dict(
     ),
 )
 
-specdoc_examples = ['''
-- name: Create a NodeBalancer
-  linode.cloud.nodebalancer:
-    label: my-nodebalancer
-    region: us-east
-    state: present
-    configs:
-      - port: 80
-        protocol: http
-        algorithm: roundrobin
-  register: nodebalancer_result
-        
-- name: Create an Instance
-  linode.cloud.instance:
-    label: my-instance
-    region: us-east
-    private_ip: true
-    type: g6-standard-1
-    state: present
-  register: instance_result
-    
-- name: Attach the Instance to the NodeBalancer
-  linode.cloud.nodebalancer_node:
-    nodebalancer_id: nodebalancer_result.node_balancer.id
-    config_id: nodebalancer_result.configs[0].id
-    
-    label: my-node
-
-    # Use the private ip address of the instance
-    address: '{{ instance_result.instance.ipv4[1] }}:80'
-
-    state: present''']
-
-result_node_samples = ['''{
-  "address": "123.123.123.123:80",
-  "config_id": 12345,
-  "id": 12345,
-  "label": "mynode",
-  "mode": "accept",
-  "nodebalancer_id": 12345,
-  "status": "Unknown",
-  "weight": 10
-}''']
-
 specdoc_meta = dict(
     description=[
         'Manage Linode NodeBalancer Nodes.'
@@ -110,13 +68,13 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=MODULE_SPEC,
-    examples=specdoc_examples,
+    examples=docs.specdoc_examples,
     return_values=dict(
         node=dict(
             description='The NodeBalancer Node in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/nodebalancers/#node-view__responses',
             type='dict',
-            sample=result_node_samples
+            sample=docs.result_node_samples
         )
     )
 )

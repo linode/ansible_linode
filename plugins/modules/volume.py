@@ -16,26 +16,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-RETURN = '''
-volume:
-  description: The volume in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/volumes/#volume-view__responses"
-  returned: always
-  type: dict
-  sample: {
-   "created":"",
-   "filesystem_path":"/dev/disk/by-id/xxxxxx",
-   "id":xxxxxx,
-   "label":"xxxxxx",
-   "linode_id":xxxxxx,
-   "linode_label":"xxxxxx",
-   "region":"us-east",
-   "size":30,
-   "status":"creating",
-   "tags":[],
-   "updated":"2021-03-05T19:05:33"
-}
-'''
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume as docs
 
 linode_volume_spec = dict(
     label=dict(
@@ -85,53 +66,6 @@ linode_volume_spec = dict(
                choices=['present', 'absent'], required=True),
 )
 
-specdoc_examples = ['''
-- name: Create a volume attached to an instance
-  linode.cloud.volume:
-    label: example-volume
-    region: us-east
-    size: 30
-    linode_id: 12345
-    state: present''', '''
-- name: Create an unattached volume
-  linode.cloud.volume:
-    label: example-volume
-    region: us-east
-    size: 30
-    state: present''', '''
-- name: Resize a volume
-  linode.cloud.volume:
-    label: example-volume
-    size: 50
-    state: present''', '''
-- name: Detach a volume
-  linode.cloud.volume:
-    label: example-volume
-    attached: false
-    state: present''', '''
-- name: Delete a volume
-  linode.cloud.volume:
-    label: example-volume
-    state: absent''']
-
-result_volume_samples = ['''{
-  "created": "2018-01-01T00:01:01",
-  "filesystem_path": "/dev/disk/by-id/scsi-0Linode_Volume_my-volume",
-  "hardware_type": "nvme",
-  "id": 12345,
-  "label": "my-volume",
-  "linode_id": 12346,
-  "linode_label": "linode123",
-  "region": "us-east",
-  "size": 30,
-  "status": "active",
-  "tags": [
-    "example tag",
-    "another example"
-  ],
-  "updated": "2018-01-01T00:01:01"
-}''']
-
 specdoc_meta = dict(
     description=[
         'Manage a Linode Volume.'
@@ -139,13 +73,13 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_volume_spec,
-    examples=specdoc_examples,
+    examples=docs.specdoc_examples,
     return_values=dict(
         volume=dict(
             description='The volume in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/volumes/#volume-view__responses',
             type='dict',
-            sample=result_volume_samples
+            sample=docs.result_volume_samples
         )
     )
 )

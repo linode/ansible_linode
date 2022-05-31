@@ -15,6 +15,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vlan_info as docs
+
 linode_vlan_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
     state=dict(type='str', required=False, doc_hide=True),
@@ -24,21 +26,6 @@ linode_vlan_info_spec = dict(
         description='The VLAN’s label.')
 )
 
-specdoc_examples = ['''
-- name: Get info about a VLAN by label
-  linode.cloud.vlan_info:
-    label: example-vlan''']
-
-result_vlan_samples = ['''{
-  "created": "2020-01-01T00:01:01",
-  "label": "vlan-example",
-  "linodes": [
-    111,
-    222
-  ],
-  "region": "ap-west"
-}''']
-
 specdoc_meta = dict(
     description=[
         'Get info about a Linode VLAN.'
@@ -46,13 +33,13 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_vlan_info_spec,
-    examples=specdoc_examples,
+    examples=docs.specdoc_examples,
     return_values=dict(
         vlan=dict(
             description='The VLAN in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/networking/#vlans-list__response-samples',
             type='dict',
-            sample=result_vlan_samples
+            sample=docs.result_vlan_samples
         )
     )
 )

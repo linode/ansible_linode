@@ -16,8 +16,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-from ansible_collections.linode.cloud.plugins.modules.firewall import specdoc_meta \
-    as firewall_specdoc_meta
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall_info as docs
 
 linode_firewall_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
@@ -35,14 +35,6 @@ linode_firewall_info_spec = dict(
                ])
 )
 
-specdoc_examples = ['''
-- name: Get info about a Firewall by label
-  linode.cloud.firewall_info:
-    label: 'my-firewall' ''', '''
-- name: Get info about a Firewall by id
-  linode.cloud.firewall_info:
-    id: 12345''']
-
 specdoc_meta = dict(
     description=[
         'Get info about a Linode Firewall.'
@@ -50,8 +42,21 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_firewall_info_spec,
-    examples=specdoc_examples,
-    return_values=firewall_specdoc_meta['return_values']
+    examples=docs.specdoc_examples,
+    return_values=dict(
+        firewall=dict(
+            description='The Firewall description in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/networking/#firewall-view',
+            type='dict',
+            sample=docs_parent.result_firewall_samples
+        ),
+        devices=dict(
+            description='A list of Firewall devices JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/networking/#firewall-device-view',
+            type='list',
+            sample=docs_parent.result_devices_samples
+        )
+    )
 )
 
 linode_firewall_valid_filters = [

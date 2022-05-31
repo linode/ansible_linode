@@ -15,6 +15,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume_info as docs
+
 from ansible_collections.linode.cloud.plugins.modules.volume import specdoc_meta \
     as volume_specdoc_meta
 
@@ -37,15 +40,6 @@ linode_volume_info_spec = dict(
         ])
 )
 
-specdoc_examples = ['''
-- name: Get info about a volume by label
-  linode.cloud.volume_info:
-    label: example-volume
-    
-- name: Get info about a volume by id
-  linode.cloud.volume_info:
-    id: 12345''']
-
 specdoc_meta = dict(
     description=[
         'Get info about a Linode Volume.'
@@ -53,8 +47,15 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_volume_info_spec,
-    examples=specdoc_examples,
-    return_values=volume_specdoc_meta['return_values']
+    examples=docs.specdoc_examples,
+    return_values=dict(
+        volume=dict(
+            description='The volume in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/volumes/#volume-view__responses',
+            type='dict',
+            sample=docs_parent.result_volume_samples
+        )
+    )
 )
 
 linode_volume_valid_filters = [

@@ -14,6 +14,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall_device as docs
+
 MODULE_SPEC = dict(
     firewall_id=dict(
         type='int', required=True,
@@ -42,42 +44,7 @@ MODULE_SPEC = dict(
                choices=['present', 'absent'], required=True),
 )
 
-specdoc_examples = ['''
-- name: Create a Firewall
-  linode.cloud.firewall:
-    label: my-firewall
-    rules:
-      inbound_policy: DROP
-    state: present
-  register: firewall_result
 
-- name: Create an Instance
-  linode.cloud.instance:
-    label: my-instance
-    region: us-east
-    private_ip: true
-    type: g6-standard-1
-    state: present
-  register: instance_result
-
-- name: Attach the instance to the Firewall
-  linode.cloud.firewall_device:
-    firewall_id: '{{ firewall_result.firewall.id }}'
-    entity_id: '{{ instance_result.instance.id }}'
-    entity_type: 'linode'
-    state: present''']
-
-result_device_samples = ['''{
-  "created": "2018-01-01T00:01:01",
-  "entity": {
-    "id": 123,
-    "label": "my-linode",
-    "type": "linode",
-    "url": "/v4/linode/instances/123"
-  },
-  "id": 123,
-  "updated": "2018-01-02T00:01:01"
-}''']
 
 specdoc_meta = dict(
     description=[
@@ -86,13 +53,13 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=MODULE_SPEC,
-    examples=specdoc_examples,
+    examples=docs.specdoc_examples,
     return_values=dict(
         device=dict(
             description='The Firewall Device in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/networking/#firewall-device-view__responses',
             type='dict',
-            sample=result_device_samples
+            sample=docs.result_device_samples
         )
     )
 )
