@@ -12,8 +12,11 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-from ansible_collections.linode.cloud.plugins.modules.nodebalancer import specdoc_meta \
-    as nodebalancer_specdoc_meta
+
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer\
+    as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_info\
+    as docs
 
 # pylint: disable=unused-import
 from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList, and_
@@ -37,14 +40,6 @@ linode_nodebalancer_info_spec = dict(
         ])
 )
 
-specdoc_examples = ['''
-- name: Get a NodeBalancer by its id
-  linode.cloud.nodebalancer_info:
-    id: 12345''', '''
-- name: Get a NodeBalancer by its label
-  linode.cloud.nodebalancer_info:
-    label: cool_nodebalancer''']
-
 specdoc_meta = dict(
     description=[
         'Get info about a Linode NodeBalancer.'
@@ -52,8 +47,27 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_nodebalancer_info_spec,
-    examples=specdoc_examples,
-    return_values=nodebalancer_specdoc_meta['return_values']
+    examples=docs.specdoc_examples,
+    return_values=dict(
+        node_balancer=dict(
+            description='The NodeBalancer in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses',
+            type='dict',
+            sample=docs_parent.result_node_balancer_samples
+        ),
+        configs=dict(
+            description='A list of configs applied to the NodeBalancer.',
+            docs_url='https://www.linode.com/docs/api/nodebalancers/#config-view__responses',
+            type='list',
+            sample=docs_parent.result_configs_samples
+        ),
+        nodes=dict(
+            description='A list of configs applied to the NodeBalancer.',
+            docs_url='https://www.linode.com/docs/api/nodebalancers/#node-view',
+            type='list',
+            sample=docs_parent.result_nodes_samples
+        )
+    )
 )
 
 linode_nodebalancer_valid_filters = [

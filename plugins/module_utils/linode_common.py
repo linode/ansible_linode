@@ -129,6 +129,7 @@ class LinodeModuleBase:
                 api_token,
                 base_url='https://api.linode.com/{0}'.format(api_version),
                 user_agent=COLLECTION_USER_AGENT,
+                retry_rate_limit_interval=10,
             )
 
         return self._client

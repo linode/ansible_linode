@@ -16,6 +16,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain_record as docs
+
 linode_domain_record_spec = dict(
     # Unused for domain record objects
     label=dict(type='str', required=False, doc_hide=True),
@@ -80,36 +82,6 @@ linode_domain_record_spec = dict(
                             'used in the case of identical priority.')
 )
 
-specdoc_examples = ['''
-- name: Create an A record
-  linode.cloud.domain_record:
-    domain: my-domain.com
-    name: my-subdomain
-    type: 'A'
-    target: '127.0.0.1'
-    state: present''', '''
-- name: Delete a domain record
-  linode.cloud.domain:
-    domain: my-domain.com
-    name: my-subdomain
-    state: absent''']
-
-result_record_samples = ['''{
-  "created": "2018-01-01T00:01:01",
-  "id": 123456,
-  "name": "test",
-  "port": 80,
-  "priority": 50,
-  "protocol": null,
-  "service": null,
-  "tag": null,
-  "target": "192.0.2.0",
-  "ttl_sec": 604800,
-  "type": "A",
-  "updated": "2018-01-01T00:01:01",
-  "weight": 50
-}''']
-
 specdoc_meta = dict(
     description=[
         'Manage Linode Domain Records.',
@@ -118,13 +90,13 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_domain_record_spec,
-    examples=specdoc_examples,
+    examples=docs.specdoc_examples,
     return_values=dict(
         record=dict(
             description='View a single Record on this Domain.',
             docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
             type='dict',
-            sample=result_record_samples
+            sample=docs.result_record_samples
         )
     )
 )

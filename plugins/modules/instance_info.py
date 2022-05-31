@@ -16,8 +16,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-from ansible_collections.linode.cloud.plugins.modules.instance import specdoc_meta \
-    as instance_specdoc_meta
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance_info as docs
 
 linode_instance_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
@@ -38,13 +38,6 @@ linode_instance_info_spec = dict(
         ])
 )
 
-specdoc_examples = ['''
-- name: Get info about an instance by label
-  linode.cloud.instance_info:
-    label: 'my-instance' ''', '''
-- name: Get info about an instance by id
-  linode.cloud.instance_info:
-    id: 12345''']
 
 specdoc_meta = dict(
     description=[
@@ -53,8 +46,28 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_instance_info_spec,
-    examples=specdoc_examples,
-    return_values=instance_specdoc_meta['return_values']
+    examples=docs.specdoc_examples,
+    return_values=dict(
+        instance=dict(
+            description=['The instance description in JSON serialized form.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#linode-view__responses',
+            type='dict',
+            sample=docs_parent.result_instance_samples
+        ),
+        configs=dict(
+            description=['A list of configs tied to this Linode Instance.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/'
+                     '#configuration-profile-view__responses',
+            type='list',
+            sample=docs_parent.result_configs_samples
+        ),
+        disks=dict(
+            description=['A list of disks tied to this Linode Instance.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#disk-view__responses',
+            type='list',
+            sample=docs_parent.result_disks_samples
+        )
+    )
 )
 
 linode_instance_valid_filters = [

@@ -14,79 +14,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-EXAMPLES = '''
-'''
 
-RETURN = '''
-firewall:
-  description: The Firewall description in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/networking/#firewall-view"
-  returned: always
-  type: dict
-  sample: {
-   "created":"xxxxx",
-   "updated":"xxxxx",
-   "status":"enabled",
-   "id":xxxx,
-   "label":"my-firewall",
-   "rules":{
-      "inbound":[
-         {
-            "action":"ACCEPT",
-            "addresses":{
-               "ipv4":[
-                  "0.0.0.0/0"
-               ],
-               "ipv6":[
-                  "ff00::/8"
-               ]
-            },
-            "description":"Allow inbound HTTP and HTTPS connections.",
-            "label":"allow-http-in",
-            "ports":"80,443",
-            "protocol":"TCP"
-         }
-      ],
-      "inbound_policy":"DROP",
-      "outbound":[
-         {
-            "action":"ACCEPT",
-            "addresses":{
-               "ipv4":[
-                  "0.0.0.0/0"
-               ],
-               "ipv6":[
-                  "ff00::/8"
-               ]
-            },
-            "description":"Allow outbound HTTP and HTTPS connections.",
-            "label":"allow-http-out",
-            "ports":"80,443",
-            "protocol":"TCP"
-         }
-      ],
-      "outbound_policy":"DROP"
-   }
-}
-devices:
-  description: A list of Firewall devices JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/networking/#firewall-device-view"
-  returned: always
-  type: list
-  sample: [
-   {
-      "created":"xxxxxx",
-      "entity":{
-         "id":xxxxxx,
-         "label":"my-device",
-         "type":"linode",
-         "url":"/v4/linode/instances/xxxxxx"
-      },
-      "id":xxxxxx,
-      "updated":"xxxxxx"
-   }
-]
-'''
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall as docs
 
 try:
     from linode_api4 import Firewall, FirewallDevice
@@ -187,108 +116,6 @@ linode_firewall_spec: dict = dict(
                choices=['present', 'absent'], required=True),
 )
 
-specdoc_examples = ['''
-- name: Create a Linode Firewall
-  linode.cloud.firewall:
-    label: 'my-firewall'
-    devices:
-      - id: 123
-        type: linode
-    rules:
-      inbound_policy: DROP
-      inbound:
-        - label: allow-http-in
-          addresses:
-            ipv4:
-              - 0.0.0.0/0
-            ipv6:
-              - 'ff00::/8'
-          description: Allow inbound HTTP and HTTPS connections.
-          ports: '80,443'
-          protocol: TCP
-          action: ACCEPT
-
-      outbound_policy: DROP
-      outbound:
-        - label: allow-http-out
-          addresses:
-            ipv4:
-              - 0.0.0.0/0
-            ipv6:
-              - 'ff00::/8'
-          description: Allow outbound HTTP and HTTPS connections.
-          ports: '80,443'
-          protocol: TCP
-          action: ACCEPT
-    state: present''', '''
-- name: Delete a Linode Firewall
-  linode.cloud.firewall:
-    label: 'my-firewall'
-    state: absent''']
-
-result_firewall_samples = ['''{
-  "created": "2018-01-01T00:01:01",
-  "id": 123,
-  "label": "firewall123",
-  "rules": {
-    "inbound": [
-      {
-        "action": "ACCEPT",
-        "addresses": {
-          "ipv4": [
-            "192.0.2.0/24"
-          ],
-          "ipv6": [
-            "2001:DB8::/32"
-          ]
-        },
-        "description": "An example firewall rule description.",
-        "label": "firewallrule123",
-        "ports": "22-24, 80, 443",
-        "protocol": "TCP"
-      }
-    ],
-    "inbound_policy": "DROP",
-    "outbound": [
-      {
-        "action": "ACCEPT",
-        "addresses": {
-          "ipv4": [
-            "192.0.2.0/24"
-          ],
-          "ipv6": [
-            "2001:DB8::/32"
-          ]
-        },
-        "description": "An example firewall rule description.",
-        "label": "firewallrule123",
-        "ports": "22-24, 80, 443",
-        "protocol": "TCP"
-      }
-    ],
-    "outbound_policy": "DROP"
-  },
-  "status": "enabled",
-  "tags": [
-    "example tag",
-    "another example"
-  ],
-  "updated": "2018-01-02T00:01:01"
-}''']
-
-result_devices_samples = ['''[
-  {
-    "created": "2018-01-01T00:01:01",
-    "entity": {
-      "id": 123,
-      "label": "my-linode",
-      "type": "linode",
-      "url": "/v4/linode/instances/123"
-    },
-    "id": 123,
-    "updated": "2018-01-02T00:01:01"
-  }
-]''']
 
 specdoc_meta = dict(
     description=[
@@ -297,19 +124,19 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_firewall_spec,
-    examples=specdoc_examples,
+    examples=docs.specdoc_examples,
     return_values=dict(
         firewall=dict(
             description='The Firewall description in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/networking/#firewall-view',
             type='dict',
-            sample=result_firewall_samples
+            sample=docs.result_firewall_samples
         ),
         devices=dict(
             description='A list of Firewall devices JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/networking/#firewall-device-view',
             type='list',
-            sample=result_devices_samples
+            sample=docs.result_devices_samples
         )
     )
 )

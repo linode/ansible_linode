@@ -1,6 +1,6 @@
 # domain_record_info
 
-Get info about a Linode Domain Records.
+Get info about a Linode Domain Record.
 
 
 - [Examples](#examples)

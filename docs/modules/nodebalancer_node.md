@@ -20,7 +20,7 @@ Manage Linode NodeBalancer Nodes.
         protocol: http
         algorithm: roundrobin
   register: nodebalancer_result
-        
+
 - name: Create an Instance
   linode.cloud.instance:
     label: my-instance
@@ -29,12 +29,12 @@ Manage Linode NodeBalancer Nodes.
     type: g6-standard-1
     state: present
   register: instance_result
-    
+
 - name: Attach the Instance to the NodeBalancer
   linode.cloud.nodebalancer_node:
     nodebalancer_id: nodebalancer_result.node_balancer.id
     config_id: nodebalancer_result.configs[0].id
-    
+
     label: my-node
 
     # Use the private ip address of the instance
