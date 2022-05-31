@@ -12,125 +12,11 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
+from ansible_collections.linode.cloud.plugins.modules.nodebalancer import specdoc_meta \
+    as nodebalancer_specdoc_meta
 
 # pylint: disable=unused-import
 from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList, and_
-
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Get info about a Linode NodeBalancer.
-module: nodebalancer_info
-options:
-  id:
-    description: The ID of this NodeBalancer.
-    required: false
-    type: int
-  label:
-    description: The label of this NodeBalancer.
-    required: false
-    type: str
-requirements:
-- python >= 3
-'''
-
-EXAMPLES = '''
-- name: Get a NodeBalancer by its id
-  linode.cloud.nodebalancer_info:
-    id: 12345
-    
-- name: Get a NodeBalancer by its label
-  linode.cloud.nodebalancer_info:
-    label: cool_nodebalancer
-'''
-
-RETURN = '''
-node_balancer:
-  description: The NodeBalancer in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses"
-  returned: always
-  type: dict
-  sample: {
-      "client_conn_throttle": 0,
-      "created": "",
-      "hostname": "xxxx.newark.nodebalancer.linode.com",
-      "id": xxxxxx,
-      "ipv4": "xxx.xxx.xxx.xxx",
-      "ipv6": "xxxx:xxxx::xxxx:xxxx:xxxx:xxxx",
-      "label": "my-loadbalancer",
-      "region": "us-east",
-      "tags": [
-
-      ],
-      "transfer": {
-        "in": 0,
-        "out": 0,
-        "total": 0
-      },
-      "updated": ""
-    }
-    
-configs:
-  description: A list of configs applied to the NodeBalancer.
-  linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#config-view__responses"
-  returned: always
-  type: list
-  sample: [
-      {
-        "algorithm": "roundrobin",
-        "check": "none",
-        "check_attempts": 3,
-        "check_body": "",
-        "check_interval": 0,
-        "check_passive": true,
-        "check_path": "",
-        "check_timeout": 30,
-        "cipher_suite": "recommended",
-        "id": xxxxxx,
-        "nodebalancer_id": xxxxxx,
-        "nodes_status": {
-          "down": 1,
-          "up": 0
-        },
-        "port": 80,
-        "protocol": "http",
-        "proxy_protocol": "none",
-        "ssl_cert": null,
-        "ssl_commonname": "",
-        "ssl_fingerprint": "",
-        "ssl_key": null,
-        "stickiness": "none"
-      }
-    ]
-    
-nodes:
-  description: A list of all nodes associated with the NodeBalancer.
-  linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#node-view__responses"
-  returned: always
-  type: list
-  sample: [
-      {
-        "address": "xxx.xxx.xxx.xx:80",
-        "config_id": xxxxxx,
-        "id": xxxxxx,
-        "label": "node1",
-        "mode": "accept",
-        "nodebalancer_id": xxxxxx,
-        "status": "Unknown",
-        "weight": 1
-      }
-    ]
-'''
 
 linode_nodebalancer_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
@@ -138,12 +24,26 @@ linode_nodebalancer_info_spec = dict(
 
     id=dict(
         type='int', required=False,
-        description='The ID of this NodeBalancer.'),
+        description=[
+            'The ID of this NodeBalancer.',
+            'Optional if `label` is defined.'
+        ]),
 
     label=dict(
         type='str', required=False,
-        description='The label of this NodeBalancer.')
+        description=[
+            'The label of this NodeBalancer.',
+            'Optional if `id` is defined.'
+        ])
 )
+
+specdoc_examples = ['''
+- name: Get a NodeBalancer by its id
+  linode.cloud.nodebalancer_info:
+    id: 12345''', '''
+- name: Get a NodeBalancer by its label
+  linode.cloud.nodebalancer_info:
+    label: cool_nodebalancer''']
 
 specdoc_meta = dict(
     description=[
@@ -151,7 +51,9 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_nodebalancer_info_spec
+    spec=linode_nodebalancer_info_spec,
+    examples=specdoc_examples,
+    return_values=nodebalancer_specdoc_meta['return_values']
 )
 
 linode_nodebalancer_valid_filters = [

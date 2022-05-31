@@ -16,116 +16,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Get info about a Linode Firewall.
-module: firewall_info
-options:
-  id:
-    description:
-    - The unique id of the Firewall.
-    required: false
-    type: int
-  label:
-    description:
-    - "The Firewall\u2019s label."
-    required: false
-    type: str
-requirements:
-- python >= 3
-'''
-
-EXAMPLES = '''
-- name: Get info about a Firewall by label
-  linode.cloud.firewall_info:
-    label: 'my-firewall'
-
-- name: Get info about a Firewall by id
-  linode.cloud.firewall_info:
-    id: 12345
-'''
-
-RETURN = '''
-firewall:
-  description: The Firewall description in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/networking/#firewall-view"
-  returned: always
-  type: dict
-  sample: {
-   "created":"xxxxx",
-   "updated":"xxxxx",
-   "status":"enabled",
-   "id":xxxx,
-   "label":"my-firewall",
-   "rules":{
-      "inbound":[
-         {
-            "action":"ACCEPT",
-            "addresses":{
-               "ipv4":[
-                  "0.0.0.0/0"
-               ],
-               "ipv6":[
-                  "ff00::/8"
-               ]
-            },
-            "description":"Allow inbound HTTP and HTTPS connections.",
-            "label":"allow-http-in",
-            "ports":"80,443",
-            "protocol":"TCP"
-         }
-      ],
-      "inbound_policy":"DROP",
-      "outbound":[
-         {
-            "action":"ACCEPT",
-            "addresses":{
-               "ipv4":[
-                  "0.0.0.0/0"
-               ],
-               "ipv6":[
-                  "ff00::/8"
-               ]
-            },
-            "description":"Allow outbound HTTP and HTTPS connections.",
-            "label":"allow-http-out",
-            "ports":"80,443",
-            "protocol":"TCP"
-         }
-      ],
-      "outbound_policy":"DROP"
-   }
-}
-devices:
-  description: A list of Firewall devices JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/networking/#firewall-device-view"
-  returned: always
-  type: list
-  sample: [
-   {
-      "created":"xxxxxx",
-      "entity":{
-         "id":xxxxxx,
-         "label":"my-device",
-         "type":"linode",
-         "url":"/v4/linode/instances/xxxxxx"
-      },
-      "id":xxxxxx,
-      "updated":"xxxxxx"
-   }
-]
-'''
+from ansible_collections.linode.cloud.plugins.modules.firewall import specdoc_meta \
+    as firewall_specdoc_meta
 
 linode_firewall_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
@@ -133,13 +25,23 @@ linode_firewall_info_spec = dict(
 
     id=dict(type='int', required=False,
             description=[
-                'The unique id of the Firewall.'
+                'The unique id of the Firewall.',
+                'Optional if `label` is defined.'
             ]),
     label=dict(type='str', required=False,
                description=[
-                   'The Firewall’s label.'
+                   'The Firewall’s label.',
+                   'Optional if `id` is defined.'
                ])
 )
+
+specdoc_examples = ['''
+- name: Get info about a Firewall by label
+  linode.cloud.firewall_info:
+    label: 'my-firewall' ''', '''
+- name: Get info about a Firewall by id
+  linode.cloud.firewall_info:
+    id: 12345''']
 
 specdoc_meta = dict(
     description=[
@@ -147,7 +49,9 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_firewall_info_spec
+    spec=linode_firewall_info_spec,
+    examples=specdoc_examples,
+    return_values=firewall_specdoc_meta['return_values']
 )
 
 linode_firewall_valid_filters = [

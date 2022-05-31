@@ -15,64 +15,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Get info about a Linode Volume.
-module: volume_info
-options:
-  id:
-    description: The ID of the Volume.
-    required: false
-    type: int
-  label:
-    description: The label of the Volume.
-    required: false
-    type: str
-requirements:
-- python >= 3
-'''
-
-EXAMPLES = '''
-- name: Get info about a volume by label
-  linode.cloud.volume_info:
-    label: example-volume
-    
-- name: Get info about a volume by id
-  linode.cloud.volume_info:
-    id: 12345
-'''
-
-RETURN = '''
-volume:
-  description: The volume in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/volumes/#volume-view__responses"
-  returned: always
-  type: dict
-  sample: {
-   "created":"",
-   "filesystem_path":"/dev/disk/by-id/xxxxxx",
-   "id":xxxxxx,
-   "label":"xxxxxx",
-   "linode_id":xxxxxx,
-   "linode_label":"xxxxxx",
-   "region":"us-east",
-   "size":30,
-   "status":"creating",
-   "tags":[],
-   "updated":"2021-03-05T19:05:33"
-}
-'''
+from ansible_collections.linode.cloud.plugins.modules.volume import specdoc_meta \
+    as volume_specdoc_meta
 
 linode_volume_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
@@ -80,12 +24,27 @@ linode_volume_info_spec = dict(
 
     id=dict(
         type='int', required=False,
-        description='The ID of the Volume.'),
+        description=[
+            'The ID of the Volume.',
+            'Optional if `label` is defined.'
+        ]),
 
     label=dict(
         type='str', required=False,
-        description='The label of the Volume.')
+        description=[
+            'The label of the Volume.',
+            'Optional if `id` is defined.'
+        ])
 )
+
+specdoc_examples = ['''
+- name: Get info about a volume by label
+  linode.cloud.volume_info:
+    label: example-volume
+    
+- name: Get info about a volume by id
+  linode.cloud.volume_info:
+    id: 12345''']
 
 specdoc_meta = dict(
     description=[
@@ -93,7 +52,9 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_volume_info_spec
+    spec=linode_volume_info_spec,
+    examples=specdoc_examples,
+    return_values=volume_specdoc_meta['return_values']
 )
 
 linode_volume_valid_filters = [

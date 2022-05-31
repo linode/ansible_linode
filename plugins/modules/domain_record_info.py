@@ -16,78 +16,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Get info about a Linode Domain Records.
-module: domain_record_info
-options:
-  domain:
-    description: The name of the parent Domain.
-    required: false
-    type: str
-  domain_id:
-    description: The ID of the parent Domain.
-    required: false
-    type: int
-  id:
-    description: The unique id of the subdomain.
-    required: false
-    type: int
-  name:
-    description: The name of the domain record.
-    required: false
-    type: str
-requirements:
-- python >= 3
-'''
-
-EXAMPLES = '''
-- name: Get info about domain records by name
-  linode.cloud.domain_record_info:
-    domain: my-domain.com
-    name: my-subdomain
-    type: A
-    target: 0.0.0.0
-
-- name: Get info about a domain record by id
-  linode.cloud.domain_info:
-    domain: my-domain.com
-    id: 12345
-'''
-
-RETURN = '''
-records:
-  description: The domain records in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/domains/#domain-record-view"
-  returned: always
-  type: list
-  sample: [{
-   "created":"xxxxx",
-   "id":xxxxx,
-   "name":"xxxx",
-   "port":0,
-   "priority":0,
-   "protocol":null,
-   "service":null,
-   "tag":null,
-   "target":"127.0.0.1",
-   "ttl_sec":3600,
-   "type":"A",
-   "updated":"xxxxx",
-   "weight":55
-}]
-'''
+from ansible_collections.linode.cloud.plugins.modules.domain_record import specdoc_meta \
+    as domain_record_specdoc_meta
 
 linode_domain_record_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
@@ -95,16 +25,56 @@ linode_domain_record_info_spec = dict(
     label=dict(type='str', required=False, doc_hide=True),
 
     domain_id=dict(type='int',
-                   description='The ID of the parent Domain.'),
+                   description=[
+                       'The ID of the parent Domain.',
+                       'Optional if `domain` is defined.'
+                   ]),
     domain=dict(type='str',
-                description='The name of the parent Domain.'),
+                description=[
+                    'The name of the parent Domain.',
+                    'Optional if `domain_id` is defined.'
+                ]),
 
     id=dict(type='int',
-            description='The unique id of the subdomain.'),
+            description=[
+                'The unique id of the subdomain.',
+                'Optional if `name` is defined.'
+            ]),
 
     name=dict(type='str',
-              description='The name of the domain record.'),
+              description=[
+                  'The name of the domain record.',
+                  'Optional if `id` is defined.'
+              ]),
 )
+
+specdoc_examples = ['''
+- name: Get info about domain records by name
+  linode.cloud.domain_record_info:
+    domain: my-domain.com
+    name: my-subdomain
+    type: A
+    target: 0.0.0.0''', '''
+- name: Get info about a domain record by id
+  linode.cloud.domain_info:
+    domain: my-domain.com
+    id: 12345''']
+
+result_record_samples = ['''{
+  "created": "2018-01-01T00:01:01",
+  "id": 123456,
+  "name": "test",
+  "port": 80,
+  "priority": 50,
+  "protocol": null,
+  "service": null,
+  "tag": null,
+  "target": "192.0.2.0",
+  "ttl_sec": 604800,
+  "type": "A",
+  "updated": "2018-01-01T00:01:01",
+  "weight": 50
+}''']
 
 specdoc_meta = dict(
     description=[
@@ -112,7 +82,9 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_domain_record_info_spec
+    spec=linode_domain_record_info_spec,
+    examples=specdoc_examples,
+    return_values=domain_record_specdoc_meta['return_values']
 )
 
 

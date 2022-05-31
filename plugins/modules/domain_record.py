@@ -16,145 +16,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Manage Linode Domain Records.
-- 'NOTE: Domain records are identified by their name, target, and type.'
-module: domain_record
-options:
-  domain:
-    description: The name of the parent Domain.
-    required: false
-    type: str
-  domain_id:
-    description: The ID of the parent Domain.
-    required: false
-    type: int
-  label:
-    description: []
-    required: false
-    type: str
-  name:
-    description: The name of this Record.
-    required: false
-    type: str
-  port:
-    description:
-    - The port this Record points to.
-    - Only valid and required for SRV record requests.
-    required: false
-    type: int
-  priority:
-    description:
-    - The priority of the target host for this Record.
-    - Lower values are preferred.
-    - Only valid for MX and SRV record requests.
-    - Required for SRV record requests.
-    required: false
-    type: int
-  protocol:
-    description:
-    - "The protocol this Record\u2019s service communicates with."
-    - An underscore (_) is prepended automatically to the submitted value for this
-      property.
-    required: false
-    type: str
-  record_id:
-    description: The id of the record to modify.
-    required: false
-    type: int
-  service:
-    description:
-    - An underscore (_) is prepended and a period (.) is appended automatically to
-      the submitted value for this property.
-    - Only valid and required for SRV record requests.
-    - The name of the service.
-    required: false
-    type: str
-  tag:
-    description:
-    - The tag portion of a CAA record.
-    - Only valid and required for CAA record requests.
-    required: false
-    type: str
-  target:
-    default: ''
-    description:
-    - The target for this Record.
-    required: false
-    type: str
-  ttl_sec:
-    description:
-    - "The amount of time in seconds that this Domain\u2019s records may be cached\
-      \ by resolvers or other domain servers."
-    required: false
-    type: int
-  type:
-    description: The type of Record this is in the DNS system.
-    required: false
-    type: str
-  weight:
-    description: The relative weight of this Record used in the case of identical
-      priority.
-    required: false
-    type: int
-requirements:
-- python >= 3
-'''
-
-EXAMPLES = '''
-- name: Create an A record
-  linode.cloud.domain_record:
-    domain: my-domain.com
-    name: my-subdomain
-    type: 'A'
-    target: '127.0.0.1'
-    state: present
-
-- name: Delete a domain record
-  linode.cloud.domain:
-    domain: my-domain.com
-    name: my-subdomain
-    state: absent
-'''
-
-RETURN = '''
-record:
-  description: The domain record in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/domains/#domain-record-view"
-  returned: always
-  type: dict
-  sample: {
-   "created":"xxxxx",
-   "id":xxxxx,
-   "name":"xxxx",
-   "port":0,
-   "priority":0,
-   "protocol":null,
-   "service":null,
-   "tag":null,
-   "target":"127.0.0.1",
-   "ttl_sec":3600,
-   "type":"A",
-   "updated":"xxxxx",
-   "weight":55
-}
-'''
-
 linode_domain_record_spec = dict(
     # Unused for domain record objects
-    label=dict(type='str', required=False),
+    label=dict(type='str', required=False, doc_hide=True),
 
     domain_id=dict(type='int',
                    description='The ID of the parent Domain.'),
@@ -191,6 +55,9 @@ linode_domain_record_spec = dict(
                      'Only valid and required for SRV record requests.',
                      'The name of the service.'
                  ]),
+    state=dict(type='str',
+               description='The desired state of the target.',
+               choices=['present', 'absent'], required=True),
     tag=dict(type='str',
              description=[
                  'The tag portion of a CAA record.',
@@ -213,6 +80,36 @@ linode_domain_record_spec = dict(
                             'used in the case of identical priority.')
 )
 
+specdoc_examples = ['''
+- name: Create an A record
+  linode.cloud.domain_record:
+    domain: my-domain.com
+    name: my-subdomain
+    type: 'A'
+    target: '127.0.0.1'
+    state: present''', '''
+- name: Delete a domain record
+  linode.cloud.domain:
+    domain: my-domain.com
+    name: my-subdomain
+    state: absent''']
+
+result_record_samples = ['''{
+  "created": "2018-01-01T00:01:01",
+  "id": 123456,
+  "name": "test",
+  "port": 80,
+  "priority": 50,
+  "protocol": null,
+  "service": null,
+  "tag": null,
+  "target": "192.0.2.0",
+  "ttl_sec": 604800,
+  "type": "A",
+  "updated": "2018-01-01T00:01:01",
+  "weight": 50
+}''']
+
 specdoc_meta = dict(
     description=[
         'Manage Linode Domain Records.',
@@ -220,7 +117,16 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_domain_record_spec
+    spec=linode_domain_record_spec,
+    examples=specdoc_examples,
+    return_values=dict(
+        record=dict(
+            description='View a single Record on this Domain.',
+            docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
+            type='dict',
+            sample=result_record_samples
+        )
+    )
 )
 
 linode_domain_record_mutable: Set[str] = {

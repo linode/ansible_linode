@@ -16,92 +16,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'supported_by': 'Linode'
-}
-
-DOCUMENTATION = '''
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Get info about a Linode Domain.
-module: domain_info
-options:
-  domain:
-    description: The unique id of the Domain.
-    required: false
-    type: str
-  id:
-    description: The unique domain name of the Domain.
-    required: false
-    type: int
-requirements:
-- python >= 3
-'''
-
-EXAMPLES = '''
-- name: Get info about a domain by domain
-  linode.cloud.domain_info:
-    domain: my-domain.com
-
-- name: Get info about a domain by id
-  linode.cloud.domain_info:
-    id: 12345
-'''
-
-RETURN = '''
-domain:
-  description: The domain in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/domains/#domain-view"
-  returned: always
-  type: dict
-  sample: {
-   "axfr_ips":[],
-   "created":"xxxx",
-   "description":"Created with ansible!",
-   "domain":"my-domain.com",
-   "expire_sec":300,
-   "group":"",
-   "id":xxxxxx,
-   "master_ips":[
-      "127.0.0.1"
-   ],
-   "refresh_sec":3600,
-   "retry_sec":7200,
-   "soa_email":"xxxx@my-domain.com",
-   "status":"active",
-   "tags":[],
-   "ttl_sec":14400,
-   "type":"master",
-   "updated":"xxxx"
-}
-
-records:
-  description: A list of records associated with the domain in JSON serialized form.
-  linode_api_docs: "https://www.linode.com/docs/api/domains/#domain-record-view"
-  returned: always
-  type: list
-  sample: [{
-   "created":"xxxxx",
-   "id":xxxxx,
-   "name":"xxxx",
-   "port":0,
-   "priority":0,
-   "protocol":null,
-   "service":null,
-   "tag":null,
-   "target":"127.0.0.1",
-   "ttl_sec":3600,
-   "type":"A",
-   "updated":"xxxxx",
-   "weight":55
-}]
-'''
+from ansible_collections.linode.cloud.plugins.modules.domain import specdoc_meta \
+    as domain_specdoc_meta
 
 linode_domain_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
@@ -109,10 +25,62 @@ linode_domain_info_spec = dict(
     label=dict(type='str', required=False, doc_hide=True),
 
     id=dict(type='int', required=False,
-            description='The unique domain name of the Domain.'),
+            description=[
+                'The unique domain name of the Domain.',
+                'Optional if `domain` is defined.'
+            ]),
     domain=dict(type='str', required=False,
-                description='The unique id of the Domain.')
+                description=[
+                    'The unique id of the Domain.',
+                    'Optional if `id` is defined.'
+                ])
 )
+
+specdoc_examples = ['''
+- name: Get info about a domain by domain
+  linode.cloud.domain_info:
+    domain: my-domain.com''', '''
+- name: Get info about a domain by id
+  linode.cloud.domain_info:
+    id: 12345''']
+
+result_domain_samples = ['''{
+  "axfr_ips": [],
+  "description": null,
+  "domain": "example.org",
+  "expire_sec": 300,
+  "group": null,
+  "id": 1234,
+  "master_ips": [],
+  "refresh_sec": 300,
+  "retry_sec": 300,
+  "soa_email": "admin@example.org",
+  "status": "active",
+  "tags": [
+    "example tag",
+    "another example"
+  ],
+  "ttl_sec": 300,
+  "type": "master"
+}''']
+
+result_records_samples = ['''[
+  {
+    "created": "2018-01-01T00:01:01",
+    "id": 123456,
+    "name": "test",
+    "port": 80,
+    "priority": 50,
+    "protocol": null,
+    "service": null,
+    "tag": null,
+    "target": "192.0.2.0",
+    "ttl_sec": 604800,
+    "type": "A",
+    "updated": "2018-01-01T00:01:01",
+    "weight": 50
+  }
+]''']
 
 specdoc_meta = dict(
     description=[
@@ -120,7 +88,9 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_domain_info_spec
+    spec=linode_domain_info_spec,
+    examples=specdoc_examples,
+    return_values=domain_specdoc_meta['return_values']
 )
 
 linode_domain_valid_filters = [
