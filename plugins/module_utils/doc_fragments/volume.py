@@ -1,3 +1,5 @@
+"""Documentation fragments for the volume module"""
+
 specdoc_examples = ['''
 - name: Create a volume attached to an instance
   linode.cloud.volume:

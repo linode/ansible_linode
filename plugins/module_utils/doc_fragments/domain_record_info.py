@@ -1,3 +1,5 @@
+"""Documentation fragments for the domain_record_info module"""
+
 specdoc_examples = ['''
 - name: Get info about domain records by name
   linode.cloud.domain_record_info:

@@ -15,7 +15,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.object_cluster_info as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.object_cluster_info \
+    as docs
 
 linode_object_cluster_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements

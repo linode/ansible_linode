@@ -1,3 +1,5 @@
+"""Documentation fragments for the firewall module"""
+
 specdoc_examples = ['''
 - name: Create a Linode Firewall
   linode.cloud.firewall:

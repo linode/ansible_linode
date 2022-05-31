@@ -1,3 +1,5 @@
+"""Documentation fragments for the volume_info module"""
+
 specdoc_examples = ['''
 - name: Get info about a volume by label
   linode.cloud.volume_info:

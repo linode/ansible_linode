@@ -1,3 +1,5 @@
+"""Documentation fragments for the domain module"""
+
 specdoc_examples = ['''
 - name: Create a domain 
   linode.cloud.domain:

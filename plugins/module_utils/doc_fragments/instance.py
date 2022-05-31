@@ -1,3 +1,5 @@
+"""Documentation fragments for the instance module"""
+
 specdoc_examples = ['''
 - name: Create a new Linode instance.
   linode.cloud.instance:

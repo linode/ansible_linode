@@ -1,3 +1,5 @@
+"""Documentation fragments for the instance_info module"""
+
 specdoc_examples = ['''
 - name: Get info about an instance by label
   linode.cloud.instance_info:

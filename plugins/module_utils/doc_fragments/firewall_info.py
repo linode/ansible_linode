@@ -1,3 +1,5 @@
+"""Documentation fragments for the firewall_info module"""
+
 specdoc_examples = ['''
 - name: Get info about a Firewall by label
   linode.cloud.firewall_info:

@@ -1,3 +1,5 @@
+"""Documentation fragments for the nodebalancer_info module"""
+
 specdoc_examples = ['''
 - name: Get a NodeBalancer by its id
   linode.cloud.nodebalancer_info:

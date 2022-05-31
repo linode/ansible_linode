@@ -1,3 +1,5 @@
+"""Documentation fragments for the object_keys module"""
+
 specdoc_examples = ['''
 - name: Create an Object Storage key
   linode.cloud.object_keys:

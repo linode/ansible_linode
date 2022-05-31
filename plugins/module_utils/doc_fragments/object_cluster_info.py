@@ -1,3 +1,5 @@
+"""Documentation fragments for the object_cluster_info module"""
+
 specdoc_examples = ['''
 - name: Get info about clusters in us-east
   linode.cloud.object_cluster_info:

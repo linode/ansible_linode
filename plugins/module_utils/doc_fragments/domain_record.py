@@ -1,3 +1,5 @@
+"""Documentation fragments for the domain_record module"""
+
 specdoc_examples = ['''
 - name: Create an A record
   linode.cloud.domain_record:

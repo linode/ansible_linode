@@ -1,3 +1,5 @@
+"""Documentation fragments for the nodebalancer_node module"""
+
 specdoc_examples = ['''
 - name: Create a NodeBalancer
   linode.cloud.nodebalancer:

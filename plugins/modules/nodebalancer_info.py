@@ -12,11 +12,11 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-from ansible_collections.linode.cloud.plugins.modules.nodebalancer import specdoc_meta \
-    as nodebalancer_specdoc_meta
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer as docs_parent
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_info as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer\
+    as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_info\
+    as docs
 
 # pylint: disable=unused-import
 from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList, and_

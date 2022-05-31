@@ -1,3 +1,4 @@
+"""Documentation fragments for the nodebalanacer module"""
 
 specdoc_examples = ['''
 - name: Create a Linode NodeBalancer
