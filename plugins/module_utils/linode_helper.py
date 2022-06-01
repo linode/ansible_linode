@@ -1,5 +1,5 @@
 """This module contains helper functions for various Linode modules."""
-from typing import Tuple, Any, Optional, cast, Dict
+from typing import Tuple, Any, Optional, cast, Dict, List, Set
 
 import linode_api4
 from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode
@@ -131,3 +131,18 @@ def jsonify_node_pool_node(node: LKENodePoolNode) -> Dict[str, Any]:
         'instance_id': node.instance_id,
         'status': node.status,
     }
+
+
+def validate_required(required_fields: Set[str], params: Dict[str, Any]):
+    """Returns whether the given parameters contain all of the required fields specified."""
+
+    has_missing_field = False
+    missing_fields = []
+
+    for field in required_fields:
+        if field not in params:
+            missing_fields.append(field)
+            has_missing_field = True
+
+    if has_missing_field:
+        raise Exception("missing fields: {}".format(', '.join(missing_fields)))

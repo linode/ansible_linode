@@ -15,7 +15,7 @@ import polling
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json, jsonify_node_pool
+    filter_null_values, paginated_list_to_json, jsonify_node_pool, validate_required
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
@@ -121,6 +121,13 @@ specdoc_meta = dict(
 
 MUTABLE_FIELDS: Set[str] = {
     'tags'
+}
+
+REQUIRED_PRESENT: Set[str] = {
+    'k8s_version',
+    'region',
+    'label',
+    'node_pools'
 }
 
 
@@ -253,6 +260,11 @@ class LinodeLKECluster(LinodeModuleBase):
 
     def _handle_present(self) -> None:
         params = self.module.params
+
+        try:
+            validate_required(REQUIRED_PRESENT, params)
+        except Exception as e:
+            self.fail(e)
 
         label: str = params.get('label')
 
