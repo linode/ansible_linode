@@ -286,8 +286,8 @@ class LinodeLKECluster(LinodeModuleBase):
 
         try:
             validate_required(REQUIRED_PRESENT, params)
-        except Exception as e:
-            self.fail(e)
+        except Exception as exception:
+            self.fail(exception)
 
         label: str = params.get('label')
 

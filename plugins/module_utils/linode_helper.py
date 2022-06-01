@@ -1,5 +1,5 @@
 """This module contains helper functions for various Linode modules."""
-from typing import Tuple, Any, Optional, cast, Dict, List, Set
+from typing import Tuple, Any, Optional, cast, Dict, Set
 
 import linode_api4
 from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode
