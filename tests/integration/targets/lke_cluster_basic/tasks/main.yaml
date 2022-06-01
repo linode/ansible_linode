@@ -76,3 +76,46 @@
           - upgrade.node_pools[0].type == 'g6-standard-1'
           - upgrade.node_pools[0].count == 1
           - upgrade.node_pools[0].id == create_cluster.node_pools[0].id
+
+    - name: Get info about the cluster by id
+      linode.cloud.lke_cluster_info:
+        id: '{{ upgrade.cluster.id }}'
+        api_token: '{{ api_token }}'
+      register: info_by_id
+
+    - assert:
+        that:
+          - info_by_id.cluster.k8s_version == '1.23'
+          - info_by_id.cluster.region == 'us-southeast'
+
+          - info_by_id.node_pools | length == 1
+
+          - info_by_id.node_pools[0].type == 'g6-standard-1'
+          - info_by_id.node_pools[0].count == 1
+          - info_by_id.node_pools[0].id == create_cluster.node_pools[0].id
+
+    - name: Get info about the cluster by label
+      linode.cloud.lke_cluster_info:
+        api_token: '{{ api_token }}'
+        label: '{{ upgrade.cluster.label }}'
+      register: info_by_label
+
+    - assert:
+        that:
+          - info_by_label.cluster.k8s_version == '1.23'
+          - info_by_label.cluster.region == 'us-southeast'
+
+          - info_by_label.node_pools | length == 1
+
+          - info_by_label.node_pools[0].type == 'g6-standard-1'
+          - info_by_label.node_pools[0].count == 1
+          - info_by_label.node_pools[0].id == create_cluster.node_pools[0].id
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the LKE cluster
+          linode.cloud.lke_cluster:
+            api_token: '{{ api_token }}'
+            label: '{{ create_cluster.cluster.label }}'
+            state: absent
