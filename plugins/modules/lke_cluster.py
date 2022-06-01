@@ -11,13 +11,15 @@ from typing import Optional, cast, Any, Set, List, Dict
 
 from linode_api4 import LKECluster, LKENodePool
 
+import polling
+
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     filter_null_values, paginated_list_to_json, jsonify_node_pool
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster as docs
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import handle_updates
 
@@ -75,8 +77,20 @@ linode_lke_cluster_spec = dict(
         type='list',
         elements='dict',
         suboptions=linode_lke_cluster_node_pool_spec,
-    )
+        description='A list of node pools to configure the cluster with'
+    ),
 
+    wait_for_ready=dict(
+        type='bool',
+        description='If true, the module will not exit until all nodes in the cluster are ready.',
+        default=False
+    ),
+
+    wait_timeout=dict(
+        type='int',
+        description='The period to wait for the cluster to be ready in seconds.',
+        default=600
+    )
 )
 
 specdoc_meta = dict(
@@ -86,26 +100,27 @@ specdoc_meta = dict(
     requirements=global_requirements,
     author=global_authors,
     spec=linode_lke_cluster_spec,
-    examples=docs.specdoc_examples,
+    examples=docs.examples,
     return_values=dict(
-        domain=dict(
-            description='The domain in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/domains/#domain-view',
+        cluster=dict(
+            description='The LKE cluster in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/'
+                     '#kubernetes-cluster-view__response-samples',
             type='dict',
-            sample=docs.result_domain_samples
+            sample=docs.result_cluster
         ),
-        records=dict(
-            description='The domain record in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
+        node_pools=dict(
+            description='A list of node pools in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/'
+                     '#node-pools-list__response-samples',
             type='list',
-            sample=docs.result_records_samples
+            sample=docs.result_node_pools
         )
     )
 )
 
 MUTABLE_FIELDS: Set[str] = {
-    'tags',
-    'high_availability'
+    'tags'
 }
 
 
@@ -139,6 +154,23 @@ class LinodeLKECluster(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get lke cluster {0}: {1}'.format(name, exception))
 
+    def _wait_for_all_nodes_ready(self, cluster: LKECluster, timeout: int) -> None:
+        def _check_cluster_nodes_ready() -> bool:
+            for pool in cluster.pools:
+                for node in pool.nodes:
+                    if node.status != 'ready':
+                        return False
+            return True
+
+        try:
+            polling.poll(
+                _check_cluster_nodes_ready,
+                step=10,
+                timeout=timeout,
+            )
+        except polling.TimeoutException:
+            self.fail('failed to wait for lke cluster: timeout period expired')
+
     def _create_cluster(self) -> Optional[LKECluster]:
         params = copy.deepcopy(self.module.params)
         label = params.pop('label')
@@ -158,8 +190,18 @@ class LinodeLKECluster(LinodeModuleBase):
 
         new_params = copy.deepcopy(self.module.params)
         pools = new_params.pop('node_pools')
+        k8s_version = new_params.pop('k8s_version')
 
         handle_updates(cluster, new_params, MUTABLE_FIELDS, self.register_action)
+
+        # version upgrade
+        if cluster.k8s_version.id != k8s_version:
+            self.client.put('/lke/clusters/{}'.format(cluster.id), data={
+                'k8s_version': k8s_version
+            })
+
+            self.register_action('Upgraded cluster {} -> {}'.
+                                 format(cluster.k8s_version.id, k8s_version))
 
         existing_pools = copy.deepcopy(cluster.pools)
         should_keep = [False for _ in existing_pools]
@@ -176,10 +218,6 @@ class LinodeLKECluster(LinodeModuleBase):
                     should_keep[i] = True
                     break
 
-            # if not exists:
-            #     self.register_action('Created pool with {} nodes and type {}'.format(pool['count'], pool['type']))
-            #     cluster.node_pool_create(pool['type'], pool['count'])
-
         for i, pool in enumerate(pools):
             if pools_handled[i]:
                 continue
@@ -191,7 +229,9 @@ class LinodeLKECluster(LinodeModuleBase):
                     continue
 
                 if existing_pool.type.id == pool['type']:
-                    self.register_action('Resized pool {} from {} -> {}'.format(existing_pool.id, existing_pool.count, pool['count']))
+                    self.register_action('Resized pool {} from {} -> {}'.
+                                         format(existing_pool.id,
+                                                existing_pool.count, pool['count']))
                     existing_pool.count = pool['count']
                     existing_pool.save()
                     should_keep[k] = True
@@ -200,7 +240,8 @@ class LinodeLKECluster(LinodeModuleBase):
                     break
 
             if not created:
-                self.register_action('Created pool with {} nodes and type {}'.format(pool['count'], pool['type']))
+                self.register_action('Created pool with {} nodes and type {}'
+                                     .format(pool['count'], pool['type']))
                 cluster.node_pool_create(pool['type'], pool['count'])
 
         for i, pool in enumerate(existing_pools):
@@ -224,6 +265,11 @@ class LinodeLKECluster(LinodeModuleBase):
         self._update_cluster(cluster)
 
         # Force lazy-loading
+        cluster._api_get()
+
+        if params.get('wait_for_ready'):
+            self._wait_for_all_nodes_ready(cluster, params.get('wait_timeout'))
+
         cluster._api_get()
 
         self.results['cluster'] = cluster._raw_json

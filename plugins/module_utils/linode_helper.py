@@ -106,13 +106,16 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
                 continue
 
             raise RuntimeError(
-                'failed to update {} -> {}: {} is a non-updatable field'.format(old_value, new_value, key))
+                'failed to update {} -> {}: {} is a non-updatable'
+                ' field'.format(old_value, new_value, key))
 
     if should_update:
         obj.save()
 
 
 def jsonify_node_pool(pool: LKENodePool) -> Dict[str, Any]:
+    """Converts an LKENodePool into a JSON-compatible dict"""
+
     result = pool._raw_json
 
     result['nodes'] = [jsonify_node_pool_node(node) for node in pool.nodes]
@@ -121,6 +124,8 @@ def jsonify_node_pool(pool: LKENodePool) -> Dict[str, Any]:
 
 
 def jsonify_node_pool_node(node: LKENodePoolNode) -> Dict[str, Any]:
+    """Converts an LKENodePoolNode into a JSON-compatible dict"""
+
     return {
         'id': node.id,
         'instance_id': node.instance_id,
