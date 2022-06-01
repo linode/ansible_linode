@@ -61,6 +61,18 @@ specdoc_meta = dict(
                      '#node-pools-list__response-samples',
             type='list',
             sample=docs_parent.result_node_pools
+        ),
+        kubeconfig=dict(
+            description='The Base64-encoded kubeconfig used to access this cluster.',
+            docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/' \
+                     '#kubeconfig-view__responses',
+            type='str'
+        ),
+        dashboard_url=dict(
+            description='The Cluster Dashboard access URL.',
+            docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/'
+                     '#kubernetes-cluster-dashboard-url-view__responses',
+            type='str'
         )
     )
 )
@@ -79,6 +91,8 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
         self.results: Dict[str, Any] = dict(
             cluster=None,
             node_pools=[],
+            dashboard_url=None,
+            kubeconfig=None
         )
 
         super().__init__(module_arg_spec=self.module_arg_spec,
@@ -111,6 +125,15 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
         return self.fail(msg='one of `label` or `id` must be specified')
 
+    def _populate_results(self, cluster: LKECluster) -> None:
+        cluster._api_get()
+        dashboard_data = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))
+
+        self.results['cluster'] = cluster._raw_json
+        self.results['node_pools'] = [jsonify_node_pool(pool) for pool in cluster.pools]
+        self.results['kubeconfig'] = cluster.kubeconfig
+        self.results['dashboard_url'] = dashboard_data['url']
+
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for LKE cluster info module"""
 
@@ -119,8 +142,7 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
         if cluster is None:
             self.fail('failed to get cluster')
 
-        self.results['cluster'] = cluster._raw_json
-        self.results['node_pools'] = [jsonify_node_pool(pool) for pool in cluster.pools]
+        self._populate_results(cluster)
 
         return self.results
 

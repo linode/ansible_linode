@@ -115,6 +115,18 @@ specdoc_meta = dict(
                      '#node-pools-list__response-samples',
             type='list',
             sample=docs.result_node_pools
+        ),
+        kubeconfig=dict(
+            description='The Base64-encoded kubeconfig used to access this cluster.',
+            docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/' \
+                     '#kubeconfig-view__responses',
+            type='str'
+        ),
+        dashboard_url=dict(
+            description='The Cluster Dashboard access URL.',
+            docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/'
+                     '#kubernetes-cluster-dashboard-url-view__responses',
+            type='str'
         )
     )
 )
@@ -142,6 +154,8 @@ class LinodeLKECluster(LinodeModuleBase):
             actions=[],
             cluster=None,
             node_pools=None,
+            dashboard_url=None,
+            kubeconfig=None
         )
 
         super().__init__(module_arg_spec=self.module_arg_spec,
@@ -258,6 +272,15 @@ class LinodeLKECluster(LinodeModuleBase):
             self.register_action('Deleted pool {}'.format(pool.id))
             pool.delete()
 
+    def _populate_results(self, cluster: LKECluster) -> None:
+        cluster._api_get()
+        dashboard_data = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))
+
+        self.results['cluster'] = cluster._raw_json
+        self.results['node_pools'] = [jsonify_node_pool(pool) for pool in cluster.pools]
+        self.results['kubeconfig'] = cluster.kubeconfig
+        self.results['dashboard_url'] = dashboard_data['url']
+
     def _handle_present(self) -> None:
         params = self.module.params
 
@@ -282,10 +305,7 @@ class LinodeLKECluster(LinodeModuleBase):
         if params.get('wait_for_ready'):
             self._wait_for_all_nodes_ready(cluster, params.get('wait_timeout'))
 
-        cluster._api_get()
-
-        self.results['cluster'] = cluster._raw_json
-        self.results['node_pools'] = [jsonify_node_pool(pool) for pool in cluster.pools]
+        self._populate_results(cluster)
 
     def _handle_absent(self) -> None:
         label: str = self.module.params.get('label')
@@ -293,8 +313,7 @@ class LinodeLKECluster(LinodeModuleBase):
         cluster = self._get_cluster_by_name(label)
 
         if cluster is not None:
-            self.results['cluster'] = cluster._raw_json
-            self.results['node_pools'] = [jsonify_node_pool(pool) for pool in cluster.pools]
+            self._populate_results(cluster)
 
             cluster.delete()
             self.register_action('Deleted cluster {0}'.format(cluster))

@@ -102,3 +102,11 @@ Get info about a Linode LKE cluster.
     - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#node-pools-list__response-samples) for a list of returned fields
 
 
+- `kubeconfig` - The Base64-encoded kubeconfig used to access this cluster.
+    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubeconfig-view__responses) for a list of returned fields
+
+
+- `dashboard_url` - The Cluster Dashboard access URL.
+    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubernetes-cluster-dashboard-url-view__responses) for a list of returned fields
+
+
