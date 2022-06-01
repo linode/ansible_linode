@@ -11,3 +11,33 @@
             count: 3
         state: present
       register: create_cluster
+
+    - name: Update a Linode LKE cluster
+      linode.cloud.lke_cluster:
+        api_token: '{{ api_token }}'
+        label: '{{ create_cluster.cluster.label }}'
+        region: us-southeast
+        k8s_version: 1.23
+        node_pools:
+          - type: g6-standard-1
+            count: 3
+          - type: g6-standard-1
+            count: 2
+        state: present
+      register: create_cluster
+
+    - name: Resize a Node Pool
+      linode.cloud.lke_cluster:
+        api_token: '{{ api_token }}'
+        label: '{{ create_cluster.cluster.label }}'
+        region: us-southeast
+        k8s_version: 1.23
+        node_pools:
+          - type: g6-standard-1
+            count: 2
+          - type: g6-standard-2
+            count: 5
+          - type: g6-standard-1
+            count: 2
+        state: present
+      register: create_cluster

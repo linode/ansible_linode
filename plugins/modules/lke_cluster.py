@@ -157,9 +157,58 @@ class LinodeLKECluster(LinodeModuleBase):
         """Handles all update functionality for the current LKE cluster"""
 
         new_params = copy.deepcopy(self.module.params)
-        new_params.pop('node_pools')
+        pools = new_params.pop('node_pools')
 
         handle_updates(cluster, new_params, MUTABLE_FIELDS, self.register_action)
+
+        existing_pools = copy.deepcopy(cluster.pools)
+        should_keep = [False for _ in existing_pools]
+        pools_handled = [False for _ in pools]
+
+        for k, pool in enumerate(pools):
+            for i, current_pool in enumerate(existing_pools):
+                if should_keep[i]:
+                    continue
+
+                # pool already exists
+                if current_pool.count == pool['count'] and current_pool.type.id == pool['type']:
+                    pools_handled[k] = True
+                    should_keep[i] = True
+                    break
+
+            # if not exists:
+            #     self.register_action('Created pool with {} nodes and type {}'.format(pool['count'], pool['type']))
+            #     cluster.node_pool_create(pool['type'], pool['count'])
+
+        for i, pool in enumerate(pools):
+            if pools_handled[i]:
+                continue
+
+            created = False
+
+            for k, existing_pool in enumerate(existing_pools):
+                if should_keep[k]:
+                    continue
+
+                if existing_pool.type.id == pool['type']:
+                    self.register_action('Resized pool {} from {} -> {}'.format(existing_pool.id, existing_pool.count, pool['count']))
+                    existing_pool.count = pool['count']
+                    existing_pool.save()
+                    should_keep[k] = True
+
+                    created = True
+                    break
+
+            if not created:
+                self.register_action('Created pool with {} nodes and type {}'.format(pool['count'], pool['type']))
+                cluster.node_pool_create(pool['type'], pool['count'])
+
+        for i, pool in enumerate(existing_pools):
+            if should_keep[i]:
+                continue
+
+            self.register_action('Deleted pool {}'.format(pool.id))
+            pool.delete()
 
     def _handle_present(self) -> None:
         params = self.module.params
