@@ -11,7 +11,6 @@ examples = ['''
         count: 3
       - type: g6-standard-2
         count: 2
-    wait_for_ready: true
     state: present''', '''
 - name: Delete a Linode LKE cluster
   linode.cloud.lke_cluster:

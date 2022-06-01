@@ -63,8 +63,11 @@ specdoc_meta = dict(
             sample=docs_parent.result_node_pools
         ),
         kubeconfig=dict(
-            description='The Base64-encoded kubeconfig used to access this cluster.',
-            docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/' \
+            description=[
+                'The Base64-encoded kubeconfig used to access this cluster.',
+                'NOTE: This value may be unavailable if the cluster is not fully provisioned.'
+            ],
+            docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/'
                      '#kubeconfig-view__responses',
             type='str'
         ),
@@ -131,8 +134,12 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
         self.results['cluster'] = cluster._raw_json
         self.results['node_pools'] = [jsonify_node_pool(pool) for pool in cluster.pools]
-        self.results['kubeconfig'] = cluster.kubeconfig
         self.results['dashboard_url'] = dashboard_data['url']
+
+        try:
+            self.results['kubeconfig'] = cluster.kubeconfig
+        except Exception:
+            self.results['kubeconfig'] = 'Kubeconfig not yet available...'
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for LKE cluster info module"""

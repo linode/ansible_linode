@@ -20,7 +20,6 @@ Manage Linode LKE clusters.
         count: 3
       - type: g6-standard-2
         count: 2
-    wait_for_ready: true
     state: present
 ```
 
@@ -48,7 +47,7 @@ Manage Linode LKE clusters.
 | `region` | `str` | Optional | This Kubernetes cluster’s location.   |
 | `tags` | `list` | Optional | An array of tags applied to the Kubernetes cluster.   |
 | `node_pools` | `list` | Optional | A list of node pools to configure the cluster with   |
-| `wait_for_ready` | `bool` | Optional | If true, the module will not exit until all nodes in the cluster are ready.   |
+| `skip_polling` | `bool` | Optional | If true, the module will not wait for all nodes in the cluster to be ready.   |
 | `wait_timeout` | `int` | Optional | The period to wait for the cluster to be ready in seconds.  ( Default: `600`) |
 
 
@@ -117,7 +116,7 @@ Manage Linode LKE clusters.
     - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#node-pools-list__response-samples) for a list of returned fields
 
 
-- `kubeconfig` - The Base64-encoded kubeconfig used to access this cluster.
+- `kubeconfig` - The Base64-encoded kubeconfig used to access this cluster.NOTE: This value may be unavailable if `skip_polling` is true.
     - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubeconfig-view__responses) for a list of returned fields
 
 

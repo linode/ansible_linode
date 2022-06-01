@@ -9,7 +9,7 @@ from __future__ import absolute_import, division, print_function
 import copy
 from typing import Optional, cast, Any, Set, List, Dict
 
-from linode_api4 import LKECluster, LKENodePool
+from linode_api4 import LKECluster, LKENodePool, ApiError
 
 import polling
 
@@ -80,9 +80,9 @@ linode_lke_cluster_spec = dict(
         description='A list of node pools to configure the cluster with'
     ),
 
-    wait_for_ready=dict(
+    skip_polling=dict(
         type='bool',
-        description='If true, the module will not exit until all nodes in the cluster are ready.',
+        description='If true, the module will not wait for all nodes in the cluster to be ready.',
         default=False
     ),
 
@@ -117,7 +117,10 @@ specdoc_meta = dict(
             sample=docs.result_node_pools
         ),
         kubeconfig=dict(
-            description='The Base64-encoded kubeconfig used to access this cluster.',
+            description=[
+                'The Base64-encoded kubeconfig used to access this cluster.',
+                'NOTE: This value may be unavailable if `skip_polling` is true.'
+            ],
             docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/' \
                      '#kubeconfig-view__responses',
             type='str'
@@ -186,7 +189,7 @@ class LinodeLKECluster(LinodeModuleBase):
         try:
             polling.poll(
                 _check_cluster_nodes_ready,
-                step=10,
+                step=4,
                 timeout=timeout,
             )
         except polling.TimeoutException:
@@ -272,14 +275,50 @@ class LinodeLKECluster(LinodeModuleBase):
             self.register_action('Deleted pool {}'.format(pool.id))
             pool.delete()
 
+    def _populate_kubeconfig(self, cluster: LKECluster) -> None:
+        if self.module.params.get('skip_polling'):
+            try:
+                self.results['kubeconfig'] = cluster.kubeconfig
+            except ApiError as error:
+                if error.status != 503:
+                    self.fail(error)
+
+                self.results['kubeconfig'] = 'Kubeconfig not yet available...'
+            except Exception as exception:
+                self.fail(exception)
+            return
+
+        def _try_get_kubeconfig() -> bool:
+            try:
+                self.results['kubeconfig'] = cluster.kubeconfig
+            except ApiError as error:
+                if error.status != 503:
+                    self.fail(error)
+
+                return False
+            except Exception as exception:
+                self.fail(exception)
+
+            return True
+
+        try:
+            polling.poll(
+                _try_get_kubeconfig,
+                step=4,
+                timeout=self.module.params.get('wait_timeout'),
+            )
+        except polling.TimeoutException:
+            self.fail('failed to wait for lke cluster kubeconfig: timeout period expired')
+
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
         dashboard_data = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))
 
         self.results['cluster'] = cluster._raw_json
         self.results['node_pools'] = [jsonify_node_pool(pool) for pool in cluster.pools]
-        self.results['kubeconfig'] = cluster.kubeconfig
         self.results['dashboard_url'] = dashboard_data['url']
+
+        self._populate_kubeconfig(cluster)
 
     def _handle_present(self) -> None:
         params = self.module.params
@@ -302,7 +341,7 @@ class LinodeLKECluster(LinodeModuleBase):
         # Force lazy-loading
         cluster._api_get()
 
-        if params.get('wait_for_ready'):
+        if not params.get('skip_polling'):
             self._wait_for_all_nodes_ready(cluster, params.get('wait_timeout'))
 
         self._populate_results(cluster)

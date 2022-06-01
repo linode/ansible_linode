@@ -102,7 +102,7 @@ Get info about a Linode LKE cluster.
     - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#node-pools-list__response-samples) for a list of returned fields
 
 
-- `kubeconfig` - The Base64-encoded kubeconfig used to access this cluster.
+- `kubeconfig` - The Base64-encoded kubeconfig used to access this cluster.NOTE: This value may be unavailable if the cluster is not fully provisioned.
     - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubeconfig-view__responses) for a list of returned fields
 
 

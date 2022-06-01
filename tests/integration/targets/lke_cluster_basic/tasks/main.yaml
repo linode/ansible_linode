@@ -11,7 +11,7 @@
             count: 3
           - type: g6-standard-4
             count: 1
-        wait_for_ready: true
+        skip_polling: true
         state: present
       register: create_cluster
 
@@ -28,6 +28,7 @@
         label: '{{ create_cluster.cluster.label }}'
         region: us-southeast
         k8s_version: 1.22
+        skip_polling: true
         node_pools:
           - type: g6-standard-1
             count: 2
@@ -60,6 +61,7 @@
         label: '{{ create_cluster.cluster.label }}'
         region: us-southeast
         k8s_version: 1.23
+        skip_polling: true
         node_pools:
           - type: g6-standard-1
             count: 1
