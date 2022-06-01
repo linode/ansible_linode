@@ -19,30 +19,30 @@ PEP440 is the schema used to describe the versions of Ansible.
 ### Modules
 Name | Description
 --- | ---
-[linode.cloud.domain](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain.md)|Create and destroy domains.
-[linode.cloud.domain_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain_info.md)|Gather info about an existing domain.
-[linode.cloud.domain_record](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain_record.md)|Create and destroy domain records.
-[linode.cloud.domain_record_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain_record_info.md)|Gather info about an existing domain record.
-[linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall.md)|Create and destroy Firewalls.
-[linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall_info.md)|Gather info about an existing Firewall.
-[linode.cloud.firewall_device](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall_device.md)|Manage Firewall Devices.
-[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance.md)|Create and destroy Linodes.
-[linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance_info.md)|Gather info about an existing Linode instance.
-[linode.cloud.lke_cluster](https://github.com/linode/ansible_linode/blob/main/docs/modules/lke_cluster.md)|Manage LKE clusters.
-[linode.cloud.lke_cluster_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/lke_cluster_info.md)|Gather info about an existing LKE cluster.
-[linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer.md)|Create, destroy, and configure NodeBalancers.
-[linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer_info.md)|Gather info about an existing NodeBalancer.
-[linode.cloud.nodebalancer_node](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer_node.md)|Manage NodeBalancer nodes.
-[linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/object_cluster_info.md)|Gather info about Object Storage clusters.
-[linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/main/docs/modules/object_keys.md)|Create and destroy Object Storage keys.
-[linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/vlan_info.md)|Gather info about an existing Linode VLAN.
-[linode.cloud.volume](https://github.com/linode/ansible_linode/blob/main/docs/modules/volume.md)|Create, destroy, and attach Linode volumes.
-[linode.cloud.volume_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/volume_info.md)|Gather info about an existing Linode volume.
+[linode.cloud.domain](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/domain.md)|Create and destroy domains.
+[linode.cloud.domain_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/domain_info.md)|Gather info about an existing domain.
+[linode.cloud.domain_record](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/domain_record.md)|Create and destroy domain records.
+[linode.cloud.domain_record_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/domain_record_info.md)|Gather info about an existing domain record.
+[linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/firewall.md)|Create and destroy Firewalls.
+[linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/firewall_info.md)|Gather info about an existing Firewall.
+[linode.cloud.firewall_device](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/firewall_device.md)|Manage Firewall Devices.
+[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/instance.md)|Create and destroy Linodes.
+[linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/instance_info.md)|Gather info about an existing Linode instance.
+[linode.cloud.lke_cluster](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/lke_cluster.md)|Manage LKE clusters.
+[linode.cloud.lke_cluster_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/lke_cluster_info.md)|Gather info about an existing LKE cluster.
+[linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/nodebalancer.md)|Create, destroy, and configure NodeBalancers.
+[linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/nodebalancer_info.md)|Gather info about an existing NodeBalancer.
+[linode.cloud.nodebalancer_node](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/nodebalancer_node.md)|Manage NodeBalancer nodes.
+[linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/object_cluster_info.md)|Gather info about Object Storage clusters.
+[linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/object_keys.md)|Create and destroy Object Storage keys.
+[linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/vlan_info.md)|Gather info about an existing Linode VLAN.
+[linode.cloud.volume](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/volume.md)|Create, destroy, and attach Linode volumes.
+[linode.cloud.volume_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/volume_info.md)|Gather info about an existing Linode volume.
 
 ### Inventory
 Name | Description
 --- | ---
-[linode.cloud.instance](docs/inventory/instance.rst)|Reads instance inventories from Linode.
+[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/inventory/instance.rst)|Reads instance inventories from Linode.
 
 <!--end collection content-->
 
