@@ -12,4 +12,5 @@ disable=protected-access,
         too-few-public-methods,
         duplicate-code,
         too-many-lines,
+        too-many-branches,
         anomalous-backslash-in-string

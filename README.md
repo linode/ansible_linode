@@ -28,6 +28,8 @@ Name | Description
 [linode.cloud.firewall_device](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/firewall_device.md)|Manage Firewall Devices.
 [linode.cloud.instance](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/instance.md)|Create and destroy Linodes.
 [linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/instance_info.md)|Gather info about an existing Linode instance.
+[linode.cloud.lke_cluster](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/lke_cluster.md)|Manage LKE clusters.
+[linode.cloud.lke_cluster_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/lke_cluster_info.md)|Gather info about an existing LKE cluster.
 [linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/nodebalancer.md)|Create, destroy, and configure NodeBalancers.
 [linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/nodebalancer_info.md)|Gather info about an existing NodeBalancer.
 [linode.cloud.nodebalancer_node](https://github.com/linode/ansible_linode/blob/v0.6.1/docs/modules/nodebalancer_node.md)|Manage NodeBalancer nodes.

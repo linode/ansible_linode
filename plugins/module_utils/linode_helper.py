@@ -1,8 +1,8 @@
 """This module contains helper functions for various Linode modules."""
-from typing import Tuple, Any, Optional, cast
+from typing import Tuple, Any, Optional, cast, Dict, Set
 
 import linode_api4
-from linode_api4 import and_, MappedObject
+from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode
 from linode_api4.objects.filtering import Filter, FilterableAttribute, FilterableMetaclass
 
 
@@ -88,6 +88,14 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
 
         old_value = getattr(obj, key)
 
+        if type(old_value) in {
+            linode_api4.objects.linode.Type,
+            linode_api4.objects.linode.Region,
+            linode_api4.objects.linode.Image,
+            linode_api4.objects.lke.KubeVersion
+        }:
+            old_value = old_value.id
+
         if new_value != old_value:
             if key in mutable_fields:
                 setattr(obj, key, new_value)
@@ -98,7 +106,43 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
                 continue
 
             raise RuntimeError(
-                'failed to update: {} is a non-updatable field'.format(key))
+                'failed to update {} -> {}: {} is a non-updatable'
+                ' field'.format(old_value, new_value, key))
 
     if should_update:
         obj.save()
+
+
+def jsonify_node_pool(pool: LKENodePool) -> Dict[str, Any]:
+    """Converts an LKENodePool into a JSON-compatible dict"""
+
+    result = pool._raw_json
+
+    result['nodes'] = [jsonify_node_pool_node(node) for node in pool.nodes]
+
+    return result
+
+
+def jsonify_node_pool_node(node: LKENodePoolNode) -> Dict[str, Any]:
+    """Converts an LKENodePoolNode into a JSON-compatible dict"""
+
+    return {
+        'id': node.id,
+        'instance_id': node.instance_id,
+        'status': node.status,
+    }
+
+
+def validate_required(required_fields: Set[str], params: Dict[str, Any]):
+    """Returns whether the given parameters contain all of the required fields specified."""
+
+    has_missing_field = False
+    missing_fields = []
+
+    for field in required_fields:
+        if field not in params:
+            missing_fields.append(field)
+            has_missing_field = True
+
+    if has_missing_field:
+        raise Exception("missing fields: {}".format(', '.join(missing_fields)))
