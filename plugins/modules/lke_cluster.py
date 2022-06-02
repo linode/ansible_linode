@@ -75,6 +75,13 @@ linode_lke_cluster_spec = dict(
         description='An array of tags applied to the Kubernetes cluster.',
     ),
 
+    high_availability=dict(
+        type='bool',
+        description='Defines whether High Availability is enabled for the '
+                    'Control Plane Components of the cluster. ',
+        default=False
+    ),
+
     node_pools=dict(
         type='list',
         elements='dict',
@@ -198,36 +205,71 @@ class LinodeLKECluster(LinodeModuleBase):
             self.fail('failed to wait for lke cluster: timeout period expired')
 
     def _create_cluster(self) -> Optional[LKECluster]:
-        params = copy.deepcopy(self.module.params)
-        label = params.pop('label')
-        region = params.pop('region')
-        node_pools = params.pop('node_pools')
-        kube_version = params.pop('k8s_version')
-        params = filter_null_values(params)
+        params = filter_null_values(self.module.params)
+
+        label = params.get('label')
+
+        # We want HA to be a root-level attribute in ansible
+        high_avail = params.pop('high_availability')
+
+        params['control_plane'] = {
+            'high_availability':  high_avail
+        }
 
         try:
             self.register_action('Created LKE cluster {0}'.format(label))
-            return self.client.lke.cluster_create(region, label, node_pools, kube_version, **params)
+
+            # This is necessary to use fields not yet supported by linode_api4
+            result = self.client.post('/lke/clusters', data=params)
+            return LKECluster(self.client, result['id'])
         except Exception as exception:
             return self.fail(msg='failed to create lke cluster: {0}'.format(exception))
+
+    def _cluster_put_updates(self, cluster: LKECluster) -> None:
+        """Handles manual field updates for the current LKE cluster"""
+
+        args = {}
+        should_update = False
+
+        # version upgrade
+        k8s_version = self.module.params.get('k8s_version')
+
+        if cluster.k8s_version.id != k8s_version:
+            args['k8s_version'] = k8s_version
+            should_update = True
+
+            self.register_action('Upgraded cluster {} -> {}'.
+                                 format(cluster.k8s_version.id, k8s_version))
+
+        # HA upgrade
+        high_avail = self.module.params.get('high_availability')
+        current_ha = cluster._raw_json['control_plane']['high_availability']
+
+        if current_ha != high_avail:
+            if not high_avail:
+                self.fail('clusters cannot be downgraded from ha')
+
+            args['control_plane'] = {
+                'high_availability': high_avail,
+            }
+            should_update = True
+
+        if should_update:
+            self.client.put('/lke/clusters/{}'.format(cluster.id), data=args)
 
     def _update_cluster(self, cluster: LKECluster) -> None:
         """Handles all update functionality for the current LKE cluster"""
 
         new_params = copy.deepcopy(self.module.params)
         pools = new_params.pop('node_pools')
-        k8s_version = new_params.pop('k8s_version')
+
+        # These are handled separately
+        new_params.pop('k8s_version')
+        new_params.pop('high_availability')
 
         handle_updates(cluster, new_params, MUTABLE_FIELDS, self.register_action)
 
-        # version upgrade
-        if cluster.k8s_version.id != k8s_version:
-            self.client.put('/lke/clusters/{}'.format(cluster.id), data={
-                'k8s_version': k8s_version
-            })
-
-            self.register_action('Upgraded cluster {} -> {}'.
-                                 format(cluster.k8s_version.id, k8s_version))
+        self._cluster_put_updates(cluster)
 
         existing_pools = copy.deepcopy(cluster.pools)
         should_keep = [False for _ in existing_pools]
@@ -277,19 +319,18 @@ class LinodeLKECluster(LinodeModuleBase):
             self.register_action('Deleted pool {}'.format(pool.id))
             pool.delete()
 
-    def _populate_kubeconfig(self, cluster: LKECluster) -> None:
-        if self.module.params.get('skip_polling'):
-            try:
-                self.results['kubeconfig'] = cluster.kubeconfig
-            except ApiError as error:
-                if error.status != 503:
-                    self.fail(error)
+    def _populate_kubeconfig_no_poll(self, cluster: LKECluster) -> None:
+        try:
+            self.results['kubeconfig'] = cluster.kubeconfig
+        except ApiError as error:
+            if error.status != 503:
+                self.fail(error)
 
-                self.results['kubeconfig'] = 'Kubeconfig not yet available...'
-            except Exception as exception:
-                self.fail(exception)
-            return
+            self.results['kubeconfig'] = 'Kubeconfig not yet available...'
+        except Exception as exception:
+            self.fail(exception)
 
+    def _populate_kubeconfig_poll(self, cluster: LKECluster) -> None:
         def _try_get_kubeconfig() -> bool:
             try:
                 self.results['kubeconfig'] = cluster.kubeconfig
@@ -311,6 +352,15 @@ class LinodeLKECluster(LinodeModuleBase):
             )
         except polling.TimeoutException:
             self.fail('failed to wait for lke cluster kubeconfig: timeout period expired')
+
+    def _populate_kubeconfig(self, cluster: LKECluster) -> None:
+        # We don't want to poll when someone is deleting their cluster
+        if self.module.params.get('skip_polling') or \
+                self.module.params.get('state') == 'absent':
+            self._populate_kubeconfig_no_poll(cluster)
+            return
+
+        self._populate_kubeconfig_poll(cluster)
 
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()

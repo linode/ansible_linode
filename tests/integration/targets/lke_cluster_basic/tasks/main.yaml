@@ -61,6 +61,7 @@
         label: '{{ create_cluster.cluster.label }}'
         region: us-southeast
         k8s_version: 1.23
+        high_availability: true
         skip_polling: true
         node_pools:
           - type: g6-standard-1
@@ -71,6 +72,7 @@
     - assert:
         that:
           - upgrade.cluster.k8s_version == '1.23'
+          - upgrade.cluster.control_plane.high_availability == True
           - upgrade.cluster.region == 'us-southeast'
 
           - upgrade.node_pools | length == 1

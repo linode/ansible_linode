@@ -46,6 +46,7 @@ Manage Linode LKE clusters.
 | `k8s_version` | `str` | Optional | The desired Kubernetes version for this Kubernetes cluster in the format of <major>.<minor>, and the latest supported patch version will be deployed. A version upgrade requires that you manually recycle the nodes in your cluster.   |
 | `region` | `str` | Optional | This Kubernetes cluster’s location.   |
 | `tags` | `list` | Optional | An array of tags applied to the Kubernetes cluster.   |
+| `high_availability` | `bool` | Optional | Defines whether High Availability is enabled for the Control Plane Components of the cluster.    |
 | `node_pools` | `list` | Optional | A list of node pools to configure the cluster with   |
 | `skip_polling` | `bool` | Optional | If true, the module will not wait for all nodes in the cluster to be ready.   |
 | `wait_timeout` | `int` | Optional | The period to wait for the cluster to be ready in seconds.  ( Default: `600`) |
