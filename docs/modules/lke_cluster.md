@@ -43,7 +43,7 @@ Manage Linode LKE clusters.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | `str` | **Required** | This Kubernetes cluster’s unique label.   |
-| `k8s_version` | `str` | Optional | The desired Kubernetes version for this Kubernetes cluster in the format of <major>.<minor>, and the latest supported patch version will be deployed.   |
+| `k8s_version` | `str` | Optional | The desired Kubernetes version for this Kubernetes cluster in the format of <major>.<minor>, and the latest supported patch version will be deployed. A version upgrade requires that you manually recycle the nodes in your cluster.   |
 | `region` | `str` | Optional | This Kubernetes cluster’s location.   |
 | `tags` | `list` | Optional | An array of tags applied to the Kubernetes cluster.   |
 | `node_pools` | `list` | Optional | A list of node pools to configure the cluster with   |

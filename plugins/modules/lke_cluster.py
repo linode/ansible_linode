@@ -57,9 +57,11 @@ linode_lke_cluster_spec = dict(
     ),
     k8s_version=dict(
         type='str',
-        description='The desired Kubernetes version for this Kubernetes '
-                    'cluster in the format of <major>.<minor>, and the '
-                    'latest supported patch version will be deployed.'
+        description=[
+            'The desired Kubernetes version for this Kubernetes '
+            'cluster in the format of <major>.<minor>, and the '
+            'latest supported patch version will be deployed.',
+            'A version upgrade requires that you manually recycle the nodes in your cluster.']
     ),
 
     region=dict(

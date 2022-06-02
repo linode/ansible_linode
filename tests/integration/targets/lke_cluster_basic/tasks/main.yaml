@@ -1,4 +1,4 @@
-- name: firewall_basic
+- name: lke_cluster_basic
   block:
     - name: Create a Linode LKE cluster
       linode.cloud.lke_cluster:
