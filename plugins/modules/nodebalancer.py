@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import copy
 from typing import Optional, cast, Any, List, Set, Tuple
 
 import linode_api4
@@ -110,6 +111,12 @@ linode_configs_spec = dict(
         description='ProxyProtocol is a TCP extension that sends initial TCP connection '
                     'information such as source/destination IPs and ports to backend devices.',
         choices=['none', 'v1', 'v2']),
+
+    recreate=dict(
+        type='bool', required=False, default=False,
+        description='If true, the config will be forcibly recreated on every run. '
+                    'This is useful for updates to redacted fields (`ssl_cert`, `ssl_key`)'
+    ),
 
     ssl_cert=dict(
         type='str', required=False,
@@ -333,9 +340,15 @@ class LinodeNodeBalancer(LinodeModuleBase):
             -> Tuple[bool, Optional[NodeBalancerConfig]]:
         """Returns whether a config exists in the target set"""
 
+        tmp_config = copy.deepcopy(config)
+
+        # These fields will return as <REDACTED> so we should not diff on them
+        tmp_config.pop('ssl_cert')
+        tmp_config.pop('ssl_key')
+
         for remote_config in target:
             config_match, remote_config_match = \
-                dict_select_matching(filter_null_values(config), remote_config._raw_json)
+                dict_select_matching(filter_null_values(tmp_config), remote_config._raw_json)
 
             if config_match == remote_config_match:
                 return True, remote_config
@@ -348,22 +361,36 @@ class LinodeNodeBalancer(LinodeModuleBase):
         new_configs = self.module.params.get('configs') or []
         remote_configs = set(self._node_balancer.configs)
 
+        to_create = []
+        to_update = []
+        to_delete = remote_configs
+
         for config in new_configs:
             config_exists, remote_config = self._check_config_exists(remote_configs, config)
 
-            if config_exists:
-                if config.get('nodes') is not None:
-                    self._handle_config_nodes(remote_config, config.get('nodes'))
-                remote_configs.remove(remote_config)
+            if not config_exists:
+                to_create.append((config, remote_config))
                 continue
 
+            if config.get('recreate'):
+                to_create.append((config, remote_config))
+                continue
+
+            to_update.append((config, remote_config))
+            to_delete.remove(remote_config)
+
+        # Remove remaining configs
+        for config in to_delete:
+            self._delete_config_register(config)
+
+        for config, remote_config in to_create:
             new_config = self._create_config_register(self._node_balancer, config)
             if config.get('nodes') is not None:
                 self._handle_config_nodes(new_config, config.get('nodes'))
 
-        # Remove remaining configs
-        for config in remote_configs:
-            self._delete_config_register(config)
+        for config, remote_config in to_update:
+            if config.get('nodes') is not None:
+                self._handle_config_nodes(remote_config, config.get('nodes'))
 
         cast(list, self.results['configs']) \
             .extend(paginated_list_to_json(self._node_balancer.configs))

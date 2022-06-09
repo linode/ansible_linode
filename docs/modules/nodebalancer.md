@@ -71,6 +71,7 @@ Manage a Linode NodeBalancer.
 | `port` | `int` | Optional | The port this Config is for.   |
 | `protocol` | `str` | Optional | The protocol this port is configured to serve.  (Choices:  `http` `https` `tcp`) |
 | `proxy_protocol` | `str` | Optional | ProxyProtocol is a TCP extension that sends initial TCP connection information such as source/destination IPs and ports to backend devices.  (Choices:  `none` `v1` `v2`) |
+| `recreate` | `bool` | Optional | If true, the config will be forcibly recreated on every run. This is useful for updates to redacted fields (`ssl_cert`, `ssl_key`)   |
 | `ssl_cert` | `str` | Optional | The PEM-formatted public SSL certificate (or the combined PEM-formatted SSL certificate and Certificate Authority chain) that should be served on this NodeBalancerConfig’s port.   |
 | `ssl_key` | `str` | Optional | The PEM-formatted private key for the SSL certificate set in the ssl_cert field.   |
 | `stickiness` | `str` | Optional | Controls how session stickiness is handled on this port.  (Choices:  `none` `table` `http_cookie`) |
