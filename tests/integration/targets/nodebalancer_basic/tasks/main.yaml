@@ -35,6 +35,65 @@
           - create_empty_nodebalancer.changed
           - create_empty_nodebalancer.configs|length == 0
 
+    - name: Add NodeBalancer config
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_empty_nodebalancer.node_balancer.label }}'
+        region: us-east
+        client_conn_throttle: 6
+        state: present
+        configs:
+          - port: 80
+            protocol: http
+            algorithm: roundrobin
+      register: create_config
+
+    - assert:
+        that:
+          - create_config.configs|length == 1
+          - create_config.configs[0].port == 80
+
+    - name: Update NodeBalancer config
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_empty_nodebalancer.node_balancer.label }}'
+        region: us-east
+        client_conn_throttle: 6
+        state: present
+        configs:
+          - port: 80
+            protocol: http
+            algorithm: roundrobin
+            check_timeout: 1
+      register: update_config
+
+    - assert:
+        that:
+          - update_config.configs|length == 1
+          - update_config.configs[0].check_timeout == 1
+          
+          - update_config.changed
+
+    - name: Recreate NodeBalancer config
+      linode.cloud.nodebalancer:
+        api_token: '{{ api_token }}'
+        label: '{{ create_empty_nodebalancer.node_balancer.label }}'
+        region: us-east
+        client_conn_throttle: 6
+        state: present
+        configs:
+          - port: 80
+            protocol: http
+            algorithm: roundrobin
+            check_timeout: 1
+            recreate: true
+      register: recreate_config
+
+    - assert:
+        that:
+          - recreate_config.changed
+          - update_config.configs|length == 1
+
   always:
     - ignore_errors: yes
       block:
