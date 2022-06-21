@@ -47,9 +47,33 @@ Manage Linode LKE clusters.
 | `region` | `str` | Optional | This Kubernetes cluster’s location.   |
 | `tags` | `list` | Optional | An array of tags applied to the Kubernetes cluster.   |
 | `high_availability` | `bool` | Optional | Defines whether High Availability is enabled for the Control Plane Components of the cluster.    |
-| `node_pools` | `list` | Optional | A list of node pools to configure the cluster with   |
+| [`node_pools` (sub-options)](#node_pools) | `list` | Optional | A list of node pools to configure the cluster with   |
 | `skip_polling` | `bool` | Optional | If true, the module will not wait for all nodes in the cluster to be ready.   |
 | `wait_timeout` | `int` | Optional | The period to wait for the cluster to be ready in seconds.  ( Default: `600`) |
+
+
+
+
+
+### node_pools
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `count` | `int` | **Required** | The number of nodes in the Node Pool.   |
+| `type` | `str` | **Required** | The Linode Type for all of the nodes in the Node Pool.   |
+| [`autoscaler` (sub-options)](#autoscaler) | `dict` | Optional | When enabled, the number of nodes autoscales within the defined minimum and maximum values.   |
+
+
+
+
+
+### autoscaler
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `enabled` | `bool` | Optional | Whether autoscaling is enabled for this Node Pool. NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.   |
+| `max` | `int` | Optional | The maximum number of nodes to autoscale to. Defaults to the value provided by the count field.   |
+| `min` | `int` | Optional | The minimum number of nodes to autoscale to. Defaults to the Node Pool’s count.   |
 
 
 
