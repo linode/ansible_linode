@@ -13,14 +13,14 @@ build:
 install: clean build
 	ansible-galaxy collection install *.tar.gz --force -p $(COLLECTIONS_PATH)
 
+deps:
+	pip install -r requirements.txt -r requirements-dev.txt
+
 lint:
 	pylint plugins
 
 	mypy plugins/modules
 	mypy plugins/inventory
-
-gendocsspec:
-
 
 gendocs:
 	mkdir -p $(DOCS_PATH)
