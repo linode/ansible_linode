@@ -12,6 +12,19 @@ examples = ['''
       - type: g6-standard-2
         count: 2
     state: present''', '''
+- name: Create a Linode LKE cluster with autoscaler
+  linode.cloud.lke_cluster:
+    label: 'my-cluster'
+    region: us-southeast
+    k8s_version: 1.23
+    node_pools:
+      - type: g6-standard-1
+        count: 2
+        autoscaler:
+          enable: true
+          min: 2
+          max: 5
+    state: present''', '''
 - name: Delete a Linode LKE cluster
   linode.cloud.lke_cluster:
     label: 'my-cluster'

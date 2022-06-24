@@ -23,6 +23,26 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_c
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import handle_updates
 
+linode_lke_cluster_autoscaler = dict(
+    enabled=dict(
+        type='bool',
+        description=[
+            'Whether autoscaling is enabled for this Node Pool.',
+            'NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.'
+        ],
+    ),
+    max=dict(
+        type='int',
+        description='The maximum number of nodes to autoscale to. '
+                    'Defaults to the value provided by the count field.',
+    ),
+    min=dict(
+        type='int',
+        description='The minimum number of nodes to autoscale to. '
+                    'Defaults to the Node Pool’s count.',
+    ),
+)
+
 linode_lke_cluster_disk = dict(
     size=dict(
         type='int',
@@ -46,7 +66,13 @@ linode_lke_cluster_node_pool_spec = dict(
         type='str',
         description='The Linode Type for all of the nodes in the Node Pool.',
         required=True,
-    )
+    ),
+    autoscaler=dict(
+        type='dict',
+        description='When enabled, the number of nodes autoscales within the '
+                    'defined minimum and maximum values.',
+        suboptions=linode_lke_cluster_autoscaler,
+    ),
 )
 
 linode_lke_cluster_spec = dict(
@@ -282,6 +308,18 @@ class LinodeLKECluster(LinodeModuleBase):
 
                 # pool already exists
                 if current_pool.count == pool['count'] and current_pool.type.id == pool['type']:
+                    if 'autoscaler' in pool and \
+                            current_pool._raw_json['autoscaler'] != pool['autoscaler']:
+                        self.register_action('Updated autoscaler for Node Pool {}'
+                                             .format(current_pool.id))
+
+                        put_data = {
+                            'autoscaler': pool['autoscaler']
+                        }
+
+                        self.client.put('/lke/clusters/{0}/pools/{1}'
+                                        .format(cluster.id, current_pool.id), data=put_data)
+
                     pools_handled[k] = True
                     should_keep[i] = True
                     break
@@ -297,11 +335,26 @@ class LinodeLKECluster(LinodeModuleBase):
                     continue
 
                 if existing_pool.type.id == pool['type']:
-                    self.register_action('Resized pool {} from {} -> {}'.
-                                         format(existing_pool.id,
-                                                existing_pool.count, pool['count']))
-                    existing_pool.count = pool['count']
-                    existing_pool.save()
+                    # We found a match
+                    put_data = {}
+
+                    if existing_pool.count != pool['count']:
+                        self.register_action('Resized pool {} from {} -> {}'.
+                                             format(existing_pool.id,
+                                                    existing_pool.count, pool['count']))
+
+                        put_data['count'] = pool['count']
+
+                    if 'autoscaler' in pool and \
+                            existing_pool._raw_json['autoscaler'] != pool['autoscaler']:
+                        self.register_action('Updated autoscaler for Node Pool {}'
+                                             .format(existing_pool.id))
+                        put_data['autoscaler'] = pool['autoscaler']
+
+                    if len(put_data) > 0:
+                        self.client.put('/lke/clusters/{0}/pools/{1}'
+                                        .format(cluster.id, existing_pool.id), data=put_data)
+
                     should_keep[k] = True
 
                     created = True
@@ -310,7 +363,8 @@ class LinodeLKECluster(LinodeModuleBase):
             if not created:
                 self.register_action('Created pool with {} nodes and type {}'
                                      .format(pool['count'], pool['type']))
-                cluster.node_pool_create(pool['type'], pool['count'])
+
+                self.client.post('/lke/clusters/{0}/pools'.format(cluster.id), data=pool)
 
         for i, pool in enumerate(existing_pools):
             if should_keep[i]:
