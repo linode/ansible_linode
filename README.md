@@ -30,6 +30,7 @@ Name | Description
 [linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/instance_info.md)|Gather info about an existing Linode instance.
 [linode.cloud.lke_cluster](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/lke_cluster.md)|Manage LKE clusters.
 [linode.cloud.lke_cluster_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/lke_cluster_info.md)|Gather info about an existing LKE cluster.
+[linode.cloud.lke_node_pool](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/lke_node_pool.md)|Manage LKE Node Pools.
 [linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/nodebalancer.md)|Create, destroy, and configure NodeBalancers.
 [linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/nodebalancer_info.md)|Gather info about an existing NodeBalancer.
 [linode.cloud.nodebalancer_node](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/nodebalancer_node.md)|Manage NodeBalancer nodes.
