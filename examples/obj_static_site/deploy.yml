@@ -1,5 +1,5 @@
 ---
-- name: Deploy static site
+- name: Deploy public site
   hosts: localhost
   roles:
     - role: static_site

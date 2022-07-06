@@ -1,6 +1,10 @@
+- set_fact:
+    bucket_name: "{{ lookup('ansible.builtin.env', 'PLAYBOOK_BUCKET_NAME') | default(ansible_date_time.epoch, true) }}"
+    region: "{{ lookup('ansible.builtin.env', 'PLAYBOOK_REGION') | default('us-east', true) }}"
+
 - name: Create an Object Storage key
   linode.cloud.object_keys:
-    label: "provisioning-k2e2y2-{{ ansible_date_time.epoch }}"
+    label: "provisioning-key-{{ ansible_date_time.epoch }}"
     state: present
   register: obj_key
 
@@ -10,12 +14,48 @@
   register: cluster_info
 
 - debug:
-    var: obj_key
+    var: cluster_info
 
-- amazon.aws.s3_bucket:
-    name: fghfdshfdsh
-    s3_url: "https://{{ cluster_info.clusters[0].domain }}"
+- name: Create an Object Storage bucket
+  amazon.aws.s3_bucket:
+    name: "{{ bucket_name }}"
+    s3_url: "https://{{ cluster_info.clusters[0].domain }}/"
     aws_access_key: "{{ obj_key.key.access_key }}"
     aws_secret_key: "{{ obj_key.key.secret_key }}"
 
     state: present
+
+- name: Upload the static site files
+  amazon.aws.aws_s3:
+    s3_url: "https://{{ cluster_info.clusters[0].domain }}/"
+    aws_access_key: "{{ obj_key.key.access_key }}"
+    aws_secret_key: "{{ obj_key.key.secret_key }}"
+
+    bucket: "{{ bucket_name }}"
+    object: "{{ item | basename }}"
+    src: "{{ item }}"
+    mode: put
+    permission: public-read
+  with_fileglob: 'roles/static_site/files/public/*.html'
+
+- name: Configure the Object Storage Bucket as a website with index and error pages
+  community.aws.s3_website:
+    endpoint_url: "https://{{ cluster_info.clusters[0].domain }}/"
+    aws_access_key: "{{ obj_key.key.access_key }}"
+    aws_secret_key: "{{ obj_key.key.secret_key }}"
+
+    name: "{{ bucket_name }}"
+    suffix: index.html
+    error_key: 404.html
+    state: present
+
+- name: Delete the Object Storage key
+  linode.cloud.object_keys:
+    label: "{{ obj_key.key.label }}"
+    state: absent
+  register: obj_key
+
+- name: Print output
+  ansible.builtin.debug:
+    msg:
+      - "Static Site Access URL: https://{{ bucket_name }}.{{ cluster_info.clusters[0].static_site_domain }}"

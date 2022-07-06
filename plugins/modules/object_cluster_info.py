@@ -37,7 +37,7 @@ linode_object_cluster_info_spec = dict(
 
     static_site_domain=dict(
         type='str', required=False,
-        description='The static-site domain of the clusters.')
+        description='The public-site domain of the clusters.')
 )
 
 specdoc_meta = dict(
