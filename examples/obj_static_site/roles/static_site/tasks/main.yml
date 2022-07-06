@@ -1,0 +1,21 @@
+- name: Create an Object Storage key
+  linode.cloud.object_keys:
+    label: "provisioning-k2e2y2-{{ ansible_date_time.epoch }}"
+    state: present
+  register: obj_key
+
+- name: Get info about the desired cluster
+  linode.cloud.object_cluster_info:
+    region: us-east
+  register: cluster_info
+
+- debug:
+    var: obj_key
+
+- amazon.aws.s3_bucket:
+    name: fghfdshfdsh
+    s3_url: "https://{{ cluster_info.clusters[0].domain }}"
+    aws_access_key: "{{ obj_key.key.access_key }}"
+    aws_secret_key: "{{ obj_key.key.secret_key }}"
+
+    state: present
