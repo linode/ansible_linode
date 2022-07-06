@@ -1,0 +1,24 @@
+- name: Update APK packages and install docker
+  apk:
+    name: docker,py3-pip,py3-setuptools
+    update_cache: yes
+    state: present
+
+- name: Install python deps (required for Docker)
+  pip:
+    name: docker-py
+    state: present
+
+- name: Start and enable docker
+  sysvinit:
+      name: docker
+      state: started
+      enabled: yes
+
+- name: Deploy a simple Apache instance on port 80
+  docker_container:
+    name: apache
+    image: httpd:latest
+    ports:
+      - 80:80
+    state: started

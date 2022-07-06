@@ -86,6 +86,10 @@ Alternatively, you can pass your Linode API v4 token into the `api_token` option
 
 For more information on Ansible collection usage, see [Ansible's official usage guide](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html).
 
+## Examples
+
+Use-case examples for this collection can be found [here](./examples/README.md).
+
 ## Licensing
 
 GNU General Public License v3.0.

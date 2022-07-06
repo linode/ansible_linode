@@ -1,0 +1,21 @@
+---
+- name: Deploy website infrastructure
+  hosts: localhost
+  vars:
+    nodes:
+  roles:
+    - role: infra
+      vars:
+        num_server: 3
+        resource_prefix: website
+        host_group: nodes
+        key_output_path: ./node_ssh_key
+
+- name: Configure website nodes
+  hosts: nodes
+  remote_user: root
+  vars:
+    ansible_ssh_private_key_file: ./node_ssh_key
+  roles:
+    - role: website
+
