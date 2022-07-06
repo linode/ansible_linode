@@ -1,0 +1,90 @@
+- name: lke_cluster_basic
+  block:
+    - name: Create a minimal LKE cluster
+      linode.cloud.lke_cluster:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        region: us-southeast
+        k8s_version: 1.22
+        node_pools:
+          - type: g6-standard-1
+            count: 1
+        skip_polling: true
+        state: present
+      register: create_cluster
+
+    - assert:
+        that:
+          - create_cluster.cluster.k8s_version == '1.22'
+          - create_cluster.cluster.region == 'us-southeast'
+          - create_cluster.node_pools[0].type == 'g6-standard-1'
+          - create_cluster.node_pools[0].count == 1
+
+    - name: Add a node pool to the cluster
+      linode.cloud.lke_node_pool:
+        api_token: '{{ api_token }}'
+        cluster_id: '{{ create_cluster.cluster.id }}'
+
+        tags: ['my-pool']
+        type: g6-standard-1
+        count: 2
+        state: present
+      register: new_pool
+
+    - assert:
+        that:
+          - new_pool.node_pool.count == 2
+          - new_pool.node_pool.type == 'g6-standard-1'
+          - new_pool.node_pool.nodes[0].ready
+          - new_pool.node_pool.nodes[1].ready
+
+    - name: Attempt to update an invalid field on the node pool
+      linode.cloud.lke_node_pool:
+        api_token: '{{ api_token }}'
+        cluster_id: '{{ create_cluster.cluster.id }}'
+
+        tags: [ 'my-pool' ]
+        type: g6-standard-2
+        count: 2
+        state: present
+      register: update_pool_fail
+      failed_when: '"failed to update" not in update_pool_fail.msg'
+
+    - name: Update the node pool
+      linode.cloud.lke_node_pool:
+        api_token: '{{ api_token }}'
+        cluster_id: '{{ create_cluster.cluster.id }}'
+
+        tags: ['my-pool']
+        type: g6-standard-1
+        count: 1
+        skip_polling: true
+        autoscaler:
+          enabled: true
+          min: 1
+          max: 3
+        state: present
+      register: update_pool
+
+    - assert:
+        that:
+          - update_pool.node_pool.count == 1
+          - update_pool.node_pool.type == 'g6-standard-1'
+          - update_pool.node_pool.autoscaler.enabled
+          - update_pool.node_pool.autoscaler.min == 1
+          - update_pool.node_pool.autoscaler.max == 3
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the LKE cluster node pool
+          linode.cloud.lke_cluster:
+            api_token: '{{ api_token }}'
+            cluster_id: '{{ create_cluster.cluster.id }}'
+            tags: ['my-pool']
+            state: absent
+        - name: Delete the LKE cluster
+          linode.cloud.lke_cluster:
+            api_token: '{{ api_token }}'
+            label: '{{ create_cluster.cluster.label }}'
+            state: absent
