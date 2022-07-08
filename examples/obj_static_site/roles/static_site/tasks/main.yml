@@ -1,7 +1,3 @@
-- set_fact:
-    bucket_name: "{{ lookup('ansible.builtin.env', 'PLAYBOOK_BUCKET_NAME') | default(ansible_date_time.epoch, true) }}"
-    region: "{{ lookup('ansible.builtin.env', 'PLAYBOOK_REGION') | default('us-east', true) }}"
-
 - name: Create an Object Storage key
   linode.cloud.object_keys:
     label: "provisioning-key-{{ ansible_date_time.epoch }}"
@@ -12,9 +8,6 @@
   linode.cloud.object_cluster_info:
     region: us-east
   register: cluster_info
-
-- debug:
-    var: cluster_info
 
 - name: Create an Object Storage bucket
   amazon.aws.s3_bucket:
@@ -56,6 +49,6 @@
   register: obj_key
 
 - name: Print output
-  ansible.builtin.debug:
+  debug:
     msg:
       - "Static Site Access URL: https://{{ bucket_name }}.{{ cluster_info.clusters[0].static_site_domain }}"

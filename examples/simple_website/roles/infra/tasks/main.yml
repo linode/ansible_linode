@@ -1,6 +1,6 @@
 - name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
   community.crypto.openssh_keypair:
-    path: "{{ key_output_path }}"
+    path: "{{ ssh_key_output_path }}"
   register: key_pair
 
 - name: Create a set of Linode instances in async

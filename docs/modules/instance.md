@@ -209,7 +209,7 @@ Manage Linode Instances, Configs, and Disks.
 | `devtmpfs_automount` | `bool` | Optional | Populates the /dev directory early during boot without udev.   |
 | `distro` | `bool` | Optional | Helps maintain correct inittab/upstart console device.   |
 | `modules_dep` | `bool` | Optional | Creates a modules dependency file for the Kernel you run.   |
-| `network` | `bool` | Optional | Automatically configures static networking.   |
+| `network` | `bool` | Optional | Automatically configures public networking.   |
 | `updatedb_disabled` | `bool` | Optional | Disables updatedb cron job to avoid disk thrashing.   |
 
 

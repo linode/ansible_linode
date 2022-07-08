@@ -10,21 +10,18 @@ While in the `obj_static_site` directory, run the following:
 
 ```bash
 export LINODE_TOKEN=mytoken
-
 ansible-playbook deploy.yml
 ```
 
 This will execute the playbook, including provisioning an Object Storage Bucket and configuring it to serve a static site.
 
-In order to customize the name of the bucket to create, the following environment variables should be executed in the shell used to execute the playbook:
-
-- `PLAYBOOK_BUCKET_NAME`
-- `PLAYBOOK_REGION`
-
 After the playbook has finished running, the website should be accessible at the `Static Site Access URL` found in the playbook run logs. This URL will automatically resolve to the contents of `files/public/index.html`. If the requested URL is not found, the page will automatically resolve to the contents of `files/public/404.html`.
+
+This example can be configured by editing the `config.yml` file. 
 
 ## Structure
 
+- `config.yml` - The config file to configure this example.
 - `deploy.yml` - The primary playbook file for this example. Calls out to roles to run provisioning steps.
 - `roles`
   - `static_site`

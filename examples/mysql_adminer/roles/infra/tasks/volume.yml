@@ -1,0 +1,8 @@
+- name: Create a volume attached to the MySQL instance
+  linode.cloud.volume:
+    label: "{{ resource_prefix }}-mysql-vol"
+    region: "{{ mysql_create.instance.region }}"
+    size: "{{ mysql_volume_size_gb }}"
+    linode_id: "{{ mysql_create.instance.id }}"
+    state: present
+  register: volume_create

@@ -1,0 +1,32 @@
+- include_tasks: volume_mount.yml
+
+- name: Update APK packages and install docker
+  apk:
+    name: docker,py3-pip,py3-setuptools
+    update_cache: yes
+    state: present
+
+- name: Install python deps (required for Docker)
+  pip:
+    name: docker-py
+    state: present
+
+- name: Start and enable docker
+  sysvinit:
+      name: docker
+      state: started
+      enabled: yes
+
+- name: Deploy a MySQL container
+  docker_container:
+    name: mysql
+    image: mysql:latest
+    restart: yes
+    volumes:
+      - /etc/mysql:/var/lib/mysql
+    ports:
+      - "{{ mysql_ipam }}:3306:3306"
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+    recreate: yes
+    state: started

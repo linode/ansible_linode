@@ -1,0 +1,42 @@
+- name: Create a Linode to host the MySQL server
+  linode.cloud.instance:
+    label: "{{resource_prefix}}-mysql"
+    type: g6-standard-2
+    region: "{{ region }}"
+    image: linode/alpine3.14
+    private_ip: true
+    authorized_keys:
+      - "{{ key_pair.public_key }}"
+    interfaces:
+      - purpose: public
+      - purpose: vlan
+        label: "vlan-{{ resource_prefix }}"
+        ipam_address: 10.0.0.1/24
+
+    wait: false
+    state: present
+  register: mysql_create
+
+
+- name: Create a Linode to host the Adminer instance
+  linode.cloud.instance:
+    label: "{{resource_prefix}}-adminer"
+    type: g6-nanode-1
+    region: "{{ region }}"
+    image: linode/alpine3.14
+    private_ip: true
+    authorized_keys:
+      - "{{ key_pair.public_key }}"
+    interfaces:
+      - purpose: public
+      - purpose: vlan
+        label: "vlan-{{ resource_prefix }}"
+        ipam_address: 10.0.0.2/24
+
+    wait: false
+    state: present
+  register: adminer_create
+
+- name: Wait for SSH to be available before continuing
+  wait_for: host="{{ item.instance.ipv4[0] }}" port=22  timeout=300
+  with_items: "{{ [mysql_create, adminer_create] }}"

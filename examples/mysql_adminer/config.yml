@@ -1,0 +1,15 @@
+---
+
+# MySQL/Adminer application options
+mysql_root_password: my-cool-pass
+ssh_key_output_path: ./node_ssh_key
+adminer_design: dracula
+
+# Infra-related options
+resource_prefix: cool-instance
+mysql_volume_size_gb: 30
+region: us-southeast
+
+# Configure the addresses of instances within the VLAN
+mysql_ipam: 10.0.0.1
+adminer_ipam: 10.0.0.2

@@ -1,0 +1,19 @@
+---
+
+- name: Create a ext4 filesystem on the attached volume
+  filesystem:
+    fstype: ext4
+    dev: "{{ var_vol_mountpoint }}"
+
+- name: Create a mountpoint for the volume
+  file:
+    path: /mnt/mysql
+    mode: '0755'
+    state: 'directory'
+
+- name: Mount the volume
+  mount:
+    path: /mnt/mysql
+    src: "{{ var_vol_mountpoint }}"
+    fstype: ext4
+    state: present
