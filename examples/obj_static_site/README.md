@@ -1,5 +1,9 @@
 # Object Storage Static Site
 
+| :exclamation:  This example is intended to provide usage examples for the Linode Ansible Collection. These examples are **not** production ready. |
+|---------------------------------------------------------------------------------------------------------------------------------------------------|
+
+
 This example provisions a simple static site using Linode Object Storage.
 
 ## Usage
@@ -21,7 +25,7 @@ This example can be configured by editing the `config.yml` file.
 
 ## Structure
 
-- `config.yml` - The config file to configure this example.
+- `config.yml` - Stores various configuration fields for this playbook.
 - `deploy.yml` - The primary playbook file for this example. Calls out to roles to run provisioning steps.
 - `roles`
   - `static_site`

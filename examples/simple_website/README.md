@@ -1,5 +1,9 @@
 # Simple Website Example
 
+| :exclamation:  This example is intended to provide usage examples for the Linode Ansible Collection. These examples are **not** production ready. |
+|---------------------------------------------------------------------------------------------------------------------------------------------------|
+
+
 This example provisions three Linode Instances and deploys a load-balanced HTTP server.
 
 ## Usage
@@ -24,6 +28,7 @@ This example can be configured by editing the `config.yml` file.
 
 ## Structure
 
+- `config.yml` - Stores various configuration fields for this playbook.
 - `deploy.yml` - The primary playbook file for this example. Calls out to roles to run provisioning steps.
 - `roles`
   - `infra`
