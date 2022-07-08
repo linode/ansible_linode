@@ -1,7 +1,7 @@
 # Object Storage Static Site
 
-| :exclamation:  This example is intended to provide usage examples for the Linode Ansible Collection. These examples are **not** production ready. |
-|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| This example is intended to provide usage examples for the Linode Ansible Collection. This examples is **not** production ready. |
+|----------------------------------------------------------------------------------------------------------------------------------|
 
 
 This example provisions a simple static site using Linode Object Storage.
