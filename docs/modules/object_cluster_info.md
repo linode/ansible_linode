@@ -36,7 +36,7 @@ Get info about a Linode Object Storage Cluster.
 | `id` | `str` | Optional | The unique id given to the clusters.   |
 | `region` | `str` | Optional | The region the clusters are in.   |
 | `domain` | `str` | Optional | The domain of the clusters.   |
-| `static_site_domain` | `str` | Optional | The public-site domain of the clusters.   |
+| `static_site_domain` | `str` | Optional | The static-site domain of the clusters.   |
 
 
 

@@ -111,7 +111,7 @@ linode_instance_helpers_spec = dict(
 
     network=dict(
         type='bool',
-        description='Automatically configures public networking.'),
+        description='Automatically configures static networking.'),
 
     updatedb_disabled=dict(
         type='bool',
