@@ -1,0 +1,50 @@
+---
+- name: Deploy MySQL/Adminer infra
+  hosts: localhost
+  gather_facts: yes
+
+  # Load in our config file
+  vars_files:
+    - config.yml
+
+  # Create groups for the provisioned infra
+  vars:
+    hosts_mysql:
+    hosts_adminer:
+
+  roles:
+    - role: infra
+
+- name: Deploy MySQL
+  gather_facts: yes
+  hosts: hosts_mysql
+  remote_user: root
+
+  vars_files:
+    - config.yml
+
+  vars:
+    ansible_ssh_private_key_file: "{{ ssh_key_output_path }}"
+  roles:
+    - role: configure_mysql
+
+- name: Deploy Adminer
+  hosts: hosts_adminer
+  remote_user: root
+
+  vars_files:
+    - config.yml
+
+  vars:
+    ansible_ssh_private_key_file: "{{ ssh_key_output_path }}"
+  roles:
+    - role: configure_adminer
+
+- name: Display Outputs
+  hosts: localhost
+  tasks:
+    - debug:
+        var: groups
+    - debug:
+        msg:
+          - "Adminer Access URL: http://{{ groups['hosts_adminer'][0] }}/"

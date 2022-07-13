@@ -1,0 +1,19 @@
+- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+  community.crypto.openssh_keypair:
+    path: "{{ ssh_key_output_path }}"
+  register: key_pair
+
+- include_tasks: instances.yml
+- include_tasks: firewall.yml
+- include_tasks: volume.yml
+
+- name: Add instance to inventory
+  ansible.builtin.add_host:
+    name: '{{ mysql_create.instance.ipv4[0] }}'
+    groups: hosts_mysql
+    var_vol_mountpoint: "{{ volume_create.volume.filesystem_path }}"
+
+- name: Add instance to inventory
+  ansible.builtin.add_host:
+    name: '{{ adminer_create.instance.ipv4[0] }}'
+    groups: hosts_adminer

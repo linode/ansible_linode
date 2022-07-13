@@ -1,0 +1,66 @@
+- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+  community.crypto.openssh_keypair:
+    path: "{{ ssh_key_output_path }}"
+  register: key_pair
+
+- name: Create a set of Linode instances in async
+  linode.cloud.instance:
+    label: "{{resource_prefix}}-{{item}}"
+    type: g6-nanode-1
+    region: us-east
+    image: linode/alpine3.14
+    private_ip: true
+    booted: true
+    authorized_keys:
+    - "{{ key_pair.public_key }}"
+
+    state: present
+
+  # Let's create these instances in async to speed up provisioning times
+  async: 120
+  poll: 0
+  changed_when: false
+  loop: "{{ range(0, num_server)|list }}"
+  register: instance_job
+
+- name: Wait for all instances to be created
+  async_status:
+    jid: "{{ async_result_item.ansible_job_id }}"
+  loop: "{{ instance_job.results }}"
+  loop_control:
+    loop_var: "async_result_item"
+  register: instance_create
+  until: instance_create.finished
+  retries: 30
+
+- name: Add instance to inventory
+  ansible.builtin.add_host:
+    name: '{{ item.instance.ipv4[0] }}'
+    groups: "{{ host_group }}"
+  loop: "{{ instance_create.results }}"
+
+- name: Create a NodeBalancer without any assigned nodes
+  linode.cloud.nodebalancer:
+    label: "{{ resource_prefix }}"
+    region: us-east
+    state: present
+    configs:
+      - port: 80
+        protocol: http
+        algorithm: roundrobin
+  register: create_nodebalancer
+
+- name: Attach the instances to the NodeBalancer
+  linode.cloud.nodebalancer_node:
+    nodebalancer_id: "{{ create_nodebalancer.node_balancer.id }}"
+    config_id: "{{ create_nodebalancer.configs[0].id }}"
+
+    label: "node-{{ item.instance.label }}"
+    address: '{{ item.instance.ipv4[1] }}:80'
+
+    state: present
+  loop: "{{ instance_create.results }}"
+
+- name: Wait for SSH to be available before continuing
+  wait_for: host="{{ item.instance.ipv4[0] }}" port=22  timeout=300
+  with_items: "{{ instance_create.results }}"

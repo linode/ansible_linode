@@ -1,0 +1,40 @@
+
+- name: Configure a firewall
+  linode.cloud.firewall:
+    label: "{{ resource_prefix }}-firewall"
+    rules:
+      inbound_policy: DROP
+      inbound:
+        - label: allow-http-in
+          addresses:
+            ipv4:
+              - 0.0.0.0/0
+            ipv6:
+              - "ff00::/8"
+          description: Allow inbound HTTP and HTTPs connections.
+          ports: '80,443'
+          protocol: TCP
+          action: ACCEPT
+
+        - label: allow-ssh-in
+          addresses:
+            ipv4:
+              - 0.0.0.0/0
+            ipv6:
+              - "ff00::/8"
+          description: Allow inbound SSH connections
+          ports: '22'
+          protocol: TCP
+          action: ACCEPT
+
+      outbound_policy: ACCEPT
+    state: present
+  register: fw
+
+- name: Add devices to the firewall
+  linode.cloud.firewall_device:
+    firewall_id: "{{ fw.firewall.id }}"
+    entity_id: "{{ item }}"
+    entity_type: linode
+    state: present
+  with_items: "{{ [mysql_create.instance.id, adminer_create.instance.id] }}"

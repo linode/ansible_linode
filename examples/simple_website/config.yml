@@ -1,0 +1,5 @@
+---
+
+resource_prefix: website
+num_server: 3
+ssh_key_output_path: ./node_ssh_key

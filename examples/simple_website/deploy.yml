@@ -1,0 +1,22 @@
+---
+- name: Deploy website infrastructure
+  hosts: localhost
+  # Create the group for all website nodes
+  vars:
+    nodes:
+  vars_files:
+    - config.yml
+  roles:
+    - role: infra
+      vars:
+        host_group: nodes
+
+- name: Configure website nodes
+  hosts: nodes
+  remote_user: root
+  vars_files:
+    - config.yml
+  vars:
+    ansible_ssh_private_key_file: "{{ ssh_key_output_path }}"
+  roles:
+    - website

@@ -1,0 +1,28 @@
+- name: Update APK packages and install docker
+  apk:
+    name: docker,py3-pip,py3-setuptools
+    update_cache: yes
+    state: present
+
+- name: Install python deps (required for Docker)
+  pip:
+    name: docker-py
+    state: present
+
+- name: Start and enable docker
+  sysvinit:
+      name: docker
+      state: started
+      enabled: yes
+
+- name: Deploy a simple Adminer instance on port 80
+  docker_container:
+    name: adminer
+    image: adminer:latest
+    restart: yes
+    ports:
+      - "80:8080"
+    env:
+      ADMINER_DEFAULT_SERVER: "{{ mysql_ipam }}"
+      ADMINER_DESIGN: "{{ adminer_design }}"
+    state: started
