@@ -1,7 +1,7 @@
 # Simple Website Example
 
-| This example is intended to provide usage examples for the Linode Ansible Collection. This examples is **not** production ready. |
-|----------------------------------------------------------------------------------------------------------------------------------|
+| This example is intended to provide usage examples for the Linode Ansible Collection and is **not** production ready. |
+|-----------------------------------------------------------------------------------------------------------------------|
 
 This example provisions three Linode Instances and deploys a load-balanced HTTP server.
 

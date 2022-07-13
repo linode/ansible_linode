@@ -1,7 +1,7 @@
 # MySQL/Adminer Deployment Example
 
-| This example is intended to provide usage examples for the Linode Ansible Collection. This examples is **not** production ready. |
-|----------------------------------------------------------------------------------------------------------------------------------|
+| This example is intended to provide usage examples for the Linode Ansible Collection and is **not** production ready. |
+|-----------------------------------------------------------------------------------------------------------------------|
 
 This example provisions a MySQL/Adminer setup using two Linode instances attached to a VLAN, a Linode Firewall, and a Linode Volume. 
 
