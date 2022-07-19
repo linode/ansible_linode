@@ -2,6 +2,6 @@ boto3==1.17.23
 botocore==1.20.23
 pylint==2.7.2
 ansible-doc-extractor==0.1.8
-mypy==0.961
+mypy==0.971
 ansible-specdoc==0.0.9
 ansible==5.9.0
