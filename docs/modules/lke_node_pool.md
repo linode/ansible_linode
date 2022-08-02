@@ -55,10 +55,10 @@ Manage Linode LKE cluster node pools.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `cluster_id` | `int` | **Required** | The ID of the LKE cluster that contains this node pool.   |
-| `count` | `int` | **Required** | The number of nodes in the Node Pool.   |
 | `tags` | `list` | **Required** | An array of tags applied to this object. Tags must be unique as they are used by the `lke_node_pool` module to uniquely identify node pools.   |
 | `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present` `absent`) |
 | [`autoscaler` (sub-options)](#autoscaler) | `dict` | Optional | When enabled, the number of nodes autoscales within the defined minimum and maximum values.   |
+| `count` | `int` | Optional | The number of nodes in the Node Pool.   |
 | [`disks` (sub-options)](#disks) | `list` | Optional | This Node Pool’s custom disk layout. Each item in this array will create a new disk partition for each node in this Node Pool.   |
 | `type` | `str` | Optional | The Linode Type for all of the nodes in the Node Pool. Required if `state` == `present`.   |
 | `skip_polling` | `bool` | Optional | If true, the module will not wait for all nodes in the node pool to be ready.   |
