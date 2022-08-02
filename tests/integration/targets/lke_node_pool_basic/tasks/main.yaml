@@ -5,7 +5,7 @@
         api_token: '{{ api_token }}'
         label: 'ansible-test-{{ ansible_date_time.epoch }}'
         region: us-southeast
-        k8s_version: 1.22
+        k8s_version: 1.23
         node_pools:
           - type: g6-standard-1
             count: 1
@@ -15,7 +15,7 @@
 
     - assert:
         that:
-          - create_cluster.cluster.k8s_version == '1.22'
+          - create_cluster.cluster.k8s_version == '1.23'
           - create_cluster.cluster.region == 'us-southeast'
           - create_cluster.node_pools[0].type == 'g6-standard-1'
           - create_cluster.node_pools[0].count == 1
@@ -35,8 +35,8 @@
         that:
           - new_pool.node_pool.count == 2
           - new_pool.node_pool.type == 'g6-standard-1'
-          - new_pool.node_pool.nodes[0].ready
-          - new_pool.node_pool.nodes[1].ready
+          - new_pool.node_pool.nodes[0].status == 'ready'
+          - new_pool.node_pool.nodes[1].status == 'ready'
 
     - name: Attempt to update an invalid field on the node pool
       linode.cloud.lke_node_pool:
@@ -78,7 +78,7 @@
     - ignore_errors: yes
       block:
         - name: Delete the LKE cluster node pool
-          linode.cloud.lke_cluster:
+          linode.cloud.lke_node_pool:
             api_token: '{{ api_token }}'
             cluster_id: '{{ create_cluster.cluster.id }}'
             tags: ['my-pool']

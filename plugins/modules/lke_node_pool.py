@@ -72,7 +72,7 @@ MODULE_SPEC = dict(
     ),
 
     count=dict(
-        type='int', required=True,
+        type='int',
         description='The number of nodes in the Node Pool.',
     ),
 
@@ -264,7 +264,7 @@ class LinodeLKENodePool(LinodeModuleBase):
         pool = self._get_node_pool()
 
         if pool is not None:
-            self.results['node_pool'] = pool._raw_json
+            self.results['node_pool'] = jsonify_node_pool(pool)
 
             self.register_action('Deleted pool {0} from cluster {1}'
                                  .format(pool.id, self.module.params['cluster_id']))

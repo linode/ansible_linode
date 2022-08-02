@@ -5,7 +5,7 @@
         api_token: '{{ api_token }}'
         label: 'ansible-test-{{ ansible_date_time.epoch }}'
         region: us-southeast
-        k8s_version: 1.22
+        k8s_version: 1.23
         node_pools:
           - type: g6-standard-1
             count: 3
@@ -21,7 +21,7 @@
 
     - assert:
         that:
-          - create_cluster.cluster.k8s_version == '1.22'
+          - create_cluster.cluster.k8s_version == '1.23'
           - create_cluster.cluster.region == 'us-southeast'
           - create_cluster.node_pools[0].type == 'g6-standard-1'
           - create_cluster.node_pools[0].count == 3
@@ -34,7 +34,7 @@
         api_token: '{{ api_token }}'
         label: '{{ create_cluster.cluster.label }}'
         region: us-southeast
-        k8s_version: 1.22
+        k8s_version: 1.23
         skip_polling: true
         node_pools:
           - type: g6-standard-1
@@ -48,7 +48,7 @@
 
     - assert:
         that:
-          - update_pools.cluster.k8s_version == '1.22'
+          - update_pools.cluster.k8s_version == '1.23'
           - update_pools.cluster.region == 'us-southeast'
 
           - update_pools.node_pools | length == 3
