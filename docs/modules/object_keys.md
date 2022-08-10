@@ -73,7 +73,7 @@ Manage Linode Object Storage Keys.
     - Sample Response:
         ```json
         {
-          "access_key": "KVAKUTGBA4WTR2NSJQ81",
+          "access_key": "ACCESSKEY",
           "bucket_access": [
             {
               "bucket_name": "example-bucket",
@@ -84,7 +84,7 @@ Manage Linode Object Storage Keys.
           "id": 123,
           "label": "my-key",
           "limited": true,
-          "secret_key": "OiA6F5r0niLs3QA2stbyq7mY5VCV7KqOzcmitmHw"
+          "secret_key": "SECRETKEY"
         }
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/object-storage/#object-storage-key-view__responses) for a list of returned fields
