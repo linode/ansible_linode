@@ -30,7 +30,8 @@ Manage Linode Instances, Configs, and Disks.
 ```
 
 ```yaml
-- linode.cloud.instance:
+- name: Create a Linode Instance with explicit configs and disks.
+  linode.cloud.instance:
     label: 'my-complex-instance'
     region: us-southeast
     type: g6-standard-1
