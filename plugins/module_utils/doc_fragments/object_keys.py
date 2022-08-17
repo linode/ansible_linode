@@ -19,7 +19,7 @@ specdoc_examples = ['''
     state: absent''']
 
 result_key_samples = ['''{
-  "access_key": "KVAKUTGBA4WTR2NSJQ81",
+  "access_key": "ACCESSKEY",
   "bucket_access": [
     {
       "bucket_name": "example-bucket",
@@ -30,5 +30,5 @@ result_key_samples = ['''{
   "id": 123,
   "label": "my-key",
   "limited": true,
-  "secret_key": "OiA6F5r0niLs3QA2stbyq7mY5VCV7KqOzcmitmHw"
+  "secret_key": "SECRETKEY"
 }''']
