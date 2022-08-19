@@ -30,6 +30,33 @@ Manage Linode Instances, Configs, and Disks.
 ```
 
 ```yaml
+- name: Create a Linode Instance with explicit configs and disks.
+  linode.cloud.instance:
+    label: 'my-complex-instance'
+    region: us-southeast
+    type: g6-standard-1
+    booted: true
+    boot_config_label: boot-config
+    disks:
+      - label: boot
+        image: linode/ubuntu18.04
+        size: 3000
+        root_pass: ans1ble-test!
+      - label: swap
+        filesystem: swap
+        size: 512
+    configs:
+      - label: boot-config
+        root_device: /dev/sda
+        devices:
+          sda:
+            disk_label: boot
+          sdb:
+            disk_label: swap
+        state: present
+```
+
+```yaml
 - name: Delete a Linode instance.
   linode.cloud.instance:
     label: my-linode
