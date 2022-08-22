@@ -12,7 +12,6 @@ Get info about a Linode Account.
 ```yaml
 - name: Get info about the current Linode account
   linode.cloud.account_info: {}
-
 ```
 
 

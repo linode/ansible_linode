@@ -15,7 +15,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.account_info as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.profile_info as docs
 
 spec = dict(
     # Disable the default values
@@ -25,7 +25,7 @@ spec = dict(
 
 specdoc_meta = dict(
     description=[
-        'Get info about a Linode Account.'
+        'Get info about a Linode Profile.'
     ],
     requirements=global_requirements,
     author=global_authors,
@@ -33,22 +33,22 @@ specdoc_meta = dict(
     examples=docs.specdoc_examples,
     return_values=dict(
         account=dict(
-            description='The account info in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/account/#account-view__response-samples',
+            description='The profile info in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/profile/#profile-view__response-samples',
             type='dict',
-            sample=docs.result_account_samples
+            sample=docs.result_profile_samples
         )
     )
 )
 
 
 class Module(LinodeModuleBase):
-    """Module for getting info about a Linode Account"""
+    """Module for getting info about a Linode Profile"""
 
     def __init__(self) -> None:
         self.required_one_of: List[str] = []
         self.results = dict(
-            account=None,
+            profile=None,
         )
 
         self.module_arg_spec = spec
@@ -59,13 +59,13 @@ class Module(LinodeModuleBase):
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for volume info module"""
 
-        self.results['account'] = self.client.account()._raw_json
+        self.results['profile'] = self.client.profile()._raw_json
 
         return self.results
 
 
 def main() -> None:
-    """Constructs and calls the account_info module"""
+    """Constructs and calls the profile_info module"""
     Module()
 
 
