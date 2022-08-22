@@ -1,9 +1,12 @@
 - name: lke_cluster_basic
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     - name: Create a minimal LKE cluster
       linode.cloud.lke_cluster:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-{{ r }}'
         region: us-southeast
         k8s_version: 1.23
         node_pools:

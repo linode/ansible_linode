@@ -1,9 +1,12 @@
 - name: domain_record
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     - name: Create a domain
       linode.cloud.domain:
         api_token: '{{ api_token }}'
-        domain: 'ansible-test-domain-{{ ansible_date_time.epoch }}.com'
+        domain: 'ansible-test-domain-{{ r }}.com'
         soa_email: 'realemail@example.com'
         type: 'master'
         state: present

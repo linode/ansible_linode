@@ -1,9 +1,11 @@
 - name: firewall_basic
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
     - name: Create a Linode Instance
       linode.cloud.instance:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-{{ r }}'
         region: us-southeast
         type: g6-standard-1
         image: linode/alpine3.13
@@ -13,7 +15,7 @@
     - name: Create another Linode Instance
       linode.cloud.instance:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-{{ ansible_date_time.epoch }}-2'
+        label: 'ansible-test-{{ r }}-2'
         region: us-southeast
         type: g6-standard-1
         image: linode/alpine3.13
@@ -24,7 +26,7 @@
       linode.cloud.firewall:
         api_token: '{{ api_token }}'
         api_version: v4beta
-        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-{{ r }}'
         devices: []
         rules:
           inbound: []

@@ -1,5 +1,8 @@
 - name: object_basic
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     - name: Get info about clusters in us-east
       linode.cloud.object_cluster_info:
         api_token: '{{ api_token }}'
@@ -27,7 +30,7 @@
     - name: Create a Linode key
       linode.cloud.object_keys:
         api_token: '{{ api_token }}'
-        label: 'test-ansible-key-{{ ansible_date_time.epoch }}'
+        label: 'test-ansible-key-{{ r }}'
         state: present
       register: create_key
 
@@ -42,7 +45,7 @@
         s3_url: 'http://{{ info_by_id.clusters[0].domain }}/'
         aws_access_key: '{{ create_key.key.access_key }}'
         aws_secret_key: '{{ create_key.key.secret_key }}'
-        name: 'test-ansible-bucket-{{ ansible_date_time.epoch }}'
+        name: 'test-ansible-bucket-{{ r }}'
         state: present
       register: create_bucket
 
@@ -54,7 +57,7 @@
     - name: Create a Linode key with access restrictions
       linode.cloud.object_keys:
         api_token: '{{ api_token }}'
-        label: 'test-ansible-key-access-{{ ansible_date_time.epoch }}'
+        label: 'test-ansible-key-access-{{ r }}'
         access:
           - cluster: us-east-1
             bucket_name: '{{ create_bucket.name }}'

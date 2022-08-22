@@ -1,9 +1,12 @@
 - name: volume_basic
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     - name: Create Linode instance
       linode.cloud.instance:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-inst-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-inst-{{ r }}'
         region: us-east
         type: g6-standard-1
         image: linode/ubuntu20.04
@@ -19,7 +22,7 @@
     - name: Create a volume with an instance
       linode.cloud.volume:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-attached-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-attached-{{ r }}'
         region: us-east
         size: 30
         linode_id: '{{ create_inst.instance.id }}'
@@ -36,7 +39,7 @@
     - name: Create a volume without an instance
       linode.cloud.volume:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-{{ r }}'
         region: us-east
         size: 42
         state: present

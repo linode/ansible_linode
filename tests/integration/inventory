@@ -1,2 +1,2 @@
 [testgroup]
-testhost ansible_connection="local" ansible_pipelining="yes" ansible_python_interpreter="/var/home/lgarber/Projects/ansible_collections/linode/cloud/venv/bin/python"
+testhost ansible_connection="local" ansible_pipelining="yes" ansible_python_interpreter="/var/home/lgarber/Projects/ansible_collections/linode/cloud/venv2/bin/python"
