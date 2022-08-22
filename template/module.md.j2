@@ -47,6 +47,8 @@
 {{ options_display(opts) }}
 {% endmacro %}
 
+{% if options | length > 0 %}
+
 ## Parameters
 
 {{ options_table(options) }}
@@ -58,6 +60,8 @@
 {{ options_table(spec) }}
 
 {% endfor %}
+
+{% endif %}
 
 ## Return Values
 

@@ -43,6 +43,7 @@ Manage Linode Firewall Devices.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -51,6 +52,7 @@ Manage Linode Firewall Devices.
 | `entity_id` | `int` | **Required** | The ID for this Firewall Device. This will be the ID of the Linode Entity.   |
 | `entity_type` | `str` | **Required** | The type of Linode Entity. Currently only supports linode.  (Choices:  `linode`) |
 | `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present` `absent`) |
+
 
 
 

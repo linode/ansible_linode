@@ -59,6 +59,7 @@ Manage a Linode Volume.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -71,6 +72,7 @@ Manage a Linode Volume.
 | `size` | `int` | Optional | The size of this volume, in GB. Be aware that volumes may only be resized up after creation.   |
 | `attached` | `bool` | Optional | If true, the volume will be attached to a Linode. Otherwise, the volume will be detached.  ( Default: `True`) |
 | `wait_timeout` | `int` | Optional | The amount of time, in seconds, to wait for a volume to have the active status.  ( Default: `240`) |
+
 
 
 

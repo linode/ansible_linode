@@ -54,6 +54,7 @@ Manage Linode LKE clusters.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -90,6 +91,7 @@ Manage Linode LKE clusters.
 | `enabled` | `bool` | Optional | Whether autoscaling is enabled for this Node Pool. NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.   |
 | `max` | `int` | Optional | The maximum number of nodes to autoscale to. Defaults to the value provided by the count field.   |
 | `min` | `int` | Optional | The minimum number of nodes to autoscale to. Defaults to the Node Pool’s count.   |
+
 
 
 

@@ -50,6 +50,7 @@ Manage Linode LKE cluster node pools.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -86,6 +87,7 @@ Manage Linode LKE cluster node pools.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `type` | `str` | **Required** | This custom disk partition’s filesystem type.  (Choices:  `raw` `ext4`) |
 | `size` | `int` | **Required** | The size of this custom disk partition in MB.   |
+
 
 
 

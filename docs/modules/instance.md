@@ -71,6 +71,7 @@ Manage Linode Instances, Configs, and Disks.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -268,6 +269,7 @@ Manage Linode Instances, Configs, and Disks.
 | `purpose` | `str` | **Required** | The type of interface.  (Choices:  `public` `vlan`) |
 | `label` | `str` | Optional | The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces.   |
 | `ipam_address` | `str` | Optional | This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.   |
+
 
 
 

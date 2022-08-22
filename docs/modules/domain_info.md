@@ -29,12 +29,14 @@ Get info about a Linode Domain.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `id` | `int` | Optional | The unique domain name of the Domain. Optional if `domain` is defined.   |
 | `domain` | `str` | Optional | The unique id of the Domain. Optional if `id` is defined.   |
+
 
 
 

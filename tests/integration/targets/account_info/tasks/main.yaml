@@ -1,0 +1,10 @@
+- name: account_info
+  block:
+    - name: Get info about the current account
+      linode.cloud.account_info:
+        api_token: '{{ api_token }}'
+      register: account
+
+    - assert:
+        that:
+          - account.account.email | length > 0
