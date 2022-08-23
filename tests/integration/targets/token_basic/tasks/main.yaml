@@ -1,0 +1,33 @@
+- name: volume_basic
+  block:
+    - name: Create Linode Token
+      linode.cloud.token:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        expiry: '2222-07-09T16:59:26'
+        scopes: '*'
+        state: present
+      register: create_token
+
+    - name: Assert token created
+      assert:
+        that:
+          - create_token.token.id != None
+
+    - name: Update the Linode Token
+      linode.cloud.token:
+        api_token: '{{ api_token }}'
+        label: '{{ create_token.token.label }}'
+        expiry: '2222-08-09T16:59:26'
+        state: present
+      register: update_token
+      failed_when: '"expiry date cannot be updated" not in update_token.msg'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode Token
+          linode.cloud.token:
+            api_token: '{{ api_token }}'
+            label: '{{ create_token.token.label }}'
+            state: absent
