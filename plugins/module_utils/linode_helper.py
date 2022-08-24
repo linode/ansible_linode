@@ -110,7 +110,8 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
 
 
 def parse_linode_types(value: any) -> any:
-    """Helper function for handle_updates; parses Linode Object types into collections of strings."""
+    """Helper function for handle_updates.
+    Parses Linode Object types into collections of strings."""
 
     if isinstance(value, list):
         return [parse_linode_types(elem) for elem in value]
