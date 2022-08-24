@@ -90,7 +90,7 @@ class Module(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to create token: {0}'.format(exception))
 
-    def _update_token(self, token: PersonalAccessToken):
+    def _update_token(self, token: PersonalAccessToken) -> None:
         token._api_get()
 
         params = self.module.params
