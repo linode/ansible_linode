@@ -83,39 +83,45 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
     obj._api_get()
 
     # Update mutable values
-    should_update = False
     params = filter_null_values(params)
+
+    put_request = {}
 
     for key, new_value in params.items():
         if not hasattr(obj, key):
             continue
 
-        old_value = getattr(obj, key)
-
-        if type(old_value) in {
-            linode_api4.objects.linode.Type,
-            linode_api4.objects.linode.Region,
-            linode_api4.objects.linode.Image,
-            linode_api4.objects.lke.KubeVersion
-        }:
-            old_value = old_value.id
+        old_value = parse_linode_types(getattr(obj, key))
 
         if new_value != old_value:
             if key in mutable_fields:
-                setattr(obj, key, new_value)
+                put_request[key] = new_value
                 register_func('Updated {0}: "{1}" -> "{2}"'.
                                      format(key, old_value, new_value))
 
-                should_update = True
                 continue
 
             raise RuntimeError(
                 'failed to update {} -> {}: {} is a non-updatable'
                 ' field'.format(old_value, new_value, key))
 
-    if should_update:
-        obj.save()
+    if len(put_request.keys()) > 0:
+        obj._client.put(type(obj).api_endpoint, model=obj, data=put_request)
 
+
+def parse_linode_types(v: any) -> any:
+    if isinstance(v, list):
+        return [parse_linode_types(elem) for elem in v]
+
+    if type(v) in {
+        linode_api4.objects.linode.Type,
+        linode_api4.objects.linode.Region,
+        linode_api4.objects.linode.Image,
+        linode_api4.objects.lke.KubeVersion
+    }:
+        return v.id
+
+    return v
 
 def jsonify_node_pool(pool: LKENodePool) -> Dict[str, Any]:
     """Converts an LKENodePool into a JSON-compatible dict"""
