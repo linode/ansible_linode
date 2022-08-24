@@ -17,7 +17,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import handle_updates, filter_null_values
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    handle_updates, filter_null_values
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript as docs
 
@@ -48,7 +49,8 @@ SPEC = dict(
     ),
     rev_note=dict(
         type='str',
-        description='This field allows you to add notes for the set of revisions made to this StackScript.',
+        description='This field allows you to add notes for '
+                    'the set of revisions made to this StackScript.',
     ),
     script=dict(
         type='str',

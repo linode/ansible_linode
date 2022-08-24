@@ -109,19 +109,21 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
         obj._client.put(type(obj).api_endpoint, model=obj, data=put_request)
 
 
-def parse_linode_types(v: any) -> any:
-    if isinstance(v, list):
-        return [parse_linode_types(elem) for elem in v]
+def parse_linode_types(value: any) -> any:
+    """Helper function for handle_updates; parses Linode Object types into collections of strings."""
 
-    if type(v) in {
+    if isinstance(value, list):
+        return [parse_linode_types(elem) for elem in value]
+
+    if type(value) in {
         linode_api4.objects.linode.Type,
         linode_api4.objects.linode.Region,
         linode_api4.objects.linode.Image,
         linode_api4.objects.lke.KubeVersion
     }:
-        return v.id
+        return value.id
 
-    return v
+    return value
 
 def jsonify_node_pool(pool: LKENodePool) -> Dict[str, Any]:
     """Converts an LKENodePool into a JSON-compatible dict"""
