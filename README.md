@@ -36,6 +36,7 @@ Name | Description
 [linode.cloud.nodebalancer_node](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/nodebalancer_node.md)|Manage NodeBalancer nodes.
 [linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/object_cluster_info.md)|Gather info about Object Storage clusters.
 [linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/object_keys.md)|Create and destroy Object Storage keys.
+[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/token.md)|Create and destroy Tokens.
 [linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/vlan_info.md)|Gather info about an existing Linode VLAN.
 [linode.cloud.volume](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/volume.md)|Create, destroy, and attach Linode volumes.
 [linode.cloud.volume_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/volume_info.md)|Gather info about an existing Linode volume.
