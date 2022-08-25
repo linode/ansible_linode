@@ -152,8 +152,13 @@ def validate_required(required_fields: Set[str], params: Dict[str, Any]):
         raise Exception("missing fields: {}".format(', '.join(missing_fields)))
 
 
-def request_retry(request_func: Callable, retry_statuses=RETRY_STATUSES,
+def request_retry(request_func: Callable, retry_statuses=None,
                   retry_interval=RETRY_INTERVAL_SECONDS, max_retries=MAX_RETRIES) -> any:
+    """Retries requests if the response status code matches the retry_statuses set."""
+    # Default value for set
+    if retry_statuses is None:
+        retry_statuses = RETRY_STATUSES
+
     number_attempts = 0
 
     while number_attempts < max_retries:

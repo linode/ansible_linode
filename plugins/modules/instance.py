@@ -21,7 +21,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
 
 try:
-    from linode_api4 import Instance, Config, ConfigInterface, Disk, Volume, ApiError
+    from linode_api4 import Instance, Config, ConfigInterface, Disk, Volume
 except ImportError:
     # handled in module_utils.linode_common
     pass
@@ -451,7 +451,8 @@ class LinodeInstance(LinodeModuleBase):
         }
 
         # We want to retry on 408s
-        response = request_retry(lambda: self.client.linode.instance_create(ltype, region, **params))
+        response = request_retry(
+            lambda: self.client.linode.instance_create(ltype, region, **params))
 
         # Weird variable return type
         if isinstance(response, tuple):
