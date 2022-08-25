@@ -11,16 +11,17 @@ from typing import Optional, Any, cast, Set, List, Dict, Union
 import linode_api4
 import polling
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import \
+    LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json, drop_empty_strings, mapping_to_dict
+    filter_null_values, paginated_list_to_json, drop_empty_strings, mapping_to_dict, request_retry
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
 
 try:
-    from linode_api4 import Instance, Config, ConfigInterface, Disk, Volume
+    from linode_api4 import Instance, Config, ConfigInterface, Disk, Volume, ApiError
 except ImportError:
     # handled in module_utils.linode_common
     pass
@@ -449,11 +450,8 @@ class LinodeInstance(LinodeModuleBase):
             'root_pass': ''
         }
 
-        try:
-            response = self.client.linode.instance_create(ltype, region, **params)
-
-        except Exception as exception:
-            self.fail(msg='failed to create instance: {0}'.format(exception))
+        # We want to retry on 408s
+        response = request_retry(lambda: self.client.linode.instance_create(ltype, region, **params))
 
         # Weird variable return type
         if isinstance(response, tuple):
