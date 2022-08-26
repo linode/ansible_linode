@@ -1,10 +1,13 @@
 - name: domain_basic
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     - name: Create a domain
       linode.cloud.domain:
         api_token: '{{ api_token }}'
         description: 'really cool domain'
-        domain: 'ansible-test-domain-{{ ansible_date_time.epoch }}.com'
+        domain: 'ansible-test-domain-{{ r }}.com'
         expire_sec: 300
         master_ips:
           - '127.0.0.1'

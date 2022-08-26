@@ -1,9 +1,12 @@
 - name: nodebalancer_basic
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     - name: create empty nodebalancer
       linode.cloud.nodebalancer:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-empty-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-empty-{{ r }}'
         region: us-east
         state: present
       register: create_empty_nodebalancer

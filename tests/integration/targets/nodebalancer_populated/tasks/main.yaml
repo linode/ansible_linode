@@ -1,10 +1,13 @@
 - name: nodebalancer_populated
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     # Create node instances
     - name: Create node1
       linode.cloud.instance:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-node1-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-node1-{{ r }}'
         region: us-east
         type: g6-standard-1
         image: linode/ubuntu20.04
@@ -23,7 +26,7 @@
     - name: Create node2
       linode.cloud.instance:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-node2-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-node2-{{ r }}'
         region: us-east
         type: g6-standard-1
         image: linode/ubuntu20.04
@@ -42,7 +45,7 @@
     - name: Create node3
       linode.cloud.instance:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-node3-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-node3-{{ r }}'
         region: us-central
         type: g6-standard-1
         image: linode/ubuntu20.04
@@ -62,7 +65,7 @@
     - name: Create a populated NodeBalancer
       linode.cloud.nodebalancer:
         api_token: '{{ api_token }}'
-        label: 'ansible-nb-populated-{{ ansible_date_time.epoch }}'
+        label: 'ansible-nb-populated-{{ r }}'
         region: us-east
         state: present
         configs:
@@ -273,7 +276,7 @@
     - name: Get info about a NodeBalancer that doesn't exist
       linode.cloud.nodebalancer_info:
         api_token: '{{ api_token }}'
-        label: 'fake_nodebalancer-{{ ansible_date_time.epoch }}'
+        label: 'fake_nodebalancer-{{ r }}'
       register: fake_nb_info
       failed_when:
         - "'failed' not in fake_nb_info.msg"

@@ -1,9 +1,12 @@
 - name: instance_booted
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     - name: Create a booted Linode instance
       linode.cloud.instance:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-{{ r }}'
         region: us-southeast
         type: g6-standard-1
         image: linode/ubuntu20.04

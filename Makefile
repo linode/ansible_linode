@@ -37,6 +37,9 @@ integration-test: $(INTEGRATION_CONFIG)
 
 test: integration-test
 
+testall:
+	./scripts/test_all.sh
+
 $(INTEGRATION_CONFIG):
 	@if test "$(LINODE_API_TOKEN)" = "" && "$(LINODE_TOKEN)" = ""; then \
 	  echo "LINODE_API_TOKEN must be set"; \

@@ -1,10 +1,14 @@
 """This module contains helper functions for various Linode modules."""
-from typing import Tuple, Any, Optional, cast, Dict, Set
+import time
+from typing import Tuple, Any, Optional, cast, Dict, Set, Callable
 
 import linode_api4
-from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode
+from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode, ApiError
 from linode_api4.objects.filtering import Filter, FilterableAttribute, FilterableMetaclass
 
+MAX_RETRIES = 5
+RETRY_INTERVAL_SECONDS = 4
+RETRY_STATUSES = {408}
 
 def dict_select_spec(target: dict, spec: dict) -> dict:
     """Returns a new dictionary that only selects the keys from target that are specified in spec"""
@@ -146,3 +150,32 @@ def validate_required(required_fields: Set[str], params: Dict[str, Any]):
 
     if has_missing_field:
         raise Exception("missing fields: {}".format(', '.join(missing_fields)))
+
+
+def request_retry(request_func: Callable, retry_statuses=None,
+                  retry_interval=RETRY_INTERVAL_SECONDS, max_retries=MAX_RETRIES) -> any:
+    """Retries requests if the response status code matches the retry_statuses set."""
+    # Default value for set
+    if retry_statuses is None:
+        retry_statuses = RETRY_STATUSES
+
+    number_attempts = 0
+
+    while number_attempts < max_retries:
+        number_attempts += 1
+
+        try:
+            response = request_func()
+        except ApiError as exception:
+            if exception.status not in retry_statuses:
+                raise exception
+
+            time.sleep(retry_interval)
+
+            continue
+        except Exception as exception:
+            raise exception
+
+        return response
+
+    raise Exception('exceeded maximum number of retries: {0}'.format(max_retries))

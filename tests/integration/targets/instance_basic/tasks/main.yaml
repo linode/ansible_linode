@@ -1,9 +1,12 @@
 - name: instance_basic
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     - name: Create a Linode instance without a root password
       linode.cloud.instance:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-nopass-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-nopass-{{ r }}'
         region: us-east
         type: g6-standard-1
         image: linode/ubuntu20.04
