@@ -1,9 +1,12 @@
 - name: volume_basic
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     - name: Create Linode Token
       linode.cloud.token:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-{{ r }}'
         expiry: '2222-07-09T16:59:26'
         scopes: '*'
         state: present
