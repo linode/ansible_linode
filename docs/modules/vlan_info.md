@@ -23,11 +23,13 @@ Get info about a Linode VLAN.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | `str` | **Required** | The VLAN’s label.   |
+
 
 
 

@@ -60,6 +60,7 @@ Manage Linode Firewalls.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -134,6 +135,7 @@ Manage Linode Firewalls.
 | `description` | `str` | Optional | A description for this rule.   |
 | `ports` | `str` | Optional | A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)   |
 | `protocol` | `str` | Optional | The type of network traffic to allow.   |
+
 
 
 
