@@ -1,0 +1,60 @@
+- name: stackscript_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a basic stackscript without required fields
+      linode.cloud.stackscript:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        state: present
+      register: failed_create
+      failed_when: '"missing: images, script" not in failed_create.msg'
+
+    - name: Create a basic stackscript
+      linode.cloud.stackscript:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        images: ['linode/alpine3.15']
+        script: |
+          #!/bin/bash
+          # <UDF name="package" label="System Package to Install" example="nginx" default="">
+          apt-get -q update && apt-get -q -y install $PACKAGE
+        state: present
+      register: create_stackscript
+
+    - assert:
+        that:
+          - create_stackscript.stackscript.id != None
+          - create_stackscript.stackscript.rev_note == ''
+          - create_stackscript.stackscript.description == ''
+          - "'package' in create_stackscript.stackscript.script"
+
+    - name: Update a basic stackscript
+      linode.cloud.stackscript:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        images: ['linode/alpine3.14']
+        script: |
+          #!/bin/bash
+          # <UDF name="package2" label="System Package to Install" example="nginx" default="">
+          apt-get -q update && apt-get -q -y install $PACKAGE2
+        rev_note: cool
+        description: do stuff
+        state: present
+      register: update_stackscript
+
+    - assert:
+        that:
+          - update_stackscript.stackscript.id != None
+          - update_stackscript.stackscript.rev_note == 'cool'
+          - update_stackscript.stackscript.description == 'do stuff'
+          - "'package2' in update_stackscript.stackscript.script"
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.stackscript:
+            api_token: '{{ api_token }}'
+            label: '{{ create_stackscript.stackscript.label }}'
+            state: absent

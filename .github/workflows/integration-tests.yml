@@ -40,6 +40,9 @@ jobs:
       - name: copy tests to installed collection
         run: cp -r tests ~/.ansible/collections/ansible_collections/linode/cloud/tests
 
+      - name: copy scripts to installed collection
+        run: cp -r scripts ~/.ansible/collections/ansible_collections/linode/cloud/scripts
+
       - name: run tests
         run: cd ~/.ansible/collections/ansible_collections/linode/cloud && make testall
         env:
