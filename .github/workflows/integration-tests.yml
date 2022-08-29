@@ -43,7 +43,7 @@ jobs:
       - name: copy scripts to installed collection
         run: cp -r scripts ~/.ansible/collections/ansible_collections/linode/cloud/scripts
 
-      - name: remove existing keys
+      - name: replace existing keys
         run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
 
       - name: run tests
