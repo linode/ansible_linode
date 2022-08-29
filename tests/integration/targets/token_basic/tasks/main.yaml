@@ -1,4 +1,4 @@
-- name: volume_basic
+- name: token_basic
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
