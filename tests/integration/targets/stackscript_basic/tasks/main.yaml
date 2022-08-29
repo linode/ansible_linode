@@ -1,9 +1,12 @@
 - name: stackscript_basic
   block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
     - name: Create a basic stackscript without required fields
       linode.cloud.stackscript:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-{{ r }}'
         state: present
       register: failed_create
       failed_when: '"missing: images, script" not in failed_create.msg'
@@ -11,7 +14,7 @@
     - name: Create a basic stackscript
       linode.cloud.stackscript:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-{{ r }}'
         images: ['linode/alpine3.15']
         script: |
           #!/bin/bash
@@ -30,7 +33,7 @@
     - name: Update a basic stackscript
       linode.cloud.stackscript:
         api_token: '{{ api_token }}'
-        label: 'ansible-test-{{ ansible_date_time.epoch }}'
+        label: 'ansible-test-{{ r }}'
         images: ['linode/alpine3.14']
         script: |
           #!/bin/bash
