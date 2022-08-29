@@ -19,6 +19,7 @@ PEP440 is the schema used to describe the versions of Ansible.
 ### Modules
 Name | Description
 --- | ---
+[linode.cloud.account_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/account_info.md)|Get information about the current Linode account.
 [linode.cloud.domain](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/domain.md)|Create and destroy domains.
 [linode.cloud.domain_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/domain_info.md)|Gather info about an existing domain.
 [linode.cloud.domain_record](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/domain_record.md)|Create and destroy domain records.
@@ -36,6 +37,7 @@ Name | Description
 [linode.cloud.nodebalancer_node](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/nodebalancer_node.md)|Manage NodeBalancer nodes.
 [linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/object_cluster_info.md)|Gather info about Object Storage clusters.
 [linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/object_keys.md)|Create and destroy Object Storage keys.
+[linode.cloud.profile_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/profile_info.md)|Get information about the current Linode profile.
 [linode.cloud.stackscript](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/stackscript.md)|Create and destroy StackScripts.
 [linode.cloud.token](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/token.md)|Create and destroy Tokens.
 [linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/v0.7.1/docs/modules/vlan_info.md)|Gather info about an existing Linode VLAN.

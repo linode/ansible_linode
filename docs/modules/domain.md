@@ -32,6 +32,7 @@ Manage Linode Domains.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -49,6 +50,7 @@ Manage Linode Domains.
 | `tags` | `list` | Optional | An array of tags applied to this object.   |
 | `ttl_sec` | `int` | Optional | the amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.   |
 | `type` | `str` | Optional | Whether this Domain represents the authoritative source of information for the domain it describes (master), or whether it is a read-only copy of a master (slave).   |
+
 
 
 

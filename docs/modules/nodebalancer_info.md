@@ -29,12 +29,14 @@ Get info about a Linode NodeBalancer.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `id` | `int` | Optional | The ID of this NodeBalancer. Optional if `label` is defined.   |
 | `label` | `str` | Optional | The label of this NodeBalancer. Optional if `id` is defined.   |
+
 
 
 

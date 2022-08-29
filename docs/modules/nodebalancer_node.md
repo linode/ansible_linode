@@ -51,6 +51,7 @@ Manage Linode NodeBalancer Nodes.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -62,6 +63,7 @@ Manage Linode NodeBalancer Nodes.
 | `address` | `str` | Optional | The private IP Address where this backend can be reached. This must be a private IP address.   |
 | `mode` | `str` | Optional | The mode this NodeBalancer should use when sending traffic to this backend.  (Choices:  `accept` `reject` `drain` `backup`) |
 | `weight` | `int` | Optional | Nodes with a higher weight will receive more traffic.   |
+
 
 
 

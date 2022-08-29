@@ -33,6 +33,7 @@ Get info about a Linode Domain Record.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -41,6 +42,7 @@ Get info about a Linode Domain Record.
 | `domain` | `str` | Optional | The name of the parent Domain. Optional if `domain_id` is defined.   |
 | `id` | `int` | Optional | The unique id of the subdomain. Optional if `name` is defined.   |
 | `name` | `str` | Optional | The name of the domain record. Optional if `id` is defined.   |
+
 
 
 

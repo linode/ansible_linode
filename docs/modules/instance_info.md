@@ -29,12 +29,14 @@ Get info about a Linode Instance.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `id` | `int` | Optional | The instance’s label. Optional if `label` is defined.   |
 | `label` | `str` | Optional | The unique ID of the Instance. Optional if `id` is defined.   |
+
 
 
 

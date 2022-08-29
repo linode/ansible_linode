@@ -37,6 +37,7 @@ NOTE: Domain records are identified by their name, target, and type.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -55,6 +56,7 @@ NOTE: Domain records are identified by their name, target, and type.
 | `ttl_sec` | `int` | Optional | The amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.   |
 | `type` | `str` | Optional | The type of Record this is in the DNS system.   |
 | `weight` | `int` | Optional | The relative weight of this Record used in the case of identical priority.   |
+
 
 
 

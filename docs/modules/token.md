@@ -40,6 +40,7 @@ Manage a Linode Token.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -48,6 +49,7 @@ Manage a Linode Token.
 | `state` | `str` | **Required** | The state of this token.  (Choices:  `present` `absent`) |
 | `expiry` | `str` | Optional | When this token should be valid until.   |
 | `scopes` | `str` | Optional | The OAuth scopes to create the token with.   |
+
 
 
 
