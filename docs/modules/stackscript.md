@@ -37,6 +37,7 @@ Manage a Linode StackScript.
 
 
 
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -48,6 +49,7 @@ Manage a Linode StackScript.
 | `is_public` | `bool` | Optional | This determines whether other users can use your StackScript.   |
 | `rev_note` | `str` | Optional | This field allows you to add notes for the set of revisions made to this StackScript.   |
 | `script` | `str` | Optional | The script to execute when provisioning a new Linode with this StackScript.   |
+
 
 
 
