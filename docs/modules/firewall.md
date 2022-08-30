@@ -65,7 +65,7 @@ Manage Linode Firewalls.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present` `absent`) |
+| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present`  `absent` ) |
 | `label` | `str` | Optional | The unique label to give this Firewall.   |
 | [`devices` (sub-options)](#devices) | `list` | Optional | The devices that are attached to this Firewall.   |
 | [`rules` (sub-options)](#rules) | `dict` | Optional | The inbound and outbound access rules to apply to this Firewall.   |
@@ -80,7 +80,7 @@ Manage Linode Firewalls.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `id` | `int` | **Required** | The unique ID of the device to attach to this Firewall.   |
-| `type` | `str` | Optional | The type of device to be attached to this Firewall.  ( Default: `linode`) |
+| `type` | `str` | Optional | The type of device to be attached to this Firewall.  (Default: `linode`) |
 
 
 

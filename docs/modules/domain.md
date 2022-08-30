@@ -38,7 +38,7 @@ Manage Linode Domains.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `domain` | `str` | **Required** | The domain this Domain represents.   |
-| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present` `absent`) |
+| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present`  `absent` ) |
 | `axfr_ips` | `list` | Optional | The list of IPs that may perform a zone transfer for this Domain.   |
 | `description` | `str` | Optional | The list of IPs that may perform a zone transfer for this Domain.   |
 | `expire_sec` | `int` | Optional | The amount of time in seconds that may pass before this Domain is no longer authoritative.   |

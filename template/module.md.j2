@@ -32,7 +32,7 @@
 {% set required_text = '**Required**' if spec.required else 'Optional' %}
 {% set type_text = '`%s`' % spec.type if spec.type else '' %}
 {% set name_fmt = '[`%s` (sub-options)](#%s)' % (name, name) if spec.suboptions else '`%s`' % name %}
-| {{ name_fmt }} | {{type_text}} | {{ required_text }} | {% for line in spec.description %}{{ line }} {% endfor %} {% if spec.default or spec.choices %}({% if spec.choices %}Choices: {% for choice in spec.choices %} `{{ choice }}`{% endfor %}{% endif %}{% if spec.default %} Default: `{{ spec.default }}`{% endif %}){% endif %} |
+| {{ name_fmt }} | {{type_text}} | {{ required_text }} | {% for line in spec.description %}{{ line }} {% endfor %} {% if spec.default or spec.default == False or spec.choices %}({% if spec.choices %}Choices: {% for choice in spec.choices %} `{{ choice }}` {% endfor %}{% endif %}{% if spec.default or spec.default == False %}Default: `{{ spec.default }}`{% endif %}){% endif %} |
 {% endif %}
 {% endfor %}
 {% endmacro %}

@@ -43,7 +43,7 @@ Manage a Linode StackScript.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | `str` | **Required** | This StackScript's unique label.   |
-| `state` | `str` | **Required** | The state of this StackScript.  (Choices:  `present` `absent`) |
+| `state` | `str` | **Required** | The state of this StackScript.  (Choices:  `present`  `absent` ) |
 | `description` | `str` | Optional | A description for the StackScript.   |
 | `images` | `list` | Optional | Images that can be deployed using this StackScript.   |
 | `is_public` | `bool` | Optional | This determines whether other users can use your StackScript.   |

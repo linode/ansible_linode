@@ -47,7 +47,7 @@ Manage Linode Object Storage Keys.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present` `absent`) |
+| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present`  `absent` ) |
 | `label` | `str` | Optional | The unique label to give this key.   |
 | [`access` (sub-options)](#access) | `list` | Optional | A list of access permissions to give the key.   |
 
@@ -61,7 +61,7 @@ Manage Linode Object Storage Keys.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `cluster` | `str` | **Required** | The id of the cluster that the provided bucket exists under.   |
 | `bucket_name` | `str` | **Required** | The name of the bucket to set the key's permissions for.   |
-| `permissions` | `str` | **Required** | The permissions to give the key.  (Choices:  `read_only` `write_only` `read_write`) |
+| `permissions` | `str` | **Required** | The permissions to give the key.  (Choices:  `read_only`  `write_only`  `read_write` ) |
 
 
 

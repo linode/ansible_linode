@@ -22,6 +22,106 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     handle_updates, filter_null_values
 
+SPEC_GRANTS_GLOBAL = {
+    'account_access': {
+        'type:': 'str',
+        'choices': ['read_only', 'read_write'],
+        'description': [
+            'The level of access this User has to Account-level actions, like billing information.',
+            'A restricted User will never be able to manage users.'],
+        'default': 'read_only',
+    },
+    'add_databases': {
+        'type': 'bool',
+        'description': 'If true, this User may add Managed Databases.',
+        'default': False,
+    },
+    'add_domains': {
+        'type': 'bool',
+        'description': 'If true, this User may add Domains.',
+        'default': False,
+    },
+    'add_firewalls': {
+        'type': 'bool',
+        'description': 'If true, this User may add firewalls.',
+        'default': False,
+    },
+    'add_images': {
+        'type': 'bool',
+        'description': 'If true, this User may add images.',
+        'default': False,
+    },
+    'add_linodes': {
+        'type': 'bool',
+        'description': 'If true, this User may add Linodes.',
+        'default': False,
+    },
+    'add_longview': {
+        'type': 'bool',
+        'description': 'If true, this User may add LongView.',
+        'default': False,
+    },
+    'add_nodebalancers': {
+        'type': 'bool',
+        'description': 'If true, this User may add NodeBalancers.',
+        'default': False,
+    },
+    'add_stackscripts': {
+        'type': 'bool',
+        'description': 'If true, this User may add StackScripts.',
+        'default': False,
+    },
+    'add_volumes': {
+        'type': 'bool',
+        'description': 'If true, this User may add volumes.',
+        'default': False,
+    },
+    'cancel_account': {
+        'type': 'bool',
+        'description': 'If true, this User may add cancel the entire account.',
+        'default': False,
+    },
+    'longview_subscription': {
+        'type': 'bool',
+        'description': 'If true, this User may manage the Account’s Longview subscription.',
+        'default': False,
+    },
+}
+
+SPEC_GRANTS_RESOURCE = {
+    'type': {
+        'type:': 'str',
+        'choices': ['domain', 'image', 'linode', 'longview', 'nodebalancer', 'stackscript', 'volume'],
+        'description': [
+            'The type of resource to grant access to.'],
+        'required': True,
+    },
+    'id': {
+        'type': 'int',
+        'description': 'The ID of the resource to grant access to.',
+        'required': True,
+    },
+    'permissions': {
+        'type': 'str',
+        'choices': ['read_only', 'read_write'],
+        'description': 'The level of access this User has to this entity. If null, this User has no access.',
+    },
+}
+
+SPEC_GRANTS = {
+    'global': {
+        'type': 'dict',
+        'description': 'A structure containing the Account-level grants a User has.',
+        'options': SPEC_GRANTS_GLOBAL,
+    },
+    'resource': {
+        'description': 'A list of resource grants to give to the user.',
+        'type': 'list',
+        'elements': 'dict',
+        'options': SPEC_GRANTS_RESOURCE
+    }
+}
+
 SPEC = dict(
     # We don't use label for this module
     label=dict(
@@ -51,6 +151,11 @@ SPEC = dict(
         description=['The email address for the User.',
                      'Linode sends emails to this address for account management communications.',
                      'May be used for other communications as configured.']
+    ),
+    grants=dict(
+        type='dict',
+        description='Update the grants a User has.',
+        options=SPEC_GRANTS
     )
 )
 
@@ -69,6 +174,12 @@ specdoc_meta = dict(
                      '#user-view__response-samples',
             type='dict',
             sample=docs.result_user_samples
+        ),
+        grants=dict(
+            description='The grants info in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/account/#users-grants-view__response-samples',
+            type='dict',
+            sample=docs.result_grants_samples
         )
     )
 )
