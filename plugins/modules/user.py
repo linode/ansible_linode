@@ -19,7 +19,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user as docs
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import handle_updates
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    handle_updates, filter_null_values
 
 SPEC = dict(
     # We don't use label for this module
@@ -43,6 +44,7 @@ SPEC = dict(
     restricted=dict(
         type='bool',
         description='If true, the User must be granted access to perform actions or access entities on this Account.',
+        default=True,
     ),
     email=dict(
         type='str',
@@ -91,7 +93,7 @@ class Module(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of,
-                         required_if=[('state', 'present', 'email')])
+                         required_if=[('state', 'present', ['email'])])
 
     def _get_user_by_username(self, username: str) -> Optional[User]:
         try:
@@ -102,12 +104,15 @@ class Module(LinodeModuleBase):
             return self.fail(msg='failed to get user {0}: {1}'.format(username, exception))
 
     def _create_user(self) -> Optional[User]:
-        params = copy.deepcopy(self.module.params)
+        params = filter_null_values(self.module.params)
         username = params.pop('username')
         email = params.pop('email')
 
+        for key in {'api_token', 'api_version', 'state'}:
+            params.pop(key)
+
         try:
-            return self.client.account.user_create(email, username, **self.module.params)
+            return self.client.account.user_create(email, username, **params)
         except Exception as exception:
             return self.fail(msg='failed to create user: {0}'.format(exception))
 

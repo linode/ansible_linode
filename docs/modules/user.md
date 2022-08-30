@@ -40,7 +40,7 @@ Manage a Linode User.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `username` | `str` | **Required** | The username of this user.   |
 | `state` | `str` | **Required** | The state of this user.  (Choices:  `present` `absent`) |
-| `restricted` | `bool` | Optional | If true, the User must be granted access to perform actions or access entities on this Account.   |
+| `restricted` | `bool` | Optional | If true, the User must be granted access to perform actions or access entities on this Account.  ( Default: `True`) |
 | `email` | `str` | Optional | The email address for the User. Linode sends emails to this address for account management communications. May be used for other communications as configured.   |
 
 
