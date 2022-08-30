@@ -25,7 +25,7 @@ Get info about a Linode Profile.
 
 ## Return Values
 
-- `account` - The profile info in JSON serialized form.
+- `profile` - The profile info in JSON serialized form.
 
     - Sample Response:
         ```json
