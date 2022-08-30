@@ -57,7 +57,7 @@ Manage a Linode Token.
 
 ## Return Values
 
-- `volume` - The token in JSON serialized form.
+- `token` - The token in JSON serialized form.
 
     - Sample Response:
         ```json
