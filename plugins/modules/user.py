@@ -215,7 +215,7 @@ class Module(LinodeModuleBase):
                          required_if=[('state', 'present', ['email'])])
 
     @staticmethod
-    def _normalize_grants_params(grants: Dict[str, any]) -> Dict[str, any]:
+    def _normalize_grants_params(grants: Dict[str, Any]) -> Dict[str, Any]:
         result = {}
 
         if 'global' in grants:
@@ -239,14 +239,14 @@ class Module(LinodeModuleBase):
 
         return result
 
-    def _get_raw_grants(self, user: User) -> Optional[Dict[any, str]]:
+    def _get_raw_grants(self, user: User) -> Optional[Dict[Any, str]]:
         try:
             return self.client.get('/account/users/{0}/grants'.format(user.id))
         except Exception as exception:
             return self.fail(msg='failed to get user grants: {0}'.format(exception))
 
     @staticmethod
-    def _compare_grants(old_grants: Dict[str, any], new_grants: Dict[str, any]) -> bool:
+    def _compare_grants(old_grants: Dict[str, any], new_grants: Dict[str, Any]) -> bool:
         normalized_grants = {'global': old_grants['global']}
 
         # Remove all implicitly created values to allow for proper diffing
@@ -265,7 +265,7 @@ class Module(LinodeModuleBase):
         return new_grants == normalized_grants
 
     @staticmethod
-    def _merge_grants(old_grants: Dict[str, any], param_grants: Dict[str, any]) -> Dict[any, str]:
+    def _merge_grants(old_grants: Dict[str, Any], param_grants: Dict[str, Any]) -> Dict[Any, str]:
         # This function is necessary as we want users to explicitly specify all grants that
         # should be given to a user.
 
