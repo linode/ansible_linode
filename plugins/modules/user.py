@@ -27,7 +27,8 @@ SPEC_GRANTS_GLOBAL = {
         'type:': 'str',
         'choices': ['read_only', 'read_write'],
         'description': [
-            'The level of access this User has to Account-level actions, like billing information.',
+            'The level of access this User has to Account-level actions, '
+            'like billing information.',
             'A restricted User will never be able to manage users.'],
         'default': None
     },
@@ -83,7 +84,8 @@ SPEC_GRANTS_GLOBAL = {
     },
     'longview_subscription': {
         'type': 'bool',
-        'description': 'If true, this User may manage the Account’s Longview subscription.',
+        'description': 'If true, this User may manage the Account’s '
+                       'Longview subscription.',
         'default': False,
     },
 }
@@ -91,7 +93,8 @@ SPEC_GRANTS_GLOBAL = {
 SPEC_GRANTS_RESOURCE = {
     'type': {
         'type:': 'str',
-        'choices': ['domain', 'image', 'linode', 'longview', 'nodebalancer', 'stackscript', 'volume'],
+        'choices': ['domain', 'image', 'linode', 'longview',
+                    'nodebalancer', 'stackscript', 'volume'],
         'description': [
             'The type of resource to grant access to.'],
         'required': True,
@@ -104,7 +107,8 @@ SPEC_GRANTS_RESOURCE = {
     'permissions': {
         'type': 'str',
         'choices': ['read_only', 'read_write'],
-        'description': 'The level of access this User has to this entity. If null, this User has no access.',
+        'description': 'The level of access this User has to this entity. '
+                       'If null, this User has no access.',
         'required': True
     },
 }
@@ -143,13 +147,15 @@ SPEC = {
     },
     'restricted': {
         'type': 'bool',
-        'description': 'If true, the User must be granted access to perform actions or access entities on this Account.',
+        'description': 'If true, the User must be granted access to perform '
+                       'actions or access entities on this Account.',
         'default': True,
     },
     'email': {
         'type': 'str',
         'description': ['The email address for the User.',
-                        'Linode sends emails to this address for account management communications.',
+                        'Linode sends emails to this address for account '
+                        'management communications.',
                         'May be used for other communications as configured.']
     },
     'grants': {
@@ -177,7 +183,8 @@ specdoc_meta = {
         },
         'grants': {
             'description': 'The grants info in JSON serialized form.',
-            'docs_url': 'https://www.linode.com/docs/api/account/#users-grants-view__response-samples',
+            'docs_url': 'https://www.linode.com/docs/api/account/'
+                        '#users-grants-view__response-samples',
             'type': 'dict',
             'sample': docs.result_grants_samples
         }
@@ -243,16 +250,16 @@ class Module(LinodeModuleBase):
         normalized_grants = {'global': old_grants['global']}
 
         # Remove all implicitly created values to allow for proper diffing
-        for k, v in old_grants.items():
-            if not isinstance(v, list):
+        for key, resource in old_grants.items():
+            if not isinstance(resource, list):
                 continue
 
             result_list = [
-                resource_grant for resource_grant in v if resource_grant['permissions'] is not None
+                resource_grant for resource_grant in resource if resource_grant['permissions'] is not None
             ]
 
             if len(result_list) > 0:
-                normalized_grants[k] = result_list
+                normalized_grants[key] = result_list
 
         return new_grants == normalized_grants
 
