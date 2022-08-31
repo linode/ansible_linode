@@ -255,7 +255,8 @@ class Module(LinodeModuleBase):
                 continue
 
             result_list = [
-                resource_grant for resource_grant in resource if resource_grant['permissions'] is not None
+                resource_grant for resource_grant in resource
+                if resource_grant['permissions'] is not None
             ]
 
             if len(result_list) > 0:
