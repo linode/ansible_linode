@@ -250,11 +250,11 @@ class Module(LinodeModuleBase):
         normalized_grants = {'global': old_grants['global']}
 
         # Remove all implicitly created values to allow for proper diffing
+        resource: List[Any]
+
         for key, resource in old_grants.items():
             if not isinstance(resource, list):
                 continue
-
-            resource: List[Any] = resource
 
             result_list = [
                 resource_grant for resource_grant in resource
