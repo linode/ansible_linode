@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
 import copy
-from typing import Optional, cast, Any, Set, Dict
+from typing import Optional, cast, Any, Set, Dict, List
 
 import polling
 from linode_api4 import User
@@ -246,13 +246,15 @@ class Module(LinodeModuleBase):
             return self.fail(msg='failed to get user grants: {0}'.format(exception))
 
     @staticmethod
-    def _compare_grants(old_grants: Dict[str, any], new_grants: Dict[str, Any]) -> bool:
+    def _compare_grants(old_grants: Dict[str, Any], new_grants: Dict[str, Any]) -> bool:
         normalized_grants = {'global': old_grants['global']}
 
         # Remove all implicitly created values to allow for proper diffing
         for key, resource in old_grants.items():
             if not isinstance(resource, list):
                 continue
+
+            resource: List[Any] = resource
 
             result_list = [
                 resource_grant for resource_grant in resource
@@ -269,14 +271,14 @@ class Module(LinodeModuleBase):
         # This function is necessary as we want users to explicitly specify all grants that
         # should be given to a user.
 
-        result = {'global': {}}
+        result: Dict[str, Any] = {'global': {}}
 
         # Set the global grant values from the params
         if param_grants['global']:
             result['global'] = param_grants['global']
 
         # Create a dict as a reference for later
-        new_grant_map = {}
+        new_grant_map: Dict[str, Dict[int, Any]] = {}
         for key, resource in param_grants.items():
             if not isinstance(resource, list):
                 continue
