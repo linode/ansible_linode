@@ -14,7 +14,7 @@ specdoc_examples = ['''
     grants:
       global:
         add_linodes: true
-      resource:
+      resources:
         - type: linode
           id: 12345
           permissions: read_write

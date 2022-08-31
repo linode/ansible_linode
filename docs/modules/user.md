@@ -26,7 +26,7 @@ Manage a Linode User.
     grants:
       global:
         add_linodes: true
-      resource:
+      resources:
         - type: linode
           id: 12345
           permissions: read_write
@@ -68,7 +68,7 @@ Manage a Linode User.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | [`global` (sub-options)](#global) | `dict` | Optional | A structure containing the Account-level grants a User has.   |
-| [`resource` (sub-options)](#resource) | `list` | Optional | A list of resource grants to give to the user.   |
+| [`resources` (sub-options)](#resources) | `list` | Optional | A list of resource grants to give to the user.   |
 
 
 
@@ -78,7 +78,7 @@ Manage a Linode User.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `account_access` |  | Optional | The level of access this User has to Account-level actions, like billing information. A restricted User will never be able to manage users.  (Choices:  `read_only`  `read_write` Default: `read_only`) |
+| `account_access` |  | Optional | The level of access this User has to Account-level actions, like billing information. A restricted User will never be able to manage users.  (Choices:  `read_only`  `read_write` ) |
 | `add_databases` | `bool` | Optional | If true, this User may add Managed Databases.  (Default: `False`) |
 | `add_domains` | `bool` | Optional | If true, this User may add Domains.  (Default: `False`) |
 | `add_firewalls` | `bool` | Optional | If true, this User may add firewalls.  (Default: `False`) |
@@ -95,13 +95,13 @@ Manage a Linode User.
 
 
 
-### resource
+### resources
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `type` |  | **Required** | The type of resource to grant access to.  (Choices:  `domain`  `image`  `linode`  `longview`  `nodebalancer`  `stackscript`  `volume` ) |
 | `id` | `int` | **Required** | The ID of the resource to grant access to.   |
-| `permissions` | `str` | Optional | The level of access this User has to this entity. If null, this User has no access.  (Choices:  `read_only`  `read_write` ) |
+| `permissions` | `str` | **Required** | The level of access this User has to this entity. If null, this User has no access.  (Choices:  `read_only`  `read_write` ) |
 
 
 

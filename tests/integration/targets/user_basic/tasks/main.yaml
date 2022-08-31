@@ -17,14 +17,20 @@
           - create_user.user.email != None
           - create_user.user.restricted == True
 
-#    - name: Update the Linode User
-#      linode.cloud.token:
-#        api_token: '{{ api_token }}'
-#        label: '{{ create_token.token.label }}'
-#        expiry: '2222-08-09T16:59:26'
-#        state: present
-#      register: update_token
-#      failed_when: '"expiry date cannot be updated" not in update_token.msg'
+    - name: Update the Linode User
+      linode.cloud.user:
+        api_token: '{{ api_token }}'
+        username: '{{ create_user.user.username }}'
+        email: 'ansible-test-{{ r }}-changed@linode.com'
+        restricted: False
+        state: present
+      register: update_user
+
+    - name: Assert user updated
+      assert:
+        that:
+          - create_user.user.email == 'ansible-test-{{ r }}-changed@linode.com'
+          - create_user.user.restricted == False
 
   always:
     - ignore_errors: yes

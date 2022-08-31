@@ -3,7 +3,7 @@
 PARALLEL_JOBS="${PARALLEL_JOBS:=20}"
 
 run_test() {
-  make TEST_ARGS="-v $1" test
+  make TEST_ARGS="$1" test
 }
 
 export -f run_test
