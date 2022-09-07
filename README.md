@@ -27,6 +27,7 @@ Name |
 [linode.cloud.firewall](./docs/modules/firewall.md)|
 [linode.cloud.firewall_device](./docs/modules/firewall_device.md)|
 [linode.cloud.firewall_info](./docs/modules/firewall_info.md)|
+[linode.cloud.image](./docs/modules/image.md)|
 [linode.cloud.instance](./docs/modules/instance.md)|
 [linode.cloud.instance_info](./docs/modules/instance_info.md)|
 [linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|
