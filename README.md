@@ -17,37 +17,39 @@ PEP440 is the schema used to describe the versions of Ansible.
 
 <!--start collection content-->
 ### Modules
-Name | Description
---- | ---
-[linode.cloud.account_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/account_info.md)|Get information about the current Linode account.
-[linode.cloud.domain](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/domain.md)|Create and destroy domains.
-[linode.cloud.domain_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/domain_info.md)|Gather info about an existing domain.
-[linode.cloud.domain_record](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/domain_record.md)|Create and destroy domain records.
-[linode.cloud.domain_record_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/domain_record_info.md)|Gather info about an existing domain record.
-[linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/firewall.md)|Create and destroy Firewalls.
-[linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/firewall_info.md)|Gather info about an existing Firewall.
-[linode.cloud.firewall_device](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/firewall_device.md)|Manage Firewall Devices.
-[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/instance.md)|Create and destroy Linodes.
-[linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/instance_info.md)|Gather info about an existing Linode instance.
-[linode.cloud.lke_cluster](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/lke_cluster.md)|Manage LKE clusters.
-[linode.cloud.lke_cluster_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/lke_cluster_info.md)|Gather info about an existing LKE cluster.
-[linode.cloud.lke_node_pool](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/lke_node_pool.md)|Manage LKE Node Pools.
-[linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/nodebalancer.md)|Create, destroy, and configure NodeBalancers.
-[linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/nodebalancer_info.md)|Gather info about an existing NodeBalancer.
-[linode.cloud.nodebalancer_node](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/nodebalancer_node.md)|Manage NodeBalancer nodes.
-[linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/object_cluster_info.md)|Gather info about Object Storage clusters.
-[linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/object_keys.md)|Create and destroy Object Storage keys.
-[linode.cloud.profile_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/profile_info.md)|Get information about the current Linode profile.
-[linode.cloud.stackscript](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/stackscript.md)|Create and destroy StackScripts.
-[linode.cloud.token](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/token.md)|Create and destroy Tokens.
-[linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/vlan_info.md)|Gather info about an existing Linode VLAN.
-[linode.cloud.volume](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/volume.md)|Create, destroy, and attach Linode volumes.
-[linode.cloud.volume_info](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/modules/volume_info.md)|Gather info about an existing Linode volume.
+Name |
+--- |
+[linode.cloud.account_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/account_info.md)|
+[linode.cloud.domain](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain.md)|
+[linode.cloud.domain_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain_info.md)|
+[linode.cloud.domain_record](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain_record.md)|
+[linode.cloud.domain_record_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/domain_record_info.md)|
+[linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall.md)|
+[linode.cloud.firewall_device](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall_device.md)|
+[linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall_info.md)|
+[linode.cloud.image](https://github.com/linode/ansible_linode/blob/main/docs/modules/image.md)|
+[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance.md)|
+[linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance_info.md)|
+[linode.cloud.lke_cluster](https://github.com/linode/ansible_linode/blob/main/docs/modules/lke_cluster.md)|
+[linode.cloud.lke_cluster_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/lke_cluster_info.md)|
+[linode.cloud.lke_node_pool](https://github.com/linode/ansible_linode/blob/main/docs/modules/lke_node_pool.md)|
+[linode.cloud.nodebalancer](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer.md)|
+[linode.cloud.nodebalancer_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer_info.md)|
+[linode.cloud.nodebalancer_node](https://github.com/linode/ansible_linode/blob/main/docs/modules/nodebalancer_node.md)|
+[linode.cloud.object_cluster_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/object_cluster_info.md)|
+[linode.cloud.object_keys](https://github.com/linode/ansible_linode/blob/main/docs/modules/object_keys.md)|
+[linode.cloud.profile_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/profile_info.md)|
+[linode.cloud.stackscript](https://github.com/linode/ansible_linode/blob/main/docs/modules/stackscript.md)|
+[linode.cloud.token](https://github.com/linode/ansible_linode/blob/main/docs/modules/token.md)|
+[linode.cloud.vlan_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/vlan_info.md)|
+[linode.cloud.volume](https://github.com/linode/ansible_linode/blob/main/docs/modules/volume.md)|
+[linode.cloud.volume_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/volume_info.md)|
+
 
 ### Inventory
-Name | Description
---- | ---
-[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/v0.8.0/docs/inventory/instance.rst)|Reads instance inventories from Linode.
+Name |
+--- |
+[linode.cloud.instance](https://github.com/linode/ansible_linode/blob/main/docs/inventory/instance.md)|
 
 <!--end collection content-->
 
