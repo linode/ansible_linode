@@ -46,7 +46,7 @@ jobs:
         run: diff -r docs tmp/docs
         working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
-      - name: compare docs
+      - name: compare README
         run: diff -r README.md tmp/README.md
         working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
