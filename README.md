@@ -27,7 +27,6 @@ Name |
 [linode.cloud.firewall](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall.md)|
 [linode.cloud.firewall_device](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall_device.md)|
 [linode.cloud.firewall_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/firewall_info.md)|
-[linode.cloud.image](https://github.com/linode/ansible_linode/blob/main/docs/modules/image.md)|
 [linode.cloud.instance](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance.md)|
 [linode.cloud.instance_info](https://github.com/linode/ansible_linode/blob/main/docs/modules/instance_info.md)|
 [linode.cloud.lke_cluster](https://github.com/linode/ansible_linode/blob/main/docs/modules/lke_cluster.md)|
