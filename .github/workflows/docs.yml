@@ -48,7 +48,7 @@ jobs:
 
       - name: compare docs
         run: diff -r README.md tmp/README.md
-        working-directory: /home/runner/.ansible/collections/ansible_collections/linode/clou
+        working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
       - name: clean up
         run: rm -rf tmp
