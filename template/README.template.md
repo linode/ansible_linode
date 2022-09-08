@@ -19,13 +19,14 @@ PEP440 is the schema used to describe the versions of Ansible.
 ### Modules
 Name |
 --- |
-{% for name in modules %}[linode.cloud.{{ name }}](https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ name }}.md)|
+{% for name in modules %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ name }}.md{% else %}./docs/modules/{{ name }}.md{% endif %})|
 {% endfor %}
 
 ### Inventory
 Name |
 --- |
-{% for name in inventory %}[linode.cloud.{{ name }}](https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/inventory/{{ name }}.md)|{% endfor %}
+{% for name in inventory %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/inventory/{{ name }}.md{% else %}./docs/inventory/{{ name }}.md{% endif %})|
+{% endfor %}
 
 <!--end collection content-->
 

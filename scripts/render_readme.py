@@ -17,6 +17,7 @@ def main() -> None:
     tpl = env.get_template('README.template.md')
     output = tpl.render({
         'collection_version': sys.argv[1] if len(sys.argv) > 1 else 'main',
+        'is_release': len(sys.argv) > 1,
         'modules': sorted(list_modules()),
         'inventory': sorted(list_inventory())
     })
