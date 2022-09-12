@@ -3,15 +3,20 @@
 
 name: release
 on:
-  workflow_dispatch:
+  workflow_dispatch: null
   release:
     types: [ published ]
 jobs:
-  goreleaser:
+  galaxyrelease:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: checkout repo
-        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # pin@v2
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # pin@v3
+        with:
+          path: .ansible/collections/ansible_collections/linode/cloud
 
       - name: update packages
         run: sudo apt-get update -y
@@ -20,7 +25,7 @@ jobs:
         run: sudo apt-get install -y build-essential
 
       - name: setup python 3
-        uses: actions/setup-python@dc73133d4da04e56a135ae2246682783cc7c7cb6 # pin@v2
+        uses: actions/setup-python@7f80679172b057fc5e90d70d197929d454754a5a # pin@v2
         with:
           python-version: '3.x'
 
