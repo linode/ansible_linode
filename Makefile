@@ -8,7 +8,7 @@ clean:
 	rm -f *.tar.gz
 
 build:
-	ansible-galaxy collection build
+	python scripts/render_galaxy.py && ansible-galaxy collection build
 
 install: clean build
 	ansible-galaxy collection install *.tar.gz --force -p $(COLLECTIONS_PATH)
@@ -31,6 +31,7 @@ gendocs:
 
 	DOCS_PATH=$(DOCS_PATH) ./scripts/specdoc_generate.sh
 	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
+	python scripts/render_readme.py
 
 integration-test: $(INTEGRATION_CONFIG)
 	ansible-test integration $(TEST_ARGS)

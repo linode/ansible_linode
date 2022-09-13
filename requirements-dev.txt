@@ -5,3 +5,4 @@ ansible-doc-extractor==0.1.8
 mypy==0.971
 ansible-specdoc==0.0.9
 ansible==6.3.0
+Jinja2==3.0.1

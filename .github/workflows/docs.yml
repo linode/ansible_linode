@@ -34,12 +34,20 @@ jobs:
         run: mkdir tmp
         working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
+      - name: copy over old readme
+        run: cp README.md tmp/README.md
+        working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
+
       - name: generate new docs
         run: DOCS_PATH=tmp/docs make gendocs
         working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
-      - name: compare results
+      - name: compare docs
         run: diff -r docs tmp/docs
+        working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
+
+      - name: compare README
+        run: diff -r README.md tmp/README.md
         working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
       - name: clean up
