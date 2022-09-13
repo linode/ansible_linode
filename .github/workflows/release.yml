@@ -1,14 +1,14 @@
-name: Run Integration Tests
+# This GitHub action can publish assets for release when a tag is created.
+# Currently its setup to run on any tag that matches the pattern "v*" (ie. v0.1.0).
 
+name: release
 on:
   workflow_dispatch: null
-  push:
-    branches:
-      - main
-
+  release:
+    types: [ published ]
 jobs:
-  run-tests:
-    runs-on: ubuntu-20.04
+  galaxyrelease:
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
@@ -25,7 +25,7 @@ jobs:
         run: sudo apt-get install -y build-essential
 
       - name: setup python 3
-        uses: actions/setup-python@dc73133d4da04e56a135ae2246682783cc7c7cb6 # pin@v2
+        uses: actions/setup-python@7f80679172b057fc5e90d70d197929d454754a5a # pin@v2
         with:
           python-version: '3.x'
 
@@ -35,13 +35,8 @@ jobs:
       - name: install ansible dependencies
         run: ansible-galaxy collection install amazon.aws:==1.5.1
 
-      - name: install collection
-        run: make install
-
-      - name: replace existing keys
-        run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
-
-      - name: run tests
-        run: make testall
+      - name: publish the collection
+        run: make publish
         env:
-          LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
+          GALAXY_TOKEN: ${{ secrets.GALAXY_TOKEN }}
+          COLLECTION_VERSION: ${{ github.event.release.tag_name }}

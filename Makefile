@@ -1,16 +1,24 @@
 COLLECTIONS_PATH ?= ~/.ansible/collections
 DOCS_PATH ?= docs
+COLLECTION_VERSION ?= 0.0.0
 
 TEST_ARGS := -v
 INTEGRATION_CONFIG := tests/integration/integration_config.yml
 
 clean:
-	rm -f *.tar.gz
+	rm -f *.tar.gz && rm -rf galaxy.yml
 
-build:
-	python scripts/render_galaxy.py && ansible-galaxy collection build
+build: clean gendocs
+	python scripts/render_galaxy.py $(COLLECTION_VERSION) && ansible-galaxy collection build
 
-install: clean build
+publish: build
+	@if test "$(GALAXY_TOKEN)" = ""; then \
+	  echo "GALAXY_TOKEN must be set"; \
+	  exit 1; \
+	fi
+	ansible-galaxy collection publish --token $(GALAXY_TOKEN) *.tar.gz
+
+install: build
 	ansible-galaxy collection install *.tar.gz --force -p $(COLLECTIONS_PATH)
 
 deps:

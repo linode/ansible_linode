@@ -5,9 +5,14 @@ on: pull_request
 jobs:
   run-docs-validation:
     runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: checkout repo
-        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f # pin@v2
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # pin@v3
+        with:
+          path: .ansible/collections/ansible_collections/linode/cloud
 
       - name: update packages
         run: sudo apt-get update -y
@@ -26,30 +31,20 @@ jobs:
       - name: install collection
         run: make install
 
-      - name: copy other files to installed collection
-        run: cp -r Makefile template scripts ~/.ansible/collections/ansible_collections/linode/cloud/
-
-        # There is not currently a way to set the working directory for subsequent steps
       - name: make temp directory
         run: mkdir tmp
-        working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
       - name: copy over old readme
         run: cp README.md tmp/README.md
-        working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
       - name: generate new docs
         run: DOCS_PATH=tmp/docs make gendocs
-        working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
       - name: compare docs
         run: diff -r docs tmp/docs
-        working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
       - name: compare README
         run: diff -r README.md tmp/README.md
-        working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
 
       - name: clean up
         run: rm -rf tmp
-        working-directory: /home/runner/.ansible/collections/ansible_collections/linode/cloud
