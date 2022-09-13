@@ -1,6 +1,6 @@
 COLLECTIONS_PATH ?= ~/.ansible/collections
 DOCS_PATH ?= docs
-COLLECTION_VERSION ?= 0.0.0
+COLLECTION_VERSION ?=
 
 TEST_ARGS := -v
 INTEGRATION_CONFIG := tests/integration/integration_config.yml
@@ -39,7 +39,7 @@ gendocs:
 
 	DOCS_PATH=$(DOCS_PATH) ./scripts/specdoc_generate.sh
 	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
-	python scripts/render_readme.py
+	python scripts/render_readme.py $(COLLECTION_VERSION)
 
 integration-test: $(INTEGRATION_CONFIG)
 	ansible-test integration $(TEST_ARGS)
