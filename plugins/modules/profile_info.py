@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module allows users to retrieve information about the current Linode account."""
+"""This module allows users to retrieve information about the current Linode profile."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -32,7 +32,7 @@ specdoc_meta = dict(
     spec=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        account=dict(
+        profile=dict(
             description='The profile info in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/profile/#profile-view__response-samples',
             type='dict',

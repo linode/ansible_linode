@@ -50,7 +50,7 @@ specdoc_meta = dict(
     spec=SPEC,
     examples=docs.specdoc_examples,
     return_values=dict(
-        volume=dict(
+        token=dict(
             description='The token in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/profile/'
                      '#personal-access-token-create__responses',
