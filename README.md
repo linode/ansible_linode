@@ -40,6 +40,8 @@ Name |
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|
 [linode.cloud.stackscript](./docs/modules/stackscript.md)|
 [linode.cloud.token](./docs/modules/token.md)|
+[linode.cloud.user](./docs/modules/user.md)|
+[linode.cloud.user_info](./docs/modules/user_info.md)|
 [linode.cloud.vlan_info](./docs/modules/vlan_info.md)|
 [linode.cloud.volume](./docs/modules/volume.md)|
 [linode.cloud.volume_info](./docs/modules/volume_info.md)|
