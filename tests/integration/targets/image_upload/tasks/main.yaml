@@ -1,0 +1,37 @@
+- name: image_upload
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+        file_content: 'H4sIAAAAAAAAA6vML1UozsgvzUlRKC1OVShJLSpKTMsvyuUCAMhLS4gZAAAA='
+
+    - name: Create temporary image file
+      tempfile:
+        state: file
+        suffix: .img.gz
+      register: source_file
+
+    - copy:
+        dest: '{{ source_file.path }}'
+        content: '{{ file_content | b64decode }}'
+
+    - name: Create an image from the image file
+      linode.cloud.image:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        source_file: '{{ source_file.path }}'
+        description: 'cool'
+        state: present
+      register: image_create
+
+    - assert:
+        that:
+          - image_create.image.size == 1
+          - image_create.image.status == 'available'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.image:
+            api_token: '{{ api_token }}'
+            label: '{{ image_create.image.label }}'
+            state: absent

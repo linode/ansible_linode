@@ -1,0 +1,73 @@
+- name: stackscript_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create an instance to image
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/alpine3.16
+        wait: no
+        state: present
+      register: instance_create
+
+    - name: Create an image from the instance
+      linode.cloud.image:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        disk_id: '{{ instance_create.disks.0.id }}'
+        description: 'cool'
+        state: present
+      register: image_create
+
+    - assert:
+        that:
+          - image_create.image.status == 'available'
+          - image_create.image.description == 'cool'
+
+    - name: Update the image
+      linode.cloud.image:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        disk_id: '{{ instance_create.disks.0.id }}'
+        description: 'cool2'
+        state: present
+      register: image_update
+
+    - assert:
+        that:
+          - image_update.image.status == 'available'
+          - image_update.image.description == 'cool2'
+
+    - name: Overwrite the image
+      linode.cloud.image:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        disk_id: '{{ instance_create.disks.0.id }}'
+        description: 'yooo'
+        recreate: yes
+        wait: no
+        state: present
+      register: image_recreate
+
+    - assert:
+        that:
+          - image_recreate.changed
+          - image_recreate.image.id != image_create.image.id
+          - image_recreate.image.description == 'yooo'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.image:
+            api_token: '{{ api_token }}'
+            label: '{{ image_create.image.label }}'
+            state: absent
+
+        - linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ instance_create.instance.label }}'
+            state: absent
