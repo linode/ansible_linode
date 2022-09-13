@@ -50,8 +50,8 @@ Manage Linode Firewall Devices.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `firewall_id` | `int` | **Required** | The ID of the Firewall that contains this device.   |
 | `entity_id` | `int` | **Required** | The ID for this Firewall Device. This will be the ID of the Linode Entity.   |
-| `entity_type` | `str` | **Required** | The type of Linode Entity. Currently only supports linode.  (Choices:  `linode`) |
-| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present` `absent`) |
+| `entity_type` | `str` | **Required** | The type of Linode Entity. Currently only supports linode.  (Choices:  `linode` ) |
+| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present`  `absent` ) |
 
 
 

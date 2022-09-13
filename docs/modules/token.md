@@ -46,7 +46,7 @@ Manage a Linode Token.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | `str` | **Required** | This token's unique label.   |
-| `state` | `str` | **Required** | The state of this token.  (Choices:  `present` `absent`) |
+| `state` | `str` | **Required** | The state of this token.  (Choices:  `present`  `absent` ) |
 | `expiry` | `str` | Optional | When this token should be valid until.   |
 | `scopes` | `str` | Optional | The OAuth scopes to create the token with.   |
 

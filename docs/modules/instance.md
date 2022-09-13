@@ -76,7 +76,7 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present` `absent`) |
+| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present`  `absent` ) |
 | `type` | `str` | Optional | The unique label to give this instance.   |
 | `region` | `str` | Optional | The location to deploy the instance in. See the [Linode API documentation](https://api.linode.com/v4/regions).   |
 | `image` | `str` | Optional | The image ID to deploy the instance disk from.   |
@@ -92,8 +92,8 @@ Manage Linode Instances, Configs, and Disks.
 | [`interfaces` (sub-options)](#interfaces) | `list` | Optional | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema).   |
 | `booted` | `bool` | Optional | Whether the new Instance should be booted. This will default to True if the Instance is deployed from an Image or Backup.   |
 | `backup_id` | `int` | Optional | The id of the Backup to restore to the new Instance. May not be provided if “image” is given.   |
-| `wait` | `bool` | Optional | Wait for the instance to have status `running` before returning.  ( Default: `True`) |
-| `wait_timeout` | `int` | Optional | The amount of time, in seconds, to wait for an instance to have status `running`.  ( Default: `240`) |
+| `wait` | `bool` | Optional | Wait for the instance to have status `running` before returning.  (Default: `True`) |
+| `wait_timeout` | `int` | Optional | The amount of time, in seconds, to wait for an instance to have status `running`.  (Default: `240`) |
 
 
 
@@ -111,7 +111,7 @@ Manage Linode Instances, Configs, and Disks.
 | `memory_limit` | `int` | Optional | Defaults to the total RAM of the Linode.   |
 | `root_device` | `str` | Optional | The root device to boot.   |
 | `run_level` | `str` | Optional | Defines the state of your Linode after booting.   |
-| `virt_mode` | `str` | Optional | Controls the virtualization mode.  (Choices:  `paravirt` `fullvirt`) |
+| `virt_mode` | `str` | Optional | Controls the virtualization mode.  (Choices:  `paravirt`  `fullvirt` ) |
 
 
 
@@ -266,7 +266,7 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `purpose` | `str` | **Required** | The type of interface.  (Choices:  `public` `vlan`) |
+| `purpose` | `str` | **Required** | The type of interface.  (Choices:  `public`  `vlan` ) |
 | `label` | `str` | Optional | The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces.   |
 | `ipam_address` | `str` | Optional | This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.   |
 

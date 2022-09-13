@@ -42,7 +42,7 @@ NOTE: Domain records are identified by their name, target, and type.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present` `absent`) |
+| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present`  `absent` ) |
 | `domain_id` | `int` | Optional | The ID of the parent Domain.   |
 | `domain` | `str` | Optional | The name of the parent Domain.   |
 | `record_id` | `int` | Optional | The id of the record to modify.   |

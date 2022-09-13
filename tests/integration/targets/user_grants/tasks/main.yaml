@@ -1,0 +1,91 @@
+- name: user_grants
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Domain to grant user access to
+      linode.cloud.domain:
+        api_token: '{{ api_token }}'
+        domain: '{{ r }}-example.com'
+        soa_email: 'dx@linode.com'
+        type: master
+        state: present
+      register: create_domain
+
+    - name: Create Linode User
+      linode.cloud.user:
+        api_token: '{{ api_token }}'
+        username: 'ansible-test-{{ r }}'
+        email: 'ansible-test-{{ r }}@linode.com'
+        grants:
+          global:
+            account_access: read_write
+            add_images: yes
+          resources:
+            - id: '{{ create_domain.domain.id }}'
+              type: domain
+              permissions: read_write
+        state: present
+      register: create_user
+
+    - debug:
+        var: create_domain.domain.id
+
+    - name: Assert user created
+      assert:
+        that:
+          - create_user.user.email != None
+          - create_user.user.restricted == True
+          - create_user.grants.global.account_access == 'read_write'
+          - create_user.grants.global.add_images
+          - create_user.grants.domain[0] | length > 0
+
+    - name: Update Linode User grants
+      linode.cloud.user:
+        api_token: '{{ api_token }}'
+        username: '{{ create_user.user.username }}'
+        email: '{{ create_user.user.email }}'
+        grants:
+          global:
+            account_access: read_only
+            add_linodes: yes
+        state: present
+      register: update_grants
+
+    - name: Assert grants updated
+      assert:
+        that:
+          - update_grants.user.email != None
+          - update_grants.user.restricted == True
+          - update_grants.grants.global.account_access == 'read_only'
+          - update_grants.grants.global.add_linodes
+
+    - name: No changes
+      linode.cloud.user:
+        api_token: '{{ api_token }}'
+        username: '{{ create_user.user.username }}'
+        email: '{{ create_user.user.email }}'
+        grants:
+          global:
+            account_access: read_only
+            add_linodes: yes
+        state: present
+      register: no_changes
+
+    - name: Assert grants updated
+      assert:
+        that:
+          - no_changes.changed == False
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.user:
+            api_token: '{{ api_token }}'
+            username: '{{ create_user.user.username }}'
+            state: absent
+
+        - linode.cloud.domain:
+            api_token: '{{ api_token }}'
+            domain: '{{ create_domain.domain.domain }}'
+            state: absent
