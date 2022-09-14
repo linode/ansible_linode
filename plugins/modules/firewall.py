@@ -249,9 +249,19 @@ class LinodeFirewall(LinodeModuleBase):
         if should_update:
             self._firewall.save()
 
+        # Clear ports for icmp rules
+        rules = params.get("rules")
+        if rules != None:
+            inbounds = rules.get("inbound")
+            if inbounds != None:
+                for inbound in inbounds:
+                    if inbound.get("protocol") == "ICMP":
+                        if "ports" in inbound and inbound["ports"] == None:
+                            del inbound["ports"]
+
         # Update rules
-        if mapping_to_dict(self._firewall.rules) != params.get('rules'):
-            self._firewall.update_rules(params.get('rules'))
+        if mapping_to_dict(self._firewall.rules) != rules:
+            self._firewall.update_rules(rules)
             self.register_action('Updated Firewall rules')
 
         # Update devices
