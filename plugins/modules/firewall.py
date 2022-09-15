@@ -247,15 +247,11 @@ class LinodeFirewall(LinodeModuleBase):
         local_rules = filter_null_values_recursive(self.module.params['rules'])
         remote_rules = filter_null_values_recursive(mapping_to_dict(self._firewall.rules))
 
-        # We need to default to an empty list for diffing purposes
-        if 'inbound' not in local_rules:
-            local_rules['inbound'] = []
-
-        if 'outbound' not in local_rules:
-            local_rules['outbound'] = []
-
         # Normalize IP addresses for all rules
         for field in {'inbound', 'outbound'}:
+            if field not in local_rules:
+                local_rules[field] = []
+
             if field in local_rules:
                 local_rules[field] = self._normalize_ips(local_rules[field])
 
