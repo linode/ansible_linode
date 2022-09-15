@@ -8,13 +8,12 @@ from __future__ import absolute_import, division, print_function
 import copy
 from typing import Optional, List, Any
 
+import ipaddress
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, mapping_to_dict, paginated_list_to_json
+    filter_null_values, mapping_to_dict, paginated_list_to_json, filter_null_values_recursive
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall as docs
 
 try:
@@ -175,15 +174,13 @@ class LinodeFirewall(LinodeModuleBase):
             return self.fail(msg='failed to get firewall {0}: {1}'.format(label, exception))
 
     def _create_firewall(self) -> dict:
-        params = copy.deepcopy(self.module.params)
+        params = self.module.params
 
-        label = params.pop('label')
-        params = {k: v for k, v in params.items() if k in {
-            'rules', 'tags'
-        }}
-
+        label = params.get('label')
+        rules = filter_null_values_recursive(params['rules'])
+        tags = params['tags']
         try:
-            result = self.client.networking.firewall_create(label, **params)
+            result = self.client.networking.firewall_create(label, rules=rules, tags=tags)
         except Exception as exception:
             self.fail(msg='failed to create firewall: {0}'.format(exception))
 
@@ -225,6 +222,44 @@ class LinodeFirewall(LinodeModuleBase):
         for device in device_map.values():
             self._delete_device(device)
 
+    @staticmethod
+    def _normalize_ips(rules: list) -> list:
+        result = []
+        for rule in rules:
+            item = copy.deepcopy(rule)
+
+            addresses = rule['addresses']
+
+            if 'ipv6' in addresses:
+                item['addresses']['ipv6'] = [str(ipaddress.IPv6Network(v))
+                                             for v in addresses['ipv6']]
+
+            if 'ipv4' in addresses:
+                item['addresses']['ipv4'] = [str(ipaddress.IPv4Network(v))
+                                             for v in addresses['ipv4']]
+
+            result.append(item)
+
+        return result
+
+    def _rules_changed(self) -> bool:
+        """Returns whether the local and remote firewall rules match."""
+        local_rules = filter_null_values_recursive(self.module.params['rules'])
+        remote_rules = filter_null_values_recursive(mapping_to_dict(self._firewall.rules))
+
+        # Normalize IP addresses for all rules
+        for field in {'inbound', 'outbound'}:
+            if field in local_rules:
+                local_rules[field] = self._normalize_ips(local_rules[field])
+            else:
+                # We should normalize missing keys to [] for diffing purposes
+                local_rules[field] = []
+
+            if field in remote_rules:
+                remote_rules[field] = self._normalize_ips(remote_rules[field])
+
+        return local_rules != remote_rules
+
     def _update_firewall(self) -> None:
         """Handles all update functionality for the current Firewall"""
 
@@ -249,9 +284,8 @@ class LinodeFirewall(LinodeModuleBase):
         if should_update:
             self._firewall.save()
 
-        # Update rules
-        if mapping_to_dict(self._firewall.rules) != params.get('rules'):
-            self._firewall.update_rules(params.get('rules'))
+        if self._rules_changed():
+            self._firewall.update_rules(filter_null_values_recursive(params.get('rules')))
             self.register_action('Updated Firewall rules')
 
         # Update devices
@@ -259,7 +293,7 @@ class LinodeFirewall(LinodeModuleBase):
         if devices is not None:
             self._update_devices(devices)
 
-    def _handle_firewall(self) -> None:
+    def _handle_present(self) -> None:
         """Updates the Firewall"""
         label = self.module.params.get('label')
 
@@ -276,7 +310,7 @@ class LinodeFirewall(LinodeModuleBase):
         self.results['firewall'] = self._firewall._raw_json
         self.results['devices'] = paginated_list_to_json(self._firewall.devices)
 
-    def _handle_firewall_absent(self) -> None:
+    def _handle_absent(self) -> None:
         """Destroys the Firewall"""
         label = self.module.params.get('label')
 
@@ -294,10 +328,10 @@ class LinodeFirewall(LinodeModuleBase):
         state = kwargs.get('state')
 
         if state == 'absent':
-            self._handle_firewall_absent()
+            self._handle_absent()
             return self.results
 
-        self._handle_firewall()
+        self._handle_present()
         return self.results
 
 

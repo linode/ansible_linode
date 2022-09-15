@@ -1,0 +1,92 @@
+- name: firewall_icmp
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+    - name: Create a Linode Instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-southeast
+        type: g6-standard-1
+        image: linode/alpine3.13
+        state: present
+      register: create_instance
+
+    - name: Create a Linode Firewall
+      linode.cloud.firewall:
+        api_token: '{{ api_token }}'
+        api_version: v4beta
+        label: 'ansible-test-{{ r }}'
+        devices: []
+        rules:
+          outbound_policy: ACCEPT
+          inbound_policy: DROP
+          inbound:
+            - label: icmp
+              addresses:
+                ipv4: "{{ ['0.0.0.0/0'] }}"
+                ipv6: "{{ ['::0/0'] }}"
+              description: "Allow all icmp traffic"
+              protocol: ICMP
+              action: ACCEPT
+        state: present
+      register: create
+
+    - name: Assert firewall created
+      assert:
+        that:
+          - create.changed
+
+    - name: Unchanged check
+      linode.cloud.firewall:
+        api_token: '{{ api_token }}'
+        api_version: v4beta
+        label: 'ansible-test-{{ r }}'
+        devices: []
+        rules:
+          outbound_policy: ACCEPT
+          inbound_policy: DROP
+          inbound:
+            - label: icmp
+              addresses:
+                ipv4: "{{ ['0.0.0.0/0'] }}"
+                ipv6: "{{ ['::0/0'] }}"
+              description: "Allow all icmp traffic"
+              protocol: ICMP
+              action: ACCEPT
+        state: present
+      register: unchanged
+
+    - assert:
+        that:
+          - unchanged.changed == False
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode Firewall
+          linode.cloud.firewall:
+            api_token: '{{ api_token }}'
+            api_version: v4beta
+            label: '{{ create.firewall.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert Firewall delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.firewall.id == create.firewall.id
+
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            label: '{{ create_instance.instance.label }}'
+            state: absent
+          register: delete_instance
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_instance.changed
+              - delete_instance.instance.id == create_instance.instance.id
