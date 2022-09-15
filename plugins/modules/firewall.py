@@ -249,11 +249,11 @@ class LinodeFirewall(LinodeModuleBase):
 
         # Normalize IP addresses for all rules
         for field in {'inbound', 'outbound'}:
-            if field not in local_rules:
-                local_rules[field] = []
-
             if field in local_rules:
                 local_rules[field] = self._normalize_ips(local_rules[field])
+            else:
+                # We should normalize missing keys to [] for diffing purposes
+                local_rules[field] = []
 
             if field in remote_rules:
                 remote_rules[field] = self._normalize_ips(remote_rules[field])
