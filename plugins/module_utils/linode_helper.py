@@ -10,6 +10,7 @@ MAX_RETRIES = 5
 RETRY_INTERVAL_SECONDS = 4
 RETRY_STATUSES = {408}
 
+
 def dict_select_spec(target: dict, spec: dict) -> dict:
     """Returns a new dictionary that only selects the keys from target that are specified in spec"""
 
@@ -97,7 +98,7 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
             if key in mutable_fields:
                 put_request[key] = new_value
                 register_func('Updated {0}: "{1}" -> "{2}"'.
-                                     format(key, old_value, new_value))
+                              format(key, old_value, new_value))
 
                 continue
 
@@ -125,6 +126,7 @@ def parse_linode_types(value: any) -> any:
         return value.id
 
     return value
+
 
 def jsonify_node_pool(pool: LKENodePool) -> Dict[str, Any]:
     """Converts an LKENodePool into a JSON-compatible dict"""
@@ -188,3 +190,14 @@ def request_retry(request_func: Callable, retry_statuses=None,
         return response
 
     raise Exception('exceeded maximum number of retries: {0}'.format(max_retries))
+
+
+def filter_null_values_recursive(obj: Any) -> Any:
+    """Recursively removes null values and keys from a structure."""
+    if isinstance(obj, dict):
+        return {k: filter_null_values_recursive(v) for k, v in obj.items() if v is not None}
+
+    if isinstance(obj, (list, set, tuple)):
+        return [filter_null_values_recursive(v) for v in obj if v is not None]
+
+    return obj
