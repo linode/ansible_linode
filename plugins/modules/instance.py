@@ -320,7 +320,8 @@ specdoc_meta = dict(
         ),
         networking=dict(
             description=['Networking information about this Linode Instance.'],
-            docs_url='https://www.linode.com/docs/api/linode-instances/#networking-information-list__responses',
+            docs_url='https://www.linode.com/docs/api/linode-instances/'
+                     '#networking-information-list__responses',
             type='dict',
             sample=docs.result_networking_samples
         )
