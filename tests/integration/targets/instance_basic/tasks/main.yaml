@@ -20,6 +20,7 @@
         that:
           - create.changed
           - create.instance.ipv4|length > 1
+          - create.networking.ipv4.public[0].address != None
 
     - name: Update the instance region and type (recreate disallowed)
       linode.cloud.instance:
@@ -64,6 +65,7 @@
           - info_id.instance.ipv4|length > 1
           - info_id.instance.region == 'us-east'
           - info_id.configs|length == 1
+          - info_id.networking.ipv4.public[0].address != None
 
     - name: Get info about the instance by label
       linode.cloud.instance_info:

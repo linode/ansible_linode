@@ -38,7 +38,6 @@ linode_instance_info_spec = dict(
         ])
 )
 
-
 specdoc_meta = dict(
     description=[
         'Get info about a Linode Instance.'
@@ -66,6 +65,12 @@ specdoc_meta = dict(
             docs_url='https://www.linode.com/docs/api/linode-instances/#disk-view__responses',
             type='list',
             sample=docs_parent.result_disks_samples
+        ),
+        networking=dict(
+            description=['Networking information about this Linode Instance.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#networking-information-list__responses',
+            type='dict',
+            sample=docs_parent.result_networking_samples
         )
     )
 )
@@ -73,6 +78,7 @@ specdoc_meta = dict(
 linode_instance_valid_filters = [
     'id', 'label'
 ]
+
 
 class LinodeInstanceInfo(LinodeModuleBase):
     """Module for getting info about a Linode Instance"""
@@ -83,7 +89,8 @@ class LinodeInstanceInfo(LinodeModuleBase):
         self.results: Dict[str, Any] = dict(
             instance=None,
             configs=None,
-            disks=None
+            disks=None,
+            networking=None
         )
 
         super().__init__(module_arg_spec=self.module_arg_spec,
@@ -111,6 +118,9 @@ class LinodeInstanceInfo(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get instance {0}'.format(exception))
 
+    def _get_networking(self, inst: Instance) -> Dict[str, Any]:
+        return self.client.get('/linode/instances/{0}/ips'.format(inst.id))
+
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for instance info module"""
 
@@ -122,6 +132,7 @@ class LinodeInstanceInfo(LinodeModuleBase):
         self.results['instance'] = instance._raw_json
         self.results['configs'] = paginated_list_to_json(instance.configs)
         self.results['disks'] = paginated_list_to_json(instance.disks)
+        self.results['networking'] = self._get_networking(instance)
 
         return self.results
 

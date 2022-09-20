@@ -317,6 +317,12 @@ specdoc_meta = dict(
             docs_url='https://www.linode.com/docs/api/linode-instances/#disk-view__responses',
             type='list',
             sample=docs.result_disks_samples
+        ),
+        networking=dict(
+            description=['Networking information about this Linode Instance.'],
+            docs_url='https://www.linode.com/docs/api/linode-instances/#networking-information-list__responses',
+            type='dict',
+            sample=docs.result_networking_samples
         )
     )
 )
@@ -353,6 +359,7 @@ class LinodeInstance(LinodeModuleBase):
             actions=[],
             instance=None,
             configs=None,
+            networking=None,
         )
 
         self._instance: Optional[Instance] = None
@@ -401,6 +408,9 @@ class LinodeInstance(LinodeModuleBase):
     def _get_disk_by_label(self, label: str) -> Optional[Disk]:
         # Find the disk with the matching label
         return next((disk for disk in self._instance.disks if disk.label == label), None)
+
+    def _get_networking(self) -> Dict[str, Any]:
+        return self.client.get('/linode/instances/{0}/ips'.format(self._instance.id))
 
     @staticmethod
     def _device_to_param_mapping(device: Union[Disk, Volume]) -> Dict[str, int]:
@@ -784,6 +794,7 @@ class LinodeInstance(LinodeModuleBase):
         self.results['instance'] = inst_result
         self.results['configs'] = paginated_list_to_json(self._instance.configs)
         self.results['disks'] = paginated_list_to_json(self._instance.disks)
+        self.results['networking'] = self._get_networking()
 
     def _handle_absent(self) -> None:
         """Destroys the instance defined in kwargs"""
@@ -795,6 +806,7 @@ class LinodeInstance(LinodeModuleBase):
             self.results['instance'] = self._instance._raw_json
             self.results['configs'] = paginated_list_to_json(self._instance.configs)
             self.results['disks'] = paginated_list_to_json(self._instance.disks)
+            self.results['networking'] = self._get_networking()
             self.register_action('Deleted instance {0}'.format(label))
             self._instance.delete()
 
