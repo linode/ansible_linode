@@ -28,6 +28,30 @@
           - image_create.image.status == 'available'
           - image_create.image.description == 'cool'
 
+    - name: Get info about the image by ID
+      linode.cloud.image_info:
+        api_token: '{{ api_token }}'
+        id: '{{ image_create.image.id }}'
+      register: info_id
+
+    - assert:
+        that:
+          - info_id.image.status == 'available'
+          - info_id.image.description == 'cool'
+          - info_id.image.id == image_create.image.id
+
+    - name: Get info about the image by label
+      linode.cloud.image_info:
+        api_token: '{{ api_token }}'
+        label: '{{ image_create.image.label }}'
+      register: info_label
+
+    - assert:
+        that:
+          - info_label.image.status == 'available'
+          - info_label.image.description == 'cool'
+          - info_label.image.id == image_create.image.id
+
     - name: Update the image
       linode.cloud.image:
         api_token: '{{ api_token }}'
