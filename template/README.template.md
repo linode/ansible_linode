@@ -40,7 +40,7 @@ Dynamically add Linode infrastructure to an Ansible inventory.
 
 Name |
 --- |
-{% for name in inventory %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/inventory/{{ name }}.md{% else %}./docs/inventory/{{ name }}.md{% endif %})|
+{% for name in inventory %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/inventory/{{ name }}.md{% else %}./docs/inventory/{{ name }}.rst{% endif %})|
 {% endfor %}
 
 <!--end collection content-->

@@ -66,7 +66,7 @@ Dynamically add Linode infrastructure to an Ansible inventory.
 
 Name |
 --- |
-[linode.cloud.instance](./docs/inventory/instance.md)|
+[linode.cloud.instance](./docs/inventory/instance.rst)|
 
 
 <!--end collection content-->
