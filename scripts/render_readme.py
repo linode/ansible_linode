@@ -1,7 +1,7 @@
 import importlib
 import pathlib
 import sys
-from typing import Set
+from typing import Set, Callable
 import importlib.machinery
 import importlib.util
 
@@ -69,37 +69,29 @@ def get_module_metadata(module_file):
     }
 
 
-def list_modules():
+def list_modules_metadata(filter_func: Callable[[str], bool]):
     result = []
 
     for dirpath, _, filenames in os.walk('plugins/modules'):
         for f in sorted([f for f in filenames
-                         if '.py' in f and not contains_one_of(f, {'_info.py', '_list.py'})]):
+                         if '.py' in f and filter_func(f)]):
             result.append(get_module_metadata(os.path.abspath(os.path.join(dirpath, f))))
 
         return result
+
+    return None
+
+
+def list_modules():
+    return list_modules_metadata(lambda f: not contains_one_of(f, {'_info.py', '_list.py'}))
 
 
 def list_info_modules():
-    result = []
-
-    for dirpath, _, filenames in os.walk('plugins/modules'):
-        for f in sorted([f for f in filenames if '_info.py' in f]):
-            result.append(get_module_metadata(os.path.abspath(os.path.join(dirpath, f))))
-
-        return result
+    return list_modules_metadata(lambda f: '_info.py' in f)
 
 
 def list_list_modules():
-    result = []
-
-    for dirpath, _, filenames in os.walk('plugins/modules'):
-        for f in sorted([f for f in filenames if '_list.py' in f]):
-            result.append(get_module_metadata(os.path.abspath(os.path.join(dirpath, f))))
-
-        return result
-
-    return result
+    return list_modules_metadata(lambda f: '_list.py' in f)
 
 
 def list_inventory():
