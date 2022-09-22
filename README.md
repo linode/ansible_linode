@@ -17,6 +17,9 @@ PEP440 is the schema used to describe the versions of Ansible.
 
 <!--start collection content-->
 ### Modules
+
+Modules for managing Linode infrastructure.
+
 Name | Description |
 --- | ------------ |
 [linode.cloud.domain](./docs/modules/domain.md)|Manage Linode Domains.|
@@ -37,6 +40,9 @@ Name | Description |
 
 
 ### Info Modules
+
+Modules for retrieving information about existing Linode infrastructure.
+
 Name | Description |
 --- | ------------ |
 [linode.cloud.account_info](./docs/modules/account_info.md)|Get info about a Linode Account.|
@@ -55,6 +61,9 @@ Name | Description |
 
 
 ### Inventory Plugins
+
+Dynamically add Linode infrastructure to an Ansible inventory.
+
 Name |
 --- |
 [linode.cloud.instance](./docs/inventory/instance.md)|

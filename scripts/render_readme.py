@@ -74,12 +74,10 @@ def list_modules_metadata(filter_func: Callable[[str], bool]):
 
     for dirpath, _, filenames in os.walk('plugins/modules'):
         for f in sorted([f for f in filenames
-                         if '.py' in f and filter_func(f)]):
+                         if f.endswith('.py') and filter_func(f)]):
             result.append(get_module_metadata(os.path.abspath(os.path.join(dirpath, f))))
 
-        return result
-
-    return None
+    return result
 
 
 def list_modules():
