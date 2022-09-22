@@ -22,7 +22,13 @@ Name |
 {% for name in modules %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ name }}.md{% else %}./docs/modules/{{ name }}.md{% endif %})|
 {% endfor %}
 
-### Inventory
+### Info Modules
+Name |
+--- |
+{% for name in info_modules %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ name }}.md{% else %}./docs/modules/{{ name }}.md{% endif %})|
+{% endfor %}
+
+### Inventory Plugins
 Name |
 --- |
 {% for name in inventory %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/inventory/{{ name }}.md{% else %}./docs/inventory/{{ name }}.md{% endif %})|

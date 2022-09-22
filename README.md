@@ -19,37 +19,42 @@ PEP440 is the schema used to describe the versions of Ansible.
 ### Modules
 Name |
 --- |
-[linode.cloud.account_info](./docs/modules/account_info.md)|
 [linode.cloud.domain](./docs/modules/domain.md)|
-[linode.cloud.domain_info](./docs/modules/domain_info.md)|
 [linode.cloud.domain_record](./docs/modules/domain_record.md)|
-[linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|
 [linode.cloud.firewall](./docs/modules/firewall.md)|
 [linode.cloud.firewall_device](./docs/modules/firewall_device.md)|
-[linode.cloud.firewall_info](./docs/modules/firewall_info.md)|
 [linode.cloud.image](./docs/modules/image.md)|
-[linode.cloud.image_info](./docs/modules/image_info.md)|
 [linode.cloud.instance](./docs/modules/instance.md)|
-[linode.cloud.instance_info](./docs/modules/instance_info.md)|
 [linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|
-[linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|
 [linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|
 [linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|
-[linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|
 [linode.cloud.nodebalancer_node](./docs/modules/nodebalancer_node.md)|
-[linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|
 [linode.cloud.object_keys](./docs/modules/object_keys.md)|
-[linode.cloud.profile_info](./docs/modules/profile_info.md)|
 [linode.cloud.stackscript](./docs/modules/stackscript.md)|
 [linode.cloud.token](./docs/modules/token.md)|
 [linode.cloud.user](./docs/modules/user.md)|
+[linode.cloud.volume](./docs/modules/volume.md)|
+
+
+### Info Modules
+Name |
+--- |
+[linode.cloud.account_info](./docs/modules/account_info.md)|
+[linode.cloud.domain_info](./docs/modules/domain_info.md)|
+[linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|
+[linode.cloud.firewall_info](./docs/modules/firewall_info.md)|
+[linode.cloud.image_info](./docs/modules/image_info.md)|
+[linode.cloud.instance_info](./docs/modules/instance_info.md)|
+[linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|
+[linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|
+[linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|
+[linode.cloud.profile_info](./docs/modules/profile_info.md)|
 [linode.cloud.user_info](./docs/modules/user_info.md)|
 [linode.cloud.vlan_info](./docs/modules/vlan_info.md)|
-[linode.cloud.volume](./docs/modules/volume.md)|
 [linode.cloud.volume_info](./docs/modules/volume_info.md)|
 
 
-### Inventory
+### Inventory Plugins
 Name |
 --- |
 [linode.cloud.instance](./docs/inventory/instance.md)|
