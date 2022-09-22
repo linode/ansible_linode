@@ -17,15 +17,15 @@ PEP440 is the schema used to describe the versions of Ansible.
 
 <!--start collection content-->
 ### Modules
-Name |
---- |
-{% for name in modules %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ name }}.md{% else %}./docs/modules/{{ name }}.md{% endif %})|
+Name | Description |
+--- | ------------ |
+{% for mod in modules %}[linode.cloud.{{ mod.name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ mod.name }}.md{% else %}./docs/modules/{{ mod.name }}.md{% endif %})|{{ mod.description }}|
 {% endfor %}
 
 ### Info Modules
-Name |
---- |
-{% for name in info_modules %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ name }}.md{% else %}./docs/modules/{{ name }}.md{% endif %})|
+Name | Description |
+--- | ------------ |
+{% for mod in info_modules %}[linode.cloud.{{ mod.name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ mod.name }}.md{% else %}./docs/modules/{{ mod.name }}.md{% endif %})|{{ mod.description }}|
 {% endfor %}
 
 ### Inventory Plugins

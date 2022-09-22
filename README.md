@@ -17,41 +17,41 @@ PEP440 is the schema used to describe the versions of Ansible.
 
 <!--start collection content-->
 ### Modules
-Name |
---- |
-[linode.cloud.domain](./docs/modules/domain.md)|
-[linode.cloud.domain_record](./docs/modules/domain_record.md)|
-[linode.cloud.firewall](./docs/modules/firewall.md)|
-[linode.cloud.firewall_device](./docs/modules/firewall_device.md)|
-[linode.cloud.image](./docs/modules/image.md)|
-[linode.cloud.instance](./docs/modules/instance.md)|
-[linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|
-[linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|
-[linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|
-[linode.cloud.nodebalancer_node](./docs/modules/nodebalancer_node.md)|
-[linode.cloud.object_keys](./docs/modules/object_keys.md)|
-[linode.cloud.stackscript](./docs/modules/stackscript.md)|
-[linode.cloud.token](./docs/modules/token.md)|
-[linode.cloud.user](./docs/modules/user.md)|
-[linode.cloud.volume](./docs/modules/volume.md)|
+Name | Description |
+--- | ------------ |
+[linode.cloud.domain](./docs/modules/domain.md)|Manage Linode Domains.|
+[linode.cloud.domain_record](./docs/modules/domain_record.md)|Manage Linode Domain Records.|
+[linode.cloud.firewall](./docs/modules/firewall.md)|Manage Linode Firewalls.|
+[linode.cloud.firewall_device](./docs/modules/firewall_device.md)|Manage Linode Firewall Devices.|
+[linode.cloud.image](./docs/modules/image.md)|Manage a Linode Image.|
+[linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
+[linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|Manage Linode LKE clusters.|
+[linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|Manage Linode LKE cluster node pools.|
+[linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|Manage a Linode NodeBalancer.|
+[linode.cloud.nodebalancer_node](./docs/modules/nodebalancer_node.md)|Manage Linode NodeBalancer Nodes.|
+[linode.cloud.object_keys](./docs/modules/object_keys.md)|Manage Linode Object Storage Keys.|
+[linode.cloud.stackscript](./docs/modules/stackscript.md)|Manage a Linode StackScript.|
+[linode.cloud.token](./docs/modules/token.md)|Manage a Linode Token.|
+[linode.cloud.user](./docs/modules/user.md)|Manage a Linode User.|
+[linode.cloud.volume](./docs/modules/volume.md)|Manage a Linode Volume.|
 
 
 ### Info Modules
-Name |
---- |
-[linode.cloud.account_info](./docs/modules/account_info.md)|
-[linode.cloud.domain_info](./docs/modules/domain_info.md)|
-[linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|
-[linode.cloud.firewall_info](./docs/modules/firewall_info.md)|
-[linode.cloud.image_info](./docs/modules/image_info.md)|
-[linode.cloud.instance_info](./docs/modules/instance_info.md)|
-[linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|
-[linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|
-[linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|
-[linode.cloud.profile_info](./docs/modules/profile_info.md)|
-[linode.cloud.user_info](./docs/modules/user_info.md)|
-[linode.cloud.vlan_info](./docs/modules/vlan_info.md)|
-[linode.cloud.volume_info](./docs/modules/volume_info.md)|
+Name | Description |
+--- | ------------ |
+[linode.cloud.account_info](./docs/modules/account_info.md)|Get info about a Linode Account.|
+[linode.cloud.domain_info](./docs/modules/domain_info.md)|Get info about a Linode Domain.|
+[linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|Get info about a Linode Domain Record.|
+[linode.cloud.firewall_info](./docs/modules/firewall_info.md)|Get info about a Linode Firewall.|
+[linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
+[linode.cloud.instance_info](./docs/modules/instance_info.md)|Get info about a Linode Instance.|
+[linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|Get info about a Linode LKE cluster.|
+[linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode NodeBalancer.|
+[linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|Get info about a Linode Object Storage Cluster.|
+[linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
+[linode.cloud.user_info](./docs/modules/user_info.md)|Get info about a Linode User.|
+[linode.cloud.vlan_info](./docs/modules/vlan_info.md)|Get info about a Linode VLAN.|
+[linode.cloud.volume_info](./docs/modules/volume_info.md)|Get info about a Linode Volume.|
 
 
 ### Inventory Plugins
