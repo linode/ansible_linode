@@ -66,6 +66,7 @@ Modules for retrieving and filtering on multiple Linode resources.
 
 Name | Description |
 --- | ------------ |
+[linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Linode events.|
 
 
 ### Inventory Plugins

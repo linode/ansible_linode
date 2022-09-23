@@ -1,0 +1,42 @@
+- name: event_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create an arbitrary event
+      linode.cloud.stackscript:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        images: ['any/all']
+        script: |
+            #!/bin/bash
+            apt-get -q update && apt-get -q -y install $PACKAGE
+        state: present
+      register: create_stackscript
+
+    - name: List the events for the current Linode Account
+      linode.cloud.event_list:
+        api_token: '{{ api_token }}'
+        count: 5
+      register: no_filter
+
+    - assert:
+        that:
+          # We can't ensure that the testing account will have 5 events
+          - no_filter.events | length <= 5
+
+    - name: Resolve the StackScript event
+      linode.cloud.event_list:
+        api_token: '{{ api_token }}'
+        count: 1
+        order_by: created
+        order: desc
+        filters:
+          - name: action
+            values: stackscript_create
+      register: filter
+
+    - assert:
+        that:
+          - filter.events | length == 1
+          - filter.events[0].entity.id == create_stackscript.stackscript.id
