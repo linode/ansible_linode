@@ -43,7 +43,7 @@ SPEC = dict(
         elements='str',
         description=[
             'A list of IP addresses that can access the Managed Database.',
-            'Each item can be a single IP address or a range in CIDR format.'
+            'Each item must be a range in CIDR format.'
         ],
         default=[]
     ),
@@ -162,7 +162,7 @@ class Module(LinodeModuleBase):
         try:
             polling.poll(
                 poll_func,
-                step=10,
+                step=4,
                 timeout=self.module.params.get('wait_timeout'),
             )
         except polling.TimeoutException:
@@ -185,11 +185,28 @@ class Module(LinodeModuleBase):
     def _update_database(self, db: MySQLDatabase) -> None:
         db.api_get()
 
+        # Automatic updates
         exceptions = {'allow_list'}
 
         params_filtered = {k: v for k, v in filter_null_values(self.module.params).items() if k not in exceptions}
 
         handle_updates_resource(db, params_filtered, MUTABLE_FIELDS, self.register_action)
+
+        # Manual updates
+        put_request = {}
+
+        if set(db.data.get('allow_list')) != set(self.module.params['allow_list']):
+            put_request['allow_list'] = self.module.params['allow_list']
+            self.register_action('Update allow_list')
+
+        if len(put_request.keys()) < 1:
+            return
+
+        db.api_update(put_request)
+
+        if self.module.params['wait']:
+            self._wait_for_database_status(db, {'updating'})
+            self._wait_for_database_status(db, {'active'})
 
     def _handle_present(self) -> None:
         params = self.module.params
@@ -202,6 +219,9 @@ class Module(LinodeModuleBase):
         if db is None:
             db = self._create_database()
             self.register_action('Created database {0}'.format(label))
+
+        if params.get('wait'):
+            self._wait_for_database_status(db, {'active'})
 
         self._update_database(db)
 
@@ -227,8 +247,18 @@ class Module(LinodeModuleBase):
             self.client.delete('/databases/mysql/instances/{}'.format(db.id))
             self.register_action('Deleted database {0}'.format(label))
 
+    def _validate_params(self) -> None:
+        params = self.module.params
+
+        if 'allow_list' in params:
+            for ip in params['allow_list']:
+                if len(ip.split('/')) != 2:
+                    self.fail(msg='Invalid CIDR format for IP {}'.format(ip))
+
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for Image module"""
+        """Entrypoint for MySQL module"""
+        self._validate_params()
+
         state = kwargs.get('state')
 
         if state == 'absent':
