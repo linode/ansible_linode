@@ -1,0 +1,22 @@
+- name: stackscript_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a database
+      linode.cloud.database_mysql:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        engine: mysql/8.0.26
+        type: g6-standard-1
+        state: present
+      register: db_create
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.database_mysql:
+            api_token: '{{ api_token }}'
+            label: '{{ db_create.database.label }}'
+            state: absent
