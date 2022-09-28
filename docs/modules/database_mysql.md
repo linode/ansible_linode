@@ -10,27 +10,37 @@ Manage a Linode MySQL database.
 ## Examples
 
 ```yaml
-- name: Create a basic image from an existing disk
-  linode.cloud.image:
-    label: my-image
-    description: Created using Ansible!
-    disk_id: 12345
+- name: Create a basic MySQL database
+  linode.cloud.database_mysql:
+    label: my-db
+    region: us-east
+    engine: mysql/8.0.26
+    type: g6-standard-1
+    allow_list:
+      - 0.0.0.0/0
     state: present
 ```
 
 ```yaml
-- name: Create a basic image from a file
-  linode.cloud.image:
-    label: my-image
-    description: Created using Ansible!
-    source_file: myimage.img.gz
+- name: Create a complex 3 node MySQL database
+  linode.cloud.database_mysql:
+    label: my-db
+    region: us-east
+    engine: mysql/8.0.26
+    type: g6-standard-1
+    allow_list:
+      - 0.0.0.0/0
+    encrypted: true
+    cluster_size: 3
+    replication_type: semi_synch
+    ssl_connection: true
     state: present
 ```
 
 ```yaml
-- name: Delete an image
-  linode.cloud.image:
-    label: my-image
+- name: Delete a MySQL database
+  linode.cloud.database_mysql:
+    label: my-db
     state: absent
 ```
 
@@ -67,27 +77,81 @@ Manage a Linode MySQL database.
 
 ## Return Values
 
-- `image` - The database in JSON serialized form.
+- `database` - The database in JSON serialized form.
 
     - Sample Response:
         ```json
         {
-          "created": "2021-08-14T22:44:02",
-          "created_by": "linode",
-          "deprecated": false,
-          "description": "Example Image description.",
-          "eol": "2026-07-01T04:00:00",
-          "expiry": null,
-          "id": "linode/debian11",
-          "is_public": true,
-          "label": "Debian 11",
-          "size": 2500,
-          "status": null,
-          "type": "manual",
-          "updated": "2021-08-14T22:44:02",
-          "vendor": "Debian"
+          "allow_list": [
+            "203.0.113.1/32",
+            "192.0.1.0/24"
+          ],
+          "cluster_size": 3,
+          "created": "2022-01-01T00:01:01",
+          "encrypted": false,
+          "engine": "mysql",
+          "hosts": {
+            "primary": "lin-123-456-mysql-mysql-primary.servers.linodedb.net",
+            "secondary": "lin-123-456-mysql-primary-private.servers.linodedb.net"
+          },
+          "id": 123,
+          "label": "example-db",
+          "port": 3306,
+          "region": "us-east",
+          "replication_type": "semi_synch",
+          "ssl_connection": true,
+          "status": "active",
+          "type": "g6-dedicated-2",
+          "updated": "2022-01-01T00:01:01",
+          "updates": {
+            "day_of_week": 1,
+            "duration": 3,
+            "frequency": "weekly",
+            "hour_of_day": 0,
+            "week_of_month": null
+          },
+          "version": "8.0.26"
         }
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-mysql-database-view__response-samples) for a list of returned fields
+
+
+- `backups` - The database backups in JSON serialized form.
+
+    - Sample Response:
+        ```json
+        [
+           {
+              "created":"2022-01-01T00:01:01",
+              "id":123,
+              "label":"Scheduled - 02/04/22 11:11 UTC-XcCRmI",
+              "type":"auto"
+           }
+        ]
+        ```
+    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-mysql-database-backup-view__responses) for a list of returned fields
+
+
+- `ssl_cert` - The SSL CA certificate for an accessible Managed MySQL Database.
+
+    - Sample Response:
+        ```json
+        {
+          "ca_certificate": "LS0tLS1CRUdJ...=="
+        }
+        ```
+    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-mysql-database-ssl-certificate-view__responses) for a list of returned fields
+
+
+- `credentials` - The root username and password for an accessible Managed MySQL Database.
+
+    - Sample Response:
+        ```json
+        {
+          "password": "s3cur3P@ssw0rd",
+          "username": "linroot"
+        }
+        ```
+    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-mysql-database-credentials-view__responses) for a list of returned fields
 
 

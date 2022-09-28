@@ -23,7 +23,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     handle_updates, filter_null_values, paginated_list_to_json, mapping_to_dict
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs
 
 SPEC = dict(
     label=dict(
@@ -104,13 +104,34 @@ specdoc_meta = dict(
     spec=SPEC,
     examples=docs.specdoc_examples,
     return_values=dict(
-        image=dict(
+        database=dict(
             description='The database in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/databases/'
                      '#managed-mysql-database-view__response-samples',
             type='dict',
-            sample=docs.result_image_samples
-        )
+            sample=docs.result_database_samples
+        ),
+        backups=dict(
+            description='The database backups in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/databases/'
+                     '#managed-mysql-database-backup-view__responses',
+            type='dict',
+            sample=docs.result_backups_samples
+        ),
+        ssl_cert=dict(
+            description='The SSL CA certificate for an accessible Managed MySQL Database.',
+            docs_url='https://www.linode.com/docs/api/databases/'
+                     '#managed-mysql-database-ssl-certificate-view__responses',
+            type='dict',
+            sample=docs.result_ssl_cert_samples
+        ),
+        credentials=dict(
+            description='The root username and password for an accessible Managed MySQL Database.',
+            docs_url='https://www.linode.com/docs/api/databases/'
+                     '#managed-mysql-database-credentials-view__responses',
+            type='dict',
+            sample=docs.result_credentials_samples
+        ),
     )
 )
 
@@ -188,22 +209,34 @@ class Module(LinodeModuleBase):
 
         additional_args = {k: v for k, v in params.items() if k in create_params and k is not None}
 
-        return self.client.database.mysql_create(
-            params.get('label'),
-            params.get('region'),
-            params.get('engine'),
-            params.get('type'),
-            **additional_args
-        )
+        try:
+            return self.client.database.mysql_create(
+                params.get('label'),
+                params.get('region'),
+                params.get('engine'),
+                params.get('type'),
+                **additional_args
+            )
+        except ApiError as err:
+            self.fail(msg='Failed to create database: {}'.format('; '.join(err.errors)))
 
     def _update_database(self, db: MySQLDatabase) -> None:
-        db._api_get()
+        try:
+            db._api_get()
 
-        changed = handle_updates(db, filter_null_values(self.module.params), MUTABLE_FIELDS, self.register_action)
+            params = filter_null_values(self.module.params)
 
-        if changed and self.module.params['wait']:
-            self._wait_for_database_status(db, {'updating'})
-            self._wait_for_database_status(db, {'active'})
+            # Engine is input as a slug
+            if 'engine' in params:
+                params['engine'] = params['engine'].split('/')[0]
+
+            changed = handle_updates(db, params, MUTABLE_FIELDS, self.register_action)
+
+            if changed and self.module.params['wait']:
+                self._wait_for_database_status(db, {'updating'})
+                self._wait_for_database_status(db, {'active'})
+        except ApiError as err:
+            self.fail(msg='Failed to update database: {}'.format('; '.join(err.errors)))
 
     def _write_result(self, db: MySQLDatabase) -> None:
         # Force lazy-loading
@@ -233,7 +266,6 @@ class Module(LinodeModuleBase):
 
         self._write_result(db)
 
-
     def _handle_absent(self) -> None:
         label: str = self.module.params.get('label')
 
@@ -248,28 +280,33 @@ class Module(LinodeModuleBase):
     def _validate_params(self) -> None:
         params = self.module.params
 
-        if 'allow_list' in params:
+        if 'allow_list' in params and params['allow_list'] is not None:
             for ip in params['allow_list']:
                 if len(ip.split('/')) != 2:
                     self.fail(msg='Invalid CIDR format for IP {}'.format(ip))
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for MySQL module"""
-        self._validate_params()
+        try:
+            self._validate_params()
 
-        state = kwargs.get('state')
+            state = kwargs.get('state')
 
-        if state == 'absent':
-            self._handle_absent()
+            if state == 'absent':
+                self._handle_absent()
+                return self.results
+
+            self._handle_present()
+
             return self.results
 
-        self._handle_present()
-
-        return self.results
+        # We want API errors to be readable
+        except ApiError as err:
+            self.fail(msg='Received Linode API Error: {}'.format('; '.join(err.errors)))
 
 
 def main() -> None:
-    """Constructs and calls the Image module"""
+    """Constructs and calls the database_mysql module"""
     Module()
 
 
