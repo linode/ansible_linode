@@ -22,6 +22,7 @@ Modules for managing Linode infrastructure.
 
 Name | Description |
 --- | ------------ |
+[linode.cloud.database_mysql](./docs/modules/database_mysql.md)|Manage a Linode MySQL database.|
 [linode.cloud.domain](./docs/modules/domain.md)|Manage Linode Domains.|
 [linode.cloud.domain_record](./docs/modules/domain_record.md)|Manage Linode Domain Records.|
 [linode.cloud.firewall](./docs/modules/firewall.md)|Manage Linode Firewalls.|
@@ -30,7 +31,6 @@ Name | Description |
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
 [linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|Manage Linode LKE clusters.|
 [linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|Manage Linode LKE cluster node pools.|
-[linode.cloud.mysql](./docs/modules/mysql.md)|Manage a Linode Image.|
 [linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|Manage a Linode NodeBalancer.|
 [linode.cloud.nodebalancer_node](./docs/modules/nodebalancer_node.md)|Manage Linode NodeBalancer Nodes.|
 [linode.cloud.object_keys](./docs/modules/object_keys.md)|Manage Linode Object Storage Keys.|

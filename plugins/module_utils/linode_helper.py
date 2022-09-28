@@ -7,8 +7,6 @@ import linode_api4
 from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode, ApiError, LinodeClient
 from linode_api4.objects.filtering import Filter, FilterableAttribute, FilterableMetaclass
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_objects import LinodeResourceBase
-
 MAX_RETRIES = 5
 RETRY_INTERVAL_SECONDS = 4
 RETRY_STATUSES = {408}
@@ -81,7 +79,7 @@ def mapping_to_dict(obj: Any) -> Any:
     return obj
 
 
-def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, register_func: Any):
+def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, register_func: Any) -> bool:
     """Handles updates for a linode_api4 object"""
 
     obj._api_get()
@@ -111,6 +109,9 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
 
     if len(put_request.keys()) > 0:
         obj._client.put(type(obj).api_endpoint, model=obj, data=put_request)
+        return True
+
+    return False
 
 
 def parse_linode_types(value: any) -> any:
@@ -272,34 +273,3 @@ def format_api_error(err: ApiError) -> str:
 
     return ';'.join(err.errors)
 
-
-def handle_updates_resource(obj: LinodeResourceBase, params: dict, mutable_fields: set, register_func: Any):
-    """Handles updates for a LinodeResourceBase object"""
-
-    obj.api_get()
-
-    # Update mutable values
-    params = filter_null_values(params)
-
-    put_request = {}
-
-    for key, new_value in params.items():
-        if not hasattr(obj, key):
-            continue
-
-        old_value = obj.data[key]
-
-        if new_value != old_value:
-            if key in mutable_fields:
-                put_request[key] = new_value
-                register_func('Updated {0}: "{1}" -> "{2}"'.
-                              format(key, old_value, new_value))
-
-                continue
-
-            raise RuntimeError(
-                'failed to update {} -> {}: {} is a non-updatable'
-                ' field'.format(old_value, new_value, key))
-
-    if len(put_request.keys()) > 0:
-        obj.api_update(put_request)

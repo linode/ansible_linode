@@ -8,11 +8,12 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 import copy
 import os
-from typing import Optional, cast, Any, Set, Dict
+from typing import Optional, cast, Any, Set, Dict, Callable
 
 import polling
 import requests
 from linode_api4 import LinodeClient, ApiError
+from linode_api4.objects import MySQLDatabase
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 
@@ -20,11 +21,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
     global_requirements
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    handle_updates, filter_null_values, handle_updates_resource
+    handle_updates, filter_null_values, paginated_list_to_json, mapping_to_dict
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image as docs
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_objects import MySQLDatabase
 
 SPEC = dict(
     label=dict(
@@ -138,13 +137,25 @@ class Module(LinodeModuleBase):
                          required_one_of=[('state', 'label')],
                          required_if=[('state', 'present', ['region', 'engine', 'type'], True)])
 
+    @staticmethod
+    def _call_protected_provisioning(func: Callable) -> Optional[Any]:
+        """
+        Helper function to return None on requests made while a database is provisioning.
+        """
+        try:
+            return func()
+        except ApiError as err:
+            if err.status == 400:
+                # Database is provisioning
+                return None
+
+            raise err
+
     def _get_database_by_label(self, label: str) -> Optional[MySQLDatabase]:
         try:
-            resp = self.client.get('/databases/mysql/instances')
+            resp = [db for db in self.client.database.mysql_instances() if db.label == label]
 
-            dbs = [v for v in resp['data'] if v['label'] == label]
-
-            return MySQLDatabase(self.client, dbs[0]['id'], data=dbs[0])
+            return resp[0]
         except IndexError:
             return None
         except Exception as exception:
@@ -152,8 +163,8 @@ class Module(LinodeModuleBase):
 
     def _wait_for_database_status(self, database: MySQLDatabase, status: Set[str]) -> None:
         def poll_func() -> bool:
-            database.api_get()
-            return database.data['status'] in status
+            database._api_get()
+            return database.status in status
 
         # Initial attempt
         if poll_func():
@@ -170,43 +181,38 @@ class Module(LinodeModuleBase):
 
     def _create_database(self) -> Optional[MySQLDatabase]:
         params = self.module.params
+
         create_params = {
-            'allow_list', 'cluster_size', 'encrypted',
-            'engine', 'label', 'region', 'replication_type',
-            'ssl_connection', 'type'
+            'allow_list', 'cluster_size', 'encrypted', 'replication_type', 'ssl_connection'
         }
 
-        request_body = {k: v for k, v in params.items() if k in create_params and k is not None}
+        additional_args = {k: v for k, v in params.items() if k in create_params and k is not None}
 
-        resp = self.client.post('/databases/mysql/instances', data=request_body)
-
-        return MySQLDatabase(self.client, resp['id'], data=resp)
+        return self.client.database.mysql_create(
+            params.get('label'),
+            params.get('region'),
+            params.get('engine'),
+            params.get('type'),
+            **additional_args
+        )
 
     def _update_database(self, db: MySQLDatabase) -> None:
-        db.api_get()
+        db._api_get()
 
-        # Automatic updates
-        exceptions = {'allow_list'}
+        changed = handle_updates(db, filter_null_values(self.module.params), MUTABLE_FIELDS, self.register_action)
 
-        params_filtered = {k: v for k, v in filter_null_values(self.module.params).items() if k not in exceptions}
-
-        handle_updates_resource(db, params_filtered, MUTABLE_FIELDS, self.register_action)
-
-        # Manual updates
-        put_request = {}
-
-        if set(db.data.get('allow_list')) != set(self.module.params['allow_list']):
-            put_request['allow_list'] = self.module.params['allow_list']
-            self.register_action('Update allow_list')
-
-        if len(put_request.keys()) < 1:
-            return
-
-        db.api_update(put_request)
-
-        if self.module.params['wait']:
+        if changed and self.module.params['wait']:
             self._wait_for_database_status(db, {'updating'})
             self._wait_for_database_status(db, {'active'})
+
+    def _write_result(self, db: MySQLDatabase) -> None:
+        # Force lazy-loading
+        db._api_get()
+
+        self.results['database'] = db._raw_json
+        self.results['backups'] = self._call_protected_provisioning(lambda: paginated_list_to_json(db.backups))
+        self.results['credentials'] = self._call_protected_provisioning(lambda: mapping_to_dict(db.credentials))
+        self.results['ssl_cert'] = self._call_protected_provisioning(lambda: mapping_to_dict(db.ssl))
 
     def _handle_present(self) -> None:
         params = self.module.params
@@ -225,13 +231,8 @@ class Module(LinodeModuleBase):
 
         self._update_database(db)
 
-        # Force lazy-loading
-        db.api_get()
+        self._write_result(db)
 
-        self.results['database'] = db.data
-        self.results['backups'] = db.get_backups()
-        self.results['credentials'] = db.get_credentials()
-        self.results['ssl_cert'] = db.get_ssl_cert()
 
     def _handle_absent(self) -> None:
         label: str = self.module.params.get('label')
@@ -239,12 +240,9 @@ class Module(LinodeModuleBase):
         db = self._get_database_by_label(label)
 
         if db is not None:
-            self.results['database'] = db.data
-            self.results['backups'] = db.get_backups()
-            self.results['credentials'] = db.get_credentials()
-            self.results['ssl_cert'] = db.get_ssl_cert()
+            self._write_result(db)
 
-            self.client.delete('/databases/mysql/instances/{}'.format(db.id))
+            db.delete()
             self.register_action('Deleted database {0}'.format(label))
 
     def _validate_params(self) -> None:
