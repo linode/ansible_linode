@@ -17,15 +17,30 @@ PEP440 is the schema used to describe the versions of Ansible.
 
 <!--start collection content-->
 ### Modules
-Name |
---- |
-{% for name in modules %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ name }}.md{% else %}./docs/modules/{{ name }}.md{% endif %})|
+
+Modules for managing Linode infrastructure.
+
+Name | Description |
+--- | ------------ |
+{% for mod in modules %}[linode.cloud.{{ mod.name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ mod.name }}.md{% else %}./docs/modules/{{ mod.name }}.md{% endif %})|{{ mod.description }}|
 {% endfor %}
 
-### Inventory
+### Info Modules
+
+Modules for retrieving information about existing Linode infrastructure.
+
+Name | Description |
+--- | ------------ |
+{% for mod in info_modules %}[linode.cloud.{{ mod.name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ mod.name }}.md{% else %}./docs/modules/{{ mod.name }}.md{% endif %})|{{ mod.description }}|
+{% endfor %}
+
+### Inventory Plugins
+
+Dynamically add Linode infrastructure to an Ansible inventory.
+
 Name |
 --- |
-{% for name in inventory %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/inventory/{{ name }}.md{% else %}./docs/inventory/{{ name }}.md{% endif %})|
+{% for name in inventory %}[linode.cloud.{{ name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/inventory/{{ name }}.md{% else %}./docs/inventory/{{ name }}.rst{% endif %})|
 {% endfor %}
 
 <!--end collection content-->
