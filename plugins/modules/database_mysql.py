@@ -25,6 +25,41 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs
 
+SPEC_UPDATES = dict(
+    day_of_week=dict(
+        type='int',
+        required=True,
+        choices=range(1, 7),
+        description='The day to perform maintenance. 1=Monday, 2=Tuesday, etc.'
+    ),
+    duration=dict(
+        type='int',
+        required=True,
+        choices=range(1, 3),
+        description='The maximum maintenance window time in hours.'
+    ),
+    frequency=dict(
+        type='str',
+        choices=['weekly', 'monthly'],
+        default='weekly',
+        description='Whether maintenance occurs on a weekly or monthly basis.'
+    ),
+    hour_of_day=dict(
+        type='int',
+        required=True,
+        description='The hour to begin maintenance based in UTC time.',
+    ),
+    week_of_month=dict(
+        type='int',
+        description=[
+            'The week of the month to perform monthly frequency updates.',
+            'Defaults to None.',
+            'Required for monthly frequency updates.',
+            'Must be null for weekly frequency updates.'
+        ]
+    )
+)
+
 SPEC = dict(
     label=dict(
         type='str',
@@ -84,6 +119,11 @@ SPEC = dict(
         type='str',
         description='The Linode Instance type used by the Managed Database for its nodes.',
     ),
+    updates=dict(
+        type='dict',
+        options=SPEC_UPDATES,
+        description='Configuration settings for automated patch update maintenance for the Managed Database.'
+    ),
     wait=dict(
         type='bool', default=True,
         description='Wait for the database to have status `available` before returning.'),
@@ -137,6 +177,7 @@ specdoc_meta = dict(
 
 MUTABLE_FIELDS = {
     'allow_list',
+    'updates'
 }
 
 
