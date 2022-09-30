@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module allows users to retrieve information about a Linode imagE."""
+"""This module allows users to retrieve information about a Linode image."""
 
 from __future__ import absolute_import, division, print_function
 

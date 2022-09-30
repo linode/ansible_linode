@@ -34,6 +34,15 @@ Name | Description |
 {% for mod in info_modules %}[linode.cloud.{{ mod.name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ mod.name }}.md{% else %}./docs/modules/{{ mod.name }}.md{% endif %})|{{ mod.description }}|
 {% endfor %}
 
+### List Modules
+
+Modules for retrieving and filtering on multiple Linode resources.
+
+Name | Description |
+--- | ------------ |
+{% for mod in list_modules %}[linode.cloud.{{ mod.name }}]({% if is_release %}https://github.com/linode/ansible_linode/blob/{{ collection_version }}/docs/modules/{{ mod.name }}.md{% else %}./docs/modules/{{ mod.name }}.md{% endif %})|{{ mod.description }}|
+{% endfor %}
+
 ### Inventory Plugins
 
 Dynamically add Linode infrastructure to an Ansible inventory.

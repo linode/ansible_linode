@@ -106,7 +106,7 @@ def main() -> None:
         'is_release': len(sys.argv) > 1,
         'modules': list_modules(),
         'info_modules': list_info_modules(),
-        'list_modules': list_modules(),
+        'list_modules': list_list_modules(),
         'inventory': list_inventory()
     })
 

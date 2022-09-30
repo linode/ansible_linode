@@ -1,9 +1,10 @@
 """This module contains helper functions for various Linode modules."""
+import math
 import time
-from typing import Tuple, Any, Optional, cast, Dict, Set, Callable
+from typing import Tuple, Any, Optional, cast, Dict, Set, Callable, List
 
 import linode_api4
-from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode, ApiError
+from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode, ApiError, LinodeClient
 from linode_api4.objects.filtering import Filter, FilterableAttribute, FilterableMetaclass
 
 MAX_RETRIES = 5
@@ -201,3 +202,64 @@ def filter_null_values_recursive(obj: Any) -> Any:
         return [filter_null_values_recursive(v) for v in obj if v is not None]
 
     return obj
+
+
+def construct_api_filter(params: Dict[str, any]) -> Dict[str, any]:
+    """Constructs a filter string given a list module's params."""
+
+    value_filters = []
+
+    if 'filters' in params and params['filters'] is not None:
+        for filter_opt in params['filters']:
+            current = []
+
+            for value in filter_opt['values']:
+                current.append({filter_opt['name']: value})
+
+            value_filters.append({
+                '+or': current,
+            })
+
+    result = {
+        '+and': value_filters,
+        '+order': params['order']
+    }
+
+    if 'order_by' in params and params['order_by'] is not None:
+        result['+order_by'] = params['order_by']
+
+    return result
+
+
+def get_all_paginated(client: LinodeClient, endpoint: str, filters: Dict[str, Any],
+                      num_results=None) -> List[Any]:
+    """Returns a list of paginated JSON responses for the given API endpoint."""
+    result = []
+    current_page = 1
+    page_size = 100
+    num_pages = -1
+
+    if num_results is not None and num_results < page_size:
+        # Clamp the page size
+        page_size = max(min(num_results, 100), 25)
+
+    while current_page <= num_pages or num_pages == -1:
+        response = client.get(endpoint + '?page={}&page_size={}'
+                              .format(current_page, page_size), filters=filters)
+
+        if 'data' not in response or 'page' not in response:
+            raise Exception('Invalid list response')
+
+        if num_pages == -1:
+            if num_results is not None:
+                num_pages = math.floor(num_results / response['pages'])
+            else:
+                num_pages = math.floor(response['results'] / response['pages'])
+
+        result.extend(response['data'])
+        current_page += 1
+
+    if num_results is not None:
+        result = result[:num_results]
+
+    return result

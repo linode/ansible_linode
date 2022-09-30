@@ -60,6 +60,15 @@ Name | Description |
 [linode.cloud.volume_info](./docs/modules/volume_info.md)|Get info about a Linode Volume.|
 
 
+### List Modules
+
+Modules for retrieving and filtering on multiple Linode resources.
+
+Name | Description |
+--- | ------------ |
+[linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Linode events.|
+
+
 ### Inventory Plugins
 
 Dynamically add Linode infrastructure to an Ansible inventory.
