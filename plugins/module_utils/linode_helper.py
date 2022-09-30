@@ -4,6 +4,7 @@ import time
 from typing import Tuple, Any, Optional, cast, Dict, Set, Callable, List
 
 import linode_api4
+import polling
 from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode, ApiError, LinodeClient
 from linode_api4.objects.filtering import Filter, FilterableAttribute, FilterableMetaclass
 
@@ -79,7 +80,7 @@ def mapping_to_dict(obj: Any) -> Any:
     return obj
 
 
-def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, register_func: Any) -> bool:
+def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, register_func: Any) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
     obj._api_get()
@@ -88,6 +89,7 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
     params = filter_null_values(params)
 
     put_request = {}
+    result = set()
 
     for key, new_value in params.items():
         if not hasattr(obj, key):
@@ -98,6 +100,7 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
         if new_value != old_value:
             if key in mutable_fields:
                 put_request[key] = new_value
+                result.add(key)
                 register_func('Updated {0}: "{1}" -> "{2}"'.
                               format(key, old_value, new_value))
 
@@ -109,9 +112,8 @@ def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, reg
 
     if len(put_request.keys()) > 0:
         obj._client.put(type(obj).api_endpoint, model=obj, data=put_request)
-        return True
 
-    return False
+    return result
 
 
 def parse_linode_types(value: any) -> any:
@@ -273,3 +275,14 @@ def format_api_error(err: ApiError) -> str:
 
     return ';'.join(err.errors)
 
+
+def poll_condition(condition_func: Callable[[], bool], step: int, timeout: int) -> None:
+    # Initial attempt
+    if condition_func():
+        return
+
+    polling.poll(
+        condition_func,
+        step=step,
+        timeout=timeout,
+    )

@@ -21,7 +21,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
     global_requirements
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    handle_updates, filter_null_values, paginated_list_to_json, mapping_to_dict
+    handle_updates, filter_null_values, paginated_list_to_json, mapping_to_dict, poll_condition
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs
 
@@ -29,13 +29,13 @@ SPEC_UPDATES = dict(
     day_of_week=dict(
         type='int',
         required=True,
-        choices=range(1, 7),
+        choices=range(1, 8),
         description='The day to perform maintenance. 1=Monday, 2=Tuesday, etc.'
     ),
     duration=dict(
         type='int',
         required=True,
-        choices=range(1, 3),
+        choices=[1, 3],
         description='The maximum maintenance window time in hours.'
     ),
     frequency=dict(
@@ -223,23 +223,13 @@ class Module(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg='failed to get database {0}: {1}'.format(label, exception))
 
-    def _wait_for_database_status(self, database: MySQLDatabase, status: Set[str]) -> None:
-        def poll_func() -> bool:
+    @staticmethod
+    def _wait_for_database_status(database: MySQLDatabase, status: Set[str], step: int, timeout: int) -> None:
+        def condition_func() -> bool:
             database._api_get()
             return database.status in status
 
-        # Initial attempt
-        if poll_func():
-            return
-
-        try:
-            polling.poll(
-                poll_func,
-                step=4,
-                timeout=self.module.params.get('wait_timeout'),
-            )
-        except polling.TimeoutException:
-            self.fail('failed to wait for database status: timeout period expired')
+        poll_condition(condition_func, step, timeout)
 
     def _create_database(self) -> Optional[MySQLDatabase]:
         params = self.module.params
@@ -271,11 +261,24 @@ class Module(LinodeModuleBase):
             if 'engine' in params:
                 params['engine'] = params['engine'].split('/')[0]
 
-            changed = handle_updates(db, params, MUTABLE_FIELDS, self.register_action)
+            changed_fields = handle_updates(db, params, MUTABLE_FIELDS, self.register_action)
 
-            if changed and self.module.params['wait']:
-                self._wait_for_database_status(db, {'updating'})
-                self._wait_for_database_status(db, {'active'})
+            # We only want to wait on fields that trigger an update
+            if len(changed_fields) > 0 and self.module.params['wait']:
+                try:
+                    self._wait_for_database_status(db, {'updating'}, 1, 4)
+                except polling.TimeoutException:
+                    # Only certain field updates will trigger an update event.
+                    # Assume the database will not enter an updating status
+                    # if the status has not updated at this point.
+                    pass
+                except Exception as err:
+                    self.fail(msg='failed to wait for database updating: {}'.format(err))
+
+                try:
+                    self._wait_for_database_status(db, {'active'}, 4, 240)
+                except Exception as err:
+                    self.fail(msg='failed to wait for database active: {}'.format(err))
         except ApiError as err:
             self.fail(msg='Failed to update database: {}'.format('; '.join(err.errors)))
 
@@ -301,7 +304,10 @@ class Module(LinodeModuleBase):
             self.register_action('Created database {0}'.format(label))
 
         if params.get('wait'):
-            self._wait_for_database_status(db, {'active'})
+            try:
+                self._wait_for_database_status(db, {'active'}, 4, params.get('wait_timeout'))
+            except Exception as err:
+                self.fail(msg='failed to wait for database active: {}'.format(err))
 
         self._update_database(db)
 
