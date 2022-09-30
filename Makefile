@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 COLLECTIONS_PATH ?= ~/.ansible/collections
 DOCS_PATH ?= docs
 COLLECTION_VERSION ?=
