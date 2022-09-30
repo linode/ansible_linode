@@ -80,7 +80,8 @@ def mapping_to_dict(obj: Any) -> Any:
     return obj
 
 
-def handle_updates(obj: linode_api4.Base, params: dict, mutable_fields: set, register_func: Any) -> Set[str]:
+def handle_updates(obj: linode_api4.Base, params: dict,
+                   mutable_fields: set, register_func: Any) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
     obj._api_get()
@@ -280,6 +281,7 @@ def format_api_error(err: ApiError) -> str:
 
 
 def poll_condition(condition_func: Callable[[], bool], step: int, timeout: int) -> None:
+    """Polls for the given condition using the given step and timeout values."""
     # Initial attempt
     if condition_func():
         return

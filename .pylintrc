@@ -15,3 +15,5 @@ disable=protected-access,
         too-many-branches,
         anomalous-backslash-in-string,
         too-many-locals
+
+extension-pkg-whitelist=math

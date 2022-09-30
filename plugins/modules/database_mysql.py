@@ -103,7 +103,8 @@ SPEC = dict(
         type='str',
         description=[
             'The replication method used for the Managed Database.',
-            'Defaults to none for a single cluster and semi_synch for a high availability cluster.',
+            'Defaults to none for a single cluster and '
+            'semi_synch for a high availability cluster.',
             'Must be none for a single node cluster.',
             'Must be asynch or semi_synch for a high availability cluster.'
         ],
@@ -112,17 +113,20 @@ SPEC = dict(
     ),
     ssl_connection=dict(
         type='bool',
-        description='Whether to require SSL credentials to establish a connection to the Managed Database.',
+        description='Whether to require SSL credentials to '
+                    'establish a connection to the Managed Database.',
         default=True,
     ),
     type=dict(
         type='str',
-        description='The Linode Instance type used by the Managed Database for its nodes.',
+        description='The Linode Instance type used by the '
+                    'Managed Database for its nodes.',
     ),
     updates=dict(
         type='dict',
         options=SPEC_UPDATES,
-        description='Configuration settings for automated patch update maintenance for the Managed Database.'
+        description='Configuration settings for automated patch '
+                    'update maintenance for the Managed Database.'
     ),
     wait=dict(
         type='bool', default=True,
@@ -224,7 +228,8 @@ class Module(LinodeModuleBase):
             return self.fail(msg='failed to get database {0}: {1}'.format(label, exception))
 
     @staticmethod
-    def _wait_for_database_status(database: MySQLDatabase, status: Set[str], step: int, timeout: int) -> None:
+    def _wait_for_database_status(database: MySQLDatabase,
+                                  status: Set[str], step: int, timeout: int) -> None:
         def condition_func() -> bool:
             database._api_get()
             return database.status in status
@@ -249,11 +254,11 @@ class Module(LinodeModuleBase):
                 **additional_args
             )
         except ApiError as err:
-            self.fail(msg='Failed to create database: {}'.format('; '.join(err.errors)))
+            return self.fail(msg='Failed to create database: {}'.format('; '.join(err.errors)))
 
-    def _update_database(self, db: MySQLDatabase) -> None:
+    def _update_database(self, database: MySQLDatabase) -> None:
         try:
-            db._api_get()
+            database._api_get()
 
             params = filter_null_values(self.module.params)
 
@@ -261,12 +266,12 @@ class Module(LinodeModuleBase):
             if 'engine' in params:
                 params['engine'] = params['engine'].split('/')[0]
 
-            changed_fields = handle_updates(db, params, MUTABLE_FIELDS, self.register_action)
+            changed_fields = handle_updates(database, params, MUTABLE_FIELDS, self.register_action)
 
             # We only want to wait on fields that trigger an update
             if len(changed_fields) > 0 and self.module.params['wait']:
                 try:
-                    self._wait_for_database_status(db, {'updating'}, 1, 4)
+                    self._wait_for_database_status(database, {'updating'}, 1, 4)
                 except polling.TimeoutException:
                     # Only certain field updates will trigger an update event.
                     # Assume the database will not enter an updating status
@@ -276,61 +281,64 @@ class Module(LinodeModuleBase):
                     self.fail(msg='failed to wait for database updating: {}'.format(err))
 
                 try:
-                    self._wait_for_database_status(db, {'active'}, 4, 240)
+                    self._wait_for_database_status(database, {'active'}, 4, 240)
                 except Exception as err:
                     self.fail(msg='failed to wait for database active: {}'.format(err))
         except ApiError as err:
             self.fail(msg='Failed to update database: {}'.format('; '.join(err.errors)))
 
-    def _write_result(self, db: MySQLDatabase) -> None:
+    def _write_result(self, database: MySQLDatabase) -> None:
         # Force lazy-loading
-        db._api_get()
+        database._api_get()
 
-        self.results['database'] = db._raw_json
-        self.results['backups'] = self._call_protected_provisioning(lambda: paginated_list_to_json(db.backups))
-        self.results['credentials'] = self._call_protected_provisioning(lambda: mapping_to_dict(db.credentials))
-        self.results['ssl_cert'] = self._call_protected_provisioning(lambda: mapping_to_dict(db.ssl))
+        self.results['database'] = database._raw_json
+        self.results['backups'] = self._call_protected_provisioning(
+            lambda: paginated_list_to_json(database.backups))
+        self.results['credentials'] = self._call_protected_provisioning(
+            lambda: mapping_to_dict(database.credentials))
+        self.results['ssl_cert'] = self._call_protected_provisioning(
+            lambda: mapping_to_dict(database.ssl))
 
     def _handle_present(self) -> None:
         params = self.module.params
 
         label = params.get('label')
 
-        db = self._get_database_by_label(label)
+        database = self._get_database_by_label(label)
 
         # Create the database if it does not already exist
-        if db is None:
-            db = self._create_database()
+        if database is None:
+            database = self._create_database()
             self.register_action('Created database {0}'.format(label))
 
         if params.get('wait'):
             try:
-                self._wait_for_database_status(db, {'active'}, 4, params.get('wait_timeout'))
+                self._wait_for_database_status(database, {'active'}, 4, params.get('wait_timeout'))
             except Exception as err:
                 self.fail(msg='failed to wait for database active: {}'.format(err))
 
-        self._update_database(db)
+        self._update_database(database)
 
-        self._write_result(db)
+        self._write_result(database)
 
     def _handle_absent(self) -> None:
         label: str = self.module.params.get('label')
 
-        db = self._get_database_by_label(label)
+        database = self._get_database_by_label(label)
 
-        if db is not None:
-            self._write_result(db)
+        if database is not None:
+            self._write_result(database)
 
-            db.delete()
+            database.delete()
             self.register_action('Deleted database {0}'.format(label))
 
     def _validate_params(self) -> None:
         params = self.module.params
 
         if 'allow_list' in params and params['allow_list'] is not None:
-            for ip in params['allow_list']:
-                if len(ip.split('/')) != 2:
-                    self.fail(msg='Invalid CIDR format for IP {}'.format(ip))
+            for ip_address in params['allow_list']:
+                if len(ip_address.split('/')) != 2:
+                    self.fail(msg='Invalid CIDR format for IP {}'.format(ip_address))
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for MySQL module"""
@@ -349,7 +357,7 @@ class Module(LinodeModuleBase):
 
         # We want API errors to be readable
         except ApiError as err:
-            self.fail(msg='Received Linode API Error: {}'.format('; '.join(err.errors)))
+            return self.fail(msg='Received Linode API Error: {}'.format('; '.join(err.errors)))
 
 
 def main() -> None:
