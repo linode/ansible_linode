@@ -33,7 +33,7 @@ lint:
 gendocs:
 	mkdir -p $(DOCS_PATH)
 
-	rm -rf $(DOCS_PATH)/*
+	rm -rf $(DOCS_PATH)
 
 	mkdir -p $(DOCS_PATH)/modules $(DOCS_PATH)/inventory
 
