@@ -131,6 +131,9 @@ def parse_linode_types(value: any) -> any:
     }:
         return value.id
 
+    if isinstance(value, MappedObject):
+        return mapping_to_dict(value)
+
     return value
 
 
