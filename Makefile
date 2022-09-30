@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 COLLECTIONS_PATH ?= ~/.ansible/collections
 DOCS_PATH ?= docs
 COLLECTION_VERSION ?=
@@ -31,10 +32,7 @@ lint:
 	mypy plugins/inventory
 
 gendocs:
-	mkdir -p $(DOCS_PATH)
-
-	rm -rf $(DOCS_PATH)/*
-
+	rm -rf $(DOCS_PATH)/modules $(DOCS_PATH)/inventory
 	mkdir -p $(DOCS_PATH)/modules $(DOCS_PATH)/inventory
 
 	DOCS_PATH=$(DOCS_PATH) ./scripts/specdoc_generate.sh
