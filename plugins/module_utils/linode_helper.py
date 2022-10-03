@@ -263,3 +263,9 @@ def get_all_paginated(client: LinodeClient, endpoint: str, filters: Dict[str, An
         result = result[:num_results]
 
     return result
+
+
+def format_api_error(err: ApiError) -> str:
+    """Formats an API error into a readable string"""
+
+    return ';'.join(err.errors)
