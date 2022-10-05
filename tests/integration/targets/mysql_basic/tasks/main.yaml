@@ -1,0 +1,64 @@
+- name: mysql_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a database
+      linode.cloud.database_mysql:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        engine: mysql/8.0.26
+        type: g6-standard-1
+        allow_list:
+          - 0.0.0.0/0
+        state: present
+      register: db_create
+
+    - assert:
+        that:
+          - db_create.database.allow_list | length == 1
+          - db_create.database.allow_list[0] == '0.0.0.0/0'
+          - db_create.database.engine == 'mysql'
+          - db_create.database.version == '8.0.26'
+          - db_create.database.region == 'us-east'
+          - db_create.database.type == 'g6-standard-1'
+
+    - name: Update the database
+      linode.cloud.database_mysql:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        engine: mysql/8.0.26
+        type: g6-standard-1
+        allow_list:
+          - 10.0.0.1/32
+        state: present
+      register: db_update
+
+    - assert:
+        that:
+          - db_update.database.allow_list | length == 1
+          - db_update.database.allow_list[0] == '10.0.0.1/32'
+
+    - name: Update the database
+      linode.cloud.database_mysql:
+        api_token: '{{ api_token }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        engine: mysql/8.0.26
+        type: g6-standard-1
+        allow_list:
+          - 10.0.0.1/32
+        cluster_size: 3
+        state: present
+      register: db_update_invalid
+      failed_when: '"mutable" not in db_update_invalid.msg'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.database_mysql:
+            api_token: '{{ api_token }}'
+            label: '{{ db_create.database.label }}'
+            state: absent
