@@ -5,6 +5,8 @@ from __future__ import absolute_import, division, print_function
 import traceback
 from typing import Any
 
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import format_api_error
+
 try:
     from ansible.module_utils.ansible_release import __version__ as ANSIBLE_VERSION
 except Exception:
@@ -13,7 +15,7 @@ except Exception:
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib, env_fallback
 
 try:
-    from linode_api4 import LinodeClient
+    from linode_api4 import LinodeClient, ApiError
 
     HAS_LINODE = True
 except ImportError:
@@ -93,7 +95,12 @@ class LinodeModuleBase:
             self.fail(msg=missing_required_lib('linode_api4'), exception=HAS_LINODE_EXC)
 
         if not skip_exec:
-            res = self.exec_module(**self.module.params)
+            try:
+                res = self.exec_module(**self.module.params)
+            except ApiError as err:
+                # We don't want to return a stack trace for an API error
+                self.fail(msg=format_api_error(err))
+
             self.module.exit_json(**res)
 
     def fail(self, msg: str, **kwargs: Any) -> None:
