@@ -23,6 +23,7 @@ Modules for managing Linode infrastructure.
 Name | Description |
 --- | ------------ |
 [linode.cloud.database_mysql](./docs/modules/database_mysql.md)|Manage a Linode MySQL database.|
+[linode.cloud.database_postgresql](./docs/modules/database_postgresql.md)|Manage a Linode PostgreSQL database.|
 [linode.cloud.domain](./docs/modules/domain.md)|Manage Linode Domains.|
 [linode.cloud.domain_record](./docs/modules/domain_record.md)|Manage Linode Domain Records.|
 [linode.cloud.firewall](./docs/modules/firewall.md)|Manage Linode Firewalls.|

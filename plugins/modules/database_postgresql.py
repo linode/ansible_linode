@@ -12,8 +12,8 @@ from typing import Optional, cast, Any, Set, Dict, Callable
 
 import polling
 import requests
-from linode_api4 import LinodeClient, ApiError
-from linode_api4.objects import MySQLDatabase
+from linode_api4 import LinodeClient, ApiError, PostgreSQLDatabase
+from linode_api4.objects import PostgreSQLDatabase
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_database_helper import \
@@ -25,7 +25,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     handle_updates, filter_null_values, paginated_list_to_json, mapping_to_dict, poll_condition
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_postgresql as docs
 
 SPEC_UPDATES = dict(
     day_of_week=dict(
@@ -113,6 +113,16 @@ SPEC = dict(
         choices=['none', 'asynch', 'semi_synch'],
         default='none'
     ),
+    replication_commit_type=dict(
+        type='str',
+        description=[
+            'The synchronization level of the replicating server.',
+            'Must be local or off for the asynch replication type.',
+            'Must be on, remote_write, or remote_apply for the semi_synch replication type.'
+        ],
+        choices=['off', 'on', 'local', 'remote_write', 'remote_apply'],
+        default='local'
+    ),
     ssl_connection=dict(
         type='bool',
         description='Whether to require SSL credentials to '
@@ -143,7 +153,7 @@ SPEC = dict(
 
 specdoc_meta = dict(
     description=[
-        'Manage a Linode MySQL database.'
+        'Manage a Linode PostgreSQL database.'
     ],
     requirements=global_requirements,
     author=global_authors,
@@ -153,28 +163,28 @@ specdoc_meta = dict(
         database=dict(
             description='The database in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/databases/'
-                     '#managed-mysql-database-view__response-samples',
+                     '#managed-postgresql-database-view__response-samples',
             type='dict',
             sample=docs.result_database_samples
         ),
         backups=dict(
             description='The database backups in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/databases/'
-                     '#managed-mysql-database-backup-view__responses',
+            docs_url='https://www.linode.com/docs/api/databases/#'
+                     'managed-postgresql-database-backups-list',
             type='dict',
             sample=docs.result_backups_samples
         ),
         ssl_cert=dict(
-            description='The SSL CA certificate for an accessible Managed MySQL Database.',
+            description='The SSL CA certificate for an accessible Managed PostgreSQL Database.',
             docs_url='https://www.linode.com/docs/api/databases/'
-                     '#managed-mysql-database-ssl-certificate-view__responses',
+                     '#managed-postgresql-database-ssl-certificate-view__responses',
             type='dict',
             sample=docs.result_ssl_cert_samples
         ),
         credentials=dict(
-            description='The root username and password for an accessible Managed MySQL Database.',
+            description='The root username and password for an accessible Managed PostgreSQL Database.',
             docs_url='https://www.linode.com/docs/api/databases/'
-                     '#managed-mysql-database-credentials-view__responses',
+                     '#managed-postgresql-database-credentials-view__responses',
             type='dict',
             sample=docs.result_credentials_samples
         ),
@@ -219,9 +229,9 @@ class Module(LinodeModuleBase):
 
             raise err
 
-    def _get_database_by_label(self, label: str) -> Optional[MySQLDatabase]:
+    def _get_database_by_label(self, label: str) -> Optional[PostgreSQLDatabase]:
         try:
-            resp = [db for db in self.client.database.mysql_instances() if db.label == label]
+            resp = [db for db in self.client.database.postgresql_instances() if db.label == label]
 
             return resp[0]
         except IndexError:
@@ -230,7 +240,7 @@ class Module(LinodeModuleBase):
             return self.fail(msg='failed to get database {0}: {1}'.format(label, exception))
 
     @staticmethod
-    def _wait_for_database_status(database: MySQLDatabase,
+    def _wait_for_database_status(database: PostgreSQLDatabase,
                                   status: Set[str], step: int, timeout: int) -> None:
         def condition_func() -> bool:
             database._api_get()
@@ -238,17 +248,18 @@ class Module(LinodeModuleBase):
 
         poll_condition(condition_func, step, timeout)
 
-    def _create_database(self) -> Optional[MySQLDatabase]:
+    def _create_database(self) -> Optional[PostgreSQLDatabase]:
         params = self.module.params
 
         create_params = {
-            'allow_list', 'cluster_size', 'encrypted', 'replication_type', 'ssl_connection'
+            'allow_list', 'cluster_size', 'encrypted', 
+            'replication_type', 'replication_commit_type', 'ssl_connection'
         }
 
         additional_args = {k: v for k, v in params.items() if k in create_params and k is not None}
 
         try:
-            return self.client.database.mysql_create(
+            return self.client.database.postgresql_create(
                 params.get('label'),
                 params.get('region'),
                 params.get('engine'),
@@ -258,7 +269,7 @@ class Module(LinodeModuleBase):
         except ApiError as err:
             return self.fail(msg='Failed to create database: {}'.format('; '.join(err.errors)))
 
-    def _update_database(self, database: MySQLDatabase) -> None:
+    def _update_database(self, database: PostgreSQLDatabase) -> None:
         try:
             database._api_get()
 
@@ -289,7 +300,7 @@ class Module(LinodeModuleBase):
         except ApiError as err:
             self.fail(msg='Failed to update database: {}'.format('; '.join(err.errors)))
 
-    def _write_result(self, database: MySQLDatabase) -> None:
+    def _write_result(self, database: PostgreSQLDatabase) -> None:
         # Force lazy-loading
         database._api_get()
 
@@ -335,7 +346,7 @@ class Module(LinodeModuleBase):
             self.register_action('Deleted database {0}'.format(label))
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for MySQL module"""
+        """Entrypoint for PostgreSQL module"""
 
         try:
             validate_shared_db_input(self.module.params)
@@ -354,7 +365,7 @@ class Module(LinodeModuleBase):
 
 
 def main() -> None:
-    """Constructs and calls the database_mysql module"""
+    """Constructs and calls the database_postgresql module"""
     Module()
 
 
