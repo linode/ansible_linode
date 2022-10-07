@@ -53,7 +53,7 @@
         cluster_size: 3
         state: present
       register: db_update_invalid
-      failed_when: '"mutable" not in db_update_invalid.msg'
+      failed_when: '"non-updatable" not in db_update_invalid.msg'
 
   always:
     - ignore_errors: yes

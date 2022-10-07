@@ -16,8 +16,8 @@ from linode_api4 import LinodeClient, ApiError
 from linode_api4.objects import MySQLDatabase
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_database_helper import \
-    validate_shared_db_input
+from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import \
+    validate_shared_db_input, call_protected_provisioning, SPEC_UPDATE_WINDOW
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
@@ -26,41 +26,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     handle_updates, filter_null_values, paginated_list_to_json, mapping_to_dict, poll_condition
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs
-
-SPEC_UPDATES = dict(
-    day_of_week=dict(
-        type='int',
-        required=True,
-        choices=range(1, 8),
-        description='The day to perform maintenance. 1=Monday, 2=Tuesday, etc.'
-    ),
-    duration=dict(
-        type='int',
-        required=True,
-        choices=[1, 3],
-        description='The maximum maintenance window time in hours.'
-    ),
-    frequency=dict(
-        type='str',
-        choices=['weekly', 'monthly'],
-        default='weekly',
-        description='Whether maintenance occurs on a weekly or monthly basis.'
-    ),
-    hour_of_day=dict(
-        type='int',
-        required=True,
-        description='The hour to begin maintenance based in UTC time.',
-    ),
-    week_of_month=dict(
-        type='int',
-        description=[
-            'The week of the month to perform monthly frequency updates.',
-            'Defaults to None.',
-            'Required for monthly frequency updates.',
-            'Must be null for weekly frequency updates.'
-        ]
-    )
-)
 
 SPEC = dict(
     label=dict(
@@ -126,7 +91,7 @@ SPEC = dict(
     ),
     updates=dict(
         type='dict',
-        options=SPEC_UPDATES,
+        options=SPEC_UPDATE_WINDOW,
         description='Configuration settings for automated patch '
                     'update maintenance for the Managed Database.'
     ),
@@ -205,20 +170,6 @@ class Module(LinodeModuleBase):
                          required_one_of=[('state', 'label')],
                          required_if=[('state', 'present', ['region', 'engine', 'type'], True)])
 
-    @staticmethod
-    def _call_protected_provisioning(func: Callable) -> Optional[Any]:
-        """
-        Helper function to return None on requests made while a database is provisioning.
-        """
-        try:
-            return func()
-        except ApiError as err:
-            if err.status == 400:
-                # Database is provisioning
-                return None
-
-            raise err
-
     def _get_database_by_label(self, label: str) -> Optional[MySQLDatabase]:
         try:
             resp = [db for db in self.client.database.mysql_instances() if db.label == label]
@@ -268,7 +219,11 @@ class Module(LinodeModuleBase):
             if 'engine' in params:
                 params['engine'] = params['engine'].split('/')[0]
 
-            changed_fields = handle_updates(database, params, MUTABLE_FIELDS, self.register_action)
+            try:
+                changed_fields = handle_updates(
+                    database, params, MUTABLE_FIELDS, self.register_action)
+            except Exception as err:
+                self.fail(msg='Failed to update database: {}'.format(err))
 
             # We only want to wait on fields that trigger an update
             if len(changed_fields) > 0 and self.module.params['wait']:
@@ -294,11 +249,11 @@ class Module(LinodeModuleBase):
         database._api_get()
 
         self.results['database'] = database._raw_json
-        self.results['backups'] = self._call_protected_provisioning(
+        self.results['backups'] = call_protected_provisioning(
             lambda: paginated_list_to_json(database.backups))
-        self.results['credentials'] = self._call_protected_provisioning(
+        self.results['credentials'] = call_protected_provisioning(
             lambda: mapping_to_dict(database.credentials))
-        self.results['ssl_cert'] = self._call_protected_provisioning(
+        self.results['ssl_cert'] = call_protected_provisioning(
             lambda: mapping_to_dict(database.ssl))
 
     def _handle_present(self) -> None:
