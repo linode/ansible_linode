@@ -17,6 +17,7 @@
     - name: Create an image from the image file
       linode.cloud.image:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         source_file: '{{ source_file.path }}'
         description: 'cool'
@@ -33,5 +34,6 @@
       block:
         - linode.cloud.image:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ image_create.image.label }}'
             state: absent

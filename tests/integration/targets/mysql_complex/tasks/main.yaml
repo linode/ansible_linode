@@ -6,6 +6,7 @@
     - name: Validation check
       linode.cloud.database_mysql:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-east
         engine: mysql/8.0.26
@@ -19,6 +20,7 @@
     - name: Create a database
       linode.cloud.database_mysql:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-east
         engine: mysql/8.0.26
@@ -64,5 +66,6 @@
       block:
         - linode.cloud.database_mysql:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ db_create.database.label }}'
             state: absent

@@ -6,6 +6,7 @@
     - name: Create a Linode LKE cluster
       linode.cloud.lke_cluster:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         k8s_version: 1.23
@@ -35,6 +36,7 @@
     - name: Update the cluster's node pools
       linode.cloud.lke_cluster:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_cluster.cluster.label }}'
         region: us-southeast
         k8s_version: 1.23
@@ -68,6 +70,7 @@
     - name: Upgrade the cluster
       linode.cloud.lke_cluster:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_cluster.cluster.label }}'
         region: us-southeast
         k8s_version: 1.23
@@ -102,6 +105,7 @@
       linode.cloud.lke_cluster_info:
         id: '{{ upgrade.cluster.id }}'
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
       register: info_by_id
 
     - assert:
@@ -118,6 +122,7 @@
     - name: Get info about the cluster by label
       linode.cloud.lke_cluster_info:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ upgrade.cluster.label }}'
       register: info_by_label
 
@@ -138,5 +143,6 @@
         - name: Delete the LKE cluster
           linode.cloud.lke_cluster:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_cluster.cluster.label }}'
             state: absent

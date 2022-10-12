@@ -6,6 +6,7 @@
     - name: Create Linode Token
       linode.cloud.token:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         expiry: '2222-07-09T16:59:26'
         scopes: '*'
@@ -20,6 +21,7 @@
     - name: Update the Linode Token
       linode.cloud.token:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_token.token.label }}'
         expiry: '2222-08-09T16:59:26'
         state: present
@@ -32,5 +34,6 @@
         - name: Delete a Linode Token
           linode.cloud.token:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_token.token.label }}'
             state: absent

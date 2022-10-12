@@ -5,6 +5,7 @@
     - name: Create a Linode Instance
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         type: g6-standard-1
@@ -15,6 +16,7 @@
     - name: Create a Linode Firewall
       linode.cloud.firewall:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: 'ansible-test-{{ r }}'
         devices: []
@@ -40,6 +42,7 @@
     - name: Unchanged check
       linode.cloud.firewall:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: 'ansible-test-{{ r }}'
         devices: []
@@ -67,6 +70,7 @@
         - name: Delete a Linode Firewall
           linode.cloud.firewall:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             api_version: v4beta
             label: '{{ create.firewall.label }}'
             state: absent
@@ -81,6 +85,7 @@
         - name: Delete a Linode instance
           linode.cloud.instance:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_instance.instance.label }}'
             state: absent
           register: delete_instance

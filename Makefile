@@ -52,4 +52,5 @@ $(INTEGRATION_CONFIG):
 	  echo "LINODE_API_TOKEN must be set"; \
 	  exit 1; \
 	fi
-	echo "api_token: $(LINODE_API_TOKEN)" >> $(INTEGRATION_CONFIG)
+	echo "api_token: $(LINODE_API_TOKEN)" > $(INTEGRATION_CONFIG)
+	echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)

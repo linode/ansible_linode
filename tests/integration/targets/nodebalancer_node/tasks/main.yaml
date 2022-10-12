@@ -5,6 +5,7 @@
 
     - linode.cloud.nodebalancer:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-nb-{{ r }}'
         region: us-east
         state: present
@@ -25,6 +26,7 @@
 
     - linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-node-{{ r }}'
         region: '{{ nb.node_balancer.region }}'
         private_ip: true
@@ -34,6 +36,7 @@
 
     - linode.cloud.nodebalancer_node:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         nodebalancer_id: '{{ nb.node_balancer.id }}'
         config_id: '{{ nb.configs[0].id }}'
 
@@ -55,6 +58,7 @@
 
     - linode.cloud.nodebalancer_node:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         nodebalancer_id: '{{ nb.node_balancer.id }}'
         config_id: '{{ nb.configs[0].id }}'
 
@@ -77,6 +81,7 @@
     - name: Create a populated NodeBalancer
       linode.cloud.nodebalancer:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-nb-{{ r }}'
         region: us-east
         state: present
@@ -100,6 +105,7 @@
 
     - linode.cloud.nodebalancer_info:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-nb-{{ r }}'
       register: nb_info
 
@@ -114,6 +120,7 @@
       block:
         - linode.cloud.nodebalancer_node:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             nodebalancer_id: '{{ nb.node_balancer.id }}'
             config_id: '{{ nb.configs[0].id }}'
             label: '{{ nb_node.node.label }}'
@@ -122,10 +129,12 @@
 
         - linode.cloud.instance:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ inst.instance.label }}'
             state: absent
 
         - linode.cloud.nodebalancer:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ nb.node_balancer.label }}'
             state: absent

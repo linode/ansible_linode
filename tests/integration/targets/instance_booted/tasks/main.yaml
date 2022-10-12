@@ -6,6 +6,7 @@
     - name: Create a booted Linode instance
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         type: g6-standard-1
@@ -26,6 +27,7 @@
     - name: Power off the instance
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{create.instance.label}}'
         region: us-southeast
         type: g6-standard-1
@@ -47,6 +49,7 @@
         - name: Delete a Linode instance
           linode.cloud.instance:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create.instance.label }}'
             state: absent
           register: delete

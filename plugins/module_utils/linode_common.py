@@ -42,6 +42,12 @@ LINODE_COMMON_ARGS = dict(
         required=True,
         choices=['present', 'absent'],
     ),
+    ua_prefix=dict(
+        type='str',
+        description='An HTTP User-Agent Prefix to prepend in API requests.',
+        doc_hide=True,
+        fallback=(env_fallback, ['LINODE_UA_PREFIX'])
+    )
 )
 
 LINODE_TAG_ARGS = dict(
@@ -132,10 +138,17 @@ class LinodeModuleBase:
             api_token = self.module.params['api_token']
             api_version = self.module.params['api_version']
 
+            user_agent = COLLECTION_USER_AGENT
+
+            # Allow for custom user-agent prefixes
+            ua_prefix = self.module.params['ua_prefix']
+            if ua_prefix is not None:
+                user_agent = f"{ua_prefix}  {user_agent}"
+
             self._client = LinodeClient(
                 api_token,
                 base_url='https://api.linode.com/{0}'.format(api_version),
-                user_agent=COLLECTION_USER_AGENT,
+                user_agent=user_agent,
                 retry_rate_limit_interval=10,
             )
 

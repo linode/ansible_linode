@@ -6,6 +6,7 @@
     - name: Create a Domain to grant user access to
       linode.cloud.domain:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         domain: '{{ r }}-example.com'
         soa_email: 'dx@linode.com'
         type: master
@@ -15,6 +16,7 @@
     - name: Create Linode User
       linode.cloud.user:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         username: 'ansible-test-{{ r }}'
         email: 'ansible-test-{{ r }}@linode.com'
         grants:
@@ -43,6 +45,7 @@
     - name: Update Linode User grants
       linode.cloud.user:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         username: '{{ create_user.user.username }}'
         email: '{{ create_user.user.email }}'
         grants:
@@ -63,6 +66,7 @@
     - name: No changes
       linode.cloud.user:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         username: '{{ create_user.user.username }}'
         email: '{{ create_user.user.email }}'
         grants:
@@ -82,10 +86,12 @@
       block:
         - linode.cloud.user:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             username: '{{ create_user.user.username }}'
             state: absent
 
         - linode.cloud.domain:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             domain: '{{ create_domain.domain.domain }}'
             state: absent
