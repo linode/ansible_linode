@@ -6,6 +6,7 @@
     - name: Create a domain
       linode.cloud.domain:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         domain: 'ansible-test-domain-{{ r }}.com'
         soa_email: 'realemail@example.com'
         type: 'master'
@@ -21,6 +22,7 @@
     - name: Create a domain record
       linode.cloud.domain_record:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         domain: '{{ domain_create.domain.domain }}'
         name: 'sub'
         type: 'A'
@@ -41,6 +43,7 @@
     - name: Update the domain record
       linode.cloud.domain_record:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         domain: '{{ domain_create.domain.domain }}'
         record_id: '{{ record_create.record.id }}'
         ttl_sec: 14400
@@ -60,6 +63,7 @@
     - name: Get info about the record
       linode.cloud.domain_record_info:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         domain: '{{ domain_create.domain.domain }}'
         name: '{{ record_create.record.name }}'
       register: record_info
@@ -75,6 +79,7 @@
     - name: Get info about the record by id
       linode.cloud.domain_record_info:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         domain: '{{ domain_create.domain.domain }}'
         id: '{{ record_create.record.id }}'
       register: record_info_id
@@ -90,6 +95,7 @@
     - name: Create a domain record by domain id
       linode.cloud.domain_record:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         domain_id: '{{ domain_create.domain.id }}'
         name: 'cool'
         type: 'TXT'
@@ -110,6 +116,7 @@
     - name: Create a duplicate record with a different target
       linode.cloud.domain_record:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         domain: '{{ domain_create.domain.domain }}'
         name: 'sub'
         type: 'A'
@@ -130,6 +137,7 @@
     - name: Update the record by id
       linode.cloud.domain_record:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         domain: '{{ domain_create.domain.domain }}'
         record_id: '{{ record_dupe_create.record.id }}'
         ttl_sec: 300
@@ -149,6 +157,7 @@
     - name: Get all domain records
       linode.cloud.domain_info:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         domain: '{{ domain_create.domain.domain }}'
       register: domain_info
 
@@ -162,6 +171,7 @@
         - name: Delete the record
           linode.cloud.domain_record:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             domain: '{{ domain_create.domain.domain }}'
             record_id: '{{ record_create.record.id }}'
             state: absent
@@ -175,6 +185,7 @@
         - name: Delete the second record
           linode.cloud.domain_record:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             domain: '{{ domain_create.domain.domain }}'
             name: '{{ record2_create.record.name }}'
             type: '{{ record2_create.record.type }}'
@@ -190,6 +201,7 @@
         - name: Delete the duplicated record
           linode.cloud.domain_record:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             domain: '{{ domain_create.domain.domain }}'
             record_id: '{{ record_dupe_create.record.id }}'
             state: absent
@@ -203,6 +215,7 @@
         - name: Delete the domain
           linode.cloud.domain:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             domain: '{{ domain_create.domain.domain }}'
             state: absent
           register: domain_delete

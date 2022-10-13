@@ -6,6 +6,7 @@
     - name: Create a Linode instance without a root password
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-nopass-{{ r }}'
         region: us-east
         type: g6-standard-1
@@ -25,6 +26,7 @@
     - name: Update the instance region and type (recreate disallowed)
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create.instance.label }}'
         region: us-southeast
         group: funny
@@ -39,6 +41,7 @@
     - name: Update the instance
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create.instance.label }}'
         region: us-east
         group: funny
@@ -56,6 +59,7 @@
     - name: Get info about the instance by id
       linode.cloud.instance_info:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         id: '{{ create.instance.id }}'
       register: info_id
 
@@ -70,6 +74,7 @@
     - name: Get info about the instance by label
       linode.cloud.instance_info:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create.instance.label }}'
       register: info_label
 
@@ -86,6 +91,7 @@
         - name: Delete a Linode instance
           linode.cloud.instance:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ update.instance.label }}'
             state: absent
           register: delete_nopass

@@ -6,6 +6,7 @@
     - name: Create a Linode instance with explicit disks and config
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-dc-{{ r }}'
         region: us-east
         type: g6-standard-1
@@ -56,6 +57,7 @@
     - name: Update the config
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-dc-{{ r }}'
         region: us-east
         type: g6-standard-1
@@ -92,6 +94,7 @@
     - name: Delete the config and resize the disk
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create.instance.label }}'
         region: us-east
         type: g6-standard-1
@@ -112,6 +115,7 @@
     - name: Try to update the disk
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create.instance.label }}'
         region: us-east
         type: g6-standard-1
@@ -127,6 +131,7 @@
     - name: Try to use conflicting params
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create.instance.label }}'
         region: us-east
         type: g6-standard-1
@@ -142,6 +147,7 @@
     - name: Boot the instance with a new config and disk
       linode.cloud.instance:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create.instance.label }}'
         region: us-east
         type: g6-standard-1
@@ -183,6 +189,7 @@
         - name: Delete a Linode instance
           linode.cloud.instance:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create.instance.label }}'
             state: absent
           register: delete

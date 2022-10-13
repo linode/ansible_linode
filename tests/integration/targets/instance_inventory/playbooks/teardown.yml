@@ -9,6 +9,7 @@
       linode.cloud.instance:
         label: 'ansible-test-inventory'
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         type: g6-nanode-1
         region: us-east
         tags:

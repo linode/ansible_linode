@@ -6,6 +6,7 @@
     - name: Validation check
       linode.cloud.database_postgresql:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-east
         engine: postgresql/13.2
@@ -19,6 +20,7 @@
     - name: Create a database
       linode.cloud.database_postgresql:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-east
         engine: postgresql/13.2
@@ -66,5 +68,6 @@
       block:
         - linode.cloud.database_postgresql:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ db_create.database.label }}'
             state: absent

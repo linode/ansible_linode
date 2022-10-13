@@ -6,6 +6,7 @@
     - name: create empty nodebalancer
       linode.cloud.nodebalancer:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-empty-{{ r }}'
         region: us-east
         state: present
@@ -20,6 +21,7 @@
     - name: update empty nodebalancer
       linode.cloud.nodebalancer:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_empty_nodebalancer.node_balancer.label }}'
         region: us-east
         client_conn_throttle: 6
@@ -41,6 +43,7 @@
     - name: Add NodeBalancer config
       linode.cloud.nodebalancer:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_empty_nodebalancer.node_balancer.label }}'
         region: us-east
         client_conn_throttle: 6
@@ -59,6 +62,7 @@
     - name: Update NodeBalancer config
       linode.cloud.nodebalancer:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_empty_nodebalancer.node_balancer.label }}'
         region: us-east
         client_conn_throttle: 6
@@ -80,6 +84,7 @@
     - name: Recreate NodeBalancer config
       linode.cloud.nodebalancer:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_empty_nodebalancer.node_balancer.label }}'
         region: us-east
         client_conn_throttle: 6
@@ -103,6 +108,7 @@
         - name: Delete the empty NodeBalancer
           linode.cloud.nodebalancer:
             api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_empty_nodebalancer.node_balancer.label }}'
             state: absent
           register: delete_empty

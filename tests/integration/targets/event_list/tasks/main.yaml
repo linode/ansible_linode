@@ -6,6 +6,7 @@
     - name: Create an arbitrary event
       linode.cloud.stackscript:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         images: ['any/all']
         script: |
@@ -17,6 +18,7 @@
     - name: List the events for the current Linode Account
       linode.cloud.event_list:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         count: 5
       register: no_filter
 
@@ -28,6 +30,7 @@
     - name: Resolve the StackScript event
       linode.cloud.event_list:
         api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
         count: 1
         order_by: created
         order: desc
