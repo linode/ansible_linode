@@ -277,7 +277,7 @@ def get_all_paginated(client: LinodeClient, endpoint: str, filters: Dict[str, An
 def format_api_error(err: ApiError) -> str:
     """Formats an API error into a readable string"""
 
-    return ';'.join(err.errors)
+    return f"Error from Linode API: {';'.join(err.errors)}"
 
 
 def poll_condition(condition_func: Callable[[], bool], step: int, timeout: int) -> None:

@@ -23,7 +23,7 @@
         api_token: '{{ api_token }}'
         ua_prefix: '{{ ua_prefix }}'
         username: '{{ create_user.user.username }}'
-        email: 'ansible-test-{{ r }}-changed@linode.com'
+        email: 'ansible-test-{{ r }}@linode.com'
         restricted: False
         state: present
       register: update_user
@@ -31,8 +31,7 @@
     - name: Assert user updated
       assert:
         that:
-          - create_user.user.email == 'ansible-test-{{ r }}-changed@linode.com'
-          - create_user.user.restricted == False
+          - update_user.user.restricted == False
 
   always:
     - ignore_errors: yes
