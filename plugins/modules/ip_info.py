@@ -59,15 +59,15 @@ class Module(LinodeModuleBase):
                          required_one_of=[],
                          mutually_exclusive=[])
 
-    def _get_ip(self, ip: str) -> IPAddress:
+    def _get_ip(self, address: str) -> IPAddress:
         try:
-            ip = IPAddress(self.client, ip)
+            ip_addr = IPAddress(self.client, address)
 
-            ip._api_get()
+            ip_addr._api_get()
 
-            return ip
+            return ip_addr
         except Exception as exception:
-            self.fail(msg='failed to get IP address {0}: {1}'.format(ip, exception))
+            self.fail(msg='failed to get IP address {0}: {1}'.format(address, exception))
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for ip_info module"""
@@ -75,9 +75,9 @@ class Module(LinodeModuleBase):
         params = filter_null_values(self.module.params)
 
         address = params.get('address')
-        ip = self._get_ip(address)
+        ip_addr = self._get_ip(address)
 
-        self.results['ip'] = ip._raw_json
+        self.results['ip'] = ip_addr._raw_json
 
         return self.results
 
