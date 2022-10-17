@@ -57,6 +57,7 @@ Name | Description |
 [linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode NodeBalancer.|
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|Get info about a Linode Object Storage Cluster.|
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
+[linode.cloud.stackscript_info](./docs/modules/stackscript_info.md)|Get info about a Linode StackScript.|
 [linode.cloud.user_info](./docs/modules/user_info.md)|Get info about a Linode User.|
 [linode.cloud.vlan_info](./docs/modules/vlan_info.md)|Get info about a Linode VLAN.|
 [linode.cloud.volume_info](./docs/modules/volume_info.md)|Get info about a Linode Volume.|
