@@ -192,7 +192,6 @@ specdoc_meta = {
 }
 
 MUTABLE_FIELDS = {
-    'email',
     'restricted'
 }
 
@@ -324,8 +323,9 @@ class Module(LinodeModuleBase):
         username = params.pop('username')
         email = params.pop('email')
 
-        for key in {'api_token', 'api_version', 'state', 'grants'}:
-            params.pop(key)
+        for key in {'api_token', 'api_version', 'state', 'grants', 'ua_prefix'}:
+            if key in params:
+                params.pop(key)
 
         try:
             return self.client.account.user_create(email, username, **params)

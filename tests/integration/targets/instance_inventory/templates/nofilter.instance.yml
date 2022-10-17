@@ -1,4 +1,2 @@
 plugin: linode.cloud.instance
 api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
-ua_prefix: '{{ ua_prefix }}
