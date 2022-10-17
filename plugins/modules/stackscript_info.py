@@ -16,8 +16,10 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript as docs_parent
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript_info as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript \
+    as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript_info \
+    as docs
 
 spec = dict(
     # Disable the default values
@@ -38,7 +40,8 @@ specdoc_meta = dict(
     return_values=dict(
         stackscript=dict(
             description='The StackScript in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/stackscripts/#stackscript-view__response-samples',
+            docs_url='https://www.linode.com/docs/api/stackscripts/'
+                     '#stackscript-view__response-samples',
             type='dict',
             sample=docs_parent.result_stackscript_samples
         )
@@ -74,7 +77,8 @@ class Module(LinodeModuleBase):
             stackscript._api_get()
             return stackscript
         except Exception as exception:
-            self.fail(msg='failed to get stackscript with id {0}: {1}'.format(stackscript_id, exception))
+            self.fail(msg='failed to get stackscript with id {0}: {1}'
+                      .format(stackscript_id, exception))
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for stackscript_info module"""
@@ -82,10 +86,12 @@ class Module(LinodeModuleBase):
         params = filter_null_values(self.module.params)
 
         if 'id' in params:
-            self.results['stackscript'] = self._get_stackscript_by_id(params.get('id'))._raw_json
+            self.results['stackscript'] = self._get_stackscript_by_id(
+                params.get('id'))._raw_json
 
         if 'label' in params:
-            self.results['stackscript'] = self._get_stackscript_by_label(params.get('label'))._raw_json
+            self.results['stackscript'] = self._get_stackscript_by_label(
+                params.get('label'))._raw_json
 
         return self.results
 
