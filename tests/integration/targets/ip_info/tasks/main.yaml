@@ -1,0 +1,36 @@
+- name: stackscript_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create an instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/alpine3.16
+        wait: no
+        state: present
+      register: instance_create
+
+    - name: Get info about the instance's primary IP
+      linode.cloud.ip_info:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        address: '{{ instance_create.instance.ipv4[0] }}'
+      register: ip_info
+
+    - assert:
+        that:
+          - ip_info.ip.address == instance_create.instance.ipv4[0]
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            label: '{{ instance_create.instance.label }}'
+            state: absent
