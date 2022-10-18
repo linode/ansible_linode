@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PARALLEL_JOBS="${PARALLEL_JOBS:=20}"
+PARALLEL_JOBS="${PARALLEL_JOBS:=3}"
 
 run_test() {
   make TEST_ARGS="$1" test
