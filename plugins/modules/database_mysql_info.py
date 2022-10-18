@@ -11,14 +11,17 @@ from typing import List, Any, Optional
 from linode_api4 import MySQLDatabase
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import call_protected_provisioning
+from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import \
+    call_protected_provisioning
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
     filter_null_values, paginated_list_to_json, mapping_to_dict
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs_parent
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql_info as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql \
+    as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql_info \
+    as docs
 
 spec = dict(
     # Disable the default values
