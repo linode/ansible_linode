@@ -25,6 +25,42 @@
           - db_create.database.region == 'us-east'
           - db_create.database.type == 'g6-standard-1'
 
+    - name: Get info about the database by ID
+      linode.cloud.database_mysql_info:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        id: '{{ db_create.database.id }}'
+      register: by_id
+
+    - name: Get info about the database by label
+      linode.cloud.database_mysql_info:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: '{{ db_create.database.label }}'
+      register: by_label
+
+    - assert:
+        that:
+          - by_label.database.allow_list | length == 1
+          - by_label.database.allow_list[0] == '0.0.0.0/0'
+          - by_label.database.engine == 'mysql'
+          - by_label.database.version == '8.0.26'
+          - by_label.database.region == 'us-east'
+          - by_label.database.type == 'g6-standard-1'
+          - by_label.ssl_cert != None
+          - by_label.credentials != None
+          - by_label.backups != None
+          - by_id.database.allow_list | length == 1
+          - by_id.database.allow_list[0] == '0.0.0.0/0'
+          - by_id.database.engine == 'mysql'
+          - by_id.database.version == '8.0.26'
+          - by_id.database.region == 'us-east'
+          - by_id.database.type == 'g6-standard-1'
+          - by_id.ssl_cert != None
+          - by_id.credentials != None
+          - by_id.backups != None
+
+
     - name: Update the database
       linode.cloud.database_mysql:
         api_token: '{{ api_token }}'

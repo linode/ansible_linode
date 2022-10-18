@@ -48,6 +48,7 @@ Modules for retrieving information about existing Linode infrastructure.
 Name | Description |
 --- | ------------ |
 [linode.cloud.account_info](./docs/modules/account_info.md)|Get info about a Linode Account.|
+[linode.cloud.database_mysql_info](./docs/modules/database_mysql_info.md)|Get info about a Linode MySQL Managed Database.|
 [linode.cloud.domain_info](./docs/modules/domain_info.md)|Get info about a Linode Domain.|
 [linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|Get info about a Linode Domain Record.|
 [linode.cloud.firewall_info](./docs/modules/firewall_info.md)|Get info about a Linode Firewall.|
