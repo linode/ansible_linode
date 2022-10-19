@@ -48,15 +48,18 @@ Modules for retrieving information about existing Linode infrastructure.
 Name | Description |
 --- | ------------ |
 [linode.cloud.account_info](./docs/modules/account_info.md)|Get info about a Linode Account.|
+[linode.cloud.database_mysql_info](./docs/modules/database_mysql_info.md)|Get info about a Linode MySQL Managed Database.|
 [linode.cloud.domain_info](./docs/modules/domain_info.md)|Get info about a Linode Domain.|
 [linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|Get info about a Linode Domain Record.|
 [linode.cloud.firewall_info](./docs/modules/firewall_info.md)|Get info about a Linode Firewall.|
 [linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
 [linode.cloud.instance_info](./docs/modules/instance_info.md)|Get info about a Linode Instance.|
+[linode.cloud.ip_info](./docs/modules/ip_info.md)|Get info about a Linode IP.|
 [linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|Get info about a Linode LKE cluster.|
 [linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode NodeBalancer.|
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|Get info about a Linode Object Storage Cluster.|
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
+[linode.cloud.stackscript_info](./docs/modules/stackscript_info.md)|Get info about a Linode StackScript.|
 [linode.cloud.token_info](./docs/modules/token_info.md)|Get info about a Linode Personal Access Token.|
 [linode.cloud.user_info](./docs/modules/user_info.md)|Get info about a Linode User.|
 [linode.cloud.vlan_info](./docs/modules/vlan_info.md)|Get info about a Linode VLAN.|
