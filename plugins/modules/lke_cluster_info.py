@@ -143,7 +143,8 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
             self.results['kubeconfig'] = 'Kubeconfig not yet available...'
 
         try:
-            self.results['dashboard_url'] = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))['url']
+            self.results['dashboard_url'] = \
+                self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))['url']
         except ApiError as err:
             if err.status != 503:
                 raise err
