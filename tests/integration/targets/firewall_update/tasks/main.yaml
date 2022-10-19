@@ -1,0 +1,613 @@
+tasks:
+- name: "firewall update tests"
+  block:
+    - set_fact:
+	r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode Firewall
+      linode.cloud.firewall:
+	state: present
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: 'ansible-test-{{ r }}'
+	devices: []
+	rules:
+	  inbound: []
+	  inbound_policy: DROP
+	  outbound: []
+	  outbound_policy: DROP
+      register: create
+
+    - name: Assert firewall created
+      assert:
+	that:
+	  - create.changed
+
+    - name: "Try ... Rescue"
+      block:
+	- name: "Expect fatal: Try to Update Linode Firewall rule that does not exist"
+	  linode.cloud.firewall:
+	    state: update
+	    api_token: '{{ api_token }}'
+	    api_version: v4beta
+	    label: '{{ create.firewall.label }}'
+	    devices: []
+	    rules:
+	      inbound:
+		- label: NOTTHERE
+		  action: DROP
+		  addresses:
+		    ipv4: ['0.0.0.0/0']
+		    ipv6: ['ff00::/8']
+		  description: 'Really cool firewall rule.'
+		  ports: '80,443'
+		  protocol: TCP
+	  register: failedupdaterules
+
+      rescue:
+	- name: "Caught fatal update. Checking return values."
+	  assert:
+	    that:
+	      - not failedupdaterules.changed
+
+    - name: Set Linode Firewall disabled
+      linode.cloud.firewall:
+	state: present
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+	devices: []
+	rules:
+	  inbound: []
+	  inbound_policy: DROP
+	  outbound: []
+	  outbound_policy: DROP
+	status: disabled
+      register: updaterules
+
+    - name: Assert firewall updated to disabled
+      assert:
+	that:
+	  - updaterules.changed
+	  - updaterules.firewall.status == 'disabled'
+
+    - name: Update Linode Firewall to enabled
+      linode.cloud.firewall:
+	state: update
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+	devices: []
+	status: enabled
+      register: updaterules
+
+    - name: Assert firewall updated to enabled
+      assert:
+	that:
+	  - updaterules.changed
+	  - updaterules.firewall.status == 'enabled'
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall info same as updatedrules
+      assert:
+	that:
+	  - firewall_info.devices|length == 0
+
+	  - firewall_info.firewall.id == create.firewall.id
+	  - firewall_info.firewall.status == updaterules.firewall.status
+
+    - name: Update Linode Firewall inbound/outbound policy to ACCEPT
+      linode.cloud.firewall:
+	state: update
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+	devices: []
+	rules:
+	  inbound_policy: ACCEPT
+	  outbound_policy: ACCEPT
+	status: enabled
+      register: update
+
+    - name: Assert firewall updated
+      assert:
+	that:
+	  - update.changed
+	  - update.firewall.rules.inbound_policy == 'ACCEPT'
+	  - update.firewall.rules.outbound_policy == 'ACCEPT'
+
+    - name: Set Linode Firewall inbound/outbound rules + policy to DROP
+      linode.cloud.firewall:
+	state: present
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+	devices: []
+	rules:
+	  inbound_policy: DROP
+	  inbound:
+	    - label: cool-http-in
+	      action: DROP
+	      addresses:
+		ipv4: ['0.0.0.0/0']
+		ipv6: ['ff00::/8']
+	      description: 'Really cool firewall rule.'
+	      ports: '80,443'
+	      protocol: TCP
+
+	  outbound_policy: DROP
+	  outbound:
+	    - label: cool-http-out
+	      action: DROP
+	      addresses:
+		ipv4: ['0.0.0.0/0']
+		ipv6: ['ff00::/8']
+	      description: 'Really cool firewall rule.'
+	      ports: '80,443'
+	      protocol: TCP
+      register: updaterules
+
+    - name: Assert firewall rules set
+      assert:
+	that:
+	  - updaterules.changed
+
+	  - updaterules.devices|length == 0
+
+	  - updaterules.firewall.rules.inbound[0].label == 'cool-http-in'
+	  - updaterules.firewall.rules.inbound[0].description == 'Really cool firewall rule.'
+	  - updaterules.firewall.rules.inbound[0].ports == '80,443'
+	  - updaterules.firewall.rules.inbound[0].protocol == 'TCP'
+	  - updaterules.firewall.rules.inbound[0].action == 'DROP'
+	  - updaterules.firewall.rules.inbound_policy == 'DROP'
+	  - updaterules.firewall.rules.inbound[0].addresses['ipv4'] == ['0.0.0.0/0']
+
+	  - updaterules.firewall.rules.outbound[0].label == 'cool-http-out'
+	  - updaterules.firewall.rules.outbound[0].description == 'Really cool firewall rule.'
+	  - updaterules.firewall.rules.outbound[0].ports == '80,443'
+	  - updaterules.firewall.rules.outbound[0].protocol == 'TCP'
+	  - updaterules.firewall.rules.outbound[0].action == 'DROP'
+	  - updaterules.firewall.rules.outbound_policy == 'DROP'
+	  - updaterules.firewall.rules.outbound[0].addresses['ipv4'] == ['0.0.0.0/0']
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall info same as updatedrules
+      assert:
+	that:
+	  - firewall_info.devices|length == 0
+
+	  - firewall_info.firewall.id == create.firewall.id
+	  - firewall_info.firewall.status == updaterules.firewall.status
+
+	  - firewall_info.firewall.rules.inbound[0].label == updaterules.firewall.rules.inbound[0].label
+	  - firewall_info.firewall.rules.inbound[0].description == updaterules.firewall.rules.inbound[0].description
+	  - firewall_info.firewall.rules.inbound[0].ports == updaterules.firewall.rules.inbound[0].ports
+	  - firewall_info.firewall.rules.inbound[0].protocol == updaterules.firewall.rules.inbound[0].protocol
+	  - firewall_info.firewall.rules.inbound[0].action == updaterules.firewall.rules.inbound[0].action
+	  - firewall_info.firewall.rules.inbound_policy == updaterules.firewall.rules.inbound_policy
+
+	  - firewall_info.firewall.rules.outbound[0].label == updaterules.firewall.rules.outbound[0].label
+	  - firewall_info.firewall.rules.outbound[0].description == updaterules.firewall.rules.outbound[0].description
+	  - firewall_info.firewall.rules.outbound[0].ports == updaterules.firewall.rules.outbound[0].ports
+	  - firewall_info.firewall.rules.outbound[0].protocol == updaterules.firewall.rules.outbound[0].protocol
+	  - firewall_info.firewall.rules.outbound[0].action == updaterules.firewall.rules.outbound[0].action
+	  - firewall_info.firewall.rules.outbound_policy == updaterules.firewall.rules.outbound_policy
+
+
+    - name: "Try ... Rescue (2)"
+      block:
+	- name: "Expect fatal: Try to Update Linode Firewall (2) rule that does not exist"
+	  linode.cloud.firewall:
+	    state: update
+	    api_token: '{{ api_token }}'
+	    api_version: v4beta
+	    label: '{{ create.firewall.label }}'
+	    devices: []
+	    rules:
+	      inbound:
+		- label: NOTTHERE
+		  action: DROP
+		  addresses:
+		    ipv4: ['0.0.0.0/0']
+		    ipv6: ['ff00::/8']
+		  description: 'Really cool firewall rule.'
+		  ports: '80,443'
+		  protocol: TCP
+	  register: failedupdaterules
+
+      rescue:
+	- name: "Caught fatal update. Checking return values."
+	  assert:
+	    that:
+	      - not failedupdaterules.changed
+
+    - name: Update labeled rules to action=ACCEPT
+      linode.cloud.firewall:
+	state: update
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+	devices: []
+	rules:
+	  inbound:
+	    - label: cool-http-in
+	      action: ACCEPT
+	  outbound:
+	    - label: cool-http-out
+	      action: ACCEPT
+      register: updaterules
+
+
+    - name: Assert firewall rules updated
+      assert:
+	that:
+	  - updaterules.changed
+
+	  - updaterules.devices|length == 0
+
+	  - updaterules.firewall.rules.inbound[0].label == 'cool-http-in'
+	  - updaterules.firewall.rules.inbound[0].description == 'Really cool firewall rule.'
+	  - updaterules.firewall.rules.inbound[0].ports == '80,443'
+	  - updaterules.firewall.rules.inbound[0].protocol == 'TCP'
+	  - updaterules.firewall.rules.inbound[0].action == 'ACCEPT'
+	  - updaterules.firewall.rules.inbound_policy == 'DROP'
+
+	  - updaterules.firewall.rules.outbound[0].label == 'cool-http-out'
+	  - updaterules.firewall.rules.outbound[0].description == 'Really cool firewall rule.'
+	  - updaterules.firewall.rules.outbound[0].ports == '80,443'
+	  - updaterules.firewall.rules.outbound[0].protocol == 'TCP'
+	  - updaterules.firewall.rules.outbound[0].action == 'ACCEPT'
+	  - updaterules.firewall.rules.outbound_policy == 'DROP'
+
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall info same as updatedrules
+      assert:
+	that:
+	  - firewall_info.devices|length == 0
+
+	  - firewall_info.firewall.id == create.firewall.id
+	  - firewall_info.firewall.status == updaterules.firewall.status
+
+	  - firewall_info.firewall.rules.inbound[0].label == updaterules.firewall.rules.inbound[0].label
+	  - firewall_info.firewall.rules.inbound[0].description == updaterules.firewall.rules.inbound[0].description
+	  - firewall_info.firewall.rules.inbound[0].ports == updaterules.firewall.rules.inbound[0].ports
+	  - firewall_info.firewall.rules.inbound[0].protocol == updaterules.firewall.rules.inbound[0].protocol
+	  - firewall_info.firewall.rules.inbound[0].action == updaterules.firewall.rules.inbound[0].action
+	  - firewall_info.firewall.rules.inbound_policy == updaterules.firewall.rules.inbound_policy
+
+	  - firewall_info.firewall.rules.outbound[0].label == updaterules.firewall.rules.outbound[0].label
+	  - firewall_info.firewall.rules.outbound[0].description == updaterules.firewall.rules.outbound[0].description
+	  - firewall_info.firewall.rules.outbound[0].ports == updaterules.firewall.rules.outbound[0].ports
+	  - firewall_info.firewall.rules.outbound[0].protocol == updaterules.firewall.rules.outbound[0].protocol
+	  - firewall_info.firewall.rules.outbound[0].action == updaterules.firewall.rules.outbound[0].action
+	  - firewall_info.firewall.rules.outbound_policy == updaterules.firewall.rules.outbound_policy
+
+
+    - name: Update labeled rules description to "Amazing rule."
+      linode.cloud.firewall:
+	state: update
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+	devices: []
+	rules:
+	  inbound:
+	    - label: cool-http-in
+	      action: ACCEPT
+	      description: 'Amazing rule.'
+	  outbound:
+	    - label: cool-http-out
+	      action: ACCEPT
+	      description: 'Amazing rule.'
+      register: updaterules
+
+    - name: Assert firewall rules updated
+      assert:
+	that:
+	  - updaterules.changed
+
+	  - updaterules.devices|length == 0
+
+	  - updaterules.firewall.rules.inbound[0].label == 'cool-http-in'
+	  - updaterules.firewall.rules.inbound[0].description == 'Amazing rule.'
+	  - updaterules.firewall.rules.inbound[0].ports == '80,443'
+	  - updaterules.firewall.rules.inbound[0].protocol == 'TCP'
+	  - updaterules.firewall.rules.inbound[0].action == 'ACCEPT'
+	  - updaterules.firewall.rules.inbound_policy == 'DROP'
+
+	  - updaterules.firewall.rules.outbound[0].label == 'cool-http-out'
+	  - updaterules.firewall.rules.outbound[0].description == 'Amazing rule.'
+	  - updaterules.firewall.rules.outbound[0].ports == '80,443'
+	  - updaterules.firewall.rules.outbound[0].protocol == 'TCP'
+	  - updaterules.firewall.rules.outbound[0].action == 'ACCEPT'
+	  - updaterules.firewall.rules.outbound_policy == 'DROP'
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall info same as updatedrules
+      assert:
+	that:
+	  - firewall_info.devices|length == 0
+
+	  - firewall_info.firewall.id == create.firewall.id
+	  - firewall_info.firewall.status == updaterules.firewall.status
+
+	  - firewall_info.firewall.rules.inbound[0].label == updaterules.firewall.rules.inbound[0].label
+	  - firewall_info.firewall.rules.inbound[0].description == updaterules.firewall.rules.inbound[0].description
+	  - firewall_info.firewall.rules.inbound[0].ports == updaterules.firewall.rules.inbound[0].ports
+	  - firewall_info.firewall.rules.inbound[0].protocol == updaterules.firewall.rules.inbound[0].protocol
+	  - firewall_info.firewall.rules.inbound[0].action == updaterules.firewall.rules.inbound[0].action
+	  - firewall_info.firewall.rules.inbound_policy == updaterules.firewall.rules.inbound_policy
+
+
+	  - firewall_info.firewall.rules.outbound[0].label == updaterules.firewall.rules.outbound[0].label
+	  - firewall_info.firewall.rules.outbound[0].description == updaterules.firewall.rules.outbound[0].description
+	  - firewall_info.firewall.rules.outbound[0].ports == updaterules.firewall.rules.outbound[0].ports
+	  - firewall_info.firewall.rules.outbound[0].protocol == updaterules.firewall.rules.outbound[0].protocol
+	  - firewall_info.firewall.rules.outbound[0].action == updaterules.firewall.rules.outbound[0].action
+	  - firewall_info.firewall.rules.outbound_policy == updaterules.firewall.rules.outbound_policy
+
+
+    - name: Update labeled rules ipv4 addresses
+      linode.cloud.firewall:
+	state: update
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+	devices: []
+	rules:
+	  inbound:
+	    - label: cool-http-in
+	      action: ACCEPT
+	      addresses:
+		ipv4: ['0.0.0.0/0','8.8.8.8/32' ]
+	  outbound:
+	    - label: cool-http-out
+	      action: ACCEPT
+	      addresses:
+		ipv4: ['0.0.0.0/0','8.8.8.8/32' ]
+      register: updaterules
+
+    - name: Assert firewall rules updated
+      assert:
+	that:
+	  - updaterules.changed
+
+	  - updaterules.devices|length == 0
+
+	  - updaterules.firewall.rules.inbound[0].label == 'cool-http-in'
+	  - updaterules.firewall.rules.inbound[0].description == 'Amazing rule.'
+	  - updaterules.firewall.rules.inbound[0].ports == '80,443'
+	  - updaterules.firewall.rules.inbound[0].protocol == 'TCP'
+	  - updaterules.firewall.rules.inbound[0].action == 'ACCEPT'
+	  - updaterules.firewall.rules.inbound[0].addresses['ipv4'] == ['0.0.0.0/0','8.8.8.8/32' ]
+	  - updaterules.firewall.rules.inbound_policy == 'DROP'
+
+	  - updaterules.firewall.rules.outbound[0].label == 'cool-http-out'
+	  - updaterules.firewall.rules.outbound[0].description == 'Amazing rule.'
+	  - updaterules.firewall.rules.outbound[0].ports == '80,443'
+	  - updaterules.firewall.rules.outbound[0].protocol == 'TCP'
+	  - updaterules.firewall.rules.outbound[0].action == 'ACCEPT'
+	  - updaterules.firewall.rules.outbound[0].addresses['ipv4'] == ['0.0.0.0/0','8.8.8.8/32' ]
+	  - updaterules.firewall.rules.outbound_policy == 'DROP'
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall info same as updatedrules
+      assert:
+	that:
+	  - firewall_info.devices|length == 0
+
+	  - firewall_info.firewall.id == create.firewall.id
+	  - firewall_info.firewall.status == updaterules.firewall.status
+
+	  - firewall_info.firewall.rules.inbound[0].label == updaterules.firewall.rules.inbound[0].label
+	  - firewall_info.firewall.rules.inbound[0].description == updaterules.firewall.rules.inbound[0].description
+	  - firewall_info.firewall.rules.inbound[0].ports == updaterules.firewall.rules.inbound[0].ports
+	  - firewall_info.firewall.rules.inbound[0].protocol == updaterules.firewall.rules.inbound[0].protocol
+	  - firewall_info.firewall.rules.inbound[0].action == updaterules.firewall.rules.inbound[0].action
+	  - firewall_info.firewall.rules.inbound_policy == updaterules.firewall.rules.inbound_policy
+
+	  - firewall_info.firewall.rules.outbound[0].label == updaterules.firewall.rules.outbound[0].label
+	  - firewall_info.firewall.rules.outbound[0].description == updaterules.firewall.rules.outbound[0].description
+	  - firewall_info.firewall.rules.outbound[0].ports == updaterules.firewall.rules.outbound[0].ports
+	  - firewall_info.firewall.rules.outbound[0].protocol == updaterules.firewall.rules.outbound[0].protocol
+	  - firewall_info.firewall.rules.outbound[0].action == updaterules.firewall.rules.outbound[0].action
+	  - firewall_info.firewall.rules.outbound_policy == updaterules.firewall.rules.outbound_policy
+
+    - name: Update Description of Linode Firewall rules
+      linode.cloud.firewall:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+	devices: []
+	rules:
+	  inbound:
+	    - label: cool-http-in
+	      action: ACCEPT
+	      description: 'Amazing firewall rule.'
+	  outbound:
+	    - label: cool-http-out
+	      action: ACCEPT
+	      description: 'Amazing firewall rule.'
+	state: update
+      register: updaterules
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall info
+      assert:
+	that:
+	  - firewall_info.devices|length == 0
+
+	  - firewall_info.firewall.id == create.firewall.id
+	  - firewall_info.firewall.status == updaterules.firewall.status
+
+	  - firewall_info.firewall.rules.inbound[0].label == updaterules.firewall.rules.inbound[0].label
+	  - firewall_info.firewall.rules.inbound[0].description == updaterules.firewall.rules.inbound[0].description
+	  - firewall_info.firewall.rules.inbound[0].ports == updaterules.firewall.rules.inbound[0].ports
+	  - firewall_info.firewall.rules.inbound[0].protocol == updaterules.firewall.rules.inbound[0].protocol
+	  - firewall_info.firewall.rules.inbound[0].action == updaterules.firewall.rules.inbound[0].action
+	  - firewall_info.firewall.rules.inbound_policy == updaterules.firewall.rules.inbound_policy
+
+	  - firewall_info.firewall.rules.outbound[0].label == updaterules.firewall.rules.outbound[0].label
+	  - firewall_info.firewall.rules.outbound[0].description == updaterules.firewall.rules.outbound[0].description
+	  - firewall_info.firewall.rules.outbound[0].ports == updaterules.firewall.rules.outbound[0].ports
+	  - firewall_info.firewall.rules.outbound[0].protocol == updaterules.firewall.rules.outbound[0].protocol
+	  - firewall_info.firewall.rules.outbound[0].action == updaterules.firewall.rules.outbound[0].action
+	  - firewall_info.firewall.rules.outbound_policy == updaterules.firewall.rules.outbound_policy
+
+    - name: Update IP addresses Linode Firewall rules
+      linode.cloud.firewall:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+	devices: []
+	rules:
+	  inbound:
+	    - label: cool-http-in
+	      action: ACCEPT
+	      addresses:
+		ipv4: ['0.0.0.0/0']
+	  outbound:
+	    - label: cool-http-out
+	      action: ACCEPT
+	      addresses:
+		ipv4: ['0.0.0.0/0']
+	state: update
+      register: updaterules
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall info
+      assert:
+	that:
+	  - firewall_info.devices|length == 0
+
+	  - firewall_info.firewall.id == create.firewall.id
+	  - firewall_info.firewall.status == updaterules.firewall.status
+
+	  - firewall_info.firewall.rules.inbound[0].label == updaterules.firewall.rules.inbound[0].label
+	  - firewall_info.firewall.rules.inbound[0].description == updaterules.firewall.rules.inbound[0].description
+	  - firewall_info.firewall.rules.inbound[0].ports == updaterules.firewall.rules.inbound[0].ports
+	  - firewall_info.firewall.rules.inbound[0].protocol == updaterules.firewall.rules.inbound[0].protocol
+	  - firewall_info.firewall.rules.inbound[0].action == updaterules.firewall.rules.inbound[0].action
+	  - firewall_info.firewall.rules.inbound_policy == updaterules.firewall.rules.inbound_policy
+
+	  - firewall_info.firewall.rules.outbound[0].label == updaterules.firewall.rules.outbound[0].label
+	  - firewall_info.firewall.rules.outbound[0].description == updaterules.firewall.rules.outbound[0].description
+	  - firewall_info.firewall.rules.outbound[0].ports == updaterules.firewall.rules.outbound[0].ports
+	  - firewall_info.firewall.rules.outbound[0].protocol == updaterules.firewall.rules.outbound[0].protocol
+	  - firewall_info.firewall.rules.outbound[0].action == updaterules.firewall.rules.outbound[0].action
+	  - firewall_info.firewall.rules.outbound_policy == updaterules.firewall.rules.outbound_policy
+
+    - name: Make update that should not cause any Linode Firewall changes
+      linode.cloud.firewall:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+	devices: []
+	rules:
+	  inbound:
+	    - label: cool-http-in
+	      action: ACCEPT
+	      addresses:
+		ipv4: ['0.0.0.0/0']
+	  outbound:
+	    - label: cool-http-out
+	      action: ACCEPT
+	      addresses:
+		ipv4: ['0.0.0.0/0']
+	state: update
+      register: updaterules
+
+    - name: Assert firewall rules did not update
+      assert:
+	that:
+	  - not updaterules.changed
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+	api_token: '{{ api_token }}'
+	api_version: v4beta
+	label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall info
+      assert:
+	that:
+	  - firewall_info.devices|length == 0
+
+	  - firewall_info.firewall.id == create.firewall.id
+	  - firewall_info.firewall.status == updaterules.firewall.status
+
+	  - firewall_info.firewall.rules.inbound[0].label == updaterules.firewall.rules.inbound[0].label
+	  - firewall_info.firewall.rules.inbound[0].description == updaterules.firewall.rules.inbound[0].description
+	  - firewall_info.firewall.rules.inbound[0].ports == updaterules.firewall.rules.inbound[0].ports
+	  - firewall_info.firewall.rules.inbound[0].protocol == updaterules.firewall.rules.inbound[0].protocol
+	  - firewall_info.firewall.rules.inbound[0].action == updaterules.firewall.rules.inbound[0].action
+	  - firewall_info.firewall.rules.inbound_policy == updaterules.firewall.rules.inbound_policy
+
+	  - firewall_info.firewall.rules.outbound[0].label == updaterules.firewall.rules.outbound[0].label
+	  - firewall_info.firewall.rules.outbound[0].description == updaterules.firewall.rules.outbound[0].description
+	  - firewall_info.firewall.rules.outbound[0].ports == updaterules.firewall.rules.outbound[0].ports
+	  - firewall_info.firewall.rules.outbound[0].protocol == updaterules.firewall.rules.outbound[0].protocol
+	  - firewall_info.firewall.rules.outbound[0].action == updaterules.firewall.rules.outbound[0].action
+	  - firewall_info.firewall.rules.outbound_policy == updaterules.firewall.rules.outbound_policy
+
+  always:
+    - ignore_errors: yes
+      block:
+	- name: Delete a Linode Firewall
+	  linode.cloud.firewall:
+	    api_token: '{{ api_token }}'
+	    api_version: v4beta
+	    label: '{{ create.firewall.label }}'
+	    state: absent
+	  register: delete
+
+	- name: Assert Firewall delete succeeded
+	  assert:
+	    that:
+	      - delete.changed
+	      - delete.firewall.id == create.firewall.id
+
