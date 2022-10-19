@@ -242,7 +242,7 @@ class LinodeFirewall(LinodeModuleBase):
 
         return result
 
-    def _amend_rules(self, remote_rules: list, local_rules: list) -> None:
+    def _amend_rules(self, remote_rules: list, local_rules: list) -> list:
         # produce a result list in the same order as remote_rules
         # amended by the updates from the local_rules
 
