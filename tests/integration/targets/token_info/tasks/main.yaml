@@ -1,0 +1,48 @@
+- name: token_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create Linode Token
+      linode.cloud.token:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        expiry: '2222-07-09T16:59:26'
+        scopes: '*'
+        state: present
+      register: create_token
+
+    - name: Assert token created
+      assert:
+        that:
+          - create_token.token.id != None
+
+    - name: Get info about the token by label
+      linode.cloud.token_info:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: '{{ create_token.token.label }}'
+      register: by_label
+
+    - name: Get info about the token by ID
+      linode.cloud.token_info:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        id: '{{ create_token.token.id }}'
+      register: by_id
+
+    - assert:
+        that:
+          - by_label.token.label == create_token.token.label
+          - by_id.token.label == create_token.token.label
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode Token
+          linode.cloud.token:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            label: '{{ create_token.token.label }}'
+            state: absent
