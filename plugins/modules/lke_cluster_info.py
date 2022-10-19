@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 from typing import List, Any, Optional, Dict
 
-from linode_api4 import LKECluster, LKENodePool
+from linode_api4 import LKECluster, ApiError
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and,\
@@ -130,16 +130,25 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
-        dashboard_data = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))
 
         self.results['cluster'] = cluster._raw_json
         self.results['node_pools'] = [jsonify_node_pool(pool) for pool in cluster.pools]
-        self.results['dashboard_url'] = dashboard_data['url']
 
         try:
             self.results['kubeconfig'] = cluster.kubeconfig
-        except Exception:
+        except ApiError as err:
+            if err.status != 503:
+                raise err
+
             self.results['kubeconfig'] = 'Kubeconfig not yet available...'
+
+        try:
+            self.results['dashboard_url'] = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))['url']
+        except ApiError as err:
+            if err.status != 503:
+                raise err
+
+            self.results['dashboard_url'] = 'Dashboard URL not yet available...'
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for LKE cluster info module"""

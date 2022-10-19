@@ -398,7 +398,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
     def _populate_dashboard_url_no_poll(self, cluster: LKECluster) -> None:
         try:
-            self.results['dashboard_url'] = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))
+            self.results['dashboard_url'] = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))['url']
         except ApiError as error:
             if error.status != 503:
                 raise error
@@ -408,7 +408,7 @@ class LinodeLKECluster(LinodeModuleBase):
     def _populate_dashboard_url_poll(self, cluster: LKECluster) -> None:
         def condition() -> bool:
             try:
-                self.results['dashboard_url'] = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))
+                self.results['dashboard_url'] = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))['url']
             except ApiError as error:
                 if error.status != 503:
                     raise error
