@@ -163,6 +163,8 @@ class LinodeFirewall(LinodeModuleBase):
 
         self._firewall: Optional[Firewall] = None
 
+        self._state = "present"
+
         super().__init__(module_arg_spec=self.module_arg_spec)
 
     def _get_firewall_by_label(self, label: str) -> Optional[Firewall]:
@@ -242,7 +244,8 @@ class LinodeFirewall(LinodeModuleBase):
 
         return result
 
-    def _amend_rules(self, remote_rules: list, local_rules: list) -> list:
+    @staticmethod
+    def _amend_rules(remote_rules: list, local_rules: list) -> list:
         # produce a result list in the same order as remote_rules
         # amended by the updates from the local_rules
 
@@ -256,43 +259,66 @@ class LinodeFirewall(LinodeModuleBase):
 
             # insert all missing fields in local_rule from remote_rule
             local_rule = local_labeled_rules[remote_rule['label']]
-            for field in linode_firewall_rule_spec.keys():
+            for field in linode_firewall_rule_spec:
                 if field not in local_rule:
                     local_rule[field]=remote_rule[field]
             result.append(local_rule)
         return result
 
-    def _update_rules(self) -> list:
+    def _update_rules(self, remote_rules: dict, local_rules: dict) -> dict:
+        # Amend existing rules with user-supplied rules
+        if self._state != "update":
+            return local_rules
+
+        # Validate that updates are for rules that already exist.
+        for direction in ['inbound', 'outbound']:
+            # check if all local_rules labels exist in remote_rules
+            rlr = { r['label'] for r in remote_rules[direction] }
+            missing_labels = [ l['label'] for l in local_rules[direction] if l['label'] not in rlr ]
+            if missing_labels:
+                self.module.fail_json(msg="Update failed: rules for labels %s missing" % \
+                                      ",".join(missing_labels))
+
+        for direction in ['inbound', 'outbound']:
+            local_rules[direction] = self._amend_rules(remote_rules[direction],
+                                                       local_rules[direction])
+        return local_rules
+
+    def _change_rules(self) -> Optional[dict]:
         """Updates remote firewall rules relative to user-supplied new rules, and returns whether anything changed."""
         local_rules = filter_null_values_recursive(self.module.params['rules'])
-        # user did not specify any rules updates
-        if local_rules == None: return []
-
         remote_rules = filter_null_values_recursive(mapping_to_dict(self._firewall.rules))
+
+        # user did not specify any rules updates
+        if local_rules is None:
+            local_rules = {}
+
+        if remote_rules is None:
+            remote_rules = {}
 
         # Normalize IP addresses for all rules
         for direction in ['inbound', 'outbound']:
-            local_rules[direction] = self._normalize_ips(local_rules[direction]) if direction in local_rules else []
-            remote_rules[direction] = self._normalize_ips(remote_rules[direction]) if direction in remote_rules else []
+            if direction in local_rules:
+                local_rules[direction] = self._normalize_ips(local_rules[direction])
+            else:
+                local_rules[direction] = []
 
-        if self._state == "update":
-            # Validate that updates are for rules that already exist.
-            for direction in ['inbound', 'outbound']:
-                # check if all local_rules labels exist in remote_rules
-                remote_labeled_rules = { r['label'] for r in remote_rules[direction] }
-                missing_labels = [ l['label'] for l in local_rules[direction] if l['label'] not in remote_labeled_rules ]
-                if missing_labels:
-                    self.module.fail_json(msg="Update failed: rules for labels %s missing" % ",".join(missing_labels))
+            if direction in remote_rules:
+                remote_rules[direction] = self._normalize_ips(remote_rules[direction])
+            else:
+                remote_rules[direction] = []
 
-            # Amend existing rules with user-supplied rules
-            for policy in ['inbound_policy', 'outbound_policy']:
-                if policy not in local_rules:
-                    local_rules[policy] = remote_rules[policy]
-            for direction in ['inbound', 'outbound']:
-                local_rules[direction] = self._amend_rules(remote_rules[direction],local_rules[direction])
+        # Update local_rules with missing information from remote_rules
+        local_rules = self._update_rules(remote_rules, local_rules)
+
+        # Sync policy
+        for policy in ['inbound_policy', 'outbound_policy']:
+            if policy not in local_rules:
+                local_rules[policy] = remote_rules[policy]
 
         local_rules = filter_null_values_recursive(local_rules)
-        return local_rules if local_rules != remote_rules else []
+        remote_rules = filter_null_values_recursive(remote_rules)
+        return local_rules if local_rules != remote_rules else None
 
     def _update_firewall(self) -> None:
         """Handles all update functionality for the current Firewall"""
@@ -318,9 +344,9 @@ class LinodeFirewall(LinodeModuleBase):
         if should_update:
             self._firewall.save()
 
-        updates = self._update_rules()
-        if updates:
-            self._firewall.update_rules(updates)
+        changes = self._change_rules()
+        if changes:
+            self._firewall.update_rules(changes)
             self.register_action('Updated Firewall rules')
 
         # Update devices
