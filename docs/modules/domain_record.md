@@ -46,7 +46,7 @@ NOTE: Domain records are identified by their name, target, and type.
 | `domain_id` | `int` | Optional | The ID of the parent Domain.   |
 | `domain` | `str` | Optional | The name of the parent Domain.   |
 | `record_id` | `int` | Optional | The id of the record to modify.   |
-| `name` | `str` | Optional | The name of this Record.   |
+| `name` | `str` | Optional | The name of this Record. NOTE: If the name of the record ends with the domain, it will be dropped from the resulting record's name.   |
 | `port` | `int` | Optional | The port this Record points to. Only valid and required for SRV record requests.   |
 | `priority` | `int` | Optional | The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.   |
 | `protocol` | `str` | Optional | The protocol this Record’s service communicates with. An underscore (_) is prepended automatically to the submitted value for this property.   |
