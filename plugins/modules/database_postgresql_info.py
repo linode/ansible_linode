@@ -20,8 +20,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_postgresql \
     as docs_parent
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_postgresql_info \
-    as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.\
+    database_postgresql_info as docs
 
 spec = dict(
     # Disable the default values
