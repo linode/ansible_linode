@@ -31,7 +31,11 @@ linode_domain_record_spec = dict(
                    description='The id of the record to modify.'),
 
     name=dict(type='str',
-              description='The name of this Record.'),
+              description=[
+                  'The name of this Record.',
+                  'NOTE: If the name of the record ends with the domain, '
+                  'it will be dropped from the resulting record\'s name.'
+              ]),
     port=dict(type='int',
               description=[
                   'The port this Record points to.',
@@ -134,11 +138,13 @@ class LinodeDomainRecord(LinodeModuleBase):
                          mutually_exclusive=self.mutually_exclusive,
                          required_together=self.required_together)
 
-    def _get_record_by_fields(self, domain: Domain, name: str, rtype: str, target: str) \
+    def _find_record(self, domain: Domain, name: str, rtype: str, target: str) \
             -> Optional[DomainRecord]:
         try:
             for record in domain.records:
-                if record.name == name \
+                # We should strip the FQDN from the user-defined record name
+                # if defined.
+                if record.name == name.removesuffix('.' + domain.domain) \
                         and record.type == rtype \
                         and record.target == target:
                     return record
@@ -187,9 +193,9 @@ class LinodeDomainRecord(LinodeModuleBase):
             record_type = params.get('type')
             record_target = params.get('target')
 
-            record = self._get_record_by_fields(self._domain,
-                                                record_name, record_type,
-                                                record_target)
+            record = self._find_record(self._domain,
+                                       record_name, record_type,
+                                       record_target)
             return record
 
         return None
@@ -237,7 +243,7 @@ class LinodeDomainRecord(LinodeModuleBase):
         if should_update:
             self._record.save()
 
-    def _handle_domain_record(self) -> None:
+    def _handle_present(self) -> None:
         params = self.module.params
 
         self._domain = self._get_domain_from_params()
@@ -262,7 +268,7 @@ class LinodeDomainRecord(LinodeModuleBase):
 
         self.results['record'] = self._record._raw_json
 
-    def _handle_domain_record_absent(self) -> None:
+    def _handle_absent(self) -> None:
         self._domain = self._get_domain_from_params()
         if self._domain is None:
             return self.fail('invalid domain specified')
@@ -282,10 +288,10 @@ class LinodeDomainRecord(LinodeModuleBase):
         state = kwargs.get('state')
 
         if state == 'absent':
-            self._handle_domain_record_absent()
+            self._handle_absent()
             return self.results
 
-        self._handle_domain_record()
+        self._handle_present()
 
         return self.results
 

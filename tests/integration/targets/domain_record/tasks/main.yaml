@@ -165,6 +165,54 @@
         that:
           - domain_info.records|length == 3
 
+    - name: Create a record containing FQDN
+      linode.cloud.domain_record:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        domain: '{{ domain_create.domain.domain }}'
+        name: 'fqdn.{{ domain_create.domain.domain }}'
+        type: 'A'
+        target: '127.0.0.2'
+        state: present
+      register: record_fqdn_create
+
+    - assert:
+        that:
+          - record_fqdn_create.record.name == 'fqdn'
+          - record_fqdn_create.changed
+
+    - name: Create a record containing FQDN
+      linode.cloud.domain_record:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        domain: '{{ domain_create.domain.domain }}'
+        name: 'fqdn.{{ domain_create.domain.domain }}'
+        type: 'A'
+        target: '127.0.0.2'
+        state: present
+      register: record_fqdn_nochange
+
+    - assert:
+        that:
+          - record_fqdn_nochange.record.name == 'fqdn'
+          - record_fqdn_nochange.changed == False
+
+    - name: Delete a record containing FQDN
+      linode.cloud.domain_record:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        domain: '{{ domain_create.domain.domain }}'
+        name: 'fqdn.{{ domain_create.domain.domain }}'
+        type: 'A'
+        target: '127.0.0.2'
+        state: absent
+      register: record_fqdn_delete
+
+    - assert:
+        that:
+          - record_fqdn_delete.record.name == 'fqdn'
+          - record_fqdn_delete.changed
+
   always:
     - ignore_errors: yes
       block:
