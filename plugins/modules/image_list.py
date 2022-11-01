@@ -14,7 +14,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.event_list as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image_list as docs
 
 spec_filter = dict(
     name=dict(type='str', required=True,
@@ -60,7 +60,7 @@ specdoc_meta = dict(
             docs_url='https://www.linode.com/docs/api/images/#images-list__response-samples',
             type='list',
             elements='dict',
-            sample=docs.result_events_samples
+            sample=docs.result_images_samples
         )
     )
 )

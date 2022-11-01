@@ -10,24 +10,24 @@ List and filter on Linode images.
 ## Examples
 
 ```yaml
-- name: List all of the events for the current Linode Account
-  linode.cloud.event_list: {}
+- name: List all of the images for the current Linode Account
+  linode.cloud.image_list: {}
 ```
 
 ```yaml
-- name: List the latest 5 events for the current Linode Account
-  linode.cloud.event_list:
+- name: List the latest 5 images for the current Linode Account
+  linode.cloud.image_list:
     count: 5
     order_by: desc
     order: created
 ```
 
 ```yaml
-- name: List all Linode Instance creation events for the current Linode Account
-  linode.cloud.event_list:
+- name: Resolve all Alpine Linux images
+  linode.cloud.image_list:
     filter:
-      - name: action
-        values: linode_create
+      - name: vendor
+        values: Alpine
 ```
 
 
@@ -72,30 +72,20 @@ List and filter on Linode images.
         ```json
         [
            {
-              "action":"ticket_create",
-              "created":"2018-01-01T00:01:01",
-              "duration":300.56,
-              "entity":{
-                 "id":11111,
-                 "label":"Problem booting my Linode",
-                 "type":"ticket",
-                 "url":"/v4/support/tickets/11111"
-              },
-              "id":123,
-              "message":"None",
-              "percent_complete":null,
-              "rate":null,
-              "read":true,
-              "secondary_entity":{
-                 "id":"linode/debian9",
-                 "label":"linode1234",
-                 "type":"linode",
-                 "url":"/v4/linode/instances/1234"
-              },
-              "seen":true,
+              "created":"2021-08-14T22:44:02",
+              "created_by":"linode",
+              "deprecated":false,
+              "description":"Example Image description.",
+              "eol":"2026-07-01T04:00:00",
+              "expiry":null,
+              "id":"linode/debian11",
+              "is_public":true,
+              "label":"Debian 11",
+              "size":2500,
               "status":null,
-              "time_remaining":null,
-              "username":"exampleUser"
+              "type":"manual",
+              "updated":"2021-08-14T22:44:02",
+              "vendor":"Debian"
            }
         ]
         ```
