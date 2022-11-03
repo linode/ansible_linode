@@ -98,7 +98,10 @@ class Module(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec,
                          mutually_exclusive=[('body', 'body_json')])
 
-    def do_request(self, method, path, filters=None, body=None) -> Tuple[int, Optional[dict]]:
+    def do_request(self, method: str, path: str,
+                   filters: dict = None, body: dict = None) -> Tuple[int, Optional[dict]]:
+        """Runs an API request given the supplied parameters."""
+
         method_handlers = {
             'GET': self.client.get,
             'PUT': self.client.put,
