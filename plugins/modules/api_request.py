@@ -90,7 +90,7 @@ class Module(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPEC
         self.results = dict(
-            body=dict(),
+            body={},
             status=0,
             changed=False
         )
