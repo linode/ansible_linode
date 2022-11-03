@@ -18,10 +18,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    handle_updates, filter_null_values
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.api_request as docs
 
 SPEC = dict(
     label=dict(type='str', doc_hide=True),
@@ -65,7 +62,9 @@ SPEC = dict(
 
 specdoc_meta = dict(
     description=[
-        'Make an arbitrary Linode API request.'
+        'Make an arbitrary Linode API request.',
+        'The Linode API documentation can be found here: '
+        'https://www.linode.com/docs/api'
     ],
     requirements=global_requirements,
     author=global_authors,
@@ -75,12 +74,11 @@ specdoc_meta = dict(
         body=dict(
             description='The deserialized response body.',
             type='dict',
-            sample=docs.result_stackscript_samples
+            sample=docs.result_body_samples
         ),
         status=dict(
             description='The response status code.',
-            type='int',
-            sample=docs.result_stackscript_samples
+            type='int'
         )
     )
 )
