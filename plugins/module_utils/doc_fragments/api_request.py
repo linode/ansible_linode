@@ -1,4 +1,4 @@
-"""Documentation fragments for the database_mysql module"""
+"""Documentation fragments for the api_request module"""
 
 specdoc_examples = ['''
 - name: Get all available LKE versions
