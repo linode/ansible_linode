@@ -75,7 +75,7 @@ class LinodeModuleBase:
             required_if: Any = None,
             skip_exec: bool = False) -> None:
 
-        arg_spec = dict()
+        arg_spec = {}
         arg_spec.update(LINODE_COMMON_ARGS)
 
         if has_label:

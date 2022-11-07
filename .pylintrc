@@ -14,6 +14,12 @@ disable=protected-access,
         too-many-lines,
         too-many-branches,
         anomalous-backslash-in-string,
-        too-many-locals
+        too-many-locals,
+        consider-using-f-string,
+        consider-using-dict-items,
+        used-before-assignment,
+        unused-variable,
+        missing-timeout,
+        use-sequence-for-iteration
 
 extension-pkg-whitelist=math
