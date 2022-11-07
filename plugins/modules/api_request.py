@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module contains all of the functionality for Linode StackScripts."""
+"""This module contains all of the functionality for running an API request."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -118,7 +118,7 @@ class Module(LinodeModuleBase):
             return err.status, err.json
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for StackScript module"""
+        """Entrypoint for api_request module"""
         param_path = self.module.params.get('path')
         if not param_path.startswith('/'):
             param_path = '/' + param_path
