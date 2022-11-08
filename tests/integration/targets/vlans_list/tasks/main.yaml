@@ -1,0 +1,31 @@
+- name: vlans_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - linode.cloud.vlans_list:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        count: 5
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.vlans | length == 5
+
+    - name: Resolve a VLAN
+      linode.cloud.vlans_list:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        count: 1
+        order_by: created
+        order: desc
+        filters:
+          - name: label
+            values: Alpine 3.16
+      register: filter
+
+    - assert:
+        that:
+          - filter.vlans | length == 1
+          - filter.vlans[0].id == 'linode/alpine3.16'
