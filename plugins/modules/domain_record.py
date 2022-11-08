@@ -140,11 +140,14 @@ class LinodeDomainRecord(LinodeModuleBase):
 
     def _find_record(self, domain: Domain, name: str, rtype: str, target: str) \
             -> Optional[DomainRecord]:
+        # We should strip the FQDN from the user-defined record name if defined.
+        suffix = '.' + domain.domain
+        search_name = name
+        if search_name.endswith(suffix):
+            search_name = search_name[:-len(suffix)]
         try:
             for record in domain.records:
-                # We should strip the FQDN from the user-defined record name
-                # if defined.
-                if record.name == name.removesuffix('.' + domain.domain) \
+                if record.name == search_name \
                         and record.type == rtype \
                         and record.target == target:
                     return record
