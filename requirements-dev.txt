@@ -4,5 +4,5 @@ pylint==2.15.5
 ansible-doc-extractor==0.1.8
 mypy==0.982
 ansible-specdoc==0.0.9
-ansible==6.5.0
+ansible==6.6.0
 Jinja2==3.0.1
