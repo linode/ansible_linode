@@ -22,12 +22,12 @@
     - linode.cloud.vlans_list:
         api_token: '{{ api_token }}'
         ua_prefix: '{{ ua_prefix }}'
-        count: 5
+        count: 1
       register: no_filter
 
     - assert:
         that:
-          - no_filter.vlans | length == 5
+          - no_filter.vlans | length == 1
 
     - name: Resolve a VLAN
       linode.cloud.vlans_list:
