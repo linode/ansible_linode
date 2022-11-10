@@ -1,34 +1,22 @@
-"""Documentation fragments for the image_info module"""
+"""Documentation fragments for the vlans_list module"""
 
 specdoc_examples = ['''
-- name: List all of the images for the current Linode Account
-  linode.cloud.image_list: {}''', '''
-- name: List the latest 5 images for the current Linode Account
-  linode.cloud.image_list:
+- name: List all of the VLANs for the current Linode Account
+  linode.cloud.vlans_list: {}''', '''
+- name: List the latest 5 VLANs for the current Linode Account
+  linode.cloud.vlans_list:
     count: 5
     order_by: desc
-    order: created''', '''
-- name: Resolve all Alpine Linux images
-  linode.cloud.image_list:
-    filter:
-      - name: vendor
-        values: Alpine''']
+    order: created''']
 
 result_images_samples = ['''[
    {
-      "created":"2021-08-14T22:44:02",
-      "created_by":"linode",
-      "deprecated":false,
-      "description":"Example Image description.",
-      "eol":"2026-07-01T04:00:00",
-      "expiry":null,
-      "id":"linode/debian11",
-      "is_public":true,
-      "label":"Debian 11",
-      "size":2500,
-      "status":null,
-      "type":"manual",
-      "updated":"2021-08-14T22:44:02",
-      "vendor":"Debian"
+   "created": "2020-01-01T00:01:01",
+    "label": "vlan-example",
+    "linodes": [
+        111,
+        222
+      ],
+      "region": "ap-west"
    }
 ]''']
