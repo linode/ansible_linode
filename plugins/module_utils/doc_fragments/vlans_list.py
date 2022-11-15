@@ -9,7 +9,7 @@ specdoc_examples = ['''
     order_by: desc
     order: created''']
 
-result_images_samples = ['''[
+result_vlans_samples = ['''[
    {
    "created": "2020-01-01T00:01:01",
     "label": "vlan-example",

@@ -8,6 +8,8 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 from typing import Any, Optional, Dict
 
+from linode_api4 import VLAN
+
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
     filter_null_values, construct_api_filter, get_all_paginated

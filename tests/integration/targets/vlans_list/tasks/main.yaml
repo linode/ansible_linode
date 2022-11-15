@@ -19,20 +19,11 @@
         state: present
       register: create_instance
 
-    - linode.cloud.vlans_list:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
-        count: 1
-      register: no_filter
-
-    - assert:
-        that:
-          - no_filter.vlans | length == 1
-
     - name: Resolve a VLAN
       linode.cloud.vlans_list:
         api_token: '{{ api_token }}'
         ua_prefix: '{{ ua_prefix }}'
+        api_version: v4beta
         count: 1
         order_by: created
         order: desc
