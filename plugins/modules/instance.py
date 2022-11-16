@@ -52,7 +52,7 @@ linode_instance_disk_spec = dict(
         description='The root user’s password on the newly-created Linode.'),
 
     size=dict(
-        type='int', required=True,
+        type='int', required=True, editable=True,
         description='The size of the Disk in MB.'),
 
     stackscript_id=dict(
@@ -145,7 +145,7 @@ linode_instance_interface_spec = dict(
 
 linode_instance_config_spec = dict(
     comments=dict(
-        type='str',
+        type='str', editable=True,
         description='Arbitrary User comments on this Config.'),
 
     devices=dict(
@@ -157,7 +157,7 @@ linode_instance_config_spec = dict(
         description='Helpers enabled when booting to this Linode Config.'),
 
     kernel=dict(
-        type='str',
+        type='str', editable=True,
         description='A Kernel ID to boot a Linode with. Defaults to “linode/latest-64bit”.'),
 
     label=dict(
@@ -165,19 +165,19 @@ linode_instance_config_spec = dict(
         description='The label to assign to this config.'),
 
     memory_limit=dict(
-        type='int',
+        type='int', editable=True,
         description='Defaults to the total RAM of the Linode.'),
 
     root_device=dict(
-        type='str',
+        type='str', editable=True,
         description='The root device to boot.'),
 
     run_level=dict(
-        type='str',
+        type='str', editable=True,
         description='Defines the state of your Linode after booting.'),
 
     virt_mode=dict(
-        type='str',
+        type='str', editable=True,
         description='Controls the virtualization mode.',
         choices=[
             'paravirt',
@@ -234,7 +234,7 @@ linode_instance_spec = dict(
         description='If true, the created Linode will have private networking enabled.'),
 
     group=dict(
-        type='str',
+        type='str', editable=True,
         description=[
             'The group that the instance should be marked under.',
             'Please note, that group labelling is deprecated but still supported.',
@@ -244,6 +244,7 @@ linode_instance_spec = dict(
 
     configs=dict(
         type='list', elements='dict', options=linode_instance_config_spec,
+        editable=True,
         description=[
             'A list of Instance configs to apply to the Linode.',
             'See the [Linode API documentation](https://www.linode.com/docs'
@@ -252,6 +253,7 @@ linode_instance_spec = dict(
 
     disks=dict(
         type='list', elements='dict', options=linode_instance_disk_spec,
+        editable=True,
         description=[
             'A list of Disks to create on the Linode.',
             'See the [Linode API documentation](https://www.linode.com/'

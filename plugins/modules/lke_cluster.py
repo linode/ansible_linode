@@ -25,19 +25,19 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 
 linode_lke_cluster_autoscaler = dict(
     enabled=dict(
-        type='bool',
+        type='bool', editable=True,
         description=[
             'Whether autoscaling is enabled for this Node Pool.',
             'NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.'
         ],
     ),
     max=dict(
-        type='int',
+        type='int', editable=True,
         description='The maximum number of nodes to autoscale to. '
                     'Defaults to the value provided by the count field.',
     ),
     min=dict(
-        type='int',
+        type='int', editable=True,
         description='The minimum number of nodes to autoscale to. '
                     'Defaults to the Node Pool’s count.',
     ),
@@ -58,7 +58,7 @@ linode_lke_cluster_disk = dict(
 
 linode_lke_cluster_node_pool_spec = dict(
     count=dict(
-        type='int',
+        type='int', editable=True,
         description='The number of nodes in the Node Pool.',
         required=True,
     ),
@@ -68,7 +68,7 @@ linode_lke_cluster_node_pool_spec = dict(
         required=True,
     ),
     autoscaler=dict(
-        type='dict',
+        type='dict', editable=True,
         description='When enabled, the number of nodes autoscales within the '
                     'defined minimum and maximum values.',
         suboptions=linode_lke_cluster_autoscaler,
@@ -82,7 +82,7 @@ linode_lke_cluster_spec = dict(
         description='This Kubernetes cluster’s unique label.'
     ),
     k8s_version=dict(
-        type='str',
+        type='str', editable=True,
         description=[
             'The desired Kubernetes version for this Kubernetes '
             'cluster in the format of <major>.<minor>, and the '
@@ -102,13 +102,14 @@ linode_lke_cluster_spec = dict(
     ),
 
     high_availability=dict(
-        type='bool',
+        type='bool', editable=True,
         description='Defines whether High Availability is enabled for the '
                     'Control Plane Components of the cluster. ',
         default=False
     ),
 
     node_pools=dict(
+        editable=True,
         type='list',
         elements='dict',
         suboptions=linode_lke_cluster_node_pool_spec,

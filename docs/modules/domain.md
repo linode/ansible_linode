@@ -37,19 +37,19 @@ Manage Linode Domains.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `domain` | `str` | **Required** | The domain this Domain represents.   |
-| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present`  `absent` ) |
-| `axfr_ips` | `list` | Optional | The list of IPs that may perform a zone transfer for this Domain.   |
-| `description` | `str` | Optional | The list of IPs that may perform a zone transfer for this Domain.   |
-| `expire_sec` | `int` | Optional | The amount of time in seconds that may pass before this Domain is no longer authoritative.   |
-| `master_ips` | `list` | Optional | The IP addresses representing the master DNS for this Domain.   |
-| `refresh_sec` | `int` | Optional | The amount of time in seconds before this Domain should be refreshed.   |
-| `retry_sec` | `int` | Optional | The interval, in seconds, at which a failed refresh should be retried.   |
-| `soa_email` | `str` | Optional | The Start of Authority email address.   |
-| `status` | `str` | Optional | Used to control whether this Domain is currently being rendered.   |
-| `tags` | `list` | Optional | An array of tags applied to this object.   |
-| `ttl_sec` | `int` | Optional | the amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.   |
-| `type` | `str` | Optional | Whether this Domain represents the authoritative source of information for the domain it describes (master), or whether it is a read-only copy of a master (slave).   |
+| `domain` | <center>`str`</center> | <center>**Required**</center> | The domain this Domain represents.   |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| `axfr_ips` | <center>`list`</center> | <center>Optional</center> | The list of IPs that may perform a zone transfer for this Domain.  **(Updatable)** |
+| `description` | <center>`str`</center> | <center>Optional</center> | The list of IPs that may perform a zone transfer for this Domain.  **(Updatable)** |
+| `expire_sec` | <center>`int`</center> | <center>Optional</center> | The amount of time in seconds that may pass before this Domain is no longer authoritative.  **(Updatable)** |
+| `master_ips` | <center>`list`</center> | <center>Optional</center> | The IP addresses representing the master DNS for this Domain.  **(Updatable)** |
+| `refresh_sec` | <center>`int`</center> | <center>Optional</center> | The amount of time in seconds before this Domain should be refreshed.  **(Updatable)** |
+| `retry_sec` | <center>`int`</center> | <center>Optional</center> | The interval, in seconds, at which a failed refresh should be retried.  **(Updatable)** |
+| `soa_email` | <center>`str`</center> | <center>Optional</center> | The Start of Authority email address.  **(Updatable)** |
+| `status` | <center>`str`</center> | <center>Optional</center> | Used to control whether this Domain is currently being rendered.  **(Updatable)** |
+| `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object.  **(Updatable)** |
+| `ttl_sec` | <center>`int`</center> | <center>Optional</center> | the amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.  **(Updatable)** |
+| `type` | <center>`str`</center> | <center>Optional</center> | Whether this Domain represents the authoritative source of information for the domain it describes (master), or whether it is a read-only copy of a master (slave).  **(Updatable)** |
 
 
 

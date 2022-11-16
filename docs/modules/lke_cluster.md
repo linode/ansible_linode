@@ -59,14 +59,14 @@ Manage Linode LKE clusters.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | `str` | **Required** | This Kubernetes cluster’s unique label.   |
-| `k8s_version` | `str` | Optional | The desired Kubernetes version for this Kubernetes cluster in the format of <major>.<minor>, and the latest supported patch version will be deployed. A version upgrade requires that you manually recycle the nodes in your cluster.   |
-| `region` | `str` | Optional | This Kubernetes cluster’s location.   |
-| `tags` | `list` | Optional | An array of tags applied to the Kubernetes cluster.   |
-| `high_availability` | `bool` | Optional | Defines whether High Availability is enabled for the Control Plane Components of the cluster.   (Default: `False`) |
-| [`node_pools` (sub-options)](#node_pools) | `list` | Optional | A list of node pools to configure the cluster with   |
-| `skip_polling` | `bool` | Optional | If true, the module will not wait for all nodes in the cluster to be ready.  (Default: `False`) |
-| `wait_timeout` | `int` | Optional | The period to wait for the cluster to be ready in seconds.  (Default: `600`) |
+| `label` | <center>`str`</center> | <center>**Required**</center> | This Kubernetes cluster’s unique label.   |
+| `k8s_version` | <center>`str`</center> | <center>Optional</center> | The desired Kubernetes version for this Kubernetes cluster in the format of <major>.<minor>, and the latest supported patch version will be deployed. A version upgrade requires that you manually recycle the nodes in your cluster.  **(Updatable)** |
+| `region` | <center>`str`</center> | <center>Optional</center> | This Kubernetes cluster’s location.   |
+| `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to the Kubernetes cluster.   |
+| `high_availability` | <center>`bool`</center> | <center>Optional</center> | Defines whether High Availability is enabled for the Control Plane Components of the cluster.   **(Default: `False`;Updatable)** |
+| [`node_pools` (sub-options)](#node_pools) | <center>`list`</center> | <center>Optional</center> | A list of node pools to configure the cluster with  **(Updatable)** |
+| `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the cluster to be ready.  **(Default: `False`)** |
+| `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The period to wait for the cluster to be ready in seconds.  **(Default: `600`)** |
 
 
 
@@ -76,9 +76,9 @@ Manage Linode LKE clusters.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `count` | `int` | **Required** | The number of nodes in the Node Pool.   |
-| `type` | `str` | **Required** | The Linode Type for all of the nodes in the Node Pool.   |
-| [`autoscaler` (sub-options)](#autoscaler) | `dict` | Optional | When enabled, the number of nodes autoscales within the defined minimum and maximum values.   |
+| `count` | <center>`int`</center> | <center>**Required**</center> | The number of nodes in the Node Pool.  **(Updatable)** |
+| `type` | <center>`str`</center> | <center>**Required**</center> | The Linode Type for all of the nodes in the Node Pool.   |
+| [`autoscaler` (sub-options)](#autoscaler) | <center>`dict`</center> | <center>Optional</center> | When enabled, the number of nodes autoscales within the defined minimum and maximum values.  **(Updatable)** |
 
 
 
@@ -88,9 +88,9 @@ Manage Linode LKE clusters.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `enabled` | `bool` | Optional | Whether autoscaling is enabled for this Node Pool. NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.   |
-| `max` | `int` | Optional | The maximum number of nodes to autoscale to. Defaults to the value provided by the count field.   |
-| `min` | `int` | Optional | The minimum number of nodes to autoscale to. Defaults to the Node Pool’s count.   |
+| `enabled` | <center>`bool`</center> | <center>Optional</center> | Whether autoscaling is enabled for this Node Pool. NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.  **(Updatable)** |
+| `max` | <center>`int`</center> | <center>Optional</center> | The maximum number of nodes to autoscale to. Defaults to the value provided by the count field.  **(Updatable)** |
+| `min` | <center>`int`</center> | <center>Optional</center> | The minimum number of nodes to autoscale to. Defaults to the Node Pool’s count.  **(Updatable)** |
 
 
 

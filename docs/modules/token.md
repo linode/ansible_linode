@@ -45,10 +45,10 @@ Manage a Linode Token.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | `str` | **Required** | This token's unique label.   |
-| `state` | `str` | **Required** | The state of this token.  (Choices:  `present`  `absent` ) |
-| `expiry` | `str` | Optional | When this token should be valid until.   |
-| `scopes` | `str` | Optional | The OAuth scopes to create the token with.   |
+| `label` | <center>`str`</center> | <center>**Required**</center> | This token's unique label.   |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The state of this token.  **(Choices: `present`, `absent`)** |
+| `expiry` | <center>`str`</center> | <center>Optional</center> | When this token should be valid until.   |
+| `scopes` | <center>`str`</center> | <center>Optional</center> | The OAuth scopes to create the token with.   |
 
 
 

@@ -38,10 +38,10 @@ Get info about a Linode Domain Record.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `domain_id` | `int` | Optional | The ID of the parent Domain. Optional if `domain` is defined.   |
-| `domain` | `str` | Optional | The name of the parent Domain. Optional if `domain_id` is defined.   |
-| `id` | `int` | Optional | The unique id of the subdomain. Optional if `name` is defined.   |
-| `name` | `str` | Optional | The name of the domain record. Optional if `id` is defined.   |
+| `domain_id` | <center>`int`</center> | <center>Optional</center> | The ID of the parent Domain. Optional if `domain` is defined.   |
+| `domain` | <center>`str`</center> | <center>Optional</center> | The name of the parent Domain. Optional if `domain_id` is defined.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The unique id of the subdomain. Optional if `name` is defined.   |
+| `name` | <center>`str`</center> | <center>Optional</center> | The name of the domain record. Optional if `id` is defined.   |
 
 
 

@@ -34,10 +34,10 @@ Get info about a Linode Object Storage Cluster.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | `str` | Optional | The unique id given to the clusters.   |
-| `region` | `str` | Optional | The region the clusters are in.   |
-| `domain` | `str` | Optional | The domain of the clusters.   |
-| `static_site_domain` | `str` | Optional | The static-site domain of the clusters.   |
+| `id` | <center>`str`</center> | <center>Optional</center> | The unique id given to the clusters.   |
+| `region` | <center>`str`</center> | <center>Optional</center> | The region the clusters are in.   |
+| `domain` | <center>`str`</center> | <center>Optional</center> | The domain of the clusters.   |
+| `static_site_domain` | <center>`str`</center> | <center>Optional</center> | The static-site domain of the clusters.   |
 
 
 

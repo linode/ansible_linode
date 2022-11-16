@@ -34,8 +34,8 @@ Get info about a Linode Instance.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | `int` | Optional | The instance’s label. Optional if `label` is defined.   |
-| `label` | `str` | Optional | The unique ID of the Instance. Optional if `id` is defined.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The instance’s label. Optional if `label` is defined.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The unique ID of the Instance. Optional if `id` is defined.   |
 
 
 

@@ -58,20 +58,20 @@ Manage a Linode PostgreSQL database.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | `str` | **Required** | This database's unique label.   |
-| `state` | `str` | **Required** | The state of this database.  (Choices:  `present`  `absent` ) |
-| `allow_list` | `list` | Optional | A list of IP addresses that can access the Managed Database. Each item must be a range in CIDR format.   |
-| `cluster_size` | `int` | Optional | The number of Linode Instance nodes deployed to the Managed Database.  (Choices:  `1`  `3` Default: `1`) |
-| `encrypted` | `bool` | Optional | Whether the Managed Databases is encrypted.   |
-| `engine` | `str` | Optional | The Managed Database engine in engine/version format.   |
-| `region` | `str` | Optional | The Region ID for the Managed Database.   |
-| `replication_type` | `str` | Optional | The replication method used for the Managed Database. Defaults to none for a single cluster and semi_synch for a high availability cluster. Must be none for a single node cluster. Must be asynch or semi_synch for a high availability cluster.  (Choices:  `none`  `asynch`  `semi_synch` Default: `none`) |
-| `replication_commit_type` | `str` | Optional | The synchronization level of the replicating server. Must be local or off for the asynch replication type. Must be on, remote_write, or remote_apply for the semi_synch replication type.  (Choices:  `off`  `on`  `local`  `remote_write`  `remote_apply` Default: `local`) |
-| `ssl_connection` | `bool` | Optional | Whether to require SSL credentials to establish a connection to the Managed Database.  (Default: `True`) |
-| `type` | `str` | Optional | The Linode Instance type used by the Managed Database for its nodes.   |
-| [`updates` (sub-options)](#updates) | `dict` | Optional | Configuration settings for automated patch update maintenance for the Managed Database.   |
-| `wait` | `bool` | Optional | Wait for the database to have status `available` before returning.  (Default: `True`) |
-| `wait_timeout` | `int` | Optional | The amount of time, in seconds, to wait for an image to have status `available`.  (Default: `3600`) |
+| `label` | <center>`str`</center> | <center>**Required**</center> | This database's unique label.   |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The state of this database.  **(Choices: `present`, `absent`)** |
+| `allow_list` | <center>`list`</center> | <center>Optional</center> | A list of IP addresses that can access the Managed Database. Each item must be a range in CIDR format.  **(Updatable)** |
+| `cluster_size` | <center>`int`</center> | <center>Optional</center> | The number of Linode Instance nodes deployed to the Managed Database.  **(Choices: `1`, `3`;Default: `1`)** |
+| `encrypted` | <center>`bool`</center> | <center>Optional</center> | Whether the Managed Databases is encrypted.   |
+| `engine` | <center>`str`</center> | <center>Optional</center> | The Managed Database engine in engine/version format.   |
+| `region` | <center>`str`</center> | <center>Optional</center> | The Region ID for the Managed Database.   |
+| `replication_type` | <center>`str`</center> | <center>Optional</center> | The replication method used for the Managed Database. Defaults to none for a single cluster and semi_synch for a high availability cluster. Must be none for a single node cluster. Must be asynch or semi_synch for a high availability cluster.  **(Choices: `none`, `asynch`, `semi_synch`;Default: `none`)** |
+| `replication_commit_type` | <center>`str`</center> | <center>Optional</center> | The synchronization level of the replicating server. Must be local or off for the asynch replication type. Must be on, remote_write, or remote_apply for the semi_synch replication type.  **(Choices: `off`, `on`, `local`, `remote_write`, `remote_apply`;Default: `local`)** |
+| `ssl_connection` | <center>`bool`</center> | <center>Optional</center> | Whether to require SSL credentials to establish a connection to the Managed Database.  **(Default: `True`)** |
+| `type` | <center>`str`</center> | <center>Optional</center> | The Linode Instance type used by the Managed Database for its nodes.   |
+| [`updates` (sub-options)](#updates) | <center>`dict`</center> | <center>Optional</center> | Configuration settings for automated patch update maintenance for the Managed Database.  **(Updatable)** |
+| `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the database to have status `available` before returning.  **(Default: `True`)** |
+| `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an image to have status `available`.  **(Default: `3600`)** |
 
 
 
@@ -81,11 +81,11 @@ Manage a Linode PostgreSQL database.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `day_of_week` | `int` | **Required** | The day to perform maintenance. 1=Monday, 2=Tuesday, etc.  (Choices:  `1`  `2`  `3`  `4`  `5`  `6`  `7` ) |
-| `duration` | `int` | **Required** | The maximum maintenance window time in hours.  (Choices:  `1`  `3` ) |
-| `hour_of_day` | `int` | **Required** | The hour to begin maintenance based in UTC time.   |
-| `frequency` | `str` | Optional | Whether maintenance occurs on a weekly or monthly basis.  (Choices:  `weekly`  `monthly` Default: `weekly`) |
-| `week_of_month` | `int` | Optional | The week of the month to perform monthly frequency updates. Defaults to None. Required for monthly frequency updates. Must be null for weekly frequency updates.   |
+| `day_of_week` | <center>`int`</center> | <center>**Required**</center> | The day to perform maintenance. 1=Monday, 2=Tuesday, etc.  **(Choices: `1`, `2`, `3`, `4`, `5`, `6`, `7`)** |
+| `duration` | <center>`int`</center> | <center>**Required**</center> | The maximum maintenance window time in hours.  **(Choices: `1`, `3`)** |
+| `hour_of_day` | <center>`int`</center> | <center>**Required**</center> | The hour to begin maintenance based in UTC time.   |
+| `frequency` | <center>`str`</center> | <center>Optional</center> | Whether maintenance occurs on a weekly or monthly basis.  **(Choices: `weekly`, `monthly`;Default: `weekly`)** |
+| `week_of_month` | <center>`int`</center> | <center>Optional</center> | The week of the month to perform monthly frequency updates. Defaults to None. Required for monthly frequency updates. Must be null for weekly frequency updates.   |
 
 
 

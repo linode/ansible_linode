@@ -34,8 +34,8 @@ Get info about a Linode Personal Access Token.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | `int` | Optional | The ID of the token.   |
-| `label` | `str` | Optional | The label of the token.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the token.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the token.   |
 
 
 

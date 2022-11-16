@@ -31,19 +31,19 @@ linode_nodes_spec = dict(
         description='The label for this node.'),
 
     address=dict(
-        type='str', required=True,
+        type='str', required=True, editable=True,
         description=[
             'The private IP Address where this backend can be reached.',
             'This must be a private IP address.'
         ]),
 
     weight=dict(
-        type='int', required=False,
+        type='int', required=False, editable=True,
         description='Nodes with a higher weight will receive more traffic.',
     ),
 
     mode=dict(
-        type='str', required=False,
+        type='str', required=False, editable=True,
         description='The mode this NodeBalancer should use when sending traffic to this backend.',
         choices=['accept', 'reject', 'drain', 'backup']),
 
@@ -51,22 +51,22 @@ linode_nodes_spec = dict(
 
 linode_configs_spec = dict(
     algorithm=dict(
-        type='str', required=False,
+        type='str', required=False, editable=True,
         description='What algorithm this NodeBalancer should use for routing traffic to backends.',
         choices=['roundrobin', 'leastconn', 'source']),
 
     check=dict(
-        type='str', required=False,
+        type='str', required=False, editable=True,
         description='The type of check to perform against backends to ensure they are '
                     'serving requests.',
         choices=['none', 'connection', 'http', 'http_body']),
 
     check_attempts=dict(
-        type='int', required=False,
+        type='int', required=False, editable=True,
         description='How many times to attempt a check before considering a backend to be down.'),
 
     check_body=dict(
-        type='str', required=False, default='',
+        type='str', required=False, default='', editable=True,
         description=[
             'This value must be present in the response body of the check in order for it to pass.',
             'If this value is not present in the response body of a check request, the backend is '
@@ -74,40 +74,40 @@ linode_configs_spec = dict(
         ]),
 
     check_interval=dict(
-        type='int', required=False,
+        type='int', required=False, editable=True,
         description='How often, in seconds, to check that backends are up and serving requests.'),
 
     check_passive=dict(
-        type='bool', required=False,
+        type='bool', required=False, editable=True,
         description='If true, any response from this backend with a 5xx status code will be enough '
                     'for it to be considered unhealthy and taken out of rotation.'),
 
     check_path=dict(
-        type='str', required=False,
+        type='str', required=False, editable=True,
         description='The URL path to check on each backend. If the backend does '
                     'not respond to this request it is considered to be down.'),
 
     check_timeout=dict(
-        type='int', required=False,
+        type='int', required=False, editable=True,
         description='How long, in seconds, to wait for a check attempt before considering it '
                     'failed.'),
 
     cipher_suite=dict(
-        type='str', required=False, default='recommended',
+        type='str', required=False, default='recommended', editable=True,
         description='What ciphers to use for SSL connections served by this NodeBalancer.',
         choices=['recommended', 'legacy']),
 
     port=dict(
-        type='int', required=False,
+        type='int', required=False, editable=True,
         description='The port this Config is for.'),
 
     protocol=dict(
-        type='str', required=False,
+        type='str', required=False, editable=True,
         description='The protocol this port is configured to serve.',
         choices=['http', 'https', 'tcp']),
 
     proxy_protocol=dict(
-        type='str', required=False,
+        type='str', required=False, editable=True,
         description='ProxyProtocol is a TCP extension that sends initial TCP connection '
                     'information such as source/destination IPs and ports to backend devices.',
         choices=['none', 'v1', 'v2']),
@@ -119,23 +119,23 @@ linode_configs_spec = dict(
     ),
 
     ssl_cert=dict(
-        type='str', required=False,
+        type='str', required=False, editable=True,
         description='The PEM-formatted public SSL certificate (or the combined '
                     'PEM-formatted SSL certificate and Certificate Authority chain) '
                     'that should be served on this NodeBalancerConfig’s port.'),
 
     ssl_key=dict(
-        type='str', required=False,
+        type='str', required=False, editable=True,
         description='The PEM-formatted private key for the SSL certificate '
                     'set in the ssl_cert field.'),
 
     stickiness=dict(
-        type='str', required=False,
+        type='str', required=False, editable=True,
         description='Controls how session stickiness is handled on this port.',
         choices=['none', 'table', 'http_cookie']),
 
     nodes=dict(
-        type='list', required=False, elements='dict', options=linode_nodes_spec,
+        type='list', required=False, elements='dict', options=linode_nodes_spec, editable=True,
         description='A list of nodes to apply to this config. '
                     'These can alternatively be configured through the nodebalancer_node module.')
 )
@@ -148,7 +148,7 @@ linode_nodebalancer_spec = dict(
     ),
 
     client_conn_throttle=dict(
-        type='int',
+        type='int', editable=True,
         description=[
             'Throttle connections per second.',
             'Set to 0 (zero) to disable throttling.'
@@ -164,7 +164,7 @@ linode_nodebalancer_spec = dict(
                choices=['present', 'absent'], required=True),
 
     configs=dict(
-        type='list', elements='dict', options=linode_configs_spec,
+        type='list', elements='dict', options=linode_configs_spec, editable=True,
         description='A list of configs to apply to the NodeBalancer.')
 )
 

@@ -44,7 +44,8 @@ SPEC = dict(
             'A list of IP addresses that can access the Managed Database.',
             'Each item must be a range in CIDR format.'
         ],
-        default=[]
+        default=[],
+        editable=True,
     ),
     cluster_size=dict(
         type='int',
@@ -101,7 +102,8 @@ SPEC = dict(
         type='dict',
         options=SPEC_UPDATE_WINDOW,
         description='Configuration settings for automated patch '
-                    'update maintenance for the Managed Database.'
+                    'update maintenance for the Managed Database.',
+        editable=True
     ),
     wait=dict(
         type='bool', default=True,

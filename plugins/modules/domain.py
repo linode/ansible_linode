@@ -22,39 +22,43 @@ linode_domain_spec = dict(
     # Unused for domain objects
     label=dict(type='str', required=False, doc_hide=True),
 
-    axfr_ips=dict(type='list', elements='str',
+    axfr_ips=dict(type='list', elements='str', editable=True,
                   description='The list of IPs that may perform a zone transfer for this Domain.'),
-    description=dict(type='str',
+    description=dict(type='str', editable=True,
                      description='The list of IPs that may perform a '
                                  'zone transfer for this Domain.'),
     domain=dict(type='str', required=True,
                 description='The domain this Domain represents.'),
-    expire_sec=dict(type='int',
+    expire_sec=dict(type='int', editable=True,
                     description='The amount of time in seconds that may pass'
                                 ' before this Domain is no longer authoritative.'),
-    master_ips=dict(type='list', elements='str',
+    master_ips=dict(type='list', elements='str', editable=True,
                     description='The IP addresses representing the '
                                 'master DNS for this Domain.'),
-    refresh_sec=dict(type='int',
+    refresh_sec=dict(type='int', editable=True,
                      description='The amount of time in seconds before '
                                  'this Domain should be refreshed.'),
-    retry_sec=dict(type='int',
+    retry_sec=dict(type='int', editable=True,
                    description='The interval, in seconds, at which a '
                                'failed refresh should be retried.'),
     soa_email=dict(type='str',
-                   description='The Start of Authority email address.'),
+                   description='The Start of Authority email address.',
+                   editable=True),
     status=dict(type='str',
-                description='Used to control whether this Domain is currently being rendered.'),
+                description='Used to control whether this Domain is currently being rendered.',
+                editable=True),
     state=dict(type='str',
                description='The desired state of the target.',
                choices=['present', 'absent'], required=True),
-    tags=dict(type='list', elements='str',
+    tags=dict(type='list', elements='str', editable=True,
               description='An array of tags applied to this object.'),
-    ttl_sec=dict(type='int',
+    ttl_sec=dict(type='int', editable=True,
                  description='the amount of time in seconds that this '
                              'Domain’s records may be cached by resolvers '
-                             'or other domain servers.'),
+                             'or other domain servers.'
+                 ),
     type=dict(type='str',
+              editable=True,
               description='Whether this Domain represents the authoritative '
                           'source of information for the domain'
                           ' it describes (master), or whether it is a '

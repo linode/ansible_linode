@@ -34,8 +34,8 @@ Get info about a Linode LKE cluster.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | `int` | Optional | The ID of the LKE cluster. Optional if `label` is defined.   |
-| `label` | `str` | Optional | The label of the LKE cluster. Optional if `id` is defined.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the LKE cluster. Optional if `label` is defined.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the LKE cluster. Optional if `id` is defined.   |
 
 
 

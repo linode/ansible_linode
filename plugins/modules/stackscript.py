@@ -35,25 +35,26 @@ SPEC = dict(
     ),
 
     description=dict(
-        type='str',
+        type='str', editable=True,
         description='A description for the StackScript.',
     ),
     images=dict(
         type='list',
         elements='str',
+        editable=True,
         description='Images that can be deployed using this StackScript.',
     ),
     is_public=dict(
-        type='bool',
+        type='bool', editable=True,
         description='This determines whether other users can use your StackScript.',
     ),
     rev_note=dict(
-        type='str',
+        type='str', editable=True,
         description='This field allows you to add notes for '
                     'the set of revisions made to this StackScript.',
     ),
     script=dict(
-        type='str',
+        type='str', editable=True,
         description='The script to execute when provisioning a new Linode with this StackScript.'
     )
 )

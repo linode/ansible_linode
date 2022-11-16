@@ -28,7 +28,7 @@ Get info about a Linode User.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `username` | `str` | **Required** | The username of the user.   |
+| `username` | <center>`str`</center> | <center>**Required**</center> | The username of the user.   |
 
 
 
