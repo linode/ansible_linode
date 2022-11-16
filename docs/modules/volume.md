@@ -70,7 +70,7 @@ Manage a Linode Volume.
 | `linode_id` | <center>`int`</center> | <center>Optional</center> | The Linode this volume should be attached to upon creation. If not given, the volume will be created without an attachment.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>Optional</center> | The location to deploy the volume in. See U(https://api.linode.com/v4/regions)   |
 | `size` | <center>`int`</center> | <center>Optional</center> | The size of this volume, in GB. Be aware that volumes may only be resized up after creation.  **(Updatable)** |
-| `attached` | <center>`bool`</center> | <center>Optional</center> | If true, the volume will be attached to a Linode. Otherwise, the volume will be detached.  **(Default: `True`;Updatable)** |
+| `attached` | <center>`bool`</center> | <center>Optional</center> | If true, the volume will be attached to a Linode. Otherwise, the volume will be detached.  **(Default: `True`; Updatable)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for a volume to have the active status.  **(Default: `240`)** |
 
 

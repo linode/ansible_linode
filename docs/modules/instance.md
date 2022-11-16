@@ -111,7 +111,7 @@ Manage Linode Instances, Configs, and Disks.
 | `memory_limit` | <center>`int`</center> | <center>Optional</center> | Defaults to the total RAM of the Linode.  **(Updatable)** |
 | `root_device` | <center>`str`</center> | <center>Optional</center> | The root device to boot.  **(Updatable)** |
 | `run_level` | <center>`str`</center> | <center>Optional</center> | Defines the state of your Linode after booting.  **(Updatable)** |
-| `virt_mode` | <center>`str`</center> | <center>Optional</center> | Controls the virtualization mode.  **(Choices: `paravirt`, `fullvirt`;Updatable)** |
+| `virt_mode` | <center>`str`</center> | <center>Optional</center> | Controls the virtualization mode.  **(Choices: `paravirt`, `fullvirt`; Updatable)** |
 
 
 

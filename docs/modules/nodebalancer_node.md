@@ -61,7 +61,7 @@ Manage Linode NodeBalancer Nodes.
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label for this node. This is used to identify nodes within a config.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | Whether the NodeBalancer node should be present or absent.  **(Choices: `present`, `absent`)** |
 | `address` | <center>`str`</center> | <center>Optional</center> | The private IP Address where this backend can be reached. This must be a private IP address.  **(Updatable)** |
-| `mode` | <center>`str`</center> | <center>Optional</center> | The mode this NodeBalancer should use when sending traffic to this backend.  **(Choices: `accept`, `reject`, `drain`, `backup`;Updatable)** |
+| `mode` | <center>`str`</center> | <center>Optional</center> | The mode this NodeBalancer should use when sending traffic to this backend.  **(Choices: `accept`, `reject`, `drain`, `backup`; Updatable)** |
 | `weight` | <center>`int`</center> | <center>Optional</center> | Nodes with a higher weight will receive more traffic.  **(Updatable)** |
 
 

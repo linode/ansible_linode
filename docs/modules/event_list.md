@@ -43,7 +43,7 @@ List and filter on Linode events.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | <center>`str`</center> | <center>Optional</center> | The order to list events in.  **(Choices: `desc`, `asc`;Default: `asc`)** |
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list events in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
 | `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order events by.   |
 | [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting events.   |
 | `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |

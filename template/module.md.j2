@@ -46,7 +46,7 @@
 {% if spec.editable -%}
 {{ extras_fmt.append("Updatable") or '' }}
 {%- endif %}
-| {{ name_fmt }} | <center>{{type_text}}</center> | <center>{{ required_text }}</center> | {% for line in spec.description %}{{ line }} {% endfor %} {% if extras_fmt | length > 0 %}**({{ extras_fmt|join(';') }})**{% endif %} |
+| {{ name_fmt }} | <center>{{type_text}}</center> | <center>{{ required_text }}</center> | {% for line in spec.description %}{{ line }} {% endfor %} {% if extras_fmt | length > 0 %}**({{ extras_fmt|join('; ') }})**{% endif %} |
 {% endif %}
 {% endfor %}
 {% endmacro %}
