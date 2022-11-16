@@ -10,6 +10,7 @@ from typing import Any, Optional, Dict
 
 from linode_api4 import VLAN
 
+from ansible.module_utils.basic import env_fallback
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
     filter_null_values, construct_api_filter, get_all_paginated
@@ -36,7 +37,12 @@ spec = dict(
     # Disable the default values
     state=dict(type='str', required=False, doc_hide=True),
     label=dict(type='str', required=False, doc_hide=True),
-
+    api_version=dict(
+            type='str',
+            fallback=(env_fallback, ['LINODE_API_VERSION']),
+            default='v4beta',
+            doc_hide=True,
+        ),
     order=dict(type='str', description='The order to list VLANs in.',
                default='asc', choices=['desc', 'asc']),
     order_by=dict(type='str', description='The attribute to order VLANs by.'),

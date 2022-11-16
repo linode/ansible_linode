@@ -23,7 +23,6 @@
       linode.cloud.vlan_list:
         api_token: '{{ api_token }}'
         ua_prefix: '{{ ua_prefix }}'
-        api_version: v4beta
         count: 1
         order_by: created
         order: desc
