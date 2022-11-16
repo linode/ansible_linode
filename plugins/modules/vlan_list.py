@@ -16,7 +16,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vlans_list as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vlan_list as docs
 
 spec_filter = dict(
     name=dict(type='str', required=True,
@@ -37,11 +37,11 @@ spec = dict(
     state=dict(type='str', required=False, doc_hide=True),
     label=dict(type='str', required=False, doc_hide=True),
 
-    order=dict(type='str', description='The order to list events in.',
+    order=dict(type='str', description='The order to list VLANs in.',
                default='asc', choices=['desc', 'asc']),
-    order_by=dict(type='str', description='The attribute to order events by.'),
+    order_by=dict(type='str', description='The attribute to order VLANs by.'),
     filters=dict(type='list', elements='dict', options=spec_filter,
-                 description='A list of filters to apply to the resulting events.'),
+                 description='A list of filters to apply to the resulting VLANs.'),
     count=dict(type='int',
                description=[
                    'The number of results to return.',
@@ -62,7 +62,7 @@ specdoc_meta = dict(
             docs_url='https://www.linode.com/docs/api/networking/#vlans-list__response-samples',
             type='list',
             elements='dict',
-            sample=docs.result_vlans_samples
+            sample=docs.result_vlan_samples
         )
     )
 )
@@ -80,7 +80,7 @@ class Module(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec)
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for event list module"""
+        """Entrypoint for VLANs list module"""
 
         filter_dict = construct_api_filter(self.module.params)
 

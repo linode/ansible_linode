@@ -1,4 +1,4 @@
-- name: vlans_list
+- name: vlan_list
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -20,7 +20,7 @@
       register: create_instance
 
     - name: Resolve a VLAN
-      linode.cloud.vlans_list:
+      linode.cloud.vlan_list:
         api_token: '{{ api_token }}'
         ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta

@@ -1,4 +1,4 @@
-# vlans_list
+# vlan_list
 
 List and filter on Linode VLANs.
 
@@ -11,15 +11,15 @@ List and filter on Linode VLANs.
 
 ```yaml
 - name: List all of the VLANs for the current Linode Account
-  linode.cloud.vlans_list: {}
+  linode.cloud.vlan_list: {}
 ```
 
 ```yaml
-- name: List the latest 5 VLANs for the current Linode Account
-  linode.cloud.vlans_list:
-    count: 5
-    order_by: desc
-    order: created
+- name: List all VLANs in the us-southeast region
+  linode.cloud.vlan_list:
+    filter:
+      - name: region
+        values: us-southeast
 ```
 
 
@@ -58,7 +58,7 @@ List and filter on Linode VLANs.
 
 ## Return Values
 
-- `vlans` - The returned VLANs.
+- `vlan` - The returned VLANs.
 
     - Sample Response:
         ```json
