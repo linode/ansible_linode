@@ -75,8 +75,7 @@ List and filter on Linode stackscripts.
                 "created": "2018-01-01T00:01:01",
                 "deployments_active": 1,
                 "deployments_total": 12,
-                "description": "This StackScript installs and configures MySQL
-        ",
+                "description": "This StackScript installs and configures MySQL\n",
                 "id": 10079,
                 "images": [
                     "linode/debian9",
@@ -86,8 +85,7 @@ List and filter on Linode stackscripts.
                 "label": "a-stackscript",
                 "mine": true,
                 "rev_note": "Set up MySQL",
-                "script": ""#!/bin/bash"
-        ",
+                "script": ""#!/bin/bash"\n",
                 "updated": "2018-01-01T00:01:01",
                 "user_defined_fields": [
                     {
