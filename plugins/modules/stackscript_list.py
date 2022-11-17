@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module allows users to list Linode images."""
+"""This module allows users to list Linode stackscripts."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -14,14 +14,14 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image_list as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript_list as docs
 
 spec_filter = dict(
     name=dict(type='str', required=True,
               description=[
                   'The name of the field to filter on.',
                   'Valid filterable attributes can be found here: '
-                  'https://www.linode.com/docs/api/images/#images-list__responses',
+                  'https://www.linode.com/docs/api/stackscripts/#stackscripts-list__response-samples',
               ]),
     values=dict(type='list', elements='str', required=True,
                 description=[
@@ -48,42 +48,42 @@ spec = dict(
 
 specdoc_meta = dict(
     description=[
-        'List and filter on Linode images.'
+        'List and filter on Linode stackscripts.'
     ],
     requirements=global_requirements,
     author=global_authors,
     spec=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        images=dict(
-            description='The returned images.',
-            docs_url='https://www.linode.com/docs/api/images/#images-list__response-samples',
+        stackscripts=dict(
+            description='The returned stackscripts.',
+            docs_url='https://www.linode.com/docs/api/stackscripts/#stackscripts-list__response-samples',
             type='list',
             elements='dict',
-            sample=docs.result_images_samples
+            sample=docs.result_stackscripts_samples
         )
     )
 )
 
 
 class Module(LinodeModuleBase):
-    """Module for getting info about a Linode images"""
+    """Module for getting a list of Linode stackscripts"""
 
     def __init__(self) -> None:
         self.module_arg_spec = spec
         self.results: Dict[str, Any] = {
-            'images': []
+            'stackscripts': []
         }
 
         super().__init__(module_arg_spec=self.module_arg_spec)
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for event list module"""
+        """Entrypoint for stackscript list module"""
 
         filter_dict = construct_api_filter(self.module.params)
 
-        self.results['images'] = get_all_paginated(self.client, '/images', filter_dict,
-                                                   num_results=self.module.params['count'])
+        self.results['stackscripts'] = get_all_paginated(self.client, '/linode/stackscripts',
+                                        filter_dict, num_results=self.module.params['count'])
         return self.results
 
 
