@@ -20,6 +20,7 @@ List and filter on Linode VLANs.
     filter:
       - name: region
         values: us-southeast
+
 ```
 
 
@@ -35,9 +36,9 @@ List and filter on Linode VLANs.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | `str` | Optional | The order to list events in.  (Choices:  `desc`  `asc` Default: `asc`) |
-| `order_by` | `str` | Optional | The attribute to order events by.   |
-| [`filters` (sub-options)](#filters) | `list` | Optional | A list of filters to apply to the resulting events.   |
+| `order` | `str` | Optional | The order to list VLANs in.  (Choices:  `desc`  `asc` Default: `asc`) |
+| `order_by` | `str` | Optional | The attribute to order VLANs by.   |
+| [`filters` (sub-options)](#filters) | `list` | Optional | A list of filters to apply to the resulting VLANs.   |
 | `count` | `int` | Optional | The number of results to return. If undefined, all results will be returned.   |
 
 
@@ -58,7 +59,7 @@ List and filter on Linode VLANs.
 
 ## Return Values
 
-- `vlan` - The returned VLANs.
+- `vlans` - The returned VLANs.
 
     - Sample Response:
         ```json
