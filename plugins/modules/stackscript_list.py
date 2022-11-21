@@ -21,6 +21,7 @@ spec_filter = dict(
               description=[
                   'The name of the field to filter on.',
                   'Valid filterable attributes can be found here: '
+                  # pylint: disable-next=line-too-long
                   'https://www.linode.com/docs/api/stackscripts/#stackscripts-list__response-samples',
               ]),
     values=dict(type='list', elements='str', required=True,
@@ -57,6 +58,7 @@ specdoc_meta = dict(
     return_values=dict(
         stackscripts=dict(
             description='The returned stackscripts.',
+            # pylint: disable-next=line-too-long
             docs_url='https://www.linode.com/docs/api/stackscripts/#stackscripts-list__response-samples',
             type='list',
             elements='dict',
