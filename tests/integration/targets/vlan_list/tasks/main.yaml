@@ -1,0 +1,54 @@
+- name: vlan_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode instance with interface
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}-i'
+        region: us-southeast
+        type: g6-standard-1
+        image: linode/alpine3.16
+        interfaces:
+          - purpose: vlan
+            label: really-cool-vlan
+        private_ip: true
+        wait: false
+        state: present
+      register: create_instance
+
+    - name: Resolve a VLAN
+      linode.cloud.vlan_list:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        count: 1
+        order_by: created
+        order: desc
+        filters:
+          - name: label
+            values: really-cool-vlan
+      register: filter
+
+    - assert:
+        that:
+          - filter.vlans | length == 1
+          - filter.vlans[0].label == 'really-cool-vlan'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            label: '{{ create_instance.instance.label }}'
+            state: absent
+          register: delete_instance
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_instance.changed
+              - delete_instance.instance.id == create_instance.instance.id

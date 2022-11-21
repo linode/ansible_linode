@@ -77,6 +77,8 @@ Name | Description |
 --- | ------------ |
 [linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Linode events.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Linode images.|
+[linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on Linode stackscripts.|
+[linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
 
 
 ### Inventory Plugins
