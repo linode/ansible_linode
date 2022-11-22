@@ -1,0 +1,75 @@
+- name: api_request_baisc
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+
+        # Arbitrary authorized endpoint
+        path: lke/versions
+        method: GET
+      register: response_get
+
+    - assert:
+        that:
+          - response_get.status == 200
+          - response_get.changed == False
+
+    - linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+
+        path: domains
+        method: POST
+        body:
+          domain: 'ansible-test-{{ r }}.com'
+          type: master
+          soa_email: ansible@example.com
+      register: response_post
+
+    - assert:
+        that:
+          - response_post.status == 200
+          - response_post.changed == True
+
+    - linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+
+        path: 'domains/{{ response_post.body.id }}'
+        method: PUT
+        body:
+          description: cool
+      register: response_put
+
+    - assert:
+        that:
+          - response_put.status == 200
+          - response_put.changed == True
+          - response_put.body.description == 'cool'
+
+    - linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+
+        path: 'reallycoolfakepath'
+        method: PUT
+      register: response_failed
+      failed_when: response_failed.failed == False
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.api_request:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+
+            path: 'domains/{{ response_post.body.id }}'
+            method: DELETE
+          register: response_delete
+
+        - assert:
+            that:
+              - response_delete.status == 200
+              - response_delete.changed == True

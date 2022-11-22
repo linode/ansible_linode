@@ -1,0 +1,44 @@
+- name: stackscript_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a basic stackscript
+      linode.cloud.stackscript:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        images: ['linode/alpine3.15']
+        script: |
+          #!/bin/bash
+          # <UDF name="package" label="System Package to Install" example="nginx" default="">
+          apt-get -q update && apt-get -q -y install $PACKAGE
+        state: present
+      register: create_stackscript
+
+    - name: Get Stackscript by filtering on Label
+      linode.cloud.stackscript_list:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        count: 1
+        filters:
+          - name: label
+            values: '{{ create_stackscript.stackscript.label }}'
+      register: stack_list
+
+    - assert:
+        that:
+          - stack_list.stackscripts | length == 1
+          - stack_list.stackscripts[0].id != None
+          - stack_list.stackscripts[0].rev_note == ''
+          - stack_list.stackscripts[0].description == ''
+          - "'package' in stack_list.stackscripts[0].script"
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.stackscript:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            label: '{{ create_stackscript.stackscript.label }}'
+            state: absent

@@ -1,0 +1,59 @@
+- name: IPv6 Range Info
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create an instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/alpine3.16
+        wait: no
+        state: present
+      register: instance_create
+
+    - set_fact:
+        ipv6_body: >
+          {"linode_id": {{ instance_create.instance.id }}, "prefix_length": 64}
+
+    - name: Assign an IPv6 range to the instance
+      linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        path: networking/ipv6/ranges
+        method: POST
+        body_json: '{{ ipv6_body | to_json }}'
+      register: range_create
+
+    - name: Get info about the IPv6 range
+      linode.cloud.ipv6_range_info:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        range: '{{ range_create.body.range }}'
+      register: range_info
+
+    - assert:
+        that:
+          - range_info.range.is_bgp == False
+          - range_info.range.linodes[0] == instance_create.instance.id
+          - range_info.range.prefix == 64
+          - range_info.range.region == instance_create.instance.region
+          - range_info.range.range == range_create.body.range.split("/")[0]
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.api_request:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            path: 'networking/ipv6/ranges/{{ range_create.body.range.split("/")[0] }}'
+            method: DELETE
+
+        - linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            label: '{{ instance_create.instance.label }}'
+            state: absent

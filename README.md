@@ -22,6 +22,7 @@ Modules for managing Linode infrastructure.
 
 Name | Description |
 --- | ------------ |
+[linode.cloud.api_request](./docs/modules/api_request.md)|Make an arbitrary Linode API request.|
 [linode.cloud.database_mysql](./docs/modules/database_mysql.md)|Manage a Linode MySQL database.|
 [linode.cloud.database_postgresql](./docs/modules/database_postgresql.md)|Manage a Linode PostgreSQL database.|
 [linode.cloud.domain](./docs/modules/domain.md)|Manage Linode Domains.|
@@ -49,12 +50,14 @@ Name | Description |
 --- | ------------ |
 [linode.cloud.account_info](./docs/modules/account_info.md)|Get info about a Linode Account.|
 [linode.cloud.database_mysql_info](./docs/modules/database_mysql_info.md)|Get info about a Linode MySQL Managed Database.|
+[linode.cloud.database_postgresql_info](./docs/modules/database_postgresql_info.md)|Get info about a Linode PostgreSQL Managed Database.|
 [linode.cloud.domain_info](./docs/modules/domain_info.md)|Get info about a Linode Domain.|
 [linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|Get info about a Linode Domain Record.|
 [linode.cloud.firewall_info](./docs/modules/firewall_info.md)|Get info about a Linode Firewall.|
 [linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
 [linode.cloud.instance_info](./docs/modules/instance_info.md)|Get info about a Linode Instance.|
 [linode.cloud.ip_info](./docs/modules/ip_info.md)|Get info about a Linode IP.|
+[linode.cloud.ipv6_range_info](./docs/modules/ipv6_range_info.md)|Get info about a Linode IPv6 range.|
 [linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|Get info about a Linode LKE cluster.|
 [linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode NodeBalancer.|
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|Get info about a Linode Object Storage Cluster.|
@@ -73,6 +76,9 @@ Modules for retrieving and filtering on multiple Linode resources.
 Name | Description |
 --- | ------------ |
 [linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Linode events.|
+[linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Linode images.|
+[linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on Linode stackscripts.|
+[linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
 
 
 ### Inventory Plugins

@@ -5,6 +5,8 @@ from __future__ import absolute_import, division, print_function
 import traceback
 from typing import Any
 
+import polling
+
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import format_api_error
 
 try:
@@ -73,7 +75,7 @@ class LinodeModuleBase:
             required_if: Any = None,
             skip_exec: bool = False) -> None:
 
-        arg_spec = dict()
+        arg_spec = {}
         arg_spec.update(LINODE_COMMON_ARGS)
 
         if has_label:
@@ -106,6 +108,8 @@ class LinodeModuleBase:
             except ApiError as err:
                 # We don't want to return a stack trace for an API error
                 self.fail(msg=format_api_error(err))
+            except polling.TimeoutException as err:
+                self.fail(msg='failed to wait for condition: timeout period expired')
 
             self.module.exit_json(**res)
 

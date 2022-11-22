@@ -15,7 +15,7 @@ import polling
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json, jsonify_node_pool, validate_required
+    filter_null_values, paginated_list_to_json, jsonify_node_pool, validate_required, poll_condition
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
@@ -378,53 +378,64 @@ class LinodeLKECluster(LinodeModuleBase):
             self.results['kubeconfig'] = cluster.kubeconfig
         except ApiError as error:
             if error.status != 503:
-                self.fail(error)
+                raise error
 
             self.results['kubeconfig'] = 'Kubeconfig not yet available...'
-        except Exception as exception:
-            self.fail(exception)
 
     def _populate_kubeconfig_poll(self, cluster: LKECluster) -> None:
-        def _try_get_kubeconfig() -> bool:
+        def condition() -> bool:
             try:
                 self.results['kubeconfig'] = cluster.kubeconfig
             except ApiError as error:
                 if error.status != 503:
-                    self.fail(error)
+                    raise error
 
                 return False
-            except Exception as exception:
-                self.fail(exception)
 
             return True
 
+        poll_condition(condition, 4, self.module.params.get('wait_timeout'))
+
+    def _populate_dashboard_url_no_poll(self, cluster: LKECluster) -> None:
         try:
-            polling.poll(
-                _try_get_kubeconfig,
-                step=4,
-                timeout=self.module.params.get('wait_timeout'),
-            )
-        except polling.TimeoutException:
-            self.fail('failed to wait for lke cluster kubeconfig: timeout period expired')
+            self.results['dashboard_url'] = \
+                self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))['url']
+        except ApiError as error:
+            if error.status != 503:
+                raise error
 
-    def _populate_kubeconfig(self, cluster: LKECluster) -> None:
-        # We don't want to poll when someone is deleting their cluster
-        if self.module.params.get('skip_polling') or \
-                self.module.params.get('state') == 'absent':
-            self._populate_kubeconfig_no_poll(cluster)
-            return
+            self.results['dashboard_url'] = 'Dashboard URL not yet available...'
 
-        self._populate_kubeconfig_poll(cluster)
+    def _populate_dashboard_url_poll(self, cluster: LKECluster) -> None:
+        def condition() -> bool:
+            try:
+                self.results['dashboard_url'] = \
+                    self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))['url']
+            except ApiError as error:
+                if error.status != 503:
+                    raise error
+
+                return False
+
+            return True
+
+        poll_condition(condition, 1, self.module.params.get('wait_timeout'))
 
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
-        dashboard_data = self.client.get('/lke/clusters/{}/dashboard'.format(cluster.id))
 
         self.results['cluster'] = cluster._raw_json
         self.results['node_pools'] = [jsonify_node_pool(pool) for pool in cluster.pools]
-        self.results['dashboard_url'] = dashboard_data['url']
 
-        self._populate_kubeconfig(cluster)
+        # We want to skip polling if designated
+        if self.module.params.get('skip_polling') or \
+                self.module.params.get('state') == 'absent':
+            self._populate_kubeconfig_no_poll(cluster)
+            self._populate_dashboard_url_no_poll(cluster)
+            return
+
+        self._populate_kubeconfig_poll(cluster)
+        self._populate_dashboard_url_poll(cluster)
 
     def _handle_present(self) -> None:
         params = self.module.params
