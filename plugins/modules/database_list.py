@@ -84,8 +84,10 @@ class Module(LinodeModuleBase):
 
         filter_dict = construct_api_filter(self.module.params)
 
-        self.results['databases'] = get_all_paginated(self.client, '/databases/instances', filter_dict,
-                                                      num_results=self.module.params['count'])
+        self.results['databases'] = get_all_paginated(
+            self.client, '/databases/instances',
+            filter_dict,
+            num_results=self.module.params['count'])
         return self.results
 
 
