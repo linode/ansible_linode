@@ -260,7 +260,7 @@ class LinodeFirewall(LinodeModuleBase):
             # insert all missing fields in local_rule from remote_rule
             local_rule = local_labeled_rules[remote_rule['label']]
             for field in linode_firewall_rule_spec:
-                if field not in local_rule:
+                if field not in local_rule and field in remote_rule:
                     local_rule[field]=remote_rule[field]
             result.append(local_rule)
         return result
