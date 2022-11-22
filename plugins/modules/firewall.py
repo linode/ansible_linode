@@ -285,7 +285,8 @@ class LinodeFirewall(LinodeModuleBase):
         return local_rules
 
     def _change_rules(self) -> Optional[dict]:
-        """Updates remote firewall rules relative to user-supplied new rules, and returns whether anything changed."""
+        """Updates remote firewall rules relative to user-supplied new rules,
+           and returns whether anything changed."""
         local_rules = filter_null_values_recursive(self.module.params['rules'])
         remote_rules = filter_null_values_recursive(mapping_to_dict(self._firewall.rules))
 
