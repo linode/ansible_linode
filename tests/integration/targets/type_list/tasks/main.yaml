@@ -1,0 +1,19 @@
+- name: type_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Resolve a Linode Type
+      linode.cloud.type_list:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        count: 1
+        filters:
+          - name: label
+            values: Nanode 1GB
+      register: filter
+
+    - assert:
+        that:
+          - filter.types | length == 1
+          - filter.types[0].label == 'Nanode 1GB'
