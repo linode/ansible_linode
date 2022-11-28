@@ -75,9 +75,11 @@ Modules for retrieving and filtering on multiple Linode resources.
 
 Name | Description |
 --- | ------------ |
+[linode.cloud.database_list](./docs/modules/database_list.md)|List and filter on Linode Managed Databases.|
 [linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Linode events.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Linode images.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on Linode stackscripts.|
+[linode.cloud.type_list](./docs/modules/type_list.md)|List and filter on Linode Instance Types.|
 [linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
 
 

@@ -65,7 +65,7 @@ Manage Linode Firewalls.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`, `update`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The unique label to give this Firewall.   |
 | [`devices` (sub-options)](#devices) | <center>`list`</center> | <center>Optional</center> | The devices that are attached to this Firewall.  **(Updatable)** |
 | [`rules` (sub-options)](#rules) | <center>`dict`</center> | <center>Optional</center> | The inbound and outbound access rules to apply to this Firewall.  **(Updatable)** |
@@ -104,7 +104,7 @@ Manage Linode Firewalls.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label of this rule.   |
-| `action` | <center>`str`</center> | <center>**Required**</center> | Controls whether traffic is accepted or dropped by this rule.   |
+| `action` | <center>`str`</center> | <center>**Required**</center> | Controls whether traffic is accepted or dropped by this rule.  **(Choices: `ACCEPT`, `DROP`)** |
 | [`addresses` (sub-options)](#addresses) | <center>`dict`</center> | <center>Optional</center> | Allowed IPv4 or IPv6 addresses.   |
 | `description` | <center>`str`</center> | <center>Optional</center> | A description for this rule.   |
 | `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)   |
@@ -130,7 +130,7 @@ Manage Linode Firewalls.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label of this rule.   |
-| `action` | <center>`str`</center> | <center>**Required**</center> | Controls whether traffic is accepted or dropped by this rule.   |
+| `action` | <center>`str`</center> | <center>**Required**</center> | Controls whether traffic is accepted or dropped by this rule.  **(Choices: `ACCEPT`, `DROP`)** |
 | [`addresses` (sub-options)](#addresses) | <center>`dict`</center> | <center>Optional</center> | Allowed IPv4 or IPv6 addresses.   |
 | `description` | <center>`str`</center> | <center>Optional</center> | A description for this rule.   |
 | `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)   |
