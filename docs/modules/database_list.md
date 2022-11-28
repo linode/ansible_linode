@@ -35,10 +35,10 @@ List and filter on Linode Managed Databases.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | `str` | Optional | The order to list databases in.  (Choices:  `desc`  `asc` Default: `asc`) |
-| `order_by` | `str` | Optional | The attribute to order databases by.   |
-| [`filters` (sub-options)](#filters) | `list` | Optional | A list of filters to apply to the resulting databases.   |
-| `count` | `int` | Optional | The number of results to return. If undefined, all results will be returned.   |
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list databases in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
+| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order databases by.   |
+| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting databases.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
 
 
 
@@ -48,8 +48,8 @@ List and filter on Linode Managed Databases.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | `str` | **Required** | The name of the field to filter on. Valid filterable attributes can be found here: https://www.linode.com/docs/api/databases/#managed-mongodb-databases-list__responses   |
-| `values` | `list` | **Required** | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable attributes can be found here: https://www.linode.com/docs/api/databases/#managed-mongodb-databases-list__responses   |
+| `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 
 

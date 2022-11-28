@@ -32,7 +32,21 @@
 {% set required_text = '**Required**' if spec.required else 'Optional' %}
 {% set type_text = '`%s`' % spec.type if spec.type else '' %}
 {% set name_fmt = '[`%s` (sub-options)](#%s)' % (name, name) if spec.suboptions else '`%s`' % name %}
-| {{ name_fmt }} | {{type_text}} | {{ required_text }} | {% for line in spec.description %}{{ line }} {% endfor %} {% if spec.default or spec.default == False or spec.choices %}({% if spec.choices %}Choices: {% for choice in spec.choices %} `{{ choice }}` {% endfor %}{% endif %}{% if spec.default or spec.default == False %}Default: `{{ spec.default }}`{% endif %}){% endif %} |
+{% set extras_fmt = [] %}
+{% set choices_fmt = [] %}
+{% if spec.choices -%}
+{% for choice in spec.choices -%}
+{{ choices_fmt.append('`{}`'.format(choice|string)) or ''}}
+{%- endfor %}
+{{ extras_fmt.append("Choices: " + ', '.join(choices_fmt)) or '' }}
+{%- endif %}
+{% if spec.default or spec.default == False -%}
+{{ extras_fmt.append('Default: `{}`'.format(spec.default)) or ''}}
+{%- endif %}
+{% if spec.editable -%}
+{{ extras_fmt.append("Updatable") or '' }}
+{%- endif %}
+| {{ name_fmt }} | <center>{{type_text}}</center> | <center>{{ required_text }}</center> | {% for line in spec.description %}{{ line }} {% endfor %} {% if extras_fmt | length > 0 %}**({{ extras_fmt|join('; ') }})**{% endif %} |
 {% endif %}
 {% endfor %}
 {% endmacro %}

@@ -47,15 +47,15 @@ Manage a Linode Image.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | `str` | **Required** | This Image's unique label.   |
-| `state` | `str` | **Required** | The state of this Image.  (Choices:  `present`  `absent` ) |
-| `description` | `str` | Optional | A description for the Image.   |
-| `disk_id` | `int` | Optional | The ID of the disk to clone this image from.   |
-| `recreate` | `bool` | Optional | If true, the image with the given label will be deleted and recreated  (Default: `False`) |
-| `region` | `str` | Optional | The Linode region to upload this image to.  (Default: `us-east`) |
-| `source_file` | `str` | Optional | An image file to create this image with.   |
-| `wait` | `bool` | Optional | Wait for the image to have status `available` before returning.  (Default: `True`) |
-| `wait_timeout` | `int` | Optional | The amount of time, in seconds, to wait for an image to have status `available`.  (Default: `600`) |
+| `label` | <center>`str`</center> | <center>**Required**</center> | This Image's unique label.   |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The state of this Image.  **(Choices: `present`, `absent`)** |
+| `description` | <center>`str`</center> | <center>Optional</center> | A description for the Image.  **(Updatable)** |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to clone this image from.   |
+| `recreate` | <center>`bool`</center> | <center>Optional</center> | If true, the image with the given label will be deleted and recreated  **(Default: `False`)** |
+| `region` | <center>`str`</center> | <center>Optional</center> | The Linode region to upload this image to.  **(Default: `us-east`)** |
+| `source_file` | <center>`str`</center> | <center>Optional</center> | An image file to create this image with.   |
+| `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the image to have status `available` before returning.  **(Default: `True`)** |
+| `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an image to have status `available`.  **(Default: `600`)** |
 
 
 

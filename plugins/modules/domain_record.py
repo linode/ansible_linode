@@ -36,25 +36,25 @@ linode_domain_record_spec = dict(
                   'NOTE: If the name of the record ends with the domain, '
                   'it will be dropped from the resulting record\'s name.'
               ]),
-    port=dict(type='int',
+    port=dict(type='int', editable=True,
               description=[
                   'The port this Record points to.',
                   'Only valid and required for SRV record requests.'
               ]),
-    priority=dict(type='int',
+    priority=dict(type='int', editable=True,
                   description=[
                       'The priority of the target host for this Record.',
                       'Lower values are preferred.',
                       'Only valid for MX and SRV record requests.',
                       'Required for SRV record requests.'
                   ]),
-    protocol=dict(type='str',
+    protocol=dict(type='str', editable=True,
                   description=[
                       'The protocol this Record’s service communicates with.',
                       'An underscore (_) is prepended automatically to '
                       'the submitted value for this property.'
                   ]),
-    service=dict(type='str',
+    service=dict(type='str', editable=True,
                  description=[
                      'An underscore (_) is prepended and a period (.) '
                      'is appended automatically to the submitted value for this property.',
@@ -64,7 +64,7 @@ linode_domain_record_spec = dict(
     state=dict(type='str',
                description='The desired state of the target.',
                choices=['present', 'absent'], required=True),
-    tag=dict(type='str',
+    tag=dict(type='str', editable=True,
              description=[
                  'The tag portion of a CAA record.',
                  'Only valid and required for CAA record requests.'
@@ -73,7 +73,7 @@ linode_domain_record_spec = dict(
                 description=[
                     'The target for this Record.'
                 ], default=''),
-    ttl_sec=dict(type='int',
+    ttl_sec=dict(type='int', editable=True,
                  description=[
                      'The amount of time in seconds that this Domain’s '
                      'records may be cached by resolvers '
@@ -81,7 +81,7 @@ linode_domain_record_spec = dict(
                  ]),
     type=dict(type='str',
               description='The type of Record this is in the DNS system.'),
-    weight=dict(type='int',
+    weight=dict(type='int', editable=True,
                 description='The relative weight of this Record '
                             'used in the case of identical priority.')
 )

@@ -55,15 +55,15 @@ Manage Linode LKE cluster node pools.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `cluster_id` | `int` | **Required** | The ID of the LKE cluster that contains this node pool.   |
-| `tags` | `list` | **Required** | An array of tags applied to this object. Tags must be unique as they are used by the `lke_node_pool` module to uniquely identify node pools.   |
-| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present`  `absent` ) |
-| [`autoscaler` (sub-options)](#autoscaler) | `dict` | Optional | When enabled, the number of nodes autoscales within the defined minimum and maximum values.   |
-| `count` | `int` | Optional | The number of nodes in the Node Pool.   |
-| [`disks` (sub-options)](#disks) | `list` | Optional | This Node Pool’s custom disk layout. Each item in this array will create a new disk partition for each node in this Node Pool.   |
-| `type` | `str` | Optional | The Linode Type for all of the nodes in the Node Pool. Required if `state` == `present`.   |
-| `skip_polling` | `bool` | Optional | If true, the module will not wait for all nodes in the node pool to be ready.  (Default: `False`) |
-| `wait_timeout` | `int` | Optional | The period to wait for the node pool to be ready in seconds.  (Default: `600`) |
+| `cluster_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the LKE cluster that contains this node pool.   |
+| `tags` | <center>`list`</center> | <center>**Required**</center> | An array of tags applied to this object. Tags must be unique as they are used by the `lke_node_pool` module to uniquely identify node pools.  **(Updatable)** |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| [`autoscaler` (sub-options)](#autoscaler) | <center>`dict`</center> | <center>Optional</center> | When enabled, the number of nodes autoscales within the defined minimum and maximum values.  **(Updatable)** |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of nodes in the Node Pool.  **(Updatable)** |
+| [`disks` (sub-options)](#disks) | <center>`list`</center> | <center>Optional</center> | This Node Pool’s custom disk layout. Each item in this array will create a new disk partition for each node in this Node Pool.   |
+| `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type for all of the nodes in the Node Pool. Required if `state` == `present`.   |
+| `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the node pool to be ready.  **(Default: `False`)** |
+| `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The period to wait for the node pool to be ready in seconds.  **(Default: `600`)** |
 
 
 
@@ -73,9 +73,9 @@ Manage Linode LKE cluster node pools.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `enabled` | `bool` | Optional | Whether autoscaling is enabled for this Node Pool. NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.   |
-| `max` | `int` | Optional | The maximum number of nodes to autoscale to. Defaults to the value provided by the count field.   |
-| `min` | `int` | Optional | The minimum number of nodes to autoscale to. Defaults to the Node Pool’s count.   |
+| `enabled` | <center>`bool`</center> | <center>Optional</center> | Whether autoscaling is enabled for this Node Pool. NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.  **(Updatable)** |
+| `max` | <center>`int`</center> | <center>Optional</center> | The maximum number of nodes to autoscale to. Defaults to the value provided by the count field.  **(Updatable)** |
+| `min` | <center>`int`</center> | <center>Optional</center> | The minimum number of nodes to autoscale to. Defaults to the Node Pool’s count.  **(Updatable)** |
 
 
 
@@ -85,8 +85,8 @@ Manage Linode LKE cluster node pools.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `type` | `str` | **Required** | This custom disk partition’s filesystem type.  (Choices:  `raw`  `ext4` ) |
-| `size` | `int` | **Required** | The size of this custom disk partition in MB.   |
+| `type` | <center>`str`</center> | <center>**Required**</center> | This custom disk partition’s filesystem type.  **(Choices: `raw`, `ext4`)** |
+| `size` | <center>`int`</center> | <center>**Required**</center> | The size of this custom disk partition in MB.   |
 
 
 

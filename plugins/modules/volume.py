@@ -30,7 +30,7 @@ linode_volume_spec = dict(
                     'to include the new Volume in.'),
 
     linode_id=dict(
-        type='int', default=None,
+        type='int', default=None, editable=True,
         description=[
             'The Linode this volume should be attached to upon creation.',
             'If not given, the volume will be created without an attachment.'
@@ -44,14 +44,14 @@ linode_volume_spec = dict(
         ]),
 
     size=dict(
-        type='int', default=None,
+        type='int', default=None, editable=True,
         description=[
             'The size of this volume, in GB.',
             'Be aware that volumes may only be resized up after creation.'
         ]),
 
     attached=dict(
-        type='bool', default=True,
+        type='bool', default=True, editable=True,
         description='If true, the volume will be attached to a Linode. '
                     'Otherwise, the volume will be detached.'),
 

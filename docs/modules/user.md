@@ -53,11 +53,11 @@ Manage a Linode User.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `username` | `str` | **Required** | The username of this user.   |
-| `state` | `str` | **Required** | The state of this user.  (Choices:  `present`  `absent` ) |
-| `restricted` | `bool` | Optional | If true, the User must be granted access to perform actions or access entities on this Account.  (Default: `True`) |
-| `email` | `str` | Optional | The email address for the User. Linode sends emails to this address for account management communications. May be used for other communications as configured.   |
-| [`grants` (sub-options)](#grants) | `dict` | Optional | Update the grants a User has.   |
+| `username` | <center>`str`</center> | <center>**Required**</center> | The username of this user.   |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The state of this user.  **(Choices: `present`, `absent`)** |
+| `restricted` | <center>`bool`</center> | <center>Optional</center> | If true, the User must be granted access to perform actions or access entities on this Account.  **(Default: `True`; Updatable)** |
+| `email` | <center>`str`</center> | <center>Optional</center> | The email address for the User. Linode sends emails to this address for account management communications. May be used for other communications as configured.   |
+| [`grants` (sub-options)](#grants) | <center>`dict`</center> | <center>Optional</center> | Update the grants a User has.  **(Updatable)** |
 
 
 
@@ -67,8 +67,8 @@ Manage a Linode User.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| [`global` (sub-options)](#global) | `dict` | Optional | A structure containing the Account-level grants a User has.   |
-| [`resources` (sub-options)](#resources) | `list` | Optional | A list of resource grants to give to the user.   |
+| [`global` (sub-options)](#global) | <center>`dict`</center> | <center>Optional</center> | A structure containing the Account-level grants a User has.  **(Updatable)** |
+| [`resources` (sub-options)](#resources) | <center>`list`</center> | <center>Optional</center> | A list of resource grants to give to the user.  **(Updatable)** |
 
 
 
@@ -78,18 +78,18 @@ Manage a Linode User.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `account_access` |  | Optional | The level of access this User has to Account-level actions, like billing information. A restricted User will never be able to manage users.  (Choices:  `read_only`  `read_write` ) |
-| `add_databases` | `bool` | Optional | If true, this User may add Managed Databases.  (Default: `False`) |
-| `add_domains` | `bool` | Optional | If true, this User may add Domains.  (Default: `False`) |
-| `add_firewalls` | `bool` | Optional | If true, this User may add firewalls.  (Default: `False`) |
-| `add_images` | `bool` | Optional | If true, this User may add images.  (Default: `False`) |
-| `add_linodes` | `bool` | Optional | If true, this User may add Linodes.  (Default: `False`) |
-| `add_longview` | `bool` | Optional | If true, this User may add LongView.  (Default: `False`) |
-| `add_nodebalancers` | `bool` | Optional | If true, this User may add NodeBalancers.  (Default: `False`) |
-| `add_stackscripts` | `bool` | Optional | If true, this User may add StackScripts.  (Default: `False`) |
-| `add_volumes` | `bool` | Optional | If true, this User may add volumes.  (Default: `False`) |
-| `cancel_account` | `bool` | Optional | If true, this User may add cancel the entire account.  (Default: `False`) |
-| `longview_subscription` | `bool` | Optional | If true, this User may manage the Account’s Longview subscription.  (Default: `False`) |
+| `account_access` | <center></center> | <center>Optional</center> | The level of access this User has to Account-level actions, like billing information. A restricted User will never be able to manage users.  **(Choices: `read_only`, `read_write`; Updatable)** |
+| `add_databases` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add Managed Databases.  **(Default: `False`; Updatable)** |
+| `add_domains` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add Domains.  **(Default: `False`; Updatable)** |
+| `add_firewalls` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add firewalls.  **(Default: `False`; Updatable)** |
+| `add_images` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add images.  **(Default: `False`; Updatable)** |
+| `add_linodes` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add Linodes.  **(Default: `False`; Updatable)** |
+| `add_longview` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add LongView.  **(Default: `False`; Updatable)** |
+| `add_nodebalancers` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add NodeBalancers.  **(Default: `False`; Updatable)** |
+| `add_stackscripts` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add StackScripts.  **(Default: `False`; Updatable)** |
+| `add_volumes` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add volumes.  **(Default: `False`; Updatable)** |
+| `cancel_account` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add cancel the entire account.  **(Default: `False`; Updatable)** |
+| `longview_subscription` | <center>`bool`</center> | <center>Optional</center> | If true, this User may manage the Account’s Longview subscription.  **(Default: `False`; Updatable)** |
 
 
 
@@ -99,9 +99,9 @@ Manage a Linode User.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `type` |  | **Required** | The type of resource to grant access to.  (Choices:  `domain`  `image`  `linode`  `longview`  `nodebalancer`  `stackscript`  `volume` ) |
-| `id` | `int` | **Required** | The ID of the resource to grant access to.   |
-| `permissions` | `str` | **Required** | The level of access this User has to this entity. If null, this User has no access.  (Choices:  `read_only`  `read_write` ) |
+| `type` | <center></center> | <center>**Required**</center> | The type of resource to grant access to.  **(Choices: `domain`, `image`, `linode`, `longview`, `nodebalancer`, `stackscript`, `volume`; Updatable)** |
+| `id` | <center>`int`</center> | <center>**Required**</center> | The ID of the resource to grant access to.  **(Updatable)** |
+| `permissions` | <center>`str`</center> | <center>**Required**</center> | The level of access this User has to this entity. If null, this User has no access.  **(Choices: `read_only`, `read_write`; Updatable)** |
 
 
 

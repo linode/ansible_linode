@@ -28,7 +28,7 @@ Get info about a Linode VLAN.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | `str` | **Required** | The VLAN’s label.   |
+| `label` | <center>`str`</center> | <center>**Required**</center> | The VLAN’s label.   |
 
 
 

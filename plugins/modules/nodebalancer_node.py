@@ -37,7 +37,7 @@ MODULE_SPEC = dict(
     ),
 
     address=dict(
-        type='str',
+        type='str', editable=True,
         description='The private IP Address where this backend can be reached. '
                     'This must be a private IP address.',
     ),
@@ -50,13 +50,13 @@ MODULE_SPEC = dict(
     ),
 
     mode=dict(
-        type='str',
+        type='str', editable=True,
         description='The mode this NodeBalancer should use when sending traffic to this backend.',
         choices=['accept', 'reject', 'drain', 'backup'],
     ),
 
     weight=dict(
-        type='int',
+        type='int', editable=True,
         description='Nodes with a higher weight will receive more traffic.',
     ),
 )

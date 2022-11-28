@@ -98,15 +98,15 @@ linode_firewall_spec: dict = dict(
                description=[
                     'The unique label to give this Firewall.'
                 ]),
-    devices=dict(type='list', elements='dict', options=linode_firewall_device_spec,
+    devices=dict(type='list', elements='dict', options=linode_firewall_device_spec, editable=True,
                  description=[
                      'The devices that are attached to this Firewall.'
                  ]),
-    rules=dict(type='dict', options=linode_firewall_rules_spec,
+    rules=dict(type='dict', options=linode_firewall_rules_spec, editable=True,
                description=[
                    'The inbound and outbound access rules to apply to this Firewall.'
                ]),
-    status=dict(type='str',
+    status=dict(type='str', editable=True,
                 description=[
                     'The status of this Firewall.'
                 ]),

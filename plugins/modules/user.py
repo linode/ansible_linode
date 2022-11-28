@@ -30,63 +30,75 @@ SPEC_GRANTS_GLOBAL = {
             'The level of access this User has to Account-level actions, '
             'like billing information.',
             'A restricted User will never be able to manage users.'],
-        'default': None
+        'default': None,
+        'editable': True,
     },
     'add_databases': {
         'type': 'bool',
         'description': 'If true, this User may add Managed Databases.',
         'default': False,
+        'editable': True,
     },
     'add_domains': {
         'type': 'bool',
         'description': 'If true, this User may add Domains.',
         'default': False,
+        'editable': True,
     },
     'add_firewalls': {
         'type': 'bool',
         'description': 'If true, this User may add firewalls.',
         'default': False,
+        'editable': True,
     },
     'add_images': {
         'type': 'bool',
         'description': 'If true, this User may add images.',
         'default': False,
+        'editable': True,
     },
     'add_linodes': {
         'type': 'bool',
         'description': 'If true, this User may add Linodes.',
         'default': False,
+        'editable': True,
     },
     'add_longview': {
         'type': 'bool',
         'description': 'If true, this User may add LongView.',
         'default': False,
+        'editable': True,
     },
     'add_nodebalancers': {
         'type': 'bool',
         'description': 'If true, this User may add NodeBalancers.',
         'default': False,
+        'editable': True,
     },
     'add_stackscripts': {
         'type': 'bool',
         'description': 'If true, this User may add StackScripts.',
         'default': False,
+        'editable': True,
     },
     'add_volumes': {
         'type': 'bool',
         'description': 'If true, this User may add volumes.',
         'default': False,
+        'editable': True,
     },
     'cancel_account': {
         'type': 'bool',
         'description': 'If true, this User may add cancel the entire account.',
         'default': False,
+        'editable': True,
     },
     'longview_subscription': {
         'type': 'bool',
         'description': 'If true, this User may manage the Account’s '
                        'Longview subscription.',
         'default': False,
+        'editable': True,
     },
 }
 
@@ -98,18 +110,21 @@ SPEC_GRANTS_RESOURCE = {
         'description': [
             'The type of resource to grant access to.'],
         'required': True,
+        'editable': True,
     },
     'id': {
         'type': 'int',
         'description': 'The ID of the resource to grant access to.',
         'required': True,
+        'editable': True,
     },
     'permissions': {
         'type': 'str',
         'choices': ['read_only', 'read_write'],
         'description': 'The level of access this User has to this entity. '
                        'If null, this User has no access.',
-        'required': True
+        'required': True,
+        'editable': True,
     },
 }
 
@@ -118,12 +133,14 @@ SPEC_GRANTS = {
         'type': 'dict',
         'description': 'A structure containing the Account-level grants a User has.',
         'options': SPEC_GRANTS_GLOBAL,
+        'editable': True,
     },
     'resources': {
         'description': 'A list of resource grants to give to the user.',
         'type': 'list',
         'elements': 'dict',
-        'options': SPEC_GRANTS_RESOURCE
+        'options': SPEC_GRANTS_RESOURCE,
+        'editable': True,
     }
 }
 
@@ -150,6 +167,7 @@ SPEC = {
         'description': 'If true, the User must be granted access to perform '
                        'actions or access entities on this Account.',
         'default': True,
+        'editable': True,
     },
     'email': {
         'type': 'str',
@@ -161,7 +179,8 @@ SPEC = {
     'grants': {
         'type': 'dict',
         'description': 'Update the grants a User has.',
-        'options': SPEC_GRANTS
+        'options': SPEC_GRANTS,
+        'editable': True,
     }
 }
 

@@ -22,19 +22,19 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_n
 
 linode_lke_pool_autoscaler = dict(
     enabled=dict(
-        type='bool',
+        type='bool', editable=True,
         description=[
             'Whether autoscaling is enabled for this Node Pool.',
             'NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.'
         ],
     ),
     max=dict(
-        type='int',
+        type='int', editable=True,
         description='The maximum number of nodes to autoscale to. '
                     'Defaults to the value provided by the count field.',
     ),
     min=dict(
-        type='int',
+        type='int', editable=True,
         description='The minimum number of nodes to autoscale to. '
                     'Defaults to the Node Pool’s count.',
     ),
@@ -65,14 +65,14 @@ MODULE_SPEC = dict(
         ),
 
     autoscaler=dict(
-        type='dict',
+        type='dict', editable=True,
         description='When enabled, the number of nodes autoscales within the '
                     'defined minimum and maximum values.',
         suboptions=linode_lke_pool_autoscaler,
     ),
 
     count=dict(
-        type='int',
+        type='int', editable=True,
         description='The number of nodes in the Node Pool.',
     ),
 
@@ -86,7 +86,7 @@ MODULE_SPEC = dict(
     ),
 
     tags=dict(
-        type='list', elements='str',
+        type='list', elements='str', editable=True,
         required=True,
         description=[
             'An array of tags applied to this object.',

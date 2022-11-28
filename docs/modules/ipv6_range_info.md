@@ -28,7 +28,7 @@ Get info about a Linode IPv6 range.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `range` | `str` | Optional | The IPv6 range to access.   |
+| `range` | <center>`str`</center> | <center>Optional</center> | The IPv6 range to access.   |
 
 
 

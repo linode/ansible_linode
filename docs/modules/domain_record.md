@@ -42,20 +42,20 @@ NOTE: Domain records are identified by their name, target, and type.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `state` | `str` | **Required** | The desired state of the target.  (Choices:  `present`  `absent` ) |
-| `domain_id` | `int` | Optional | The ID of the parent Domain.   |
-| `domain` | `str` | Optional | The name of the parent Domain.   |
-| `record_id` | `int` | Optional | The id of the record to modify.   |
-| `name` | `str` | Optional | The name of this Record. NOTE: If the name of the record ends with the domain, it will be dropped from the resulting record's name.   |
-| `port` | `int` | Optional | The port this Record points to. Only valid and required for SRV record requests.   |
-| `priority` | `int` | Optional | The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.   |
-| `protocol` | `str` | Optional | The protocol this Record’s service communicates with. An underscore (_) is prepended automatically to the submitted value for this property.   |
-| `service` | `str` | Optional | An underscore (_) is prepended and a period (.) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests. The name of the service.   |
-| `tag` | `str` | Optional | The tag portion of a CAA record. Only valid and required for CAA record requests.   |
-| `target` | `str` | Optional | The target for this Record.   |
-| `ttl_sec` | `int` | Optional | The amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.   |
-| `type` | `str` | Optional | The type of Record this is in the DNS system.   |
-| `weight` | `int` | Optional | The relative weight of this Record used in the case of identical priority.   |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| `domain_id` | <center>`int`</center> | <center>Optional</center> | The ID of the parent Domain.   |
+| `domain` | <center>`str`</center> | <center>Optional</center> | The name of the parent Domain.   |
+| `record_id` | <center>`int`</center> | <center>Optional</center> | The id of the record to modify.   |
+| `name` | <center>`str`</center> | <center>Optional</center> | The name of this Record. NOTE: If the name of the record ends with the domain, it will be dropped from the resulting record's name.   |
+| `port` | <center>`int`</center> | <center>Optional</center> | The port this Record points to. Only valid and required for SRV record requests.  **(Updatable)** |
+| `priority` | <center>`int`</center> | <center>Optional</center> | The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.  **(Updatable)** |
+| `protocol` | <center>`str`</center> | <center>Optional</center> | The protocol this Record’s service communicates with. An underscore (_) is prepended automatically to the submitted value for this property.  **(Updatable)** |
+| `service` | <center>`str`</center> | <center>Optional</center> | An underscore (_) is prepended and a period (.) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests. The name of the service.  **(Updatable)** |
+| `tag` | <center>`str`</center> | <center>Optional</center> | The tag portion of a CAA record. Only valid and required for CAA record requests.  **(Updatable)** |
+| `target` | <center>`str`</center> | <center>Optional</center> | The target for this Record.   |
+| `ttl_sec` | <center>`int`</center> | <center>Optional</center> | The amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.  **(Updatable)** |
+| `type` | <center>`str`</center> | <center>Optional</center> | The type of Record this is in the DNS system.   |
+| `weight` | <center>`int`</center> | <center>Optional</center> | The relative weight of this Record used in the case of identical priority.  **(Updatable)** |
 
 
 

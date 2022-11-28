@@ -28,7 +28,7 @@ Get info about a Linode IP.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `address` | `str` | **Required** | The IP address to operate on.   |
+| `address` | <center>`str`</center> | <center>**Required**</center> | The IP address to operate on.   |
 
 
 

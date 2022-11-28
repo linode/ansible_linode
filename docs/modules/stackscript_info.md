@@ -34,8 +34,8 @@ Get info about a Linode StackScript.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | `int` | Optional | The ID of the StackScript.   |
-| `label` | `str` | Optional | The label of the StackScript.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the StackScript.   |
 
 
 

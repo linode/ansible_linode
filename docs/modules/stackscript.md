@@ -42,13 +42,13 @@ Manage a Linode StackScript.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | `str` | **Required** | This StackScript's unique label.   |
-| `state` | `str` | **Required** | The state of this StackScript.  (Choices:  `present`  `absent` ) |
-| `description` | `str` | Optional | A description for the StackScript.   |
-| `images` | `list` | Optional | Images that can be deployed using this StackScript.   |
-| `is_public` | `bool` | Optional | This determines whether other users can use your StackScript.   |
-| `rev_note` | `str` | Optional | This field allows you to add notes for the set of revisions made to this StackScript.   |
-| `script` | `str` | Optional | The script to execute when provisioning a new Linode with this StackScript.   |
+| `label` | <center>`str`</center> | <center>**Required**</center> | This StackScript's unique label.   |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The state of this StackScript.  **(Choices: `present`, `absent`)** |
+| `description` | <center>`str`</center> | <center>Optional</center> | A description for the StackScript.  **(Updatable)** |
+| `images` | <center>`list`</center> | <center>Optional</center> | Images that can be deployed using this StackScript.  **(Updatable)** |
+| `is_public` | <center>`bool`</center> | <center>Optional</center> | This determines whether other users can use your StackScript.  **(Updatable)** |
+| `rev_note` | <center>`str`</center> | <center>Optional</center> | This field allows you to add notes for the set of revisions made to this StackScript.  **(Updatable)** |
+| `script` | <center>`str`</center> | <center>Optional</center> | The script to execute when provisioning a new Linode with this StackScript.  **(Updatable)** |
 
 
 

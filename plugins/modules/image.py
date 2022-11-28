@@ -37,6 +37,7 @@ SPEC = dict(
     ),
     description=dict(
         type='str',
+        editable=True,
         description='A description for the Image.',
     ),
     disk_id=dict(

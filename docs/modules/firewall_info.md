@@ -34,8 +34,8 @@ Get info about a Linode Firewall.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | `int` | Optional | The unique id of the Firewall. Optional if `label` is defined.   |
-| `label` | `str` | Optional | The Firewall’s label. Optional if `id` is defined.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The unique id of the Firewall. Optional if `label` is defined.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The Firewall’s label. Optional if `id` is defined.   |
 
 
 
