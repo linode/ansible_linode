@@ -90,7 +90,7 @@
       linode.cloud.database_list:
         api_token: '{{ api_token }}'
         ua_prefix: '{{ ua_prefix }}'
-        filter:
+        filters:
           - name: engine
             values: mysql
           - name: label
