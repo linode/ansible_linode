@@ -14,8 +14,8 @@ import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import \
     LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json, drop_empty_strings, mapping_to_dict, request_retry, \
-    filter_null_values_recursive
+    filter_null_values, paginated_list_to_json, drop_empty_strings, mapping_to_dict, \
+    request_retry, filter_null_values_recursive
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
