@@ -1,0 +1,117 @@
+- name: instance_config_vlan
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode instance with interface
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-southeast
+        type: g6-standard-1
+        disks:
+          - label: test-disk
+            filesystem: ext4
+            size: 10
+        configs:
+          - label: cool-config
+            devices:
+              sda:
+                disk_label: test-disk
+            interfaces:
+              - purpose: vlan
+                label: really-cool-vlan
+        wait: false
+        booted: false
+        state: present
+      register: create_instance
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_instance.changed
+          - create_instance.instance.ipv4|length == 1
+
+          - create_instance.configs[0].interfaces[0].purpose == 'vlan'
+          - create_instance.configs[0].interfaces[0].label == 'really-cool-vlan'
+
+    - name: Update the instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-southeast
+        type: g6-standard-1
+        disks:
+          - label: test-disk
+            filesystem: ext4
+            size: 10
+        configs:
+          - label: cool-config
+            devices:
+              sda:
+                disk_label: test-disk
+            interfaces:
+              - purpose: public
+              - purpose: vlan
+                label: really-cool-vlan
+        wait: false
+        booted: false
+        state: present
+      register: update_instance
+
+    - assert:
+        that:
+          - update_instance.changed
+          - update_instance.instance.ipv4|length == 1
+
+          - update_instance.configs[0].interfaces[0].purpose == 'public'
+          - update_instance.configs[0].interfaces[1].purpose == 'vlan'
+          - update_instance.configs[0].interfaces[1].label == 'really-cool-vlan'
+
+    - name: Don't change the instance
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-southeast
+        type: g6-standard-1
+        disks:
+          - label: test-disk
+            filesystem: ext4
+            size: 10
+        configs:
+          - label: cool-config
+            devices:
+              sda:
+                disk_label: test-disk
+            interfaces:
+              - purpose: public
+              - purpose: vlan
+                label: really-cool-vlan
+        wait: false
+        booted: false
+        state: present
+      register: unchanged_instance
+
+    - assert:
+        that:
+          - unchanged_instance.changed == False
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            label: '{{ create_instance.instance.label }}'
+            state: absent
+          register: delete_instance
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_instance.changed
+              - delete_instance.instance.id == create_instance.instance.id

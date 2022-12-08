@@ -14,7 +14,8 @@ import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import \
     LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json, drop_empty_strings, mapping_to_dict, request_retry
+    filter_null_values, paginated_list_to_json, drop_empty_strings, mapping_to_dict, request_retry, \
+    filter_null_values_recursive
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
@@ -149,7 +150,7 @@ linode_instance_config_spec = dict(
         description='Arbitrary User comments on this Config.'),
 
     devices=dict(
-        type='dict', options=linode_instance_devices_spec,
+        type='dict', required=True, options=linode_instance_devices_spec,
         description='The devices to map to this configuration.'),
 
     helpers=dict(
@@ -182,7 +183,14 @@ linode_instance_config_spec = dict(
         choices=[
             'paravirt',
             'fullvirt'
-        ])
+        ]),
+    interfaces=dict(
+        type='list', elements='dict', options=linode_instance_interface_spec,
+        description=[
+            'A list of network interfaces to apply to the Linode.',
+            'See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances'
+            '/#configuration-profile-create__request-body-schema).'
+        ]),
 )
 
 linode_instance_spec = dict(
@@ -342,7 +350,8 @@ linode_instance_config_mutable = {
     'memory_limit',
     'root_device',
     'run_level',
-    'virt_mode'
+    'virt_mode',
+    'interfaces'
 }
 
 
@@ -503,11 +512,20 @@ class LinodeInstance(LinodeModuleBase):
         device_params = config_params.pop('devices')
         devices = []
 
-        for device_suffix in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']:
-            device_dict = device_params.get('sd{0}'.format(device_suffix))
-            devices.append(self._param_device_to_device(device_dict))
+        if device_params is not None:
+            for device_suffix in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']:
+                device_name = 'sd{0}'.format(device_suffix)
+                if device_name not in device_params:
+                    continue
 
-        self._instance.config_create(devices=devices, **filter_null_values(config_params))
+                device_dict = device_params.get(device_name)
+                devices.append(self._param_device_to_device(device_dict))
+
+        try:
+            self._instance.config_create(devices=devices, **filter_null_values(config_params))
+        except ValueError as err:
+            self.fail(msg=';'.join(err.args))
+
         self.register_action('Created config {0}'.format(config_params.get('label')))
 
     def _delete_config_register(self, config: Config) -> None:
@@ -590,6 +608,14 @@ class LinodeInstance(LinodeModuleBase):
                 continue
 
             old_value = mapping_to_dict(getattr(config, key))
+
+            # Special handling for the ConfigInterface type
+            if key == 'interfaces':
+                old_value = filter_null_values_recursive([
+                    drop_empty_strings(v._serialize()) for v in old_value])
+                new_value = filter_null_values_recursive([
+                    drop_empty_strings(v) for v in new_value
+                ])
 
             # Special diffing due to handling in linode_api4-python
             if key == 'devices':
