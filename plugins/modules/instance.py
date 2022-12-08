@@ -186,6 +186,7 @@ linode_instance_config_spec = dict(
         ]),
     interfaces=dict(
         type='list', elements='dict', options=linode_instance_interface_spec,
+        editable=True,
         description=[
             'A list of network interfaces to apply to the Linode.',
             'See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances'
@@ -364,6 +365,8 @@ class LinodeInstance(LinodeModuleBase):
         self.mutually_exclusive = [
             ('image', 'disks'),
             ('image', 'configs'),
+            ('interfaces', 'configs'),
+            ('interfaces', 'disks')
         ]
 
         self.results: dict = dict(
