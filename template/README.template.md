@@ -1,7 +1,7 @@
 # Linode Ansible Collection
 [![Ansible Galaxy](https://img.shields.io/badge/galaxy-linode.cloud-660198.svg?style=flat)](https://galaxy.ansible.com/linode/cloud/) 
 ![Tests](https://img.shields.io/github/actions/workflow/status/linode/ansible_linode/integration-tests.yml?branch=main)
-![Code Quality](https://img.shields.io/lgtm/grade/python/github/linode/ansible_linode?label=Code%20Quality)
+![Code Quality](https://img.shields.io/lgtm/grade/python/github/linode/ansible_linode?label=code%20quality)
 
 The Ansible Linode Collection contains various plugins for managing Linode services.
 
