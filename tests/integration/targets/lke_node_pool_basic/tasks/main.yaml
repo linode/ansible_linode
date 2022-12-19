@@ -3,13 +3,24 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
+    - name: Resolve the latest K8s version
+      linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        method: GET
+        path: lke/versions
+      register: lke_versions
+
+    - set_fact:
+        kube_version: '{{ lke_versions.body.data[0].id }}'
+
     - name: Create a minimal LKE cluster
       linode.cloud.lke_cluster:
         api_token: '{{ api_token }}'
         ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-southeast
-        k8s_version: 1.23
+        k8s_version: '{{ kube_version }}'
         node_pools:
           - type: g6-standard-1
             count: 1
@@ -19,7 +30,7 @@
 
     - assert:
         that:
-          - create_cluster.cluster.k8s_version == '1.23'
+          - create_cluster.cluster.k8s_version == kube_version
           - create_cluster.cluster.region == 'us-southeast'
           - create_cluster.node_pools[0].type == 'g6-standard-1'
           - create_cluster.node_pools[0].count == 1
