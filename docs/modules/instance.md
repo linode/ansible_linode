@@ -103,15 +103,16 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
+| [`devices` (sub-options)](#devices) | <center>`dict`</center> | <center>**Required**</center> | The devices to map to this configuration.   |
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label to assign to this config.   |
 | `comments` | <center>`str`</center> | <center>Optional</center> | Arbitrary User comments on this Config.  **(Updatable)** |
-| [`devices` (sub-options)](#devices) | <center>`dict`</center> | <center>Optional</center> | The devices to map to this configuration.   |
 | [`helpers` (sub-options)](#helpers) | <center>`dict`</center> | <center>Optional</center> | Helpers enabled when booting to this Linode Config.   |
 | `kernel` | <center>`str`</center> | <center>Optional</center> | A Kernel ID to boot a Linode with. Defaults to “linode/latest-64bit”.  **(Updatable)** |
 | `memory_limit` | <center>`int`</center> | <center>Optional</center> | Defaults to the total RAM of the Linode.  **(Updatable)** |
 | `root_device` | <center>`str`</center> | <center>Optional</center> | The root device to boot.  **(Updatable)** |
 | `run_level` | <center>`str`</center> | <center>Optional</center> | Defines the state of your Linode after booting.  **(Updatable)** |
 | `virt_mode` | <center>`str`</center> | <center>Optional</center> | Controls the virtualization mode.  **(Choices: `paravirt`, `fullvirt`; Updatable)** |
+| [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create__request-body-schema).  **(Updatable)** |
 
 
 
@@ -244,6 +245,18 @@ Manage Linode Instances, Configs, and Disks.
 
 
 
+### interfaces
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `purpose` | <center>`str`</center> | <center>**Required**</center> | The type of interface.  **(Choices: `public`, `vlan`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces.   |
+| `ipam_address` | <center>`str`</center> | <center>Optional</center> | This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.   |
+
+
+
+
+
 ### disks
 
 | Field     | Type | Required | Description                                                                  |
@@ -257,18 +270,6 @@ Manage Linode Instances, Configs, and Disks.
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The root user’s password on the newly-created Linode.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
-
-
-
-
-
-### interfaces
-
-| Field     | Type | Required | Description                                                                  |
-|-----------|------|----------|------------------------------------------------------------------------------|
-| `purpose` | <center>`str`</center> | <center>**Required**</center> | The type of interface.  **(Choices: `public`, `vlan`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces.   |
-| `ipam_address` | <center>`str`</center> | <center>Optional</center> | This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.   |
 
 
 
