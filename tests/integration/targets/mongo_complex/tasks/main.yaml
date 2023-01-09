@@ -1,0 +1,71 @@
+- name: mongodb_complex
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Validation check
+      linode.cloud.database_mongodb:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        engine: mongodb
+        type: g6-standard-1
+        allow_list:
+          - 0.0.0.0
+        state: present
+      register: allow_list_validation
+      failed_when: '"Invalid CIDR format for IP" not in allow_list_validation.msg'
+
+    - name: Create a database
+      linode.cloud.database_mongodb:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        engine: mongodb
+        type: g6-standard-1
+        allow_list:
+          - 0.0.0.0/0
+        updates:
+          day_of_week: 2
+          duration: 3
+          frequency: monthly
+          hour_of_day: 5
+          week_of_month: 2
+        cluster_size: 3
+        encrypted: true
+        replication_type: asynch
+        ssl_connection: true
+        state: present
+      register: db_create
+
+    - assert:
+        that:
+          - db_create.database.allow_list | length == 1
+          - db_create.database.allow_list[0] == '0.0.0.0/0'
+          - db_create.database.engine == 'mongodb'
+          - db_create.database.version == '8.0.26'
+          - db_create.database.region == 'us-east'
+          - db_create.database.type == 'g6-standard-1'
+          - db_create.database.cluster_size == 3
+          - db_create.database.encrypted == true
+          - db_create.database.replication_type == 'asynch'
+          - db_create.database.ssl_connection == true
+          - db_create.backups != None
+          - db_create.credentials != None
+          - db_create.ssl_cert != None
+          - db_create.database.updates.day_of_week == 2
+          - db_create.database.updates.duration == 3
+          - db_create.database.updates.frequency == 'monthly'
+          - db_create.database.updates.hour_of_day == 5
+          - db_create.database.updates.week_of_month == 2
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.database_mongodb:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            label: '{{ db_create.database.label }}'
+            state: absent
