@@ -75,7 +75,7 @@ class LinodeSSHKeyInfo(LinodeModuleBase):
             ssh_key._api_get()
             return ssh_key
         except Exception as exception:
-            self.fail(msg=f'failed to get ssh key with id {ssh_key_id}: {exception}')
+            return self.fail(msg=f'failed to get ssh key with id {ssh_key_id}: {exception}')
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for ssh_key_info module"""
