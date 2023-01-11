@@ -17,7 +17,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
     global_requirements
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume as docs
-from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
 
 linode_volume_spec = dict(
     label=dict(
@@ -99,7 +98,6 @@ class LinodeVolume(LinodeModuleBase):
         )
 
         self._volume: Optional[Volume] = None
-        self._timeout_ctx: Optional[TimeoutContext] = None
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
@@ -206,8 +204,6 @@ class LinodeVolume(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for volume module"""
-        self._timeout_ctx = TimeoutContext(kwargs.get('wait_timeout'))
-
         state = kwargs.get('state')
 
         if state == 'absent':

@@ -19,7 +19,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     filter_null_values, jsonify_node_pool, handle_updates
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_node_pool as docs
-from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
 
 linode_lke_pool_autoscaler = dict(
     enabled=dict(
@@ -154,8 +153,6 @@ class LinodeLKENodePool(LinodeModuleBase):
             node_pool=None,
         )
 
-        self._timeout_ctx: Optional[TimeoutContext] = None
-
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
 
@@ -275,7 +272,6 @@ class LinodeLKENodePool(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for lke_node_pool module"""
-        self._timeout_ctx = TimeoutContext(kwargs.get('wait_timeout'))
 
         state = kwargs.get('state')
 

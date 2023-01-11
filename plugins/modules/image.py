@@ -23,7 +23,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     handle_updates, filter_null_values
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image as docs
-from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
 
 SPEC = dict(
     label=dict(
@@ -103,8 +102,6 @@ class Module(LinodeModuleBase):
             actions=[],
             image=None,
         )
-
-        self._timeout_ctx: Optional[TimeoutContext] = None
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=[('state', 'label')],
@@ -239,7 +236,6 @@ class Module(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Image module"""
-        self._timeout_ctx = TimeoutContext(kwargs.get('wait_timeout'))
 
         state = kwargs.get('state')
 

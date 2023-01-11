@@ -18,7 +18,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     request_retry, filter_null_values_recursive
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
 
@@ -380,8 +379,6 @@ class LinodeInstance(LinodeModuleBase):
 
         self._instance: Optional[Instance] = None
         self._root_pass: str = ''
-
-        self._timeout_ctx: Optional[TimeoutContext] = None
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
@@ -847,8 +844,6 @@ class LinodeInstance(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Instance module"""
-
-        self._timeout_ctx = TimeoutContext(kwargs.get('wait_timeout'))
 
         state = kwargs.get('state')
 

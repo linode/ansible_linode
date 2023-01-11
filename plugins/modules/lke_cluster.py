@@ -22,7 +22,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster as docs
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import handle_updates
-from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
 
 linode_lke_cluster_autoscaler = dict(
     enabled=dict(
@@ -197,8 +196,6 @@ class LinodeLKECluster(LinodeModuleBase):
             dashboard_url=None,
             kubeconfig=None
         )
-
-        self._timeout_ctx: Optional[TimeoutContext] = None
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
@@ -480,8 +477,6 @@ class LinodeLKECluster(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Domain module"""
-        self._timeout_ctx = TimeoutContext(kwargs.get('wait_timeout'))
-
         state = kwargs.get('state')
 
         if state == 'absent':
