@@ -22,6 +22,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster as docs
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import handle_updates
+from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
 
 linode_lke_cluster_autoscaler = dict(
     enabled=dict(
@@ -196,6 +197,8 @@ class LinodeLKECluster(LinodeModuleBase):
             dashboard_url=None,
             kubeconfig=None
         )
+
+        self._timeout_ctx: Optional[TimeoutContext] = None
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=self.required_one_of)
@@ -395,7 +398,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
             return True
 
-        poll_condition(condition, 4, self.module.params.get('wait_timeout'))
+        poll_condition(condition, 4, self._timeout_ctx.seconds_remaining)
 
     def _populate_dashboard_url_no_poll(self, cluster: LKECluster) -> None:
         try:
@@ -420,7 +423,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
             return True
 
-        poll_condition(condition, 1, self.module.params.get('wait_timeout'))
+        poll_condition(condition, 1, self._timeout_ctx.seconds_remaining)
 
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
@@ -460,7 +463,7 @@ class LinodeLKECluster(LinodeModuleBase):
         cluster._api_get()
 
         if not params.get('skip_polling'):
-            self._wait_for_all_nodes_ready(cluster, params.get('wait_timeout'))
+            self._wait_for_all_nodes_ready(cluster, self._timeout_ctx.seconds_remaining)
 
         self._populate_results(cluster)
 
@@ -477,6 +480,8 @@ class LinodeLKECluster(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Domain module"""
+        self._timeout_ctx = TimeoutContext(kwargs.get('wait_timeout'))
+
         state = kwargs.get('state')
 
         if state == 'absent':

@@ -23,6 +23,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     handle_updates, filter_null_values
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
 
 SPEC = dict(
     label=dict(
@@ -103,6 +104,8 @@ class Module(LinodeModuleBase):
             image=None,
         )
 
+        self._timeout_ctx: Optional[TimeoutContext] = None
+
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=[('state', 'label')],
                          mutually_exclusive=[('disk_id', 'source_file')],
@@ -129,7 +132,7 @@ class Module(LinodeModuleBase):
             polling.poll(
                 poll_func,
                 step=10,
-                timeout=self.module.params.get('wait_timeout'),
+                timeout=self._timeout_ctx.seconds_remaining,
             )
         except polling.TimeoutException:
             self.fail('failed to wait for image status: timeout period expired')
@@ -236,6 +239,8 @@ class Module(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Image module"""
+        self._timeout_ctx = TimeoutContext(kwargs.get('wait_timeout'))
+
         state = kwargs.get('state')
 
         if state == 'absent':

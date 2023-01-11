@@ -18,6 +18,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     request_retry, filter_null_values_recursive
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
 
@@ -380,6 +381,8 @@ class LinodeInstance(LinodeModuleBase):
         self._instance: Optional[Instance] = None
         self._root_pass: str = ''
 
+        self._timeout_ctx: Optional[TimeoutContext] = None
+
         super().__init__(
             module_arg_spec=self.module_arg_spec,
             mutually_exclusive=self.mutually_exclusive)
@@ -452,7 +455,7 @@ class LinodeInstance(LinodeModuleBase):
         if disk_label is not None:
             disk = self._get_disk_by_label(disk_label)
             if disk is None:
-                self.fail('invalid disk specified')
+                self.fail(msg='invalid disk specified')
 
             device_param = {
                 'disk_id': disk.id
@@ -499,7 +502,7 @@ class LinodeInstance(LinodeModuleBase):
         if disk_label is not None:
             disk = self._get_disk_by_label(disk_label)
             if disk is None:
-                self.fail('invalid disk label: {0}'.format(disk_label))
+                self.fail(msg='invalid disk label: {0}'.format(disk_label))
 
             return disk
 
@@ -569,7 +572,7 @@ class LinodeInstance(LinodeModuleBase):
                 timeout=timeout,
             )
         except polling.TimeoutException:
-            self.fail('failed to wait for instance: timeout period expired')
+            self.fail(msg='failed to wait for instance: timeout period expired')
 
     def _wait_for_disk_status(
             self, disk: Disk, status: Set[str], timeout: int, not_status: bool = False) \
@@ -581,7 +584,7 @@ class LinodeInstance(LinodeModuleBase):
                 timeout=timeout,
             )
         except polling.TimeoutException:
-            self.fail('failed to wait for disk: timeout period expired')
+            self.fail(msg='failed to wait for disk: timeout period expired')
 
     def _update_interfaces(self) -> None:
         config = self._get_boot_config()
@@ -624,7 +627,7 @@ class LinodeInstance(LinodeModuleBase):
             if key == 'devices':
                 for device_key, device in old_value.items():
                     if not self._compare_param_to_device(new_value[device_key], device):
-                        self.fail('failed to update config: {0} is a non-mutable field'
+                        self.fail(msg='failed to update config: {0} is a non-mutable field'
                                   .format('devices'))
 
                 continue
@@ -637,7 +640,7 @@ class LinodeInstance(LinodeModuleBase):
                     should_update = True
                     continue
 
-                self.fail('failed to update config: {0} is a non-mutable field'.format(key))
+                self.fail(msg='failed to update config: {0} is a non-mutable field'.format(key))
 
         if should_update:
             config.save()
@@ -676,7 +679,7 @@ class LinodeInstance(LinodeModuleBase):
             self.register_action('Resized disk {0}: {1} -> {2}'
                                  .format(disk.label, disk.size, new_size))
             disk._api_get()
-            self._wait_for_disk_status(disk, {'ready'}, self.module.params.get('wait_timeout'))
+            self._wait_for_disk_status(disk, {'ready'}, self._timeout_ctx.seconds_remaining)
 
         for key, new_value in filter_null_values(disk_params).items():
             if not hasattr(disk, key):
@@ -684,7 +687,7 @@ class LinodeInstance(LinodeModuleBase):
 
             old_value = getattr(disk, key)
             if new_value != old_value:
-                self.fail('failed to update disk: {0} is a non-mutable field'.format(key))
+                self.fail(msg='failed to update disk: {0} is a non-mutable field'.format(key))
 
     def _update_disks(self) -> None:
         current_disks = self._instance.disks
@@ -712,7 +715,7 @@ class LinodeInstance(LinodeModuleBase):
             self._create_disk_register(**disk)
 
         if len(disk_map.values()) > 0:
-            self.fail('unable to update disks: disks must be removed manually')
+            self.fail(msg='unable to update disks: disks must be removed manually')
 
     def _update_instance(self) -> None:
         """Update instance handles all update functionality for the current instance"""
@@ -764,7 +767,7 @@ class LinodeInstance(LinodeModuleBase):
         self._wait_for_instance_status(
             self._instance,
             {'running', 'offline'},
-            self.module.params.get('wait_timeout'))
+            self._timeout_ctx.seconds_remaining)
 
         self._instance._api_get()
 
@@ -784,7 +787,7 @@ class LinodeInstance(LinodeModuleBase):
             self._wait_for_instance_status(
                 self._instance,
                 desired_status,
-                self.module.params.get('wait_timeout'))
+                self._timeout_ctx.seconds_remaining)
 
     def _handle_present(self) -> None:
         """Updates the instance defined in kwargs"""
@@ -811,7 +814,7 @@ class LinodeInstance(LinodeModuleBase):
             self._wait_for_instance_status(
                 self._instance,
                 {'offline', 'running'},
-                self.module.params.get('wait_timeout'))
+                self._timeout_ctx.seconds_remaining)
 
             self._update_disks()
             self._update_configs()
@@ -844,6 +847,8 @@ class LinodeInstance(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Instance module"""
+
+        self._timeout_ctx = TimeoutContext(kwargs.get('wait_timeout'))
 
         state = kwargs.get('state')
 

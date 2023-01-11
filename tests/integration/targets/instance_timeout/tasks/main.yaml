@@ -1,0 +1,27 @@
+- name: instance_timeout
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode instance with an immediate timeout
+      linode.cloud.instance:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        wait: yes
+        wait_timeout: 0
+        booted: yes
+        state: present
+      register: timeout
+      failed_when: "'timeout period expired' not in timeout.msg"
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.instance:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            label: 'ansible-test-{{ r }}'
+            state: absent

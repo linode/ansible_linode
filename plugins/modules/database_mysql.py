@@ -26,6 +26,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     handle_updates, filter_null_values, paginated_list_to_json, mapping_to_dict, poll_condition
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
 
 SPEC = dict(
     label=dict(
@@ -168,6 +169,8 @@ class Module(LinodeModuleBase):
             ssl_cert=None,
         )
 
+        self._timeout_ctx: Optional[TimeoutContext] = None
+
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=[('state', 'label')],
                          required_if=[('state', 'present', ['region', 'engine', 'type'], True)])
@@ -272,7 +275,9 @@ class Module(LinodeModuleBase):
 
         if params.get('wait'):
             try:
-                self._wait_for_database_status(database, {'active'}, 4, params.get('wait_timeout'))
+                self._wait_for_database_status(
+                    database, {'active'}, 4, self._timeout_ctx.seconds_remaining
+                )
             except Exception as err:
                 self.fail(msg='failed to wait for database active: {}'.format(err))
 
@@ -298,6 +303,8 @@ class Module(LinodeModuleBase):
             validate_shared_db_input(self.module.params)
         except ValueError as err:
             self.fail(msg='Invalid param: {}'.format(err))
+
+        self._timeout_ctx = TimeoutContext(kwargs.get('wait_timeout'))
 
         state = kwargs.get('state')
 
