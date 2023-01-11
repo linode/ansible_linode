@@ -4,3 +4,4 @@ tmp
 *.pyc
 __pycache__/
 galaxy.yml
+venv
