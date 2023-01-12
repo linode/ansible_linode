@@ -16,8 +16,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-# import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript \
-#     as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ssh_key_info \
     as docs
 
@@ -40,7 +38,7 @@ specdoc_meta = dict(
             docs_url='https://www.linode.com/docs/api/profile/'
                      '#ssh-key-view__response-samples',
             type='dict',
-            # sample=docs_parent.result_stackscript_samples
+            sample=docs.ssh_key_response_sample,
         )
     )
 )
