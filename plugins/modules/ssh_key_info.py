@@ -1,14 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module allows users to retrieve information about a Linode StackScript."""
+"""This module allows users to retrieve information about a Linode SSH key."""
 
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
 from typing import List, Any, Optional
 
-from linode_api4 import StackScript, SSHKey
+from linode_api4 import SSHKey
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
@@ -36,9 +36,9 @@ specdoc_meta = dict(
     examples=docs.specdoc_examples,
     return_values=dict(
         ssh_key=dict(
-            description='The StackScript in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/stackscripts/'
-                     '#stackscript-view__response-samples',
+            description='The SSH key in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/profile/'
+                     '#ssh-key-view__response-samples',
             type='dict',
             # sample=docs_parent.result_stackscript_samples
         )
