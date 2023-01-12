@@ -16,4 +16,3 @@ ssh_key_response_sample = ['''{
   "label": "My SSH Key",
   "ssh_key": "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
 }''']
-
