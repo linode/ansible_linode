@@ -39,7 +39,7 @@ gendocs:
 	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
 	python scripts/render_readme.py $(COLLECTION_VERSION)
 
-integration-test: $(INTEGRATION_CONFIG)
+integration-test: create-integration-config
 	ansible-test integration $(TEST_ARGS)
 
 test: integration-test
@@ -47,13 +47,13 @@ test: integration-test
 testall:
 	./scripts/test_all.sh
 
-$(INTEGRATION_CONFIG):
+create-integration-config:
 ifneq ("$(LINODE_TOKEN)", "")
-	echo "api_token: $(LINODE_API_TOKEN)" > $(INTEGRATION_CONFIG);
+	@echo "api_token: $(LINODE_API_TOKEN)" > $(INTEGRATION_CONFIG);
 else ifneq ("$(LINODE_API_TOKEN)", "")
-	echo "api_token: $(LINODE_TOKEN)" > $(INTEGRATION_CONFIG);
+	@echo "api_token: $(LINODE_TOKEN)" > $(INTEGRATION_CONFIG);
 else
 	echo "LINODE_API_TOKEN must be set"; \
 	exit 1;
 endif
-	echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)
+	@echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)
