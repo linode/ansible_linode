@@ -1,0 +1,48 @@
+- name: ssh_key_info
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+
+        path: profile/sshkeys
+        method: POST
+        body:
+          ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDDOUaSPY2foeZuDmaIV6bmYnwMVcVdyhA3fF7y/Jg44tEfwEmH7DC+ixwvnyBgHhBCaQsv4S97sphFaC0R56CBwVlVC//sF/E9IpuiCkxjfFbQJlISa4moeH8CfGCgNyr97fPxhP0vJWeoqFaBRCDu8avdaX5VJ/QDN6J8faf5nQ32OHrO6/vQAVyceUwYnZTJFECc7okdbVl3byygTyE/+7O937ljFeMSd84C4wMGXyxks9efuZVZofnw9PCN6BWRlBqBj/nmUXfMcTHRU8Vw4EK+A0+Rz7LTEVv2z0h+M0R42lURJT3B5DLpuz5ZAbS2Vu1dYLjLpqnkJ209l6rVFKb/Z/bycN/f9DPNPd8wqy14bgk3SQw1aHE83ADctCMZYYhlL93Yo8COdxaWfLco/+gfOTn/Hyn8vaG3pr/VmP6lFh7Hv61+idR5t27N89kREW+vBLDvGd+kZWTHOrTu+VySKHiIWjj7/bbfBoTQr0Yq9y8r9mRf5pTaz9rrY50= zliang@dfw-mpzpg"
+          label: "test-key-{{ r }}"
+      register: create_ssh_key
+
+    - name: Get info about the SSH key by ID
+      linode.cloud.ssh_key_info:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        id: "{{ create_ssh_key.body.id }}"
+      register: by_id
+
+    - name: Get info about the SSH key by label
+      linode.cloud.ssh_key_info:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: "{{ create_ssh_key.body.label }}"
+      register: by_label
+
+    - assert:
+        that:
+          - by_id.ssh_key.id == create_ssh_key.body.id
+          - by_id.ssh_key.ssh_key == create_ssh_key.body.ssh_key
+          - by_id.ssh_key.created == create_ssh_key.body.created
+          - by_label.ssh_key.id == create_ssh_key.body.id
+          - by_label.ssh_key.ssh_key == create_ssh_key.body.ssh_key
+          - by_label.ssh_key.created == create_ssh_key.body.created
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.api_request:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+
+            path: "profile/sshkeys/{{ create_ssh_key.body.id }}"
+            method: DELETE

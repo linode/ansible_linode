@@ -20,6 +20,9 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ssh_k
     as docs
 
 linode_ssh_key_info_spec = dict(
+    # Disable the default values
+    state=dict(type='str', required=False, doc_hide=True),
+
     id=dict(type='int', description='The ID of the SSH key.'),
     label=dict(type='str', description='The label of the SSH key.'),
 )
