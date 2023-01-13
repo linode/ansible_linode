@@ -62,6 +62,7 @@ Name | Description |
 [linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode NodeBalancer.|
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|Get info about a Linode Object Storage Cluster.|
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
+[linode.cloud.ssh_key_info](./docs/modules/ssh_key_info.md)|Get info about the Linode SSH public key.|
 [linode.cloud.stackscript_info](./docs/modules/stackscript_info.md)|Get info about a Linode StackScript.|
 [linode.cloud.token_info](./docs/modules/token_info.md)|Get info about a Linode Personal Access Token.|
 [linode.cloud.user_info](./docs/modules/user_info.md)|Get info about a Linode User.|
