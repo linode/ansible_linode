@@ -2,6 +2,7 @@
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
+        ssh_pub_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCloBr83q7v2/kipfpChnN1cPr+DA++JN3RdLBid3tFjy5UmAelpRmKO9Uhija7ElC9/x187t13smc35NGaDOG+s+zrSMlSfygqA6pf8njEPDRBhvyp12Fjwb8i+ILFXiU1GYaVprbQwpgdApwqieoCZ4pathc/HdPvznX/Aqgyiq+5+dSRa5GUftAPWrt3ScFXttlfihU+0wIanyxoxnrtPcqNshs39dRg8UP2zrB5aK+9nPurO/6qSWDqVnIVlparlqXxZdwKl+Gfiq93pGicrPgVEy49Tbl75Y8Nxj7zDsJsQuO0UlRk9IUoe1asAy5DXqQ6foOb6vR9rld6owqRHCG/tjYDpuw1uYCYj5xm+DDfkNRowWJktIgnajzaYqZ3ytWzg31m8a7X2Wol8foxlFrUqqqesJ05I28A3JvLIU5s4vSzi1hK4cWKSi15UFdxX1f1a+pRsRgY446k+i3uWcFZVybzp5tDRdjUMRO6XQrbjrxFnKurRY0+S1NeRF0="
 
     - linode.cloud.api_request:
         api_token: '{{ api_token }}'
@@ -10,7 +11,7 @@
         path: profile/sshkeys
         method: POST
         body:
-          ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDDOUaSPY2foeZuDmaIV6bmYnwMVcVdyhA3fF7y/Jg44tEfwEmH7DC+ixwvnyBgHhBCaQsv4S97sphFaC0R56CBwVlVC//sF/E9IpuiCkxjfFbQJlISa4moeH8CfGCgNyr97fPxhP0vJWeoqFaBRCDu8avdaX5VJ/QDN6J8faf5nQ32OHrO6/vQAVyceUwYnZTJFECc7okdbVl3byygTyE/+7O937ljFeMSd84C4wMGXyxks9efuZVZofnw9PCN6BWRlBqBj/nmUXfMcTHRU8Vw4EK+A0+Rz7LTEVv2z0h+M0R42lURJT3B5DLpuz5ZAbS2Vu1dYLjLpqnkJ209l6rVFKb/Z/bycN/f9DPNPd8wqy14bgk3SQw1aHE83ADctCMZYYhlL93Yo8COdxaWfLco/+gfOTn/Hyn8vaG3pr/VmP6lFh7Hv61+idR5t27N89kREW+vBLDvGd+kZWTHOrTu+VySKHiIWjj7/bbfBoTQr0Yq9y8r9mRf5pTaz9rrY50= zliang@dfw-mpzpg"
+          ssh_key: "{{ ssh_pub_key }}"
           label: "test-key-{{ r }}"
       register: create_ssh_key
 
