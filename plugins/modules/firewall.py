@@ -262,12 +262,14 @@ class LinodeFirewall(LinodeModuleBase):
             for field in linode_firewall_rule_spec:
                 if field not in local_rule and field in remote_rule:
                     local_rule[field]=remote_rule[field]
-            for ip in ['ipv6','ipv4']:
-                if ip not in local_rule.get('addresses',{}):
-                    remote_addresses=remote_rule.get('addresses',{})
-                    local_addresses=local_rule.get('addresses',{})
-                    local_addresses[ip]=remote_addresses.get(ip,[])
-                    local_rule['addresses']=local_addresses
+            for ip in ['ipv6', 'ipv4']:
+                if ip in local_rule.get('addresses', {}):
+                    continue
+                    
+                remote_addresses=remote_rule.get('addresses',{})
+                local_addresses=local_rule.get('addresses',{})
+                local_addresses[ip]=remote_addresses.get(ip,[])
+                local_rule['addresses']=local_addresses
             result.append(local_rule)
         return result
 
