@@ -1,0 +1,49 @@
+- name: ssh_key_info
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+        ssh_pub_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCloBr83q7v2/kipfpChnN1cPr+DA++JN3RdLBid3tFjy5UmAelpRmKO9Uhija7ElC9/x187t13smc35NGaDOG+s+zrSMlSfygqA6pf8njEPDRBhvyp12Fjwb8i+ILFXiU1GYaVprbQwpgdApwqieoCZ4pathc/HdPvznX/Aqgyiq+5+dSRa5GUftAPWrt3ScFXttlfihU+0wIanyxoxnrtPcqNshs39dRg8UP2zrB5aK+9nPurO/6qSWDqVnIVlparlqXxZdwKl+Gfiq93pGicrPgVEy49Tbl75Y8Nxj7zDsJsQuO0UlRk9IUoe1asAy5DXqQ6foOb6vR9rld6owqRHCG/tjYDpuw1uYCYj5xm+DDfkNRowWJktIgnajzaYqZ3ytWzg31m8a7X2Wol8foxlFrUqqqesJ05I28A3JvLIU5s4vSzi1hK4cWKSi15UFdxX1f1a+pRsRgY446k+i3uWcFZVybzp5tDRdjUMRO6XQrbjrxFnKurRY0+S1NeRF0="
+
+    - linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+
+        path: profile/sshkeys
+        method: POST
+        body:
+          ssh_key: "{{ ssh_pub_key }}"
+          label: "test-key-{{ r }}"
+      register: create_ssh_key
+
+    - name: Get info about the SSH key by ID
+      linode.cloud.ssh_key_info:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        id: "{{ create_ssh_key.body.id }}"
+      register: by_id
+
+    - name: Get info about the SSH key by label
+      linode.cloud.ssh_key_info:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: "{{ create_ssh_key.body.label }}"
+      register: by_label
+
+    - assert:
+        that:
+          - by_id.ssh_key.id == create_ssh_key.body.id
+          - by_id.ssh_key.ssh_key == create_ssh_key.body.ssh_key
+          - by_id.ssh_key.created == create_ssh_key.body.created
+          - by_label.ssh_key.id == create_ssh_key.body.id
+          - by_label.ssh_key.ssh_key == create_ssh_key.body.ssh_key
+          - by_label.ssh_key.created == create_ssh_key.body.created
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.api_request:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+
+            path: "profile/sshkeys/{{ create_ssh_key.body.id }}"
+            method: DELETE
