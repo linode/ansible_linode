@@ -262,13 +262,13 @@ class LinodeFirewall(LinodeModuleBase):
             for field in linode_firewall_rule_spec:
                 if field not in local_rule and field in remote_rule:
                     local_rule[field]=remote_rule[field]
-            for ip in ['ipv6', 'ipv4']:
-                if ip in local_rule.get('addresses', {}):
+            for ip_version in ['ipv6', 'ipv4']:
+                if ip_version in local_rule.get('addresses', {}):
                     continue
-                    
+
                 remote_addresses=remote_rule.get('addresses',{})
                 local_addresses=local_rule.get('addresses',{})
-                local_addresses[ip]=remote_addresses.get(ip,[])
+                local_addresses[ip_version]=remote_addresses.get(ip_version,[])
                 local_rule['addresses']=local_addresses
             result.append(local_rule)
         return result
@@ -280,10 +280,10 @@ class LinodeFirewall(LinodeModuleBase):
 
         # Add new local rules to remote rules if they don't exist
         for direction in ['inbound', 'outbound']:
-            rlr = { r['label'] for r in remote_rules.get(direction,{}) }
-            for l in local_rules.get(direction,{}):
-                if l['label'] not in rlr:
-                    remote_rules[direction].append(l)
+            rlr = { remote_rule['label'] for remote_rule in remote_rules.get(direction,{}) }
+            for local_rule in local_rules.get(direction,{}):
+                if local_rule['label'] not in rlr:
+                    remote_rules[direction].append(local_rule)
 
         for direction in ['inbound', 'outbound']:
             local_rules[direction] = self._amend_rules(remote_rules[direction],
