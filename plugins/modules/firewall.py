@@ -262,6 +262,7 @@ class LinodeFirewall(LinodeModuleBase):
             for field in linode_firewall_rule_spec:
                 if field not in local_rule and field in remote_rule:
                     local_rule[field]=remote_rule[field]
+
             for ip_version in ['ipv6', 'ipv4']:
                 if ip_version in local_rule.get('addresses', {}):
                     continue
@@ -270,6 +271,7 @@ class LinodeFirewall(LinodeModuleBase):
                 local_addresses=local_rule.get('addresses',{})
                 local_addresses[ip_version]=remote_addresses.get(ip_version,[])
                 local_rule['addresses']=local_addresses
+
             result.append(local_rule)
         return result
 
