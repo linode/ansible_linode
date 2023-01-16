@@ -18,8 +18,8 @@ List and filter on Linode events.
 - name: List the latest 5 events for the current Linode Account
   linode.cloud.event_list:
     count: 5
-    order_by: desc
-    order: created
+    order_by: created
+    order: desc
 ```
 
 ```yaml
