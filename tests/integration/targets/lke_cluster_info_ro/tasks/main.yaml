@@ -1,0 +1,75 @@
+- name: lke_cluster_info_ro
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Resolve the latest K8s version
+      linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        method: GET
+        path: lke/versions
+      register: lke_versions
+
+    - name: Create a read-only testing token
+      linode.cloud.token:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        scopes: 'lke:read_only'
+        state: present
+      register: ro_token
+
+    - set_fact:
+        kube_version: '{{ lke_versions.body.data[0].id }}'
+
+    - name: Create a Linode LKE cluster
+      linode.cloud.lke_cluster:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: 'ansible-test-{{ r }}'
+        region: us-southeast
+        k8s_version: '{{ kube_version }}'
+        node_pools:
+          - type: g6-standard-1
+            count: 1
+        skip_polling: true
+        state: present
+      register: create_cluster
+
+    - assert:
+        that:
+          - create_cluster.cluster.k8s_version == kube_version
+          - create_cluster.cluster.region == 'us-southeast'
+          - create_cluster.node_pools[0].type == 'g6-standard-1'
+          - create_cluster.node_pools[0].count == 1
+
+    - name: Attempt to view the cluster with a read-only token
+      linode.cloud.lke_cluster_info:
+        api_token: '{{ ro_token.token.token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        label: '{{ create_cluster.cluster.label }}'
+      register: cluster_info
+
+    - assert:
+        that:
+          - cluster_info.cluster.k8s_version == kube_version
+          - cluster_info.cluster.region == 'us-southeast'
+          - cluster_info.node_pools[0].type == 'g6-standard-1'
+          - cluster_info.node_pools[0].count == 1
+          - '"not authorized" in cluster_info.kubeconfig'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.lke_cluster:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            label: '{{ create_cluster.cluster.label }}'
+            state: absent
+
+        - linode.cloud.token:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            label: 'ansible-test-{{ r }}'
+            state: absent

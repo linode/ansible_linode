@@ -43,7 +43,9 @@ SPEC = dict(
 
 specdoc_meta = dict(
     description=[
-        'Manage a Linode Token.'
+        'Manage a Linode Token.',
+        'NOTE: The full Personal Access Token is only returned '
+        'when a new token has been created.'
     ],
     requirements=global_requirements,
     author=global_authors,
@@ -106,16 +108,25 @@ class Module(LinodeModuleBase):
         label = params.get('label')
 
         token = self._get_token_by_label(label)
+        full_pat: Optional[str] = None
 
         # Create the token if it does not already exist
         if token is None:
             token = self._create_token()
+            full_pat = token.token
             self.register_action('Created token {0}'.format(label))
 
         self._update_token(token)
 
         # Force lazy-loading
         token._api_get()
+
+        result_token = token._raw_json
+
+        # If the full PAT (only returned once) is present,
+        # inject it back into the result
+        if full_pat is not None:
+            result_token['token'] = full_pat
 
         self.results['token'] = token._raw_json
 
