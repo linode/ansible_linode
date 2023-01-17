@@ -129,7 +129,7 @@ class Module(LinodeModuleBase):
             polling.poll(
                 poll_func,
                 step=10,
-                timeout=self.module.params.get('wait_timeout'),
+                timeout=self._timeout_ctx.seconds_remaining,
             )
         except polling.TimeoutException:
             self.fail('failed to wait for image status: timeout period expired')
@@ -236,6 +236,7 @@ class Module(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Image module"""
+
         state = kwargs.get('state')
 
         if state == 'absent':

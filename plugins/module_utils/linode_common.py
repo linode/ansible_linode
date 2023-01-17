@@ -8,6 +8,7 @@ from typing import Any
 import polling
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import format_api_error
+from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
 
 try:
     from ansible.module_utils.ansible_release import __version__ as ANSIBLE_VERSION
@@ -97,6 +98,13 @@ class LinodeModuleBase:
         self.results: dict = self.results or dict(
             changed=False,
             actions=[]
+        )
+
+        # This field may or may not be present depending on the module
+        timeout_param = self.module.params.get('wait_timeout', 120)
+
+        self._timeout_ctx: TimeoutContext = TimeoutContext(
+            timeout_seconds=timeout_param
         )
 
         if not HAS_LINODE:

@@ -272,7 +272,9 @@ class Module(LinodeModuleBase):
 
         if params.get('wait'):
             try:
-                self._wait_for_database_status(database, {'active'}, 4, params.get('wait_timeout'))
+                self._wait_for_database_status(
+                    database, {'active'}, 4, self._timeout_ctx.seconds_remaining
+                )
             except Exception as err:
                 self.fail(msg='failed to wait for database active: {}'.format(err))
 

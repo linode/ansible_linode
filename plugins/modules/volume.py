@@ -141,8 +141,10 @@ class LinodeVolume(LinodeModuleBase):
             self.fail('failed to wait for volume status: timeout period expired')
 
     def _wait_for_volume_active(self) -> None:
-        self._wait_for_volume_status(self._volume, {'active'},
-                                     self.module.params.get('wait_timeout'))
+        self._wait_for_volume_status(
+            self._volume, {'active'},
+            self._timeout_ctx.seconds_remaining
+        )
 
     def _handle_volume(self) -> None:
         params = self.module.params

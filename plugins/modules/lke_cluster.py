@@ -395,7 +395,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
             return True
 
-        poll_condition(condition, 4, self.module.params.get('wait_timeout'))
+        poll_condition(condition, 4, self._timeout_ctx.seconds_remaining)
 
     def _populate_dashboard_url_no_poll(self, cluster: LKECluster) -> None:
         try:
@@ -420,7 +420,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
             return True
 
-        poll_condition(condition, 1, self.module.params.get('wait_timeout'))
+        poll_condition(condition, 1, self._timeout_ctx.seconds_remaining)
 
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
@@ -460,7 +460,7 @@ class LinodeLKECluster(LinodeModuleBase):
         cluster._api_get()
 
         if not params.get('skip_polling'):
-            self._wait_for_all_nodes_ready(cluster, params.get('wait_timeout'))
+            self._wait_for_all_nodes_ready(cluster, self._timeout_ctx.seconds_remaining)
 
         self._populate_results(cluster)
 

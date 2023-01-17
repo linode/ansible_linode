@@ -256,7 +256,7 @@ class LinodeLKENodePool(LinodeModuleBase):
         pool = self._update_pool(pool)
 
         if not self.module.params.get('skip_polling'):
-            self._wait_for_all_nodes_ready(pool, self.module.params.get('wait_timeout'))
+            self._wait_for_all_nodes_ready(pool, self._timeout_ctx.seconds_remaining)
 
         self.results['node_pool'] = jsonify_node_pool(pool)
 
@@ -272,6 +272,7 @@ class LinodeLKENodePool(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for lke_node_pool module"""
+
         state = kwargs.get('state')
 
         if state == 'absent':
