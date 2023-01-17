@@ -44,7 +44,7 @@ integration-test: create-integration-config
 
 test: integration-test
 
-testall:
+testall: create-integration-config
 	./scripts/test_all.sh
 
 create-integration-config:
