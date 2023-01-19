@@ -137,10 +137,15 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
         try:
             self.results['kubeconfig'] = cluster.kubeconfig
         except ApiError as err:
-            if err.status != 503:
+            ignored_error_messages = {
+                503: 'Kubeconfig not yet available...',
+                401: 'Current token is not authorized to view this endpoint.'
+            }
+
+            if err.status not in ignored_error_messages:
                 raise err
 
-            self.results['kubeconfig'] = 'Kubeconfig not yet available...'
+            self.results['kubeconfig'] = ignored_error_messages[err.status]
 
         try:
             self.results['dashboard_url'] = \
