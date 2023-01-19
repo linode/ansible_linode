@@ -10,9 +10,8 @@ from typing import List, Any, Optional
 
 from linode_api4 import SSHKey
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    filter_null_values
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import InfoModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import filter_null_values
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
@@ -47,7 +46,7 @@ specdoc_meta = dict(
 )
 
 
-class LinodeSSHKeyInfo(LinodeModuleBase):
+class LinodeSSHKeyInfo(InfoModuleBase):
     """Module for getting Linode SSH public key"""
 
     def __init__(self) -> None:
@@ -58,7 +57,8 @@ class LinodeSSHKeyInfo(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=[('id', 'label')],
-                         mutually_exclusive=[('id', 'label')])
+                         mutually_exclusive=[('id', 'label')],
+                         resource_name="SSH key")
 
     def _get_ssh_key_by_label(self, label: str) -> Optional[SSHKey]:
         try:
@@ -71,12 +71,7 @@ class LinodeSSHKeyInfo(LinodeModuleBase):
             return self.fail(msg=f'failed to get ssh key {label}: {exception}')
 
     def _get_ssh_key_by_id(self, ssh_key_id: int) -> Optional[SSHKey]:
-        try:
-            ssh_key = SSHKey(self.client, ssh_key_id)
-            ssh_key._api_get()
-            return ssh_key
-        except Exception as exception:
-            return self.fail(msg=f'failed to get ssh key with id {ssh_key_id}: {exception}')
+        return self._get_resource_by_id(SSHKey, ssh_key_id)
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for ssh_key_info module"""

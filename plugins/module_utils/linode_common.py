@@ -3,7 +3,7 @@
 from __future__ import absolute_import, division, print_function
 
 import traceback
-from typing import Any
+from typing import Any, Type
 
 import polling
 
@@ -18,7 +18,7 @@ except Exception:
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib, env_fallback
 
 try:
-    from linode_api4 import LinodeClient, ApiError
+    from linode_api4 import LinodeClient, ApiError, Base
 
     HAS_LINODE = True
 except ImportError:
@@ -141,8 +141,6 @@ class LinodeModuleBase:
         self.results['changed'] = True
         self.results['actions'].append(description)
 
-
-
     @property
     def client(self) -> LinodeClient:
         """Creates a 'client' property that is used to access the Linode API."""
@@ -165,3 +163,21 @@ class LinodeModuleBase:
             )
 
         return self._client
+
+
+class InfoModuleBase(LinodeModuleBase):
+    """The base class for the info module"""
+
+    def __init__(self, *args, resource_name="the resource", **kwargs) -> None:
+        self.resource_name = resource_name
+        super().__init__(*args, **kwargs)
+
+    def _get_resource_by_id(self, ResourceType: Type[Base], resource_id: int):  # pylint: disable=invalid-name
+        try:
+            resource = ResourceType(self.client, resource_id)
+            resource._api_get()
+            return resource
+        except Exception as exception:
+            return self.fail(
+                msg=f'failed to get {self.resource_name} with id {resource_id}: {exception}'
+            )
