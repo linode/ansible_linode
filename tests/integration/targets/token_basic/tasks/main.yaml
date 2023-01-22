@@ -18,6 +18,9 @@
         that:
           - create_token.token.id != None
 
+          # We want to make sure we're getting full-length API tokens
+          - create_token.token.token|length > 16
+
     - name: Update the Linode Token
       linode.cloud.token:
         api_token: '{{ api_token }}'

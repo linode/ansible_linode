@@ -2,6 +2,8 @@
 
 Manage a Linode Token.
 
+NOTE: The full Personal Access Token is only returned when a new token has been created.
+
 
 - [Examples](#examples)
 - [Parameters](#parameters)
