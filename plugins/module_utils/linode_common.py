@@ -3,7 +3,7 @@
 from __future__ import absolute_import, division, print_function
 
 import traceback
-from typing import Any
+from typing import Any, Type
 
 import polling
 
@@ -18,7 +18,7 @@ except Exception:
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib, env_fallback
 
 try:
-    from linode_api4 import LinodeClient, ApiError
+    from linode_api4 import LinodeClient, ApiError, Base
 
     HAS_LINODE = True
 except ImportError:
@@ -64,6 +64,7 @@ LINODE_LABEL_ARGS = dict(
         description='The label to assign to this resource.'),
 )
 
+LinodeAPIType = Base
 
 class LinodeModuleBase:
     """A base for all Linode resource modules."""
@@ -73,11 +74,13 @@ class LinodeModuleBase:
             bypass_checks: bool = False, no_log: bool = False, mutually_exclusive: Any = None,
             required_together: Any = None, required_one_of: Any = None,
             add_file_common_args: bool = False, supports_check_mode: bool = False,
-            required_if: Any = None,
+            required_if: Any = None, resource_name: str = None,
             skip_exec: bool = False) -> None:
 
         arg_spec = {}
         arg_spec.update(LINODE_COMMON_ARGS)
+
+        self.resource_name = resource_name
 
         if has_label:
             arg_spec.update(LINODE_LABEL_ARGS)
@@ -141,6 +144,17 @@ class LinodeModuleBase:
         self.results['changed'] = True
         self.results['actions'].append(description)
 
+    def _get_resource_by_id(self, resource_type: Type[LinodeAPIType], resource_id: int):
+        
+        try:
+            resource = resource_type(self.client, resource_id)
+            resource._api_get()
+            return resource
+        except Exception as exception:
+            return self.fail(
+                msg=f"failed to get {self.resource_name or type(resource_type).__name__} "
+                "with id {resource_id}: {exception}"
+            )
 
 
     @property

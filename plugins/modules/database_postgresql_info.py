@@ -87,7 +87,8 @@ class Module(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=[('id', 'label')],
-                         mutually_exclusive=[('id', 'label')])
+                         mutually_exclusive=[('id', 'label')],
+                         resource_name="PostgreSQL database")
 
     def _get_database_by_label(self, label: str) -> Optional[PostgreSQLDatabase]:
         try:
@@ -100,12 +101,7 @@ class Module(LinodeModuleBase):
             return self.fail(msg='failed to get database {0}: {1}'.format(label, exception))
 
     def _get_database_by_id(self, database_id: int) -> PostgreSQLDatabase:
-        try:
-            database = PostgreSQLDatabase(self.client, database_id)
-            database._api_get()
-            return database
-        except Exception as exception:
-            self.fail(msg='failed to get database with id {0}: {1}'.format(database_id, exception))
+        return self._get_resource_by_id(PostgreSQLDatabase, database_id)
 
     def _write_result(self, database: PostgreSQLDatabase) -> None:
         # Force lazy-loading

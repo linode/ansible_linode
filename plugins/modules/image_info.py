@@ -57,7 +57,8 @@ class Module(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=[('id', 'label')],
-                         mutually_exclusive=[('id', 'label')])
+                         mutually_exclusive=[('id', 'label')],
+                         resource_name="image")
 
     def _get_image_by_label(self, label: str) -> Optional[Image]:
         try:
@@ -69,12 +70,7 @@ class Module(LinodeModuleBase):
             return self.fail(msg='failed to get image {0}: {1}'.format(label, exception))
 
     def _get_image_by_id(self, image_id: int) -> Image:
-        try:
-            image = Image(self.client, image_id)
-            image._api_get()
-            return image
-        except Exception as exception:
-            return self.fail(msg='failed to get image with id {0}: {1}'.format(image_id, exception))
+        return self._get_resource_by_id(Image, image_id)
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for user info module"""

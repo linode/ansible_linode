@@ -58,7 +58,8 @@ class Module(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=[('id', 'label')],
-                         mutually_exclusive=[('id', 'label')])
+                         mutually_exclusive=[('id', 'label')],
+                         resource_name = "personal token")
 
     def _get_token_by_label(self, label: str) -> Optional[PersonalAccessToken]:
         try:
@@ -70,12 +71,7 @@ class Module(LinodeModuleBase):
             return self.fail(msg='failed to get token {0}: {1}'.format(label, exception))
 
     def _get_token_by_id(self, token_id: int) -> PersonalAccessToken:
-        try:
-            token = PersonalAccessToken(self.client, token_id)
-            token._api_get()
-            return token
-        except Exception as exception:
-            self.fail(msg='failed to get token with id {0}: {1}'.format(token_id, exception))
+        return self._get_resource_by_id(PersonalAccessToken, token_id)
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for token info module"""
