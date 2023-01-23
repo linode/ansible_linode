@@ -41,7 +41,7 @@ specdoc_meta = dict(
             docs_url='https://www.linode.com/docs/api/profile/'
                      '#ssh-key-view__response-samples',
             type='dict',
-            sample=docs.ssh_key_response_sample,
+            sample=docs.ssh_key_info_response_sample,
         )
     )
 )

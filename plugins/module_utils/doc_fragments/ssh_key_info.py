@@ -10,7 +10,7 @@ specdoc_examples = [
   linode.cloud.ssh_key_info:
     id: 12345''']
 
-ssh_key_response_sample = ['''{
+ssh_key_info_response_sample = ['''{
   "created": "2018-01-01T00:01:01",
   "id": 42,
   "label": "My SSH Key",
