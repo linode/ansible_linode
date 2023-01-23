@@ -19,10 +19,6 @@ jobs:
       github.event.client_payload.pull_request.head.sha == github.event.client_payload.slash_command.sha
 
     steps:
-      - uses: actions/setup-go@37335c7bb261b353407cff977110895fa0b4f7d8 # pin@v2
-        with:
-          go-version: '1.17'
-      - run: go version
       - uses: actions-ecosystem/action-regex-match@v2
         id: validate-tests
         with:
@@ -36,6 +32,30 @@ jobs:
         with:
           ref: ${{ github.event.client_payload.slash_command.sha }}
           path: .ansible/collections/ansible_collections/linode/cloud
+
+      # Install deps
+      - name: update packages
+        run: sudo apt-get update -y
+
+      - name: install make
+        run: sudo apt-get install -y build-essential
+
+      - name: setup python 3
+        uses: actions/setup-python@dc73133d4da04e56a135ae2246682783cc7c7cb6 # pin@v2
+        with:
+          python-version: '3.10'
+
+      - name: install dependencies
+        run: pip3 install -r requirements-dev.txt -r requirements.txt
+
+      - name: install ansible dependencies
+        run: ansible-galaxy collection install amazon.aws:==1.5.1
+
+      - name: install collection
+        run: make install
+
+      - name: replace existing keys
+        run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
 
       - run: make deps && make TEST_ARGS="-v ${{ github.event.client_payload.slash_command.tests }}" test
         if: ${{ steps.validate-tests.outputs.match == '' }}
