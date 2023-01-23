@@ -36,6 +36,7 @@ Name | Description |
 [linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|Manage a Linode NodeBalancer.|
 [linode.cloud.nodebalancer_node](./docs/modules/nodebalancer_node.md)|Manage Linode NodeBalancer Nodes.|
 [linode.cloud.object_keys](./docs/modules/object_keys.md)|Manage Linode Object Storage Keys.|
+[linode.cloud.ssh_key](./docs/modules/ssh_key.md)|Manage a Linode SSH key.|
 [linode.cloud.stackscript](./docs/modules/stackscript.md)|Manage a Linode StackScript.|
 [linode.cloud.token](./docs/modules/token.md)|Manage a Linode Token.|
 [linode.cloud.user](./docs/modules/user.md)|Manage a Linode User.|
@@ -79,6 +80,7 @@ Name | Description |
 [linode.cloud.database_list](./docs/modules/database_list.md)|List and filter on Linode Managed Databases.|
 [linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Linode events.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Linode images.|
+[linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on Linode stackscripts.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on Linode stackscripts.|
 [linode.cloud.type_list](./docs/modules/type_list.md)|List and filter on Linode Instance Types.|
 [linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
