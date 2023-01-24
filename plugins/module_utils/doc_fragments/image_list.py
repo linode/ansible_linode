@@ -6,8 +6,8 @@ specdoc_examples = ['''
 - name: List the latest 5 images for the current Linode Account
   linode.cloud.image_list:
     count: 5
-    order_by: desc
-    order: created''', '''
+    order_by: created
+    order: desc''', '''
 - name: Resolve all Alpine Linux images
   linode.cloud.image_list:
     filter:
