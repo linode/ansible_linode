@@ -145,7 +145,6 @@ class LinodeModuleBase:
         self.results['actions'].append(description)
 
     def _get_resource_by_id(self, resource_type: Type[LinodeAPIType], resource_id: int):
-        
         try:
             resource = resource_type(self.client, resource_id)
             resource._api_get()
