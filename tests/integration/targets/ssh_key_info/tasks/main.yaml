@@ -39,7 +39,7 @@
           - by_label.ssh_key.created == create_ssh_key.body.created
 
   always:
-    - ignore_errors: yes
+    - ignore_errors: true
       block:
         - linode.cloud.api_request:
             api_token: '{{ api_token }}'

@@ -5,17 +5,25 @@ ssh_key_list_specdoc_examples = ['''
   linode.cloud.ssh_key_list: {}''', '''
 - name: List the latest 5 SSH keys for the current Linode Account
   linode.cloud.ssh_key_list:
+    api_token: '{{ api_token }}'
+    ua_prefix: '{{ ua_prefix }}'
+
     count: 5
     order_by: created
     order: desc''', '''
 - name: List filtered personal SSH keys for the current Linode Account
   linode.cloud.ssh_key_list:
-    filter:
+    api_token: '{{ api_token }}'
+    ua_prefix: '{{ ua_prefix }}'
+
+    filters:
       - name: label-or-some-other-field
         values: MySSHKey1''', '''
 - name: List filtered personal SSH keys for the current Linode Account
   linode.cloud.ssh_key_list:
-    filter:
+    api_token: '{{ api_token }}'
+    ua_prefix: '{{ ua_prefix }}'
+    filters:
       - name: label-or-some-other-field
         values:
           - MySSHKey1
