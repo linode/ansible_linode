@@ -6,8 +6,8 @@ specdoc_examples = ['''
 - name: List the latest 5 events for the current Linode Account
   linode.cloud.event_list:
     count: 5
-    order_by: desc
-    order: created''', '''
+    order_by: created
+    order: desc''', '''
 - name: List all Linode Instance creation events for the current Linode Account
   linode.cloud.event_list:
     filter:
