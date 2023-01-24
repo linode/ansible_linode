@@ -87,8 +87,7 @@ class Module(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=[('id', 'label')],
-                         mutually_exclusive=[('id', 'label')],
-                         resource_name = "MySQL database")
+                         mutually_exclusive=[('id', 'label')])
 
     def _get_database_by_label(self, label: str) -> Optional[MySQLDatabase]:
         try:

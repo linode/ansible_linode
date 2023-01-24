@@ -6,19 +6,24 @@ import traceback
 from typing import Any, Type
 
 import polling
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import format_api_error
-from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    format_api_error
+from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import \
+    TimeoutContext
 
 try:
-    from ansible.module_utils.ansible_release import __version__ as ANSIBLE_VERSION
+    from ansible.module_utils.ansible_release import \
+        __version__ as ANSIBLE_VERSION
 except Exception:
     ANSIBLE_VERSION = 'unknown'
 
-from ansible.module_utils.basic import AnsibleModule, missing_required_lib, env_fallback
+from ansible.module_utils.basic import (AnsibleModule, env_fallback,
+                                        missing_required_lib)
 
 try:
-    from linode_api4 import LinodeClient, ApiError, Base
+    from linode_api4 import (ApiError, Base, Image, LinodeClient,
+                             MySQLDatabase, PersonalAccessToken,
+                             PostgreSQLDatabase, SSHKey, StackScript)
 
     HAS_LINODE = True
 except ImportError:
@@ -66,6 +71,15 @@ LINODE_LABEL_ARGS = dict(
 
 LinodeAPIType = Base
 
+RESOURCE_NAMES = {
+    Image: "image",
+    MySQLDatabase: "MySQL database",
+    PersonalAccessToken: "personal access token",
+    PostgreSQLDatabase: "PostgreSQL database",
+    SSHKey: "SSH key",
+    StackScript: "stackscript",
+} if HAS_LINODE else {}
+
 class LinodeModuleBase:
     """A base for all Linode resource modules."""
 
@@ -74,13 +88,11 @@ class LinodeModuleBase:
             bypass_checks: bool = False, no_log: bool = False, mutually_exclusive: Any = None,
             required_together: Any = None, required_one_of: Any = None,
             add_file_common_args: bool = False, supports_check_mode: bool = False,
-            required_if: Any = None, resource_name: str = None,
+            required_if: Any = None,
             skip_exec: bool = False) -> None:
 
         arg_spec = {}
         arg_spec.update(LINODE_COMMON_ARGS)
-
-        self.resource_name = resource_name
 
         if has_label:
             arg_spec.update(LINODE_LABEL_ARGS)
@@ -150,8 +162,9 @@ class LinodeModuleBase:
             resource._api_get()
             return resource
         except Exception as exception:
+            resource_name = RESOURCE_NAMES.get(resource_type) or type(resource_type).__name__
             return self.fail(
-                msg=f"failed to get {self.resource_name or type(resource_type).__name__} "
+                msg=f"failed to get {resource_name} "
                 "with id {resource_id}: {exception}"
             )
 

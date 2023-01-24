@@ -57,8 +57,7 @@ class Module(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=[('id', 'label')],
-                         mutually_exclusive=[('id', 'label')],
-                         resource_name="image")
+                         mutually_exclusive=[('id', 'label')])
 
     def _get_image_by_label(self, label: str) -> Optional[Image]:
         try:

@@ -58,8 +58,7 @@ class LinodeSSHKeyInfo(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec,
                          required_one_of=[('id', 'label')],
-                         mutually_exclusive=[('id', 'label')],
-                         resource_name="SSH key")
+                         mutually_exclusive=[('id', 'label')])
 
     def _get_ssh_key_by_label(self, label: str) -> Optional[SSHKey]:
         try:
