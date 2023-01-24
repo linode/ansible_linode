@@ -18,8 +18,8 @@ List and filter on Linode stackscripts.
 - name: List the latest 5 stackscripts for the current Linode Account
   linode.cloud.stackscript_list:
     count: 5
-    order_by: desc
-    order: created
+    order_by: created
+    order: desc
 ```
 
 ```yaml
