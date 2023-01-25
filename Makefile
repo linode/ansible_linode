@@ -4,7 +4,7 @@ DOCS_PATH ?= docs
 COLLECTION_VERSION ?=
 
 TEST_ARGS := -v
-INTEGRATION_CONFIG := tests/integration/integration_config.yml
+INTEGRATION_CONFIG := ./tests/integration/integration_config.yml
 
 clean:
 	rm -f *.tar.gz && rm -rf galaxy.yml
@@ -49,9 +49,9 @@ testall: create-integration-config
 
 create-integration-config:
 ifneq ("${LINODE_TOKEN}", "")
-	@echo "api_token: ${LINODE_API_TOKEN}" > $(INTEGRATION_CONFIG);
-else ifneq ("${LINODE_API_TOKEN}", "")
 	@echo "api_token: ${LINODE_TOKEN}" > $(INTEGRATION_CONFIG);
+else ifneq ("${LINODE_API_TOKEN}", "")
+	@echo "api_token: ${LINODE_API_TOKEN}" > $(INTEGRATION_CONFIG);
 else
 	echo "LINODE_API_TOKEN must be set"; \
 	exit 1;

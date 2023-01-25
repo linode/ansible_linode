@@ -100,12 +100,7 @@ class Module(LinodeModuleBase):
             return self.fail(msg='failed to get database {0}: {1}'.format(label, exception))
 
     def _get_database_by_id(self, database_id: int) -> MySQLDatabase:
-        try:
-            database = MySQLDatabase(self.client, database_id)
-            database._api_get()
-            return database
-        except Exception as exception:
-            self.fail(msg='failed to get database with id {0}: {1}'.format(database_id, exception))
+        return self._get_resource_by_id(MySQLDatabase, database_id)
 
     def _write_result(self, database: MySQLDatabase) -> None:
         # Force lazy-loading

@@ -72,13 +72,7 @@ class Module(LinodeModuleBase):
             return self.fail(msg='failed to get stackscript {0}: {1}'.format(label, exception))
 
     def _get_stackscript_by_id(self, stackscript_id: int) -> StackScript:
-        try:
-            stackscript = StackScript(self.client, stackscript_id)
-            stackscript._api_get()
-            return stackscript
-        except Exception as exception:
-            self.fail(msg='failed to get stackscript with id {0}: {1}'
-                      .format(stackscript_id, exception))
+        return self._get_resource_by_id(StackScript, stackscript_id)
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for stackscript_info module"""

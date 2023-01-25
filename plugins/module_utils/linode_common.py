@@ -3,22 +3,27 @@
 from __future__ import absolute_import, division, print_function
 
 import traceback
-from typing import Any
+from typing import Any, Type
 
 import polling
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import format_api_error
-from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import TimeoutContext
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    format_api_error
+from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import \
+    TimeoutContext
 
 try:
-    from ansible.module_utils.ansible_release import __version__ as ANSIBLE_VERSION
+    from ansible.module_utils.ansible_release import \
+        __version__ as ANSIBLE_VERSION
 except Exception:
     ANSIBLE_VERSION = 'unknown'
 
-from ansible.module_utils.basic import AnsibleModule, missing_required_lib, env_fallback
+from ansible.module_utils.basic import (AnsibleModule, env_fallback,
+                                        missing_required_lib)
 
 try:
-    from linode_api4 import LinodeClient, ApiError
+    from linode_api4 import (ApiError, Base, Image, LinodeClient,
+                             MySQLDatabase, PersonalAccessToken,
+                             PostgreSQLDatabase, SSHKey, StackScript)
 
     HAS_LINODE = True
 except ImportError:
@@ -64,6 +69,16 @@ LINODE_LABEL_ARGS = dict(
         description='The label to assign to this resource.'),
 )
 
+LinodeAPIType = Base
+
+RESOURCE_NAMES = {
+    Image: "image",
+    MySQLDatabase: "MySQL database",
+    PersonalAccessToken: "personal access token",
+    PostgreSQLDatabase: "PostgreSQL database",
+    SSHKey: "SSH key",
+    StackScript: "stackscript",
+} if HAS_LINODE else {}
 
 class LinodeModuleBase:
     """A base for all Linode resource modules."""
@@ -141,6 +156,17 @@ class LinodeModuleBase:
         self.results['changed'] = True
         self.results['actions'].append(description)
 
+    def _get_resource_by_id(self, resource_type: Type[LinodeAPIType], resource_id: int):
+        try:
+            resource = resource_type(self.client, resource_id)
+            resource._api_get()
+            return resource
+        except Exception as exception:
+            resource_name = RESOURCE_NAMES.get(resource_type) or type(resource_type).__name__
+            return self.fail(
+                msg=f"failed to get {resource_name} "
+                "with id {resource_id}: {exception}"
+            )
 
 
     @property
