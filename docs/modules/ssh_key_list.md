@@ -2,7 +2,6 @@
 
 List and filter on SSH keys in the Linode profile.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -17,6 +16,9 @@ List and filter on SSH keys in the Linode profile.
 ```yaml
 - name: List the latest 5 SSH keys for the current Linode Account
   linode.cloud.ssh_key_list:
+    api_token: '{{ api_token }}'
+    ua_prefix: '{{ ua_prefix }}'
+
     count: 5
     order_by: created
     order: desc
@@ -25,7 +27,10 @@ List and filter on SSH keys in the Linode profile.
 ```yaml
 - name: List filtered personal SSH keys for the current Linode Account
   linode.cloud.ssh_key_list:
-    filter:
+    api_token: '{{ api_token }}'
+    ua_prefix: '{{ ua_prefix }}'
+
+    filters:
       - name: label-or-some-other-field
         values: MySSHKey1
 ```
@@ -33,21 +38,14 @@ List and filter on SSH keys in the Linode profile.
 ```yaml
 - name: List filtered personal SSH keys for the current Linode Account
   linode.cloud.ssh_key_list:
-    filter:
+    api_token: '{{ api_token }}'
+    ua_prefix: '{{ ua_prefix }}'
+    filters:
       - name: label-or-some-other-field
         values:
           - MySSHKey1
           - MySSHKey2
 ```
-
-
-
-
-
-
-
-
-
 
 ## Parameters
 
@@ -58,21 +56,12 @@ List and filter on SSH keys in the Linode profile.
 | [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting ssh keys.   |
 | `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
 
-
-
-
-
 ### filters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable attributes can be found here: https://www.linode.com/docs/api/profile/#ssh-keys-list   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
-
-
-
-
-
 
 ## Return Values
 
@@ -90,5 +79,3 @@ List and filter on SSH keys in the Linode profile.
         ]
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/profile/#ssh-keys-list) for a list of returned fields
-
-
