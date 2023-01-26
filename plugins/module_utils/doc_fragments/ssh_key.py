@@ -3,14 +3,10 @@
 specdoc_examples = ['''
 - name: Create a basic SSH key
   linode.cloud.ssh_key:
-    api_token: "{{ api_token }}"
-    ua_prefix: "{{ ua_prefix }}"
     label: my-ssh-key
     state: present''', '''
 - name: Delete a SSH key
   linode.cloud.ssh_key:
-    api_token: "{{ api_token }}"
-    ua_prefix: "{{ ua_prefix }}"
     label: my-ssh-key
     state: absent''']
 
