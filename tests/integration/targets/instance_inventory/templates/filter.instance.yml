@@ -1,5 +1,5 @@
 plugin: linode.cloud.instance
-
+api_token: '{{ api_token }}'
 types:
   - g6-nanode-1
 tags:
