@@ -3,7 +3,8 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - linode.cloud.api_request:        # Arbitrary authorized endpoint
+    - linode.cloud.api_request:
+        # Arbitrary authorized endpoint
         path: lke/versions
         method: GET
       register: response_get
@@ -13,7 +14,8 @@
           - response_get.status == 200
           - response_get.changed == False
 
-    - linode.cloud.api_request:        path: domains
+    - linode.cloud.api_request:
+        path: domains
         method: POST
         body:
           domain: 'ansible-test-{{ r }}.com'
@@ -26,7 +28,8 @@
           - response_post.status == 200
           - response_post.changed == True
 
-    - linode.cloud.api_request:        path: 'domains/{{ response_post.body.id }}'
+    - linode.cloud.api_request:
+        path: 'domains/{{ response_post.body.id }}'
         method: PUT
         body:
           description: cool
@@ -38,7 +41,8 @@
           - response_put.changed == True
           - response_put.body.description == 'cool'
 
-    - linode.cloud.api_request:        path: 'reallycoolfakepath'
+    - linode.cloud.api_request:
+        path: 'reallycoolfakepath'
         method: PUT
       register: response_failed
       failed_when: response_failed.failed == False
@@ -46,7 +50,6 @@
     - ignore_errors: yes
       block:
         - linode.cloud.api_request:
-
             path: 'domains/{{ response_post.body.id }}'
             method: DELETE
           register: response_delete
