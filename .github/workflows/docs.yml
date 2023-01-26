@@ -28,9 +28,6 @@ jobs:
       - name: install dependencies
         run: pip install -r requirements-dev.txt -r requirements.txt
 
-      - name: install collection
-        run: make install
-
       - name: make temp directory
         run: mkdir tmp
 
