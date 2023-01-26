@@ -2,6 +2,7 @@
 
 Manage a Linode SSH key.
 
+
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -22,6 +23,15 @@ Manage a Linode SSH key.
     state: absent
 ```
 
+
+
+
+
+
+
+
+
+
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -29,6 +39,11 @@ Manage a Linode SSH key.
 | `label` | <center>`str`</center> | <center>**Required**</center> | This SSH key's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this SSH key.  **(Choices: `present`, `absent`)** |
 | `ssh_key` | <center>`str`</center> | <center>Optional</center> | The SSH public key value.  **(Updatable)** |
+
+
+
+
+
 
 ## Return Values
 
@@ -47,3 +62,5 @@ Manage a Linode SSH key.
         {}
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/profile/#ssh-key-add__response-samples) for a list of returned fields
+
+
