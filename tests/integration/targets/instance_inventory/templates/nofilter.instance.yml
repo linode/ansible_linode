@@ -1,2 +1,1 @@
 plugin: linode.cloud.instance
-api_token: '{{ api_token }}'

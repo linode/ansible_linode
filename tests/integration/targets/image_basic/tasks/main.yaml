@@ -5,8 +5,6 @@
 
     - name: Create an instance to image
       linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-east
         type: g6-standard-1
@@ -16,8 +14,6 @@
 
     - name: Create an image from the instance
       linode.cloud.image:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         disk_id: '{{ instance_create.disks.0.id }}'
         description: 'cool'
@@ -31,8 +27,6 @@
 
     - name: Get info about the image by ID
       linode.cloud.image_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         id: '{{ image_create.image.id }}'
       register: info_id
 
@@ -44,8 +38,6 @@
 
     - name: Get info about the image by label
       linode.cloud.image_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ image_create.image.label }}'
       register: info_label
 
@@ -57,8 +49,6 @@
 
     - name: Update the image
       linode.cloud.image:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         disk_id: '{{ instance_create.disks.0.id }}'
         description: 'cool2'
@@ -72,8 +62,6 @@
 
     - name: Overwrite the image
       linode.cloud.image:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         disk_id: '{{ instance_create.disks.0.id }}'
         description: 'yooo'
@@ -92,13 +80,13 @@
     - ignore_errors: yes
       block:
         - linode.cloud.image:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ image_create.image.label }}'
             state: absent
 
         - linode.cloud.instance:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ instance_create.instance.label }}'
             state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

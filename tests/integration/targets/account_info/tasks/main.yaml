@@ -4,8 +4,8 @@
         msg: Skipping...
 #    - name: Get info about the current account
 #      linode.cloud.account_info:
-#        api_token: '{{ api_token }}'
-#        ua_prefix: '{{ ua_prefix }}'
+#        
+#        
 #      register: account
 #
 #    - assert:

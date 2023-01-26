@@ -5,8 +5,6 @@
 
     - name: Create Linode User
       linode.cloud.user:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         username: 'ansible-test-{{ r }}'
         email: 'ansible-test-{{ r }}@linode.com'
         state: present
@@ -20,8 +18,6 @@
 
     - name: Update the Linode User
       linode.cloud.user:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         username: '{{ create_user.user.username }}'
         email: 'ansible-test-{{ r }}@linode.com'
         restricted: False
@@ -38,7 +34,9 @@
       block:
         - name: Delete a Linode User
           linode.cloud.user:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             username: '{{ create_user.user.username }}'
             state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

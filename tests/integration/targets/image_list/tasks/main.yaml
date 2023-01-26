@@ -4,8 +4,6 @@
         r: "{{ 1000000000 | random }}"
 
     - linode.cloud.image_list:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         count: 5
       register: no_filter
 
@@ -15,8 +13,6 @@
 
     - name: Resolve an image
       linode.cloud.image_list:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         count: 1
         order_by: created
         order: desc
@@ -29,3 +25,7 @@
         that:
           - filter.images | length == 1
           - filter.images[0].id == 'linode/alpine3.16'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

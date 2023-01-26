@@ -5,8 +5,6 @@
 
     - name: Resolve a Linode Type
       linode.cloud.type_list:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         count: 1
         filters:
           - name: label
@@ -17,3 +15,7 @@
         that:
           - filter.types | length == 1
           - filter.types[0].label == 'Nanode 1GB'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

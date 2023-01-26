@@ -5,8 +5,6 @@
 
     - name: Resolve the latest K8s version
       linode.cloud.api_request:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         method: GET
         path: lke/versions
       register: lke_versions
@@ -16,8 +14,6 @@
 
     - name: Create a Linode LKE cluster
       linode.cloud.lke_cluster:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         k8s_version: '{{ kube_version }}'
@@ -46,8 +42,6 @@
 
     - name: Update the cluster's node pools
       linode.cloud.lke_cluster:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_cluster.cluster.label }}'
         region: us-southeast
         k8s_version: '{{ kube_version }}'
@@ -80,8 +74,6 @@
 
     - name: Upgrade the cluster
       linode.cloud.lke_cluster:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_cluster.cluster.label }}'
         region: us-southeast
         k8s_version: '{{ kube_version }}'
@@ -115,8 +107,8 @@
     - name: Get info about the cluster by id
       linode.cloud.lke_cluster_info:
         id: '{{ upgrade.cluster.id }}'
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
+        
+        
       register: info_by_id
 
     - assert:
@@ -132,8 +124,6 @@
 
     - name: Get info about the cluster by label
       linode.cloud.lke_cluster_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ upgrade.cluster.label }}'
       register: info_by_label
 
@@ -153,7 +143,9 @@
       block:
         - name: Delete the LKE cluster
           linode.cloud.lke_cluster:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_cluster.cluster.label }}'
             state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

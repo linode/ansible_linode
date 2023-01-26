@@ -5,8 +5,6 @@
 
     - name: Create a basic stackscript without required fields
       linode.cloud.stackscript:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         state: present
       register: failed_create
@@ -14,8 +12,6 @@
 
     - name: Create a basic stackscript
       linode.cloud.stackscript:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         images: ['linode/alpine3.15']
         script: |
@@ -34,8 +30,6 @@
 
     - name: Update a basic stackscript
       linode.cloud.stackscript:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         images: ['linode/alpine3.14']
         script: |
@@ -58,7 +52,9 @@
     - ignore_errors: yes
       block:
         - linode.cloud.stackscript:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_stackscript.stackscript.label }}'
             state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

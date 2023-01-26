@@ -5,8 +5,6 @@
 
     - name: Create a database
       linode.cloud.database_mysql:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-east
         engine: mysql/8.0.26
@@ -27,15 +25,11 @@
 
     - name: Get info about the database by ID
       linode.cloud.database_mysql_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         id: '{{ db_create.database.id }}'
       register: by_id
 
     - name: Get info about the database by label
       linode.cloud.database_mysql_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ db_create.database.label }}'
       register: by_label
 
@@ -63,8 +57,6 @@
 
     - name: Update the database
       linode.cloud.database_mysql:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-east
         engine: mysql/8.0.26
@@ -82,8 +74,6 @@
     # Let's test database_list here to speed up our test runs
     - name: Get all databases
       linode.cloud.database_list:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
       register: all_dbs
 
     - assert:
@@ -93,8 +83,8 @@
 #    This is not a collection-related issue, so we'll ignore this for now
 #    - name: Filter to this database
 #      linode.cloud.database_list:
-#        api_token: '{{ api_token }}'
-#        ua_prefix: '{{ ua_prefix }}'
+#        
+#        
 #        filters:
 #          - name: engine
 #            values: mysql
@@ -109,8 +99,6 @@
 
     - name: Update the database
       linode.cloud.database_mysql:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-east
         engine: mysql/8.0.26
@@ -126,7 +114,9 @@
     - ignore_errors: yes
       block:
         - linode.cloud.database_mysql:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ db_create.database.label }}'
             state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

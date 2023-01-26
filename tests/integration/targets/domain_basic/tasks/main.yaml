@@ -5,8 +5,6 @@
 
     - name: Create a domain
       linode.cloud.domain:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         description: 'really cool domain'
         domain: 'ansible-test-domain-{{ r }}.com'
         expire_sec: 300
@@ -35,8 +33,6 @@
 
     - name: Update a domain
       linode.cloud.domain:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         description: 'really cool'
         domain: '{{ create.domain.domain }}'
         expire_sec: 14400
@@ -65,8 +61,6 @@
 
     - name: Get domain info
       linode.cloud.domain_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         domain: '{{ create.domain.domain }}'
       register: info
 
@@ -87,8 +81,6 @@
       block:
         - name: Delete the domain
           linode.cloud.domain:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             domain: '{{ create.domain.domain }}'
             state: absent
           register: delete
@@ -98,3 +90,6 @@
             that:
               - delete.changed
               - delete.domain.id == create.domain.id
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

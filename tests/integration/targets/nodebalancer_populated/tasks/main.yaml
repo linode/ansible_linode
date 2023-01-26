@@ -6,8 +6,6 @@
     # Create node instances
     - name: Create node1
       linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-node1-{{ r }}'
         region: us-east
         type: g6-standard-1
@@ -26,8 +24,6 @@
 
     - name: Create node2
       linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-node2-{{ r }}'
         region: us-east
         type: g6-standard-1
@@ -46,8 +42,6 @@
 
     - name: Create node3
       linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-node3-{{ r }}'
         region: us-central
         type: g6-standard-1
@@ -67,8 +61,6 @@
     # Create populated NodeBalancers
     - name: Create a populated NodeBalancer
       linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-nb-populated-{{ r }}'
         region: us-east
         state: present
@@ -120,8 +112,6 @@
     # Edit the NodeBalancer config
     - name: Update the NodeBalancer config
       linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
         region: us-east
         state: present
@@ -144,8 +134,6 @@
 
     - name: Attempt to update with no differences
       linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
         region: us-east
         state: present
@@ -166,8 +154,6 @@
     # Add a node to the NodeBalancer
     - name: Add node to NodeBalancer
       linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
         region: us-east
         state: present
@@ -191,8 +177,6 @@
     # Add a node from a different region to the NodeBalancer
     - name: Add node from different region to NodeBalancer
       linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
         region: us-east
         state: present
@@ -214,8 +198,6 @@
     # Add an additional config and node to NodeBalancer
     - name: Add additional config and node to NodeBalancer
       linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
         region: us-east
         state: present
@@ -247,8 +229,6 @@
 
     - name: Remove a config from the NodeBalancer
       linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
         region: us-east
         state: present
@@ -270,8 +250,6 @@
 
     - name: Get info about the NodeBalancer
       linode.cloud.nodebalancer_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
         id: '{{ create_populated_nodebalancer.node_balancer.id }}'
       register: nb_info
@@ -286,8 +264,6 @@
 
     - name: Get info about a NodeBalancer that doesn't exist
       linode.cloud.nodebalancer_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'fake_nodebalancer-{{ r }}'
       register: fake_nb_info
       failed_when:
@@ -298,8 +274,6 @@
       block:
         - name: Delete the populated NodeBalancer
           linode.cloud.nodebalancer:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_populated_nodebalancer.node_balancer.label }}'
             state: absent
           register: delete_populated
@@ -312,8 +286,6 @@
 
         - name: Delete node1
           linode.cloud.instance:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ node1_inst.instance.label }}'
             state: absent
           register: delete_node1
@@ -326,8 +298,6 @@
 
         - name: Delete node2
           linode.cloud.instance:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ node2_inst.instance.label }}'
             state: absent
           register: delete_node2
@@ -340,8 +310,6 @@
 
         - name: Delete node3
           linode.cloud.instance:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ node3_inst.instance.label }}'
             state: absent
           register: delete_node3
@@ -351,3 +319,7 @@
             that:
               - delete_node3.changed
               - delete_node3.instance.id == node3_inst.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

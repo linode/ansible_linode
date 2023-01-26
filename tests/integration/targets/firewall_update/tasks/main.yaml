@@ -6,7 +6,7 @@
     - name: Create a Linode Firewall
       linode.cloud.firewall:
         state: present
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: 'ansible-test-{{ r }}'
         devices: []
@@ -25,7 +25,7 @@
     - name: Set Linode Firewall with ipv6 addresses
       linode.cloud.firewall:
         state: present
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -54,7 +54,7 @@
     - name: Update Linode Firewall with ipv4 addresses (issue 257)
       linode.cloud.firewall:
         state: update
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -71,9 +71,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -108,7 +106,7 @@
     - name: Set Linode Firewall disabled
       linode.cloud.firewall:
         state: present
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -121,9 +119,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -156,7 +152,7 @@
     - name: Update Linode Firewall to enabled
       linode.cloud.firewall:
         state: update
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -164,9 +160,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -199,7 +193,7 @@
     - name: Update Linode Firewall inbound/outbound policy to ACCEPT
       linode.cloud.firewall:
         state: update
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -210,9 +204,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -246,7 +238,7 @@
     - name: Set Linode Firewall inbound/outbound rules + policy to DROP
       linode.cloud.firewall:
         state: present
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -275,9 +267,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -326,7 +316,7 @@
     - name: Update labeled rules to action=ACCEPT
       linode.cloud.firewall:
         state: update
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -340,9 +330,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -389,7 +377,7 @@
     - name: Update labeled rules description to "Amazing rule."
       linode.cloud.firewall:
         state: update
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -405,9 +393,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -455,7 +441,7 @@
     - name: Update labeled rules ipv4 addresses
       linode.cloud.firewall:
         state: update
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -473,9 +459,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -523,7 +507,7 @@
     - name: Update Description of Linode Firewall rules
       linode.cloud.firewall:
         state: update
-        api_token: '{{ api_token }}'
+        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -539,9 +523,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -573,9 +555,7 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
 
     - name: Update IP addresses Linode Firewall rules
-      linode.cloud.firewall:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall:api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
         rules:
@@ -593,9 +573,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -625,9 +603,7 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
 
     - name: Make update that should not cause any Linode Firewall changes
-      linode.cloud.firewall:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall:api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
         rules:
@@ -645,9 +621,7 @@
       register: updated_firewall
 
     - name: Get info about the firewall
-      linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        api_version: v4beta
+      linode.cloud.firewall_info:api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
 
@@ -679,9 +653,7 @@
     - ignore_errors: yes
       block:
         - name: Delete a Linode Firewall
-          linode.cloud.firewall:
-            api_token: '{{ api_token }}'
-            api_version: v4beta
+          linode.cloud.firewall:api_version: v4beta
             label: '{{ create.firewall.label }}'
             state: absent
           register: delete
@@ -691,3 +663,7 @@
             that:
               - delete.changed
               - delete.firewall.id == create.firewall.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

@@ -2,10 +2,12 @@
   block:
     - name: Get info about the current profile
       linode.cloud.profile_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
       register: profile
 
     - assert:
         that:
           - profile.profile.email | length > 0
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
