@@ -11,8 +11,6 @@ Manage a Linode SSH key.
 ```yaml
 - name: Create a basic SSH key
   linode.cloud.ssh_key:
-    api_token: "{{ api_token }}"
-    ua_prefix: "{{ ua_prefix }}"
     label: my-ssh-key
     state: present
 ```
@@ -20,8 +18,6 @@ Manage a Linode SSH key.
 ```yaml
 - name: Delete a SSH key
   linode.cloud.ssh_key:
-    api_token: "{{ api_token }}"
-    ua_prefix: "{{ ua_prefix }}"
     label: my-ssh-key
     state: absent
 ```
@@ -33,7 +29,6 @@ Manage a Linode SSH key.
 | `label` | <center>`str`</center> | <center>**Required**</center> | This SSH key's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this SSH key.  **(Choices: `present`, `absent`)** |
 | `ssh_key` | <center>`str`</center> | <center>Optional</center> | The SSH public key value.  **(Updatable)** |
-
 
 ## Return Values
 

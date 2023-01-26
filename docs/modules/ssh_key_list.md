@@ -16,8 +16,6 @@ List and filter on SSH keys in the Linode profile.
 ```yaml
 - name: List the latest 5 SSH keys for the current Linode Account
   linode.cloud.ssh_key_list:
-    api_token: '{{ api_token }}'
-    ua_prefix: '{{ ua_prefix }}'
 
     count: 5
     order_by: created
@@ -27,8 +25,6 @@ List and filter on SSH keys in the Linode profile.
 ```yaml
 - name: List filtered personal SSH keys for the current Linode Account
   linode.cloud.ssh_key_list:
-    api_token: '{{ api_token }}'
-    ua_prefix: '{{ ua_prefix }}'
 
     filters:
       - name: label-or-some-other-field
@@ -38,8 +34,6 @@ List and filter on SSH keys in the Linode profile.
 ```yaml
 - name: List filtered personal SSH keys for the current Linode Account
   linode.cloud.ssh_key_list:
-    api_token: '{{ api_token }}'
-    ua_prefix: '{{ ua_prefix }}'
     filters:
       - name: label-or-some-other-field
         values:
