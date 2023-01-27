@@ -25,7 +25,7 @@ class TimeoutContext:
     @property
     def expired(self):
         """Whether the current timeout period has been exceeded."""
-        return self.seconds_remaining > self._timeout_seconds
+        return self.seconds_remaining < 0
 
     @property
     def valid(self):
