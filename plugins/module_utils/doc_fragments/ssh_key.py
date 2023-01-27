@@ -15,5 +15,4 @@ result_ssh_key_samples = ['''{
   "id": 42,
   "label": "My SSH Key",
   "ssh_key": "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
-}''',
-"{}"]
+}''']

@@ -58,9 +58,6 @@ Manage a Linode SSH key.
           "ssh_key": "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
         }
         ```
-        ```json
-        {}
-        ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/profile/#ssh-key-add__response-samples) for a list of returned fields
 
 
