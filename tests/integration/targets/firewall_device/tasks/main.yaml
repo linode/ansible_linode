@@ -5,8 +5,6 @@
 
     - name: Create a Linode Instance
       linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         type: g6-standard-1
@@ -16,8 +14,6 @@
 
     - name: Create a Linode Firewall
       linode.cloud.firewall:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: 'ansible-test-{{ r }}'
         devices: []
@@ -31,8 +27,6 @@
 
     - name: Add Device to Linode Firewall
       linode.cloud.firewall_device:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         firewall_id: '{{ fw.firewall.id }}'
         entity_id: '{{ inst.instance.id }}'
@@ -47,8 +41,6 @@
 
     - name: Add Existing Device to Linode Firewall
       linode.cloud.firewall_device:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         firewall_id: '{{ fw.firewall.id }}'
         entity_id: '{{ inst.instance.id }}'
@@ -65,21 +57,19 @@
     - ignore_errors: yes
       block:
         - linode.cloud.firewall_device:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             firewall_id: '{{ fw.firewall.id }}'
             entity_id: '{{ inst.instance.id }}'
             entity_type: 'linode'
             state: absent
 
         - linode.cloud.instance:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ inst.instance.label }}'
             state: absent
 
         - linode.cloud.firewall:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ fw.firewall.label }}'
             state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

@@ -5,8 +5,6 @@
 
     - name: Create Linode instance
       linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-inst-{{ r }}'
         region: us-east
         type: g6-standard-1
@@ -22,8 +20,6 @@
 
     - name: Create a volume with an instance
       linode.cloud.volume:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-attached-{{ r }}'
         region: us-east
         size: 30
@@ -40,8 +36,6 @@
 
     - name: Create a volume without an instance
       linode.cloud.volume:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-east
         size: 42
@@ -56,8 +50,6 @@
 
     - name: Resize the volume
       linode.cloud.volume:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_volume_noinst.volume.label }}'
         size: 50
         state: present
@@ -71,8 +63,6 @@
 
     - name: Attach the volume to a Linode
       linode.cloud.volume:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_volume_noinst.volume.label }}'
         linode_id: '{{ create_inst.instance.id }}'
         state: present
@@ -86,8 +76,6 @@
 
     - name: Get info about the volume by label
       linode.cloud.volume_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_volume_noinst.volume.label }}'
       register: volume_info_label
 
@@ -99,8 +87,6 @@
 
     - name: Detach the volume
       linode.cloud.volume:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: '{{ create_volume_noinst.volume.label }}'
         attached: false
         state: present
@@ -117,8 +103,6 @@
       block:
         - name: Delete the instance volume
           linode.cloud.volume:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_volume_inst.volume.label }}'
             state: absent
           register: delete_volume_inst
@@ -130,8 +114,6 @@
 
         - name: Delete the volume
           linode.cloud.volume:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_volume_noinst.volume.label }}'
             state: absent
           register: delete_volume_noinst
@@ -143,8 +125,6 @@
 
         - name: Delete the instance
           linode.cloud.instance:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_inst.instance.label }}'
             state: absent
           register: delete_inst
@@ -154,3 +134,7 @@
             that:
               - delete_inst.changed
               - delete_inst.instance.id == create_inst.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
