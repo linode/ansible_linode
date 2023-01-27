@@ -35,4 +35,4 @@ class TimeoutContext:
     @property
     def seconds_remaining(self):
         """The number of seconds until the timeout period has expired."""
-        return (datetime.datetime.now() - self._start_time).seconds
+        return self._timeout_seconds - (datetime.datetime.now() - self._start_time).seconds
