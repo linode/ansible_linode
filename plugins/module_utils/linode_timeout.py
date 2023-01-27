@@ -35,4 +35,9 @@ class TimeoutContext:
     @property
     def seconds_remaining(self):
         """The number of seconds until the timeout period has expired."""
-        return self._timeout_seconds - (datetime.datetime.now() - self._start_time).seconds
+        return self._timeout_seconds - self.seconds_since_started
+
+    @property
+    def seconds_since_started(self):
+        """The number of seconds since the timeout period started."""
+        return (datetime.datetime.now() - self._start_time).seconds
