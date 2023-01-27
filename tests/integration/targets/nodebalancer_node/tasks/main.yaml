@@ -4,8 +4,6 @@
         r: "{{ 1000000000 | random }}"
 
     - linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-nb-{{ r }}'
         region: us-east
         state: present
@@ -25,8 +23,6 @@
       register: nb
 
     - linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-node-{{ r }}'
         region: '{{ nb.node_balancer.region }}'
         private_ip: true
@@ -35,8 +31,6 @@
       register: inst
 
     - linode.cloud.nodebalancer_node:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         nodebalancer_id: '{{ nb.node_balancer.id }}'
         config_id: '{{ nb.configs[0].id }}'
 
@@ -57,8 +51,6 @@
           - nb_node.node.weight == 10
 
     - linode.cloud.nodebalancer_node:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         nodebalancer_id: '{{ nb.node_balancer.id }}'
         config_id: '{{ nb.configs[0].id }}'
 
@@ -80,8 +72,6 @@
 
     - name: Create a populated NodeBalancer
       linode.cloud.nodebalancer:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-nb-{{ r }}'
         region: us-east
         state: present
@@ -104,8 +94,6 @@
         var: nb_update
 
     - linode.cloud.nodebalancer_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-nb-{{ r }}'
       register: nb_info
 
@@ -119,8 +107,6 @@
     - ignore_errors: yes
       block:
         - linode.cloud.nodebalancer_node:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             nodebalancer_id: '{{ nb.node_balancer.id }}'
             config_id: '{{ nb.configs[0].id }}'
             label: '{{ nb_node.node.label }}'
@@ -128,13 +114,13 @@
             state: absent
 
         - linode.cloud.instance:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ inst.instance.label }}'
             state: absent
 
         - linode.cloud.nodebalancer:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ nb.node_balancer.label }}'
             state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

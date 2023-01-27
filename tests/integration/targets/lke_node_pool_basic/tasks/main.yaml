@@ -5,8 +5,6 @@
 
     - name: Resolve the latest K8s version
       linode.cloud.api_request:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         method: GET
         path: lke/versions
       register: lke_versions
@@ -16,8 +14,6 @@
 
     - name: Create a minimal LKE cluster
       linode.cloud.lke_cluster:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         k8s_version: '{{ kube_version }}'
@@ -37,8 +33,6 @@
 
     - name: Add a node pool to the cluster
       linode.cloud.lke_node_pool:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         cluster_id: '{{ create_cluster.cluster.id }}'
 
         tags: ['my-pool']
@@ -56,8 +50,6 @@
 
     - name: Attempt to update an invalid field on the node pool
       linode.cloud.lke_node_pool:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         cluster_id: '{{ create_cluster.cluster.id }}'
 
         tags: [ 'my-pool' ]
@@ -69,8 +61,6 @@
 
     - name: Update the node pool
       linode.cloud.lke_node_pool:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         cluster_id: '{{ create_cluster.cluster.id }}'
 
         tags: ['my-pool']
@@ -97,14 +87,14 @@
       block:
         - name: Delete the LKE cluster node pool
           linode.cloud.lke_node_pool:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             cluster_id: '{{ create_cluster.cluster.id }}'
             tags: ['my-pool']
             state: absent
         - name: Delete the LKE cluster
           linode.cloud.lke_cluster:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_cluster.cluster.label }}'
             state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

@@ -5,8 +5,6 @@
 
     - name: Get info about clusters in us-east
       linode.cloud.object_cluster_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         region: us-east
       register: info_by_region
 
@@ -18,8 +16,6 @@
 
     - name: Get info about cluster id us-east-1
       linode.cloud.object_cluster_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         id: us-east-1
       register: info_by_id
 
@@ -31,8 +27,6 @@
 
     - name: Create a Linode key
       linode.cloud.object_keys:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'test-ansible-key-{{ r }}'
         state: present
       register: create_key
@@ -59,8 +53,6 @@
 
     - name: Create a Linode key with access restrictions
       linode.cloud.object_keys:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'test-ansible-key-access-{{ r }}'
         access:
           - cluster: us-east-1
@@ -103,8 +95,8 @@
 
       - name: Remove the key
         linode.cloud.object_keys:
-          api_token: '{{ api_token }}'
-          ua_prefix: '{{ ua_prefix }}'
+          
+          
           label: '{{ create_key.key.label }}'
           state: absent
         register: delete
@@ -117,8 +109,8 @@
 
       - name: Remove the restricted key
         linode.cloud.object_keys:
-          api_token: '{{ api_token }}'
-          ua_prefix: '{{ ua_prefix }}'
+          
+          
           label: '{{ create_access.key.label }}'
           state: absent
         register: delete_access
@@ -128,3 +120,7 @@
           that:
             - delete_access.changed
             - '"REDACTED" in delete_access.key.secret_key'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

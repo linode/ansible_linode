@@ -5,8 +5,6 @@
 
     - name: Create an instance
       linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-east
         type: g6-standard-1
@@ -17,8 +15,6 @@
 
     - name: Get info about the instance's primary IP
       linode.cloud.ip_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         address: '{{ instance_create.instance.ipv4[0] }}'
       register: ip_info
 
@@ -30,7 +26,9 @@
     - ignore_errors: yes
       block:
         - linode.cloud.instance:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ instance_create.instance.label }}'
             state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

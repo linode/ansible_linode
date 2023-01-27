@@ -5,16 +5,12 @@
 
     - name: Resolve the latest K8s version
       linode.cloud.api_request:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         method: GET
         path: lke/versions
       register: lke_versions
 
     - name: Create a read-only testing token
       linode.cloud.token:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         scopes: 'lke:read_only'
         state: present
@@ -25,8 +21,6 @@
 
     - name: Create a Linode LKE cluster
       linode.cloud.lke_cluster:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         k8s_version: '{{ kube_version }}'
@@ -47,7 +41,7 @@
     - name: Attempt to view the cluster with a read-only token
       linode.cloud.lke_cluster_info:
         api_token: '{{ ro_token.token.token }}'
-        ua_prefix: '{{ ua_prefix }}'
+        
         label: '{{ create_cluster.cluster.label }}'
       register: cluster_info
 
@@ -62,14 +56,14 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.lke_cluster:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
+        - linode.cloud.lke_cluster:            
             label: '{{ create_cluster.cluster.label }}'
             state: absent
 
-        - linode.cloud.token:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
+        - linode.cloud.token:            
             label: 'ansible-test-{{ r }}'
             state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

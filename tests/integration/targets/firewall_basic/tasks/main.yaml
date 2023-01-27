@@ -4,8 +4,6 @@
         r: "{{ 1000000000 | random }}"
     - name: Create a Linode Instance
       linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         type: g6-standard-1
@@ -15,8 +13,6 @@
 
     - name: Create another Linode Instance
       linode.cloud.instance:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         label: 'ansible-test-{{ r }}-2'
         region: us-southeast
         type: g6-standard-1
@@ -26,8 +22,6 @@
 
     - name: Create a Linode Firewall
       linode.cloud.firewall:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: 'ansible-test-{{ r }}'
         devices: []
@@ -46,8 +40,6 @@
 
     - name: Update a Linode Firewall
       linode.cloud.firewall:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -68,8 +60,6 @@
 
     - name: Update Linode Firewall devices
       linode.cloud.firewall:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices:
@@ -94,8 +84,6 @@
 
     - name: Update Linode Firewall devices again
       linode.cloud.firewall:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices:
@@ -120,8 +108,6 @@
 
     - name: Update Linode Firewall devices unchanged
       linode.cloud.firewall:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices:
@@ -143,8 +129,6 @@
 
     - name: Update Linode Firewall rules
       linode.cloud.firewall:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -195,8 +179,6 @@
 
     - name: Update a Linode Firewall rules unchanged
       linode.cloud.firewall:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -231,8 +213,6 @@
 
     - name: Get info about the firewall
       linode.cloud.firewall_info:
-        api_token: '{{ api_token }}'
-        ua_prefix: '{{ ua_prefix }}'
         api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
@@ -263,8 +243,6 @@
       block:
         - name: Delete a Linode Firewall
           linode.cloud.firewall:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             api_version: v4beta
             label: '{{ create.firewall.label }}'
             state: absent
@@ -278,8 +256,6 @@
 
         - name: Delete a Linode instance
           linode.cloud.instance:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_instance.instance.label }}'
             state: absent
           register: delete_instance
@@ -292,8 +268,6 @@
 
         - name: Delete a Linode instance
           linode.cloud.instance:
-            api_token: '{{ api_token }}'
-            ua_prefix: '{{ ua_prefix }}'
             label: '{{ create_instance_2.instance.label }}'
             state: absent
           register: delete_instance_2
@@ -303,3 +277,7 @@
             that:
               - delete_instance_2.changed
               - delete_instance_2.instance.id == create_instance_2.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
