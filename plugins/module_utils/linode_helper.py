@@ -213,12 +213,12 @@ def filter_null_values_recursive(obj: Any) -> Any:
     return obj
 
 
-def construct_api_filter(params: Dict[str, any]) -> Dict[str, any]:
+def construct_api_filter(params: Dict[str, Any]) -> Dict[str, Any]:
     """Constructs a filter string given a list module's params."""
 
     value_filters = []
 
-    if 'filters' in params and params['filters'] is not None:
+    if params.get('filters') is not None:
         for filter_opt in params['filters']:
             current = []
 
@@ -234,7 +234,7 @@ def construct_api_filter(params: Dict[str, any]) -> Dict[str, any]:
         '+order': params['order']
     }
 
-    if 'order_by' in params and params['order_by'] is not None:
+    if params.get('order_by') is not None:
         result['+order_by'] = params['order_by']
 
     return result

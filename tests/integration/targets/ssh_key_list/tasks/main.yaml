@@ -1,0 +1,79 @@
+- name: ssh_key_info
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+        ssh_pub_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCloBr83q7v2/kipfpChnN1cPr+DA++JN3RdLBid3tFjy5UmAelpRmKO9Uhija7ElC9/x187t13smc35NGaDOG+s+zrSMlSfygqA6pf8njEPDRBhvyp12Fjwb8i+ILFXiU1GYaVprbQwpgdApwqieoCZ4pathc/HdPvznX/Aqgyiq+5+dSRa5GUftAPWrt3ScFXttlfihU+0wIanyxoxnrtPcqNshs39dRg8UP2zrB5aK+9nPurO/6qSWDqVnIVlparlqXxZdwKl+Gfiq93pGicrPgVEy49Tbl75Y8Nxj7zDsJsQuO0UlRk9IUoe1asAy5DXqQ6foOb6vR9rld6owqRHCG/tjYDpuw1uYCYj5xm+DDfkNRowWJktIgnajzaYqZ3ytWzg31m8a7X2Wol8foxlFrUqqqesJ05I28A3JvLIU5s4vSzi1hK4cWKSi15UFdxX1f1a+pRsRgY446k+i3uWcFZVybzp5tDRdjUMRO6XQrbjrxFnKurRY0+S1NeRF0="
+
+    - linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+
+        path: profile/sshkeys
+        method: POST
+        body:
+          ssh_key: "{{ ssh_pub_key }}"
+          label: "test-key-1-{{ r }}"
+      register: create_ssh_key1
+    
+    - linode.cloud.api_request:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+
+        path: profile/sshkeys
+        method: POST
+        body:
+          ssh_key: "{{ ssh_pub_key }}"
+          label: "test-key-2-{{ r }}"
+      register: create_ssh_key2
+
+    - name: List filtered personal SSH keys for the current Linode Account
+      linode.cloud.ssh_key_list:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        filters:
+          - name: label
+            values: "test-key-1-{{ r }}"
+      register: key_list_1
+    
+    - name: List filtered personal SSH keys for the current Linode Account
+      linode.cloud.ssh_key_list:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        filters:
+          - name: label
+            values:
+              - "test-key-1-{{ r }}"
+              - "test-key-2-{{ r }}"
+      register: key_list_12
+    
+    - name: List filtered personal SSH keys for the current Linode Account
+      linode.cloud.ssh_key_list:
+        api_token: '{{ api_token }}'
+        ua_prefix: '{{ ua_prefix }}'
+        filters:
+          - name: label
+            values:
+              - "test-key-1-{{ r }}"
+              - "test-key-2-{{ r }}"
+        count: 1
+      register: key_list_random
+
+    - assert:
+        that:
+          - key_list_1.ssh_keys | length == 1
+          - key_list_12.ssh_keys | length == 2
+          - key_list_random.ssh_keys | length == 1
+
+  always:
+    - ignore_errors: true
+      block:
+        - linode.cloud.api_request:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            path: "profile/sshkeys/{{ create_ssh_key1.body.id }}"
+            method: DELETE
+        - linode.cloud.api_request:
+            api_token: '{{ api_token }}'
+            ua_prefix: '{{ ua_prefix }}'
+            path: "profile/sshkeys/{{ create_ssh_key2.body.id }}"
+            method: DELETE
