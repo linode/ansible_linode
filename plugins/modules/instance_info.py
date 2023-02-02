@@ -8,6 +8,7 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 from typing import List, Optional, Any, Dict
 
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Instance
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -21,56 +22,56 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.insta
 
 linode_instance_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
-    state=dict(type='str', required=False, doc_hide=True),
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=dict(
-        type='int', required=False,
+    id=SpecField(
+        type=FieldType.integer, required=False,
         description=[
             'The instance’s label.',
             'Optional if `label` is defined.'
         ]),
 
-    label=dict(
-        type='str', required=False,
+    label=SpecField(
+        type=FieldType.string, required=False,
         description=[
             'The unique ID of the Instance.',
             'Optional if `id` is defined.'
         ])
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Get info about a Linode Instance.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_instance_info_spec,
+    options=linode_instance_info_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        instance=dict(
-            description=['The instance description in JSON serialized form.'],
+        instance=SpecReturnValue(
+            description='The instance description in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/linode-instances/#linode-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs_parent.result_instance_samples
         ),
-        configs=dict(
-            description=['A list of configs tied to this Linode Instance.'],
+        configs=SpecReturnValue(
+            description='A list of configs tied to this Linode Instance.',
             docs_url='https://www.linode.com/docs/api/linode-instances/'
                      '#configuration-profile-view__responses',
-            type='list',
+            type=FieldType.list,
             sample=docs_parent.result_configs_samples
         ),
-        disks=dict(
-            description=['A list of disks tied to this Linode Instance.'],
+        disks=SpecReturnValue(
+            description='A list of disks tied to this Linode Instance.',
             docs_url='https://www.linode.com/docs/api/linode-instances/#disk-view__responses',
-            type='list',
+            type=FieldType.list,
             sample=docs_parent.result_disks_samples
         ),
-        networking=dict(
-            description=['Networking information about this Linode Instance.'],
+        networking=SpecReturnValue(
+            description='Networking information about this Linode Instance.',
             docs_url='https://www.linode.com/docs/api/linode-instances/'
                      '#networking-information-list__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs_parent.result_networking_samples
         )
     )
@@ -85,7 +86,7 @@ class LinodeInstanceInfo(LinodeModuleBase):
     """Module for getting info about a Linode Instance"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = linode_instance_info_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
         self.results: Dict[str, Any] = dict(
             instance=None,
