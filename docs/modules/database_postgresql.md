@@ -61,8 +61,8 @@ Manage a Linode PostgreSQL database.
 | `label` | <center>`str`</center> | <center>**Required**</center> | This database's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this database.  **(Choices: `present`, `absent`)** |
 | `allow_list` | <center>`list`</center> | <center>Optional</center> | A list of IP addresses that can access the Managed Database. Each item must be a range in CIDR format.  **(Updatable)** |
-| `cluster_size` | <center>`str`</center> | <center>Optional</center> | The number of Linode Instance nodes deployed to the Managed Database.  **(Choices: `1`, `3`; Default: `1`)** |
-| `encrypted` | <center>`str`</center> | <center>Optional</center> | Whether the Managed Databases is encrypted.   |
+| `cluster_size` | <center>`int`</center> | <center>Optional</center> | The number of Linode Instance nodes deployed to the Managed Database.  **(Choices: `1`, `3`; Default: `1`)** |
+| `encrypted` | <center>`bool`</center> | <center>Optional</center> | Whether the Managed Databases is encrypted.   |
 | `engine` | <center>`str`</center> | <center>Optional</center> | The Managed Database engine in engine/version format.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The Region ID for the Managed Database.   |
 | `replication_type` | <center>`str`</center> | <center>Optional</center> | The replication method used for the Managed Database. Defaults to none for a single cluster and semi_synch for a high availability cluster. Must be none for a single node cluster. Must be asynch or semi_synch for a high availability cluster.  **(Choices: `none`, `asynch`, `semi_synch`; Default: `none`)** |

@@ -32,7 +32,7 @@ spec = dict(
     label=SpecField(type=FieldType.string, description=['The label of the PostgreSQL Database.']),
 )
 
-specdoc_meta = SpecDocMeta(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Get info about a Linode PostgreSQL Managed Database.'
     ],
@@ -78,7 +78,7 @@ class Module(LinodeModuleBase):
     """Module for getting info about a Linode PostgreSQL database"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results = {
             'database': None,
             'backups': None,

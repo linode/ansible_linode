@@ -48,13 +48,13 @@ SPEC = dict(
         editable=True,
     ),
     cluster_size=SpecField(
-        type=FieldType.string,
+        type=FieldType.integer,
         description=['The number of Linode Instance nodes deployed to the Managed Database.'],
         choices=[1, 3],
         default=1
     ),
     encrypted=SpecField(
-        type=FieldType.string,
+        type=FieldType.bool,
         description=['Whether the Managed Databases is encrypted.'],
     ),
     engine=SpecField(
