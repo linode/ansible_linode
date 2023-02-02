@@ -8,6 +8,7 @@ import copy
 from typing import Optional, Any, List
 
 import linode_api4
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Domain
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -17,48 +18,47 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall_device as docs
 
 MODULE_SPEC = dict(
-    firewall_id=dict(
-        type='int', required=True,
-        description='The ID of the Firewall that contains this device.',
-        ),
-
-    entity_id=dict(
-        type='int', required=True,
-        description='The ID for this Firewall Device. This will be the ID of the Linode Entity.',
+    firewall_id=SpecField(
+        type=FieldType.integer, required=True,
+        description=['The ID of the Firewall that contains this device.'],
     ),
 
-    entity_type=dict(
-        type='str', required=True,
-        description='The type of Linode Entity. Currently only supports linode.',
+    entity_id=SpecField(
+        type=FieldType.integer, required=True,
+        description=['The ID for this Firewall Device. This will be the ID of the Linode Entity.'],
+    ),
+
+    entity_type=SpecField(
+        type=FieldType.string, required=True,
+        description=['The type of Linode Entity. Currently only supports linode.'],
         choices=['linode'],
     ),
 
-    label=dict(
-        type='str',
+    label=SpecField(
+        type=FieldType.string,
         required=False,
         doc_hide=True,
     ),
 
-    state=dict(type='str',
-               description='The desired state of the target.',
-               choices=['present', 'absent'], required=True),
+    state=SpecField(
+        type=FieldType.string,
+        description=['The desired state of the target.'],
+        choices=['present', 'absent'], required=True),
 )
 
-
-
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage Linode Firewall Devices.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=MODULE_SPEC,
+    options=MODULE_SPEC,
     examples=docs.specdoc_examples,
     return_values=dict(
-        device=dict(
+        device=SpecReturnValue(
             description='The Firewall Device in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/networking/#firewall-device-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_device_samples
         )
     )
@@ -69,7 +69,7 @@ class LinodeFirewallDevice(LinodeModuleBase):
     """Module for managing Linode Firewall devices"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = MODULE_SPEC
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
         self.results = dict(
             changed=False,
@@ -148,6 +148,7 @@ class LinodeFirewallDevice(LinodeModuleBase):
         self._handle_present()
 
         return self.results
+
 
 def main() -> None:
     """Constructs and calls the Linode Domain module"""

@@ -9,6 +9,9 @@ import copy
 from typing import Optional, List, Any
 
 import ipaddress
+
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
+
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     filter_null_values, mapping_to_dict, paginated_list_to_json, filter_null_values_recursive
@@ -23,123 +26,122 @@ except ImportError:
     pass
 
 linode_firewall_addresses_spec: dict = dict(
-    ipv4=dict(type='list', elements='str',
-              description=[
-                  'A list of IPv4 addresses or networks.',
-                  'Must be in IP/mask format.'
-              ]),
-    ipv6=dict(type='list', elements='str',
-              description=[
-                  'A list of IPv4 addresses or networks.',
-                  'Must be in IP/mask format.'
-              ])
+    ipv4=SpecField(type=FieldType.list, element_type=FieldType.string,
+                   description=[
+                       'A list of IPv4 addresses or networks.',
+                       'Must be in IP/mask format.'
+                   ]),
+    ipv6=SpecField(type=FieldType.list, element_type=FieldType.string,
+                   description=[
+                       'A list of IPv6 addresses or networks.',
+                       'Must be in IP/mask format.'
+                   ])
 )
 
 linode_firewall_rule_spec: dict = dict(
-    label=dict(type='str', required=True,
-               description=[
-                   'The label of this rule.'
-               ]),
-    action=dict(type='str', choices=['ACCEPT', 'DROP'], required=True,
-                description=[
-                    'Controls whether traffic is accepted or dropped by this rule.'
-                ]),
-    addresses=dict(type='dict', options=linode_firewall_addresses_spec,
-                   description=[
-                       'Allowed IPv4 or IPv6 addresses.'
-                   ]),
-    description=dict(type='str',
+    label=SpecField(type=FieldType.string, required=True,
+                    description=[
+                        'The label of this rule.'
+                    ]),
+    action=SpecField(type=FieldType.string, choices=['ACCEPT', 'DROP'], required=True,
                      description=[
-                         'A description for this rule.'
+                         'Controls whether traffic is accepted or dropped by this rule.'
                      ]),
-    ports=dict(type='str',
-               description=[
-                   'A string representing the port or ports on which traffic will be allowed.',
-                   'See U(https://www.linode.com/docs/api/networking/#firewall-create)'
-               ]),
-    protocol=dict(type='str',
-                  description=[
-                      'The type of network traffic to allow.'
-                  ])
+    addresses=SpecField(type=FieldType.dict, suboptions=linode_firewall_addresses_spec,
+                        description=[
+                            'Allowed IPv4 or IPv6 addresses.'
+                        ]),
+    description=SpecField(type=FieldType.string,
+                          description=[
+                              'A description for this rule.'
+                          ]),
+    ports=SpecField(type=FieldType.string,
+                    description=[
+                        'A string representing the port or ports on which traffic will be allowed.',
+                        'See U(https://www.linode.com/docs/api/networking/#firewall-create)'
+                    ]),
+    protocol=SpecField(type=FieldType.string,
+                       description=[
+                           'The type of network traffic to allow.'
+                       ])
 )
 
 linode_firewall_rules_spec: dict = dict(
-    inbound=dict(type='list', elements='dict', options=linode_firewall_rule_spec,
-                 description=[
-                     'A list of rules for inbound traffic.'
-                 ]),
-    inbound_policy=dict(type='str',
-                        description=[
-                            'The default behavior for inbound traffic.'
-                        ]),
-    outbound=dict(type='list', elements='dict', options=linode_firewall_rule_spec,
-                  description=[
-                      'A list of rules for outbound traffic.'
-                  ]),
-    outbound_policy=dict(type='str',
-                         description=[
-                             'The default behavior for outbound traffic.'
-                         ]),
+    inbound=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=linode_firewall_rule_spec,
+                      description=[
+                          'A list of rules for inbound traffic.'
+                      ]),
+    inbound_policy=SpecField(type=FieldType.string,
+                             description=[
+                                 'The default behavior for inbound traffic.'
+                             ]),
+    outbound=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=linode_firewall_rule_spec,
+                       description=[
+                           'A list of rules for outbound traffic.'
+                       ]),
+    outbound_policy=SpecField(type=FieldType.string,
+                              description=[
+                                  'The default behavior for outbound traffic.'
+                              ]),
 )
 
 linode_firewall_device_spec: dict = dict(
-    id=dict(type='int', required=True,
-            description=[
-                'The unique ID of the device to attach to this Firewall.'
-            ]),
-    type=dict(type='str', default='linode',
-              description=[
-                  'The type of device to be attached to this Firewall.'
-              ])
+    id=SpecField(type=FieldType.integer, required=True,
+                 description=[
+                     'The unique ID of the device to attach to this Firewall.'
+                 ]),
+    type=SpecField(type=FieldType.string, default='linode',
+                   description=[
+                       'The type of device to be attached to this Firewall.'
+                   ])
 )
 
 linode_firewall_spec: dict = dict(
-    label=dict(type='str',
-               description=[
-                    'The unique label to give this Firewall.'
-                ]),
-    devices=dict(type='list', elements='dict', options=linode_firewall_device_spec, editable=True,
-                 description=[
-                     'The devices that are attached to this Firewall.'
-                 ]),
-    rules=dict(type='dict', options=linode_firewall_rules_spec, editable=True,
-               description=[
-                   'The inbound and outbound access rules to apply to this Firewall.'
-               ]),
-    status=dict(type='str', editable=True,
-                description=[
-                    'The status of this Firewall.'
-                ]),
-    state=dict(type='str',
-               description='The desired state of the target.',
-               choices=['present', 'absent', 'update'], required=True),
+    label=SpecField(type=FieldType.string,
+                    description=[
+                        'The unique label to give this Firewall.'
+                    ]),
+    devices=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=linode_firewall_device_spec,
+                      editable=True,
+                      description=[
+                          'The devices that are attached to this Firewall.'
+                      ]),
+    rules=SpecField(type=FieldType.dict, suboptions=linode_firewall_rules_spec, editable=True,
+                    description=[
+                        'The inbound and outbound access rules to apply to this Firewall.'
+                    ]),
+    status=SpecField(type=FieldType.string, editable=True,
+                     description=[
+                         'The status of this Firewall.'
+                     ]),
+    state=SpecField(type=FieldType.string,
+                    description=['The desired state of the target.'],
+                    choices=['present', 'absent', 'update'], required=True),
 )
 
-
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage Linode Firewalls.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_firewall_spec,
+    options=linode_firewall_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        firewall=dict(
+        firewall=SpecReturnValue(
             description='The Firewall description in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/networking/#firewall-view',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_firewall_samples
         ),
-        devices=dict(
+        devices=SpecReturnValue(
             description='A list of Firewall devices JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/networking/#firewall-device-view',
-            type='list',
+            type=FieldType.list,
             sample=docs.result_devices_samples
         )
     )
 )
-
 
 # Fields that can be updated on an existing Firewall
 linode_firewall_mutable: List[str] = [
@@ -152,7 +154,7 @@ class LinodeFirewall(LinodeModuleBase):
     """Module for creating and destroying Linode Firewalls"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = linode_firewall_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
 
         self.results: dict = dict(
             changed=False,
@@ -230,7 +232,7 @@ class LinodeFirewall(LinodeModuleBase):
         for rule in rules:
             item = copy.deepcopy(rule)
 
-            addresses = rule.get('addresses',[])
+            addresses = rule.get('addresses', [])
 
             if 'ipv6' in addresses:
                 item['addresses']['ipv6'] = [str(ipaddress.IPv6Network(v))
@@ -249,8 +251,8 @@ class LinodeFirewall(LinodeModuleBase):
         # produce a result list in the same order as remote_rules
         # amended by the updates from the local_rules
 
-        local_labeled_rules = { r['label']:r for r in local_rules }
-        result=[]
+        local_labeled_rules = {r['label']: r for r in local_rules}
+        result = []
         for remote_rule in remote_rules:
             # copy remote_rule as is if not being updated by local_rules
             if remote_rule['label'] not in local_labeled_rules:
@@ -261,16 +263,16 @@ class LinodeFirewall(LinodeModuleBase):
             local_rule = local_labeled_rules[remote_rule['label']]
             for field in linode_firewall_rule_spec:
                 if field not in local_rule and field in remote_rule:
-                    local_rule[field]=remote_rule[field]
+                    local_rule[field] = remote_rule[field]
 
             for ip_version in ['ipv6', 'ipv4']:
                 if ip_version in local_rule.get('addresses', {}):
                     continue
 
-                remote_addresses=remote_rule.get('addresses',{})
-                local_addresses=local_rule.get('addresses',{})
-                local_addresses[ip_version]=remote_addresses.get(ip_version,[])
-                local_rule['addresses']=local_addresses
+                remote_addresses = remote_rule.get('addresses', {})
+                local_addresses = local_rule.get('addresses', {})
+                local_addresses[ip_version] = remote_addresses.get(ip_version, [])
+                local_rule['addresses'] = local_addresses
 
             result.append(local_rule)
         return result
@@ -282,8 +284,8 @@ class LinodeFirewall(LinodeModuleBase):
 
         # Add new local rules to remote rules if they don't exist
         for direction in ['inbound', 'outbound']:
-            rlr = { remote_rule['label'] for remote_rule in remote_rules.get(direction,{}) }
-            for local_rule in local_rules.get(direction,{}):
+            rlr = {remote_rule['label'] for remote_rule in remote_rules.get(direction, {})}
+            for local_rule in local_rules.get(direction, {}):
                 if local_rule['label'] not in rlr:
                     remote_rules[direction].append(local_rule)
 

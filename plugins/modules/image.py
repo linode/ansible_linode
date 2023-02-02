@@ -12,6 +12,7 @@ from typing import Optional, cast, Any, Set
 
 import polling
 import requests
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Image
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -25,63 +26,63 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image as docs
 
 SPEC = dict(
-    label=dict(
-        type='str',
+    label=SpecField(
+        type=FieldType.string,
         required=True,
-        description='This Image\'s unique label.'),
-    state=dict(
-        type='str',
+        description=['This Image\'s unique label.']),
+    state=SpecField(
+        type=FieldType.string,
         choices=['present', 'absent'],
         required=True,
-        description='The state of this Image.',
+        description=['The state of this Image.'],
     ),
-    description=dict(
-        type='str',
+    description=SpecField(
+        type=FieldType.string,
         editable=True,
-        description='A description for the Image.',
+        description=['A description for the Image.'],
     ),
-    disk_id=dict(
-        type='int',
-        description='The ID of the disk to clone this image from.',
+    disk_id=SpecField(
+        type=FieldType.integer,
+        description=['The ID of the disk to clone this image from.'],
     ),
-    recreate=dict(
-        type='bool', default=False,
-        description='If true, the image with the given label will be deleted and recreated',
+    recreate=SpecField(
+        type=FieldType.bool, default=False,
+        description=['If true, the image with the given label will be deleted and recreated'],
     ),
-    region=dict(
-        type='str',
-        description='The Linode region to upload this image to.',
+    region=SpecField(
+        type=FieldType.string,
+        description=['The Linode region to upload this image to.'],
         default='us-east',
     ),
-    source_file=dict(
-        type='str',
-        description='An image file to create this image with.'
+    source_file=SpecField(
+        type=FieldType.string,
+        description=['An image file to create this image with.']
     ),
-    wait=dict(
-        type='bool', default=True,
-        description='Wait for the image to have status `available` before returning.'),
+    wait=SpecField(
+        type=FieldType.bool, default=True,
+        description=['Wait for the image to have status `available` before returning.']),
 
-    wait_timeout=dict(
-        type='int', default=600,
-        description='The amount of time, in seconds, to wait for an image to '
-                    'have status `available`.'
+    wait_timeout=SpecField(
+        type=FieldType.integer, default=600,
+        description=['The amount of time, in seconds, to wait for an image to '
+                     'have status `available`.']
     ),
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage a Linode Image.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=SPEC,
+    options=SPEC,
     examples=docs.specdoc_examples,
     return_values=dict(
-        image=dict(
+        image=SpecReturnValue(
             description='The Image in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/images/'
                      '#image-view__response-samples',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_image_samples
         )
     )
@@ -96,7 +97,7 @@ class Module(LinodeModuleBase):
     """Module for creating and destroying Linode Images"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = SPEC
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results = dict(
             changed=False,
             actions=[],
