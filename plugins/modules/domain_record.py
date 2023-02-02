@@ -6,18 +6,17 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import Optional, cast, Any, Set, List
+from typing import Optional, Any, Set, List
 
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Domain, DomainRecord
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain_record as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain_record as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    filter_null_values
 
 linode_domain_record_spec = dict(
     # Unused for domain record objects

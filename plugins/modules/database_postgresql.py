@@ -6,24 +6,21 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import Optional, cast, Any, Set, Dict, Callable
+from typing import Optional, Any, Set
 
 import polling
 from ansible_specdoc.objects import SpecField, SpecDocMeta, SpecReturnValue, FieldType
-from linode_api4 import LinodeClient, ApiError, PostgreSQLDatabase
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import \
-    validate_shared_db_input, call_protected_provisioning, SPEC_UPDATE_WINDOW
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    handle_updates, filter_null_values, paginated_list_to_json, mapping_to_dict, poll_condition
+from linode_api4 import ApiError, PostgreSQLDatabase
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_postgresql \
     as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import \
+    validate_shared_db_input, call_protected_provisioning, SPEC_UPDATE_WINDOW
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    handle_updates, filter_null_values, paginated_list_to_json, mapping_to_dict, poll_condition
 
 SPEC = dict(
     label=SpecField(

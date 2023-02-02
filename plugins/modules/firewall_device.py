@@ -9,13 +9,11 @@ from typing import Optional, Any, List
 
 import linode_api4
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
-from linode_api4 import Domain
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall_device as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall_device as docs
 
 MODULE_SPEC = dict(
     firewall_id=SpecField(

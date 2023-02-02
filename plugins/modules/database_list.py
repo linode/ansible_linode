@@ -10,13 +10,11 @@ from typing import Any, Optional, Dict
 
 from ansible_specdoc.objects import SpecDocMeta, SpecReturnValue, FieldType, SpecField
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_list as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    filter_null_values, construct_api_filter, get_all_paginated
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_list as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import construct_api_filter, get_all_paginated
 
 spec_filter = dict(
     name=SpecField(type=FieldType.string, required=True,

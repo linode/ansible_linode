@@ -9,14 +9,12 @@ from __future__ import absolute_import, division, print_function
 from typing import Optional, Union, List, Any
 
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
-from linode_api4 import ObjectStorageKeys, ObjectStorageCluster
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
+from linode_api4 import ObjectStorageKeys
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.object_keys as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
 
 linode_access_spec = dict(
     cluster=SpecField(
@@ -43,8 +41,8 @@ linode_object_keys_spec = dict(
         description=['A list of access permissions to give the key.']),
 
     state=SpecField(type=FieldType.string,
-               description=['The desired state of the target.'],
-               choices=['present', 'absent'], required=True),
+                    description=['The desired state of the target.'],
+                    choices=['present', 'absent'], required=True),
 )
 
 SPECDOC_META = SpecDocMeta(
@@ -65,6 +63,7 @@ SPECDOC_META = SpecDocMeta(
         )
     )
 )
+
 
 class LinodeObjectStorageKeys(LinodeModuleBase):
     """Module for creating and destroying Linode Object Storage Keys"""

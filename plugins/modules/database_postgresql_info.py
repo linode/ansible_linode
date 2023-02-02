@@ -6,23 +6,22 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import List, Any, Optional
+from typing import Any, Optional
 
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import PostgreSQLDatabase
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_postgresql \
+    as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments. \
+    database_postgresql_info as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import \
     call_protected_provisioning
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    filter_null_values, paginated_list_to_json, mapping_to_dict
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_postgresql \
-    as docs_parent
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.\
-    database_postgresql_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import filter_null_values, \
+    paginated_list_to_json, mapping_to_dict
 
 spec = dict(
     # Disable the default values

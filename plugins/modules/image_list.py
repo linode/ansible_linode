@@ -10,26 +10,24 @@ from typing import Any, Optional, Dict
 
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image_list as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    filter_null_values, construct_api_filter, get_all_paginated
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image_list as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import construct_api_filter, get_all_paginated
 
 spec_filter = dict(
     name=SpecField(type=FieldType.string, required=True,
-              description=[
-                  'The name of the field to filter on.',
-                  'Valid filterable attributes can be found here: '
-                  'https://www.linode.com/docs/api/images/#images-list__responses',
-              ]),
+                   description=[
+                       'The name of the field to filter on.',
+                       'Valid filterable attributes can be found here: '
+                       'https://www.linode.com/docs/api/images/#images-list__responses',
+                   ]),
     values=SpecField(type=FieldType.list, element_type=FieldType.string, required=True,
-                description=[
-                    'A list of values to allow for this field.',
-                    'Fields will pass this filter if at least one of these values matches.'
-                ])
+                     description=[
+                         'A list of values to allow for this field.',
+                         'Fields will pass this filter if at least one of these values matches.'
+                     ])
 )
 
 spec = dict(
@@ -38,14 +36,14 @@ spec = dict(
     label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
     order=SpecField(type=FieldType.string, description=['The order to list events in.'],
-               default='asc', choices=['desc', 'asc']),
+                    default='asc', choices=['desc', 'asc']),
     order_by=SpecField(type=FieldType.string, description=['The attribute to order events by.']),
     filters=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=spec_filter,
-                 description=['A list of filters to apply to the resulting events.']),
+                      description=['A list of filters to apply to the resulting events.']),
     count=SpecField(type=FieldType.integer,
-               description=[
-                   'The number of results to return.',
-                   'If undefined, all results will be returned.'])
+                    description=[
+                        'The number of results to return.',
+                        'If undefined, all results will be returned.'])
 )
 
 SPECDOC_META = SpecDocMeta(

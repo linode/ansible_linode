@@ -7,72 +7,69 @@ from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
 import copy
-from typing import Optional, cast, Any, Set
+from typing import Optional, Any
 
-import polling
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import StackScript
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     handle_updates, filter_null_values
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript as docs
-
 SPEC = dict(
-    label=dict(
-        type='str',
+    label=SpecField(
+        type=FieldType.string,
         required=True,
-        description='This StackScript\'s unique label.'),
-    state=dict(
-        type='str',
+        description=['This StackScript\'s unique label.']),
+    state=SpecField(
+        type=FieldType.string,
         choices=['present', 'absent'],
         required=True,
-        description='The state of this StackScript.',
+        description=['The state of this StackScript.'],
     ),
 
-    description=dict(
-        type='str', editable=True,
-        description='A description for the StackScript.',
+    description=SpecField(
+        type=FieldType.string, editable=True,
+        description=['A description for the StackScript.'],
     ),
-    images=dict(
-        type='list',
-        elements='str',
+    images=SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
         editable=True,
-        description='Images that can be deployed using this StackScript.',
+        description=['Images that can be deployed using this StackScript.'],
     ),
-    is_public=dict(
-        type='bool', editable=True,
-        description='This determines whether other users can use your StackScript.',
+    is_public=SpecField(
+        type=FieldType.bool, editable=True,
+        description=['This determines whether other users can use your StackScript.'],
     ),
-    rev_note=dict(
-        type='str', editable=True,
-        description='This field allows you to add notes for '
-                    'the set of revisions made to this StackScript.',
+    rev_note=SpecField(
+        type=FieldType.string, editable=True,
+        description=['This field allows you to add notes for '
+                     'the set of revisions made to this StackScript.'],
     ),
-    script=dict(
-        type='str', editable=True,
-        description='The script to execute when provisioning a new Linode with this StackScript.'
+    script=SpecField(
+        type=FieldType.string, editable=True,
+        description=['The script to execute when provisioning a new Linode with this StackScript.']
     )
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage a Linode StackScript.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=SPEC,
+    options=SPEC,
     examples=docs.specdoc_examples,
     return_values=dict(
-        stackscript=dict(
+        stackscript=SpecReturnValue(
             description='The StackScript in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/stackscripts/'
                      '#stackscript-create__response-samples',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_stackscript_samples
         )
     )
@@ -91,7 +88,7 @@ class Module(LinodeModuleBase):
     """Module for creating and destroying Linode StackScripts"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = SPEC
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ['state', 'label']
         self.results = dict(
             changed=False,

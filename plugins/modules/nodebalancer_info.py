@@ -8,20 +8,18 @@ from __future__ import absolute_import, division, print_function
 from typing import List, Optional, Any
 
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
+# pylint: disable=unused-import
+from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    create_filter_and
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer \
+    as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_info \
+    as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer\
-    as docs_parent
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_info\
-    as docs
-
-# pylint: disable=unused-import
-from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList, and_
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    create_filter_and
 
 linode_nodebalancer_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements

@@ -6,64 +6,63 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import Optional, cast, Any, Set, List
+from typing import Optional, Any, Set, List
 
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Domain
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    filter_null_values, paginated_list_to_json
 
 linode_domain_spec = dict(
     # Unused for domain objects
     label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
     axfr_ips=SpecField(type=FieldType.list, element_type=FieldType.string, editable=True,
-                  description=['The list of IPs that may perform a zone transfer for this Domain.']),
+                       description=['The list of IPs that may perform a zone transfer for this Domain.']),
     description=SpecField(type=FieldType.string, editable=True,
-                     description=['The list of IPs that may perform a '
-                                  'zone transfer for this Domain.']),
+                          description=['The list of IPs that may perform a '
+                                       'zone transfer for this Domain.']),
     domain=SpecField(type=FieldType.string, required=True,
-                description=['The domain this Domain represents.']),
+                     description=['The domain this Domain represents.']),
     expire_sec=SpecField(type=FieldType.integer, editable=True,
-                    description=['The amount of time in seconds that may pass'
-                                 ' before this Domain is no longer authoritative.']),
+                         description=['The amount of time in seconds that may pass'
+                                      ' before this Domain is no longer authoritative.']),
     master_ips=SpecField(type=FieldType.list, element_type=FieldType.string, editable=True,
-                    description=['The IP addresses representing the '
-                                 'master DNS for this Domain.']),
+                         description=['The IP addresses representing the '
+                                      'master DNS for this Domain.']),
     refresh_sec=SpecField(type=FieldType.integer, editable=True,
-                     description=['The amount of time in seconds before '
-                                  'this Domain should be refreshed.']),
+                          description=['The amount of time in seconds before '
+                                       'this Domain should be refreshed.']),
     retry_sec=SpecField(type=FieldType.integer, editable=True,
-                   description=['The interval, in seconds, at which a '
-                                'failed refresh should be retried.']),
+                        description=['The interval, in seconds, at which a '
+                                     'failed refresh should be retried.']),
     soa_email=SpecField(type=FieldType.string,
-                   description=['The Start of Authority email address.'],
-                   editable=True),
+                        description=['The Start of Authority email address.'],
+                        editable=True),
     status=SpecField(type=FieldType.string,
-                description=['Used to control whether this Domain is currently being rendered.'],
-                editable=True),
+                     description=['Used to control whether this Domain is currently being rendered.'],
+                     editable=True),
     state=SpecField(type=FieldType.string,
-               description=['The desired state of the target.'],
-               choices=['present', 'absent'], required=True),
+                    description=['The desired state of the target.'],
+                    choices=['present', 'absent'], required=True),
     tags=SpecField(type=FieldType.list, element_type=FieldType.string, editable=True,
-              description=['An array of tags applied to this object.']),
+                   description=['An array of tags applied to this object.']),
     ttl_sec=SpecField(type=FieldType.integer, editable=True,
-                 description=['The amount of time in seconds that this '
-                              'Domain’s records may be cached by resolvers '
-                              'or other domain servers.']
-                 ),
+                      description=['The amount of time in seconds that this '
+                                   'Domain’s records may be cached by resolvers '
+                                   'or other domain servers.']
+                      ),
     type=SpecField(type=FieldType.string,
-              editable=True,
-              description=['Whether this Domain represents the authoritative '
-                           'source of information for the domain'
-                           ' it describes (master), or whether it is a '
-                           'read-only copy of a master (slave).']),
+                   editable=True,
+                   description=['Whether this Domain represents the authoritative '
+                                'source of information for the domain'
+                                ' it describes (master), or whether it is a '
+                                'read-only copy of a master (slave).']),
 
     # Deprecated
     group=SpecField(type=FieldType.string, doc_hide=True)
@@ -175,7 +174,7 @@ class LinodeDomain(LinodeModuleBase):
 
                 self.fail(
                     'failed to update domain {0}: {1} is a non-updatable field'
-                        .format(self._domain.domain, key))
+                    .format(self._domain.domain, key))
 
         if should_update:
             self._domain.save()

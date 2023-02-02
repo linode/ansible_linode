@@ -4,22 +4,19 @@
 """This module contains all of the functionality for Linode LKE node pools."""
 
 # pylint: disable=unused-import
-import copy
 from typing import Optional, Any, List
 
-import polling
-
 import linode_api4
+import polling
 from ansible_specdoc.objects import FieldType, SpecField, SpecDocMeta, SpecReturnValue
-from linode_api4 import LKENodePool, LKECluster, ApiError
+from linode_api4 import LKENodePool
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_node_pool as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     filter_null_values, jsonify_node_pool, handle_updates
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_node_pool as docs
 
 linode_lke_pool_autoscaler = dict(
     enabled=SpecField(

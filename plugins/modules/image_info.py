@@ -6,19 +6,17 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import List, Any, Optional
+from typing import Any, Optional
 
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Image
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    filter_null_values
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import filter_null_values
 
 spec = dict(
     # Disable the default values

@@ -8,66 +8,57 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 from typing import Any, Optional, Dict
 
-from linode_api4 import VLAN
-
-from ansible.module_utils.basic import env_fallback
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    filter_null_values, construct_api_filter, get_all_paginated
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vlan_list as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import construct_api_filter, get_all_paginated
 
 spec_filter = dict(
-    name=dict(type='str', required=True,
-              description=[
-                  'The name of the field to filter on.',
-                  'Valid filterable attributes can be found here: '
-                  'https://www.linode.com/docs/api/networking/#vlans-list__response-samples',
-              ]),
-    values=dict(type='list', elements='str', required=True,
-                description=[
-                    'A list of values to allow for this field.',
-                    'Fields will pass this filter if at least one of these values matches.'
-                ])
+    name=SpecField(type=FieldType.string, required=True,
+                   description=[
+                       'The name of the field to filter on.',
+                       'Valid filterable attributes can be found here: '
+                       'https://www.linode.com/docs/api/networking/#vlans-list__response-samples',
+                   ]),
+    values=SpecField(type=FieldType.list, element_type=FieldType.string, required=True,
+                     description=[
+                         'A list of values to allow for this field.',
+                         'Fields will pass this filter if at least one of these values matches.'
+                     ])
 )
 
 spec = dict(
     # Disable the default values
-    state=dict(type='str', required=False, doc_hide=True),
-    label=dict(type='str', required=False, doc_hide=True),
-    api_version=dict(
-            type='str',
-            fallback=(env_fallback, ['LINODE_API_VERSION']),
-            default='v4beta',
-            doc_hide=True,
-        ),
-    order=dict(type='str', description='The order to list VLANs in.',
-               default='asc', choices=['desc', 'asc']),
-    order_by=dict(type='str', description='The attribute to order VLANs by.'),
-    filters=dict(type='list', elements='dict', options=spec_filter,
-                 description='A list of filters to apply to the resulting VLANs.'),
-    count=dict(type='int',
-               description=[
-                   'The number of results to return.',
-                   'If undefined, all results will be returned.'])
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
+    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
+    order=SpecField(type=FieldType.string, description=['The order to list VLANs in.'],
+                    default='asc', choices=['desc', 'asc']),
+    order_by=SpecField(type=FieldType.string, description=['The attribute to order VLANs by.']),
+    filters=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=spec_filter,
+                      description=['A list of filters to apply to the resulting VLANs.']),
+    count=SpecField(type=FieldType.integer,
+                    description=[
+                        'The number of results to return.',
+                        'If undefined, all results will be returned.'])
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'List and filter on Linode VLANs.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=spec,
+    options=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        vlans=dict(
+        vlans=SpecReturnValue(
             description='The returned VLANs.',
             docs_url='https://www.linode.com/docs/api/networking/#vlans-list__response-samples',
-            type='list',
-            elements='dict',
+            type=FieldType.list,
+            elements=FieldType.dict,
             sample=docs.result_vlan_samples
         )
     )
@@ -78,7 +69,7 @@ class Module(LinodeModuleBase):
     """Module for getting info about a Linode VLANs"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results: Dict[str, Any] = {
             'vlans': []
         }
@@ -91,7 +82,7 @@ class Module(LinodeModuleBase):
         filter_dict = construct_api_filter(self.module.params)
 
         self.results['vlans'] = get_all_paginated(self.client, '/networking/vlans', filter_dict,
-                                                   num_results=self.module.params['count'])
+                                                  num_results=self.module.params['count'])
         return self.results
 
 

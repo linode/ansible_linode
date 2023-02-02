@@ -11,15 +11,13 @@ from typing import List, Any, Optional, Dict
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import LKECluster, ApiError
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    jsonify_node_pool, filter_null_values
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster \
     as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import jsonify_node_pool, filter_null_values
 
 linode_lke_cluster_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements

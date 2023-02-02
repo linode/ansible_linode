@@ -7,21 +7,18 @@ from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
 import copy
-from typing import Optional, cast, Any, Set, List, Dict
-
-from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
-from linode_api4 import LKECluster, LKENodePool, ApiError
+from typing import Optional, Any, Set, List
 
 import polling
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json, jsonify_node_pool, validate_required, poll_condition
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
+from linode_api4 import LKECluster, ApiError
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster as docs
-
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    filter_null_values, jsonify_node_pool, validate_required, poll_condition
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import handle_updates
 
 linode_lke_cluster_autoscaler = dict(

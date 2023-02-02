@@ -6,21 +6,20 @@
 from __future__ import absolute_import, division, print_function
 
 import copy
-
 from typing import Optional, Any, cast, Set, List, Dict, Union
+
 import linode_api4
 import polling
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import \
     LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     filter_null_values, paginated_list_to_json, drop_empty_strings, mapping_to_dict, \
     request_retry, filter_null_values_recursive
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
 
 try:
     from linode_api4 import Instance, Config, ConfigInterface, Disk, Volume

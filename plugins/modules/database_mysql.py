@@ -6,27 +6,21 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-import copy
-import os
-from typing import Optional, cast, Any, Set, Dict, Callable
+from typing import Optional, Any, Set
 
 import polling
-import requests
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
-from linode_api4 import LinodeClient, ApiError
+from linode_api4 import ApiError
 from linode_api4.objects import MySQLDatabase
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import \
     validate_shared_db_input, call_protected_provisioning, SPEC_UPDATE_WINDOW
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     handle_updates, filter_null_values, paginated_list_to_json, mapping_to_dict, poll_condition
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs
 
 SPEC = dict(
     label=SpecField(
@@ -83,7 +77,7 @@ SPEC = dict(
     ssl_connection=SpecField(
         type=FieldType.bool,
         description=['Whether to require SSL credentials to '
-                    'establish a connection to the Managed Database.'],
+                     'establish a connection to the Managed Database.'],
         default=True,
     ),
     type=SpecField(

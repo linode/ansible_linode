@@ -11,14 +11,13 @@ from typing import Optional, List, Any, Dict
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Firewall
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    paginated_list_to_json
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
+    paginated_list_to_json
 
 linode_firewall_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements

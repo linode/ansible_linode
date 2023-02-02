@@ -6,20 +6,16 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-import copy
 import json
-from typing import Optional, cast, Any, Set, Tuple
+from typing import Optional, Any, Tuple
 
-import polling
 from ansible_specdoc.objects import SpecDocMeta, SpecReturnValue, FieldType, SpecField
-from linode_api4 import StackScript, ApiError
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
+from linode_api4 import ApiError
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.api_request as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
 
 SPEC = dict(
     label=SpecField(type=FieldType.string, doc_hide=True),

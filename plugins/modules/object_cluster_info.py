@@ -9,15 +9,14 @@ from __future__ import absolute_import, division, print_function
 from typing import List, Optional, Any
 
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
-from linode_api4 import ObjectStorageKeys, ObjectStorageCluster
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
+from linode_api4 import ObjectStorageCluster
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.object_cluster_info \
     as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and
 
 linode_object_cluster_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements

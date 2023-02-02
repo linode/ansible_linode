@@ -6,42 +6,40 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import Optional, cast, Any, Set
+from typing import Optional, Any
 
-import polling
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import PersonalAccessToken
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.token as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.token as docs
-
 SPEC = dict(
-    label=dict(
-        type='str',
+    label=SpecField(
+        type=FieldType.string,
         required=True,
-        description='This token\'s unique label.'),
-    state=dict(
-        type='str',
+        description=['This token\'s unique label.']),
+    state=SpecField(
+        type=FieldType.string,
         choices=['present', 'absent'],
         required=True,
-        description='The state of this token.',
+        description=['The state of this token.'],
     ),
 
-    expiry=dict(
-        type='str', default=None,
-        description='When this token should be valid until.'),
+    expiry=SpecField(
+        type=FieldType.string, default=None,
+        description=['When this token should be valid until.']),
 
-    scopes=dict(
-        type='str',
+    scopes=SpecField(
+        type=FieldType.string,
         description=[
             'The OAuth scopes to create the token with.'
         ]),
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage a Linode Token.',
         'NOTE: The full Personal Access Token is only returned '
@@ -49,14 +47,14 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=SPEC,
+    options=SPEC,
     examples=docs.specdoc_examples,
     return_values=dict(
-        token=dict(
+        token=SpecReturnValue(
             description='The token in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/profile/'
                      '#personal-access-token-create__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_token_samples
         )
     )
@@ -67,7 +65,7 @@ class Module(LinodeModuleBase):
     """Module for creating and destroying Linode Tokens"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = SPEC
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ['state', 'label']
         self.results = dict(
             changed=False,

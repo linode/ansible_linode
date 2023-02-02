@@ -7,30 +7,28 @@ from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
 import copy
-from typing import Optional, cast, Any, Set, List
+from typing import Optional, Any, Set, List
 
 import linode_api4
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
-from linode_api4 import Domain
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json, handle_updates
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_node as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    handle_updates
 
 MODULE_SPEC = dict(
     nodebalancer_id=SpecField(
         type=FieldType.integer, required=True,
         description=['The ID of the NodeBalancer that contains this node.'],
-        ),
+    ),
 
     config_id=SpecField(
         type=FieldType.integer, required=True,
         description=['The ID of the NodeBalancer Config that contains this node.'],
-        ),
+    ),
 
     label=SpecField(
         type=FieldType.string, required=True,
@@ -40,7 +38,7 @@ MODULE_SPEC = dict(
     address=SpecField(
         type=FieldType.string, editable=True,
         description=['The private IP Address where this backend can be reached. '
-                    'This must be a private IP address.'],
+                     'This must be a private IP address.'],
     ),
 
     state=SpecField(
@@ -187,7 +185,7 @@ def main() -> None:
 if __name__ == '__main__':
     main()
 
-DOCUMENTATION='''
+DOCUMENTATION = '''
 author:
 - Luke Murphy (@decentral1se)
 - Charles Kenney (@charliekenney23)

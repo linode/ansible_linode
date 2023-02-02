@@ -10,21 +10,15 @@ from typing import Optional, cast, Any, List, Set, Tuple
 
 import linode_api4
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    paginated_list_to_json, dict_select_matching, filter_null_values
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
-
+# pylint: disable=unused-import
+from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer as docs
-
-# pylint: disable=unused-import
-from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    paginated_list_to_json, dict_select_matching, filter_null_values
 
 linode_nodes_spec = dict(
     label=SpecField(
@@ -59,7 +53,7 @@ linode_configs_spec = dict(
     check=SpecField(
         type=FieldType.string, required=False, editable=True,
         description=['The type of check to perform against backends to ensure they are '
-                    'serving requests.'],
+                     'serving requests.'],
         choices=['none', 'connection', 'http', 'http_body']),
 
     check_attempts=SpecField(
@@ -81,17 +75,17 @@ linode_configs_spec = dict(
     check_passive=SpecField(
         type='bool', required=False, editable=True,
         description=['If true, any response from this backend with a 5xx status code will be enough '
-                    'for it to be considered unhealthy and taken out of rotation.']),
+                     'for it to be considered unhealthy and taken out of rotation.']),
 
     check_path=SpecField(
         type=FieldType.string, required=False, editable=True,
         description=['The URL path to check on each backend. If the backend does '
-                    'not respond to this request it is considered to be down.']),
+                     'not respond to this request it is considered to be down.']),
 
     check_timeout=SpecField(
         type=FieldType.integer, required=False, editable=True,
         description=['How long, in seconds, to wait for a check attempt before considering it '
-                    'failed.']),
+                     'failed.']),
 
     cipher_suite=SpecField(
         type=FieldType.string, required=False, default='recommended', editable=True,
@@ -110,25 +104,25 @@ linode_configs_spec = dict(
     proxy_protocol=SpecField(
         type=FieldType.string, required=False, editable=True,
         description=['ProxyProtocol is a TCP extension that sends initial TCP connection '
-                    'information such as source/destination IPs and ports to backend devices.'],
+                     'information such as source/destination IPs and ports to backend devices.'],
         choices=['none', 'v1', 'v2']),
 
     recreate=SpecField(
         type=FieldType.bool, required=False, default=False,
         description=['If true, the config will be forcibly recreated on every run. '
-                    'This is useful for updates to redacted fields (`ssl_cert`, `ssl_key`)']
+                     'This is useful for updates to redacted fields (`ssl_cert`, `ssl_key`)']
     ),
 
     ssl_cert=SpecField(
         type=FieldType.string, required=False, editable=True,
         description=['The PEM-formatted public SSL certificate (or the combined '
-                    'PEM-formatted SSL certificate and Certificate Authority chain) '
-                    'that should be served on this NodeBalancerConfig’s port.']),
+                     'PEM-formatted SSL certificate and Certificate Authority chain) '
+                     'that should be served on this NodeBalancerConfig’s port.']),
 
     ssl_key=SpecField(
         type=FieldType.string, required=False, editable=True,
         description=['The PEM-formatted private key for the SSL certificate '
-                    'set in the ssl_cert field.']),
+                     'set in the ssl_cert field.']),
 
     stickiness=SpecField(
         type=FieldType.string, required=False, editable=True,
@@ -138,7 +132,7 @@ linode_configs_spec = dict(
     nodes=SpecField(
         type=FieldType.list, required=False, element_type=FieldType.dict, suboptions=linode_nodes_spec, editable=True,
         description=['A list of nodes to apply to this config. '
-                    'These can alternatively be configured through the nodebalancer_node module.'])
+                     'These can alternatively be configured through the nodebalancer_node module.'])
 )
 
 linode_nodebalancer_spec = dict(
@@ -161,14 +155,13 @@ linode_nodebalancer_spec = dict(
     ),
 
     state=SpecField(type=FieldType.string,
-               description=['The desired state of the target.'],
-               choices=['present', 'absent'], required=True),
+                    description=['The desired state of the target.'],
+                    choices=['present', 'absent'], required=True),
 
     configs=SpecField(
         type=FieldType.list, element_type=FieldType.dict, suboptions=linode_configs_spec, editable=True,
         description=['A list of configs to apply to the NodeBalancer.'])
 )
-
 
 SPECDOC_META = SpecDocMeta(
     description=[
@@ -426,7 +419,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
                 self.fail(
                     'failed to update nodebalancer {0}: {1} is a non-updatable field'
-                        .format(self._node_balancer.label, key))
+                    .format(self._node_balancer.label, key))
 
         if should_update:
             self._node_balancer.save()
