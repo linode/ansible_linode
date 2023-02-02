@@ -8,6 +8,7 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 from typing import Optional, cast, Any, Set, List
 
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Domain, DomainRecord
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -20,86 +21,86 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domai
 
 linode_domain_record_spec = dict(
     # Unused for domain record objects
-    label=dict(type='str', required=False, doc_hide=True),
+    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    domain_id=dict(type='int',
-                   description='The ID of the parent Domain.'),
-    domain=dict(type='str',
-                description='The name of the parent Domain.'),
+    domain_id=SpecField(type=FieldType.integer,
+                        description=['The ID of the parent Domain.']),
+    domain=SpecField(type=FieldType.string,
+                     description=['The name of the parent Domain.']),
 
-    record_id=dict(type='int',
-                   description='The id of the record to modify.'),
+    record_id=SpecField(type=FieldType.integer,
+                        description=['The id of the record to modify.']),
 
-    name=dict(type='str',
-              description=[
-                  'The name of this Record.',
-                  'NOTE: If the name of the record ends with the domain, '
-                  'it will be dropped from the resulting record\'s name.'
-              ]),
-    port=dict(type='int', editable=True,
-              description=[
-                  'The port this Record points to.',
-                  'Only valid and required for SRV record requests.'
-              ]),
-    priority=dict(type='int', editable=True,
+    name=SpecField(type=FieldType.string,
+                   description=[
+                       'The name of this Record.',
+                       'NOTE: If the name of the record ends with the domain, '
+                       'it will be dropped from the resulting record\'s name.'
+                   ]),
+    port=SpecField(type=FieldType.integer, editable=True,
+                   description=[
+                       'The port this Record points to.',
+                       'Only valid and required for SRV record requests.'
+                   ]),
+    priority=SpecField(type=FieldType.integer, editable=True,
+                       description=[
+                           'The priority of the target host for this Record.',
+                           'Lower values are preferred.',
+                           'Only valid for MX and SRV record requests.',
+                           'Required for SRV record requests.'
+                       ]),
+    protocol=SpecField(type=FieldType.string, editable=True,
+                       description=[
+                           'The protocol this Record’s service communicates with.',
+                           'An underscore (_) is prepended automatically to '
+                           'the submitted value for this property.'
+                       ]),
+    service=SpecField(type=FieldType.string, editable=True,
+                      description=[
+                          'An underscore (_) is prepended and a period (.) '
+                          'is appended automatically to the submitted value for this property.',
+                          'Only valid and required for SRV record requests.',
+                          'The name of the service.'
+                      ]),
+    state=SpecField(type=FieldType.string,
+                    description=['The desired state of the target.'],
+                    choices=['present', 'absent'], required=True),
+    tag=SpecField(type=FieldType.string, editable=True,
                   description=[
-                      'The priority of the target host for this Record.',
-                      'Lower values are preferred.',
-                      'Only valid for MX and SRV record requests.',
-                      'Required for SRV record requests.'
+                      'The tag portion of a CAA record.',
+                      'Only valid and required for CAA record requests.'
                   ]),
-    protocol=dict(type='str', editable=True,
-                  description=[
-                      'The protocol this Record’s service communicates with.',
-                      'An underscore (_) is prepended automatically to '
-                      'the submitted value for this property.'
-                  ]),
-    service=dict(type='str', editable=True,
-                 description=[
-                     'An underscore (_) is prepended and a period (.) '
-                     'is appended automatically to the submitted value for this property.',
-                     'Only valid and required for SRV record requests.',
-                     'The name of the service.'
-                 ]),
-    state=dict(type='str',
-               description='The desired state of the target.',
-               choices=['present', 'absent'], required=True),
-    tag=dict(type='str', editable=True,
-             description=[
-                 'The tag portion of a CAA record.',
-                 'Only valid and required for CAA record requests.'
-             ]),
-    target=dict(type='str',
-                description=[
-                    'The target for this Record.'
-                ], default=''),
-    ttl_sec=dict(type='int', editable=True,
-                 description=[
-                     'The amount of time in seconds that this Domain’s '
-                     'records may be cached by resolvers '
-                     'or other domain servers.'
-                 ]),
-    type=dict(type='str',
-              description='The type of Record this is in the DNS system.'),
-    weight=dict(type='int', editable=True,
-                description='The relative weight of this Record '
-                            'used in the case of identical priority.')
+    target=SpecField(type=FieldType.string,
+                     description=[
+                         'The target for this Record.'
+                     ], default=''),
+    ttl_sec=SpecField(type=FieldType.integer, editable=True,
+                      description=[
+                          'The amount of time in seconds that this Domain’s '
+                          'records may be cached by resolvers '
+                          'or other domain servers.'
+                      ]),
+    type=SpecField(type=FieldType.string,
+                   description=['The type of Record this is in the DNS system.']),
+    weight=SpecField(type=FieldType.integer, editable=True,
+                     description=['The relative weight of this Record '
+                                  'used in the case of identical priority.'])
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage Linode Domain Records.',
         'NOTE: Domain records are identified by their name, target, and type.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_domain_record_spec,
+    options=linode_domain_record_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        record=dict(
+        record=SpecReturnValue(
             description='View a single Record on this Domain.',
             docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_record_samples
         )
     )
@@ -120,7 +121,7 @@ class LinodeDomainRecord(LinodeModuleBase):
     """Module for creating and destroying Linode Domain records"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = linode_domain_record_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[List[str]] = [['domain', 'domain_id'], ['name', 'record_id']]
         self.mutually_exclusive: List[List[str]] = [['name', 'record_id']]
         self.required_together: List[List[str]] = [['name', 'type']]
@@ -241,7 +242,7 @@ class LinodeDomainRecord(LinodeModuleBase):
 
                 self.fail(
                     'failed to update domain record {0}: {1} is a non-updatable field'
-                        .format(self._record.name, key))
+                    .format(self._record.name, key))
 
         if should_update:
             self._record.save()
