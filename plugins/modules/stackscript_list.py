@@ -14,7 +14,8 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stack
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import construct_api_filter, get_all_paginated
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    construct_api_filter, get_all_paginated
 
 spec_filter = dict(
     name=SpecField(type=FieldType.string, required=True,
@@ -84,8 +85,9 @@ class Module(LinodeModuleBase):
 
         filter_dict = construct_api_filter(self.module.params)
 
-        self.results['stackscripts'] = get_all_paginated(self.client, '/linode/stackscripts',
-                                                         filter_dict, num_results=self.module.params['count'])
+        self.results['stackscripts'] = get_all_paginated(
+            self.client, '/linode/stackscripts',
+            filter_dict, num_results=self.module.params['count'])
         return self.results
 
 

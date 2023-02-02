@@ -106,7 +106,8 @@ MODULE_SPEC = dict(
 
     skip_polling=SpecField(
         type=FieldType.bool,
-        description=['If true, the module will not wait for all nodes in the node pool to be ready.'],
+        description=['If true, the module will not wait for all '
+                     'nodes in the node pool to be ready.'],
         default=False
     ),
 

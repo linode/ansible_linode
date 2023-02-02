@@ -66,7 +66,8 @@ linode_firewall_rule_spec: dict = dict(
 )
 
 linode_firewall_rules_spec: dict = dict(
-    inbound=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=linode_firewall_rule_spec,
+    inbound=SpecField(type=FieldType.list, element_type=FieldType.dict,
+                      suboptions=linode_firewall_rule_spec,
                       description=[
                           'A list of rules for inbound traffic.'
                       ]),
@@ -74,7 +75,8 @@ linode_firewall_rules_spec: dict = dict(
                              description=[
                                  'The default behavior for inbound traffic.'
                              ]),
-    outbound=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=linode_firewall_rule_spec,
+    outbound=SpecField(type=FieldType.list, element_type=FieldType.dict,
+                       suboptions=linode_firewall_rule_spec,
                        description=[
                            'A list of rules for outbound traffic.'
                        ]),
@@ -100,7 +102,8 @@ linode_firewall_spec: dict = dict(
                     description=[
                         'The unique label to give this Firewall.'
                     ]),
-    devices=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=linode_firewall_device_spec,
+    devices=SpecField(type=FieldType.list, element_type=FieldType.dict,
+                      suboptions=linode_firewall_device_spec,
                       editable=True,
                       description=[
                           'The devices that are attached to this Firewall.'

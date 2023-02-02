@@ -18,7 +18,8 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domai
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import paginated_list_to_json
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    paginated_list_to_json
 
 linode_domain_record_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements

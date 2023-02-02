@@ -14,7 +14,8 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.type_
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import construct_api_filter, get_all_paginated
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    construct_api_filter, get_all_paginated
 
 spec_filter = dict(
     name=SpecField(type=FieldType.string, required=True,
@@ -36,7 +37,10 @@ spec = dict(
     label=SpecField(type=FieldType.string, required=False, doc_hide=True),
     order=SpecField(type=FieldType.string, description=['The order to list Instance Types in.'],
                     default='asc', choices=['desc', 'asc']),
-    order_by=SpecField(type=FieldType.string, description=['The attribute to order Instance Types by.']),
+    order_by=SpecField(
+        type=FieldType.string,
+        description=['The attribute to order Instance Types by.']
+    ),
     filters=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=spec_filter,
                       description=['A list of filters to apply to the resulting Instance Types.']),
     count=SpecField(type=FieldType.integer,

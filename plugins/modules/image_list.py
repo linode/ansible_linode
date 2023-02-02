@@ -14,7 +14,8 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import construct_api_filter, get_all_paginated
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    construct_api_filter, get_all_paginated
 
 spec_filter = dict(
     name=SpecField(type=FieldType.string, required=True,

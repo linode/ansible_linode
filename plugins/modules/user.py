@@ -100,7 +100,10 @@ SPEC_GRANTS_GLOBAL = {
 SPEC_GRANTS_RESOURCE = {
     'type': SpecField(
         type=FieldType.string,
-        choices=['domain', 'image', 'linode', 'longview', 'nodebalancer', 'stackscript', 'volume', 'database'],
+        choices=[
+            'domain', 'image', 'linode', 'longview',
+            'nodebalancer', 'stackscript', 'volume', 'database'
+        ],
         description=['The type of resource to grant access to.'],
         required=True,
         editable=True

@@ -47,7 +47,8 @@ linode_nodes_spec = dict(
 linode_configs_spec = dict(
     algorithm=SpecField(
         type=FieldType.string, required=False, editable=True,
-        description=['What algorithm this NodeBalancer should use for routing traffic to backends.'],
+        description=['What algorithm this NodeBalancer should use '
+                     'for routing traffic to backends.'],
         choices=['roundrobin', 'leastconn', 'source']),
 
     check=SpecField(
@@ -73,9 +74,10 @@ linode_configs_spec = dict(
         description=['How often, in seconds, to check that backends are up and serving requests.']),
 
     check_passive=SpecField(
-        type='bool', required=False, editable=True,
-        description=['If true, any response from this backend with a 5xx status code will be enough '
-                     'for it to be considered unhealthy and taken out of rotation.']),
+        type=FieldType.bool, required=False, editable=True,
+        description=['If true, any response from this backend with a 5xx '
+                     'status code will be enough for it to be considered unhealthy '
+                     'and taken out of rotation.']),
 
     check_path=SpecField(
         type=FieldType.string, required=False, editable=True,
@@ -130,7 +132,8 @@ linode_configs_spec = dict(
         choices=['none', 'table', 'http_cookie']),
 
     nodes=SpecField(
-        type=FieldType.list, required=False, element_type=FieldType.dict, suboptions=linode_nodes_spec, editable=True,
+        type=FieldType.list, required=False, element_type=FieldType.dict,
+        suboptions=linode_nodes_spec, editable=True,
         description=['A list of nodes to apply to this config. '
                      'These can alternatively be configured through the nodebalancer_node module.'])
 )
@@ -159,7 +162,8 @@ linode_nodebalancer_spec = dict(
                     choices=['present', 'absent'], required=True),
 
     configs=SpecField(
-        type=FieldType.list, element_type=FieldType.dict, suboptions=linode_configs_spec, editable=True,
+        type=FieldType.list, element_type=FieldType.dict,
+        suboptions=linode_configs_spec, editable=True,
         description=['A list of configs to apply to the NodeBalancer.'])
 )
 

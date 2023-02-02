@@ -23,7 +23,9 @@ linode_domain_spec = dict(
     label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
     axfr_ips=SpecField(type=FieldType.list, element_type=FieldType.string, editable=True,
-                       description=['The list of IPs that may perform a zone transfer for this Domain.']),
+                       description=[
+                           'The list of IPs that may perform a zone transfer for this Domain.'
+                       ]),
     description=SpecField(type=FieldType.string, editable=True,
                           description=['The list of IPs that may perform a '
                                        'zone transfer for this Domain.']),
@@ -45,7 +47,8 @@ linode_domain_spec = dict(
                         description=['The Start of Authority email address.'],
                         editable=True),
     status=SpecField(type=FieldType.string,
-                     description=['Used to control whether this Domain is currently being rendered.'],
+                     description=['Used to control whether this Domain is '
+                                  'currently being rendered.'],
                      editable=True),
     state=SpecField(type=FieldType.string,
                     description=['The desired state of the target.'],

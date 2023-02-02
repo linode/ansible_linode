@@ -17,7 +17,8 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_c
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import jsonify_node_pool, filter_null_values
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    jsonify_node_pool, filter_null_values
 
 linode_lke_cluster_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
@@ -63,7 +64,8 @@ SPECDOC_META = SpecDocMeta(
         ),
         kubeconfig=SpecReturnValue(
             description='The Base64-encoded kubeconfig used to access this cluster. \n'
-                        'NOTE: This value may be unavailable if the cluster is not fully provisioned.',
+                        'NOTE: This value may be unavailable if the cluster is not '
+                        'fully provisioned.',
             docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/'
                      '#kubeconfig-view__responses',
             type=FieldType.string

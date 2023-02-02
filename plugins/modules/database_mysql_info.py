@@ -20,8 +20,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_database_share
     call_protected_provisioning
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import filter_null_values, \
-    paginated_list_to_json, mapping_to_dict
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    filter_null_values, paginated_list_to_json, mapping_to_dict
 
 spec = dict(
     # Disable the default values
