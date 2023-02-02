@@ -171,7 +171,7 @@ SPEC = {
     ),
     'grants': SpecField(
         type=FieldType.dict,
-        description=['Update the grants a ser has.'],
+        description=['Update the grants a user has.'],
         suboptions=SPEC_GRANTS,
         editable=True,
     )
