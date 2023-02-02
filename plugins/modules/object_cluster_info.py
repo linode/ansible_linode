@@ -8,6 +8,7 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 from typing import List, Optional, Any
 
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import ObjectStorageKeys, ObjectStorageCluster
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -20,39 +21,39 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.objec
 
 linode_object_cluster_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
-    state=dict(type='str', required=False, doc_hide=True),
-    label=dict(type='str', required=False, doc_hide=True),
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
+    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=dict(
-        type='str', required=False,
-        description='The unique id given to the clusters.'),
+    id=SpecField(
+        type=FieldType.string, required=False,
+        description=['The unique id given to the clusters.']),
 
-    region=dict(
-        type='str', required=False,
-        description='The region the clusters are in.'),
+    region=SpecField(
+        type=FieldType.string, required=False,
+        description=['The region the clusters are in.']),
 
-    domain=dict(
-        type='str', required=False,
-        description='The domain of the clusters.'),
+    domain=SpecField(
+        type=FieldType.string, required=False,
+        description=['The domain of the clusters.']),
 
-    static_site_domain=dict(
-        type='str', required=False,
-        description='The static-site domain of the clusters.')
+    static_site_domain=SpecField(
+        type=FieldType.string, required=False,
+        description=['The static-site domain of the clusters.'])
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Get info about a Linode Object Storage Cluster.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_object_cluster_info_spec,
+    options=linode_object_cluster_info_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        clusters=dict(
+        clusters=SpecReturnValue(
             description='The Object Storage clusters in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/object-storage/#cluster-view__responses',
-            type='list',
+            type=FieldType.list,
             sample=docs.result_clusters_samples
         )
     )
@@ -67,7 +68,7 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
     """Module for getting info about a Linode Object Storage Cluster"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = linode_object_cluster_info_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
         self.results = dict(
             changed=False,
