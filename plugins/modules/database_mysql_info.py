@@ -8,6 +8,7 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 from typing import List, Any, Optional
 
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import MySQLDatabase
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -25,48 +26,48 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.datab
 
 spec = dict(
     # Disable the default values
-    state=dict(type='str', required=False, doc_hide=True),
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=dict(type='str', description='The ID of the MySQL Database.'),
-    label=dict(type='str', description='The label of the MySQL Database.'),
+    id=SpecField(type=FieldType.string, description=['The ID of the MySQL Database.']),
+    label=SpecField(type=FieldType.string, description=['The label of the MySQL Database.']),
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Get info about a Linode MySQL Managed Database.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=spec,
+    options=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        database=dict(
+        database=SpecReturnValue(
             description='The database in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/databases/'
                      '#managed-mysql-database-view__response-samples',
-            type='dict',
+            type=FieldType.dict,
             sample=docs_parent.result_database_samples
         ),
-        backups=dict(
+        backups=SpecReturnValue(
             description='The database backups in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/databases/'
                      '#managed-mysql-database-backup-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs_parent.result_backups_samples
         ),
-        ssl_cert=dict(
+        ssl_cert=SpecReturnValue(
             description='The SSL CA certificate for an accessible Managed MySQL Database.',
             docs_url='https://www.linode.com/docs/api/databases/'
                      '#managed-mysql-database-ssl-certificate-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs_parent.result_ssl_cert_samples
         ),
-        credentials=dict(
+        credentials=SpecReturnValue(
             description='The root username and password for an accessible Managed MySQL Database.',
             docs_url='https://www.linode.com/docs/api/databases/'
                      '#managed-mysql-database-credenti'
                      'als-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs_parent.result_credentials_samples
         ),
     )
@@ -77,7 +78,7 @@ class Module(LinodeModuleBase):
     """Module for getting info about a Linode user"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results = {
             'database': None,
             'backups': None,

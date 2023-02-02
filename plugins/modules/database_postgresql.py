@@ -9,6 +9,7 @@ from __future__ import absolute_import, division, print_function
 from typing import Optional, cast, Any, Set, Dict, Callable
 
 import polling
+from ansible_specdoc.objects import SpecField, SpecDocMeta, SpecReturnValue, FieldType
 from linode_api4 import LinodeClient, ApiError, PostgreSQLDatabase
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -25,20 +26,20 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.datab
     as docs
 
 SPEC = dict(
-    label=dict(
-        type='str',
+    label=SpecField(
+        type=FieldType.string,
         required=True,
-        description='This database\'s unique label.'),
-    state=dict(
-        type='str',
+        description=['This database\'s unique label.']),
+    state=SpecField(
+        type=FieldType.string,
         choices=['present', 'absent'],
         required=True,
-        description='The state of this database.',
+        description=['The state of this database.'],
     ),
 
-    allow_list=dict(
-        type='list',
-        elements='str',
+    allow_list=SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
         description=[
             'A list of IP addresses that can access the Managed Database.',
             'Each item must be a range in CIDR format.'
@@ -46,26 +47,26 @@ SPEC = dict(
         default=[],
         editable=True,
     ),
-    cluster_size=dict(
-        type='int',
-        description='The number of Linode Instance nodes deployed to the Managed Database.',
+    cluster_size=SpecField(
+        type=FieldType.string,
+        description=['The number of Linode Instance nodes deployed to the Managed Database.'],
         choices=[1, 3],
         default=1
     ),
-    encrypted=dict(
-        type='bool',
-        description='Whether the Managed Databases is encrypted.',
+    encrypted=SpecField(
+        type=FieldType.string,
+        description=['Whether the Managed Databases is encrypted.'],
     ),
-    engine=dict(
-        type='str',
-        description='The Managed Database engine in engine/version format.',
+    engine=SpecField(
+        type=FieldType.string,
+        description=['The Managed Database engine in engine/version format.'],
     ),
-    region=dict(
-        type='str',
-        description='The Region ID for the Managed Database.'
+    region=SpecField(
+        type=FieldType.string,
+        description=['The Region ID for the Managed Database.']
     ),
-    replication_type=dict(
-        type='str',
+    replication_type=SpecField(
+        type=FieldType.string,
         description=[
             'The replication method used for the Managed Database.',
             'Defaults to none for a single cluster and '
@@ -76,8 +77,8 @@ SPEC = dict(
         choices=['none', 'asynch', 'semi_synch'],
         default='none'
     ),
-    replication_commit_type=dict(
-        type='str',
+    replication_commit_type=SpecField(
+        type=FieldType.string,
         description=[
             'The synchronization level of the replicating server.',
             'Must be local or off for the asynch replication type.',
@@ -86,71 +87,71 @@ SPEC = dict(
         choices=['off', 'on', 'local', 'remote_write', 'remote_apply'],
         default='local'
     ),
-    ssl_connection=dict(
-        type='bool',
-        description='Whether to require SSL credentials to '
-                    'establish a connection to the Managed Database.',
+    ssl_connection=SpecField(
+        type=FieldType.bool,
+        description=['Whether to require SSL credentials to '
+                     'establish a connection to the Managed Database.'],
         default=True,
     ),
-    type=dict(
-        type='str',
-        description='The Linode Instance type used by the '
-                    'Managed Database for its nodes.',
+    type=SpecField(
+        type=FieldType.string,
+        description=['The Linode Instance type used by the '
+                     'Managed Database for its nodes.'],
     ),
-    updates=dict(
-        type='dict',
-        options=SPEC_UPDATE_WINDOW,
-        description='Configuration settings for automated patch '
-                    'update maintenance for the Managed Database.',
+    updates=SpecField(
+        type=FieldType.dict,
+        suboptions=SPEC_UPDATE_WINDOW,
+        description=['Configuration settings for automated patch '
+                     'update maintenance for the Managed Database.'],
         editable=True
     ),
-    wait=dict(
-        type='bool', default=True,
-        description='Wait for the database to have status `available` before returning.'),
+    wait=SpecField(
+        type=FieldType.bool, default=True,
+        description=['Wait for the database to have status `available` before returning.']),
 
-    wait_timeout=dict(
-        type='int', default=3600,
-        description='The amount of time, in seconds, to wait for an image to '
-                    'have status `available`.'
+    wait_timeout=SpecField(
+        type=FieldType.integer, default=3600,
+        description=['The amount of time, in seconds, to wait for an image to '
+                     'have status `available`.']
     ),
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage a Linode PostgreSQL database.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=SPEC,
+    options=SPEC,
     examples=docs.specdoc_examples,
     return_values=dict(
-        database=dict(
+        database=SpecReturnValue(
             description='The database in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/databases/'
                      '#managed-postgresql-database-view__response-samples',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_database_samples
         ),
-        backups=dict(
+        backups=SpecReturnValue(
             description='The database backups in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/databases/#'
                      'managed-postgresql-database-backups-list',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_backups_samples
         ),
-        ssl_cert=dict(
+        ssl_cert=SpecReturnValue(
             description='The SSL CA certificate for an accessible Managed PostgreSQL Database.',
             docs_url='https://www.linode.com/docs/api/databases/'
                      '#managed-postgresql-database-ssl-certificate-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_ssl_cert_samples
         ),
-        credentials=dict(
+        credentials=SpecReturnValue(
             description='The root username and password for an '
                         'accessible Managed PostgreSQL Database.',
             docs_url='https://www.linode.com/docs/api/databases/'
                      '#managed-postgresql-database-credentials-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_credentials_samples
         ),
     )
@@ -166,7 +167,7 @@ class Module(LinodeModuleBase):
     """Module for creating and destroying Linode Databases"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = SPEC
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results = dict(
             changed=False,
             actions=[],

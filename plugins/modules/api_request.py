@@ -11,6 +11,7 @@ import json
 from typing import Optional, cast, Any, Set, Tuple
 
 import polling
+from ansible_specdoc.objects import SpecDocMeta, SpecReturnValue, FieldType, SpecField
 from linode_api4 import StackScript, ApiError
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
@@ -21,38 +22,38 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.api_request as docs
 
 SPEC = dict(
-    label=dict(type='str', doc_hide=True),
-    state=dict(type='str', doc_hide=True),
+    label=SpecField(type=FieldType.string, doc_hide=True),
+    state=SpecField(type=FieldType.string, doc_hide=True),
 
-    path=dict(
-        type='str',
+    path=SpecField(
+        type=FieldType.string,
         required=True,
         description=[
             'The relative path to the endpoint to make a request to.',
             'e.g. "linode/instances"'
         ]
     ),
-    method=dict(
-        type='str',
+    method=SpecField(
+        type=FieldType.string,
         required=True,
-        description='The HTTP method of the request or response.',
+        description=['The HTTP method of the request or response.'],
         choices=['POST', 'PUT', 'GET', 'DELETE']
     ),
-    body=dict(
-        type='dict',
+    body=SpecField(
+        type=FieldType.dict,
         description=[
             'The body of the request.',
             'This is a YAML structure that will be marshalled to JSON.'
         ]
     ),
-    body_json=dict(
-        type='str',
+    body_json=SpecField(
+        type=FieldType.string,
         description=[
             'The body of the request in JSON format.'
         ]
     ),
-    filters=dict(
-        type='dict',
+    filters=SpecField(
+        type=FieldType.dict,
         description=[
             'A YAML structure corresponding to the X-Filter request header.',
             'See: https://www.linode.com/docs/api/#filtering-and-sorting'
@@ -60,7 +61,7 @@ SPEC = dict(
     )
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Make an arbitrary Linode API request.',
         'The Linode API documentation can be found here: '
@@ -68,17 +69,17 @@ specdoc_meta = dict(
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=SPEC,
+    options=SPEC,
     examples=docs.specdoc_examples,
     return_values=dict(
-        body=dict(
+        body=SpecReturnValue(
             description='The deserialized response body.',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_body_samples
         ),
-        status=dict(
+        status=SpecReturnValue(
             description='The response status code.',
-            type='int'
+            type=FieldType.integer
         )
     )
 )
@@ -88,7 +89,7 @@ class Module(LinodeModuleBase):
     """Module for running arbitrary Linode API requests"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = SPEC
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results = dict(
             body={},
             status=0,

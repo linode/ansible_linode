@@ -4,34 +4,35 @@ Shared helper functions and structures for all Managed Database modules.
 
 from typing import Set, Dict, Any, Callable, Optional
 
+from ansible_specdoc.objects import SpecField, FieldType
 from linode_api4 import ApiError
 
 SPEC_UPDATE_WINDOW = dict(
-    day_of_week=dict(
-        type='int',
+    day_of_week=SpecField(
+        type=FieldType.integer,
         required=True,
-        choices=range(1, 8),
-        description='The day to perform maintenance. 1=Monday, 2=Tuesday, etc.'
+        choices=list(range(1, 8)),
+        description=['The day to perform maintenance. 1=Monday, 2=Tuesday, etc.']
     ),
-    duration=dict(
-        type='int',
+    duration=SpecField(
+        type=FieldType.integer,
         required=True,
         choices=[1, 3],
-        description='The maximum maintenance window time in hours.'
+        description=['The maximum maintenance window time in hours.']
     ),
-    frequency=dict(
-        type='str',
+    frequency=SpecField(
+        type=FieldType.string,
         choices=['weekly', 'monthly'],
         default='weekly',
-        description='Whether maintenance occurs on a weekly or monthly basis.'
+        description=['Whether maintenance occurs on a weekly or monthly basis.']
     ),
-    hour_of_day=dict(
-        type='int',
+    hour_of_day=SpecField(
+        type=FieldType.integer,
         required=True,
-        description='The hour to begin maintenance based in UTC time.',
+        description=['The hour to begin maintenance based in UTC time.'],
     ),
-    week_of_month=dict(
-        type='int',
+    week_of_month=SpecField(
+        type=FieldType.integer,
         description=[
             'The week of the month to perform monthly frequency updates.',
             'Defaults to None.',
@@ -40,6 +41,7 @@ SPEC_UPDATE_WINDOW = dict(
         ]
     )
 )
+
 
 def validate_allow_list(allow_list: Set[str]) -> None:
     """Validates the allow_list field params."""
