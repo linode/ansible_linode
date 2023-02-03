@@ -34,8 +34,8 @@ Get info about a Linode Image.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`str`</center> | <center>Optional</center> | The ID of the image.   |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the image.   |
+| `id` | <center>`str`</center> | <center>Optional</center> | The ID of the image.  **(Conflicts With:`label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the image.  **(Conflicts With:`id`)** |
 
 
 

@@ -22,8 +22,16 @@ spec = dict(
     # Disable the default values
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=SpecField(type=FieldType.string, description=['The ID of the image.']),
-    label=SpecField(type=FieldType.string, description=['The label of the image.']),
+    id=SpecField(
+        type=FieldType.string,
+        description=['The ID of the image.'],
+        conflicts_with=['label']
+    ),
+    label=SpecField(
+        type=FieldType.string,
+        description=['The label of the image.'],
+        conflicts_with=['id']
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(

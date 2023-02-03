@@ -39,6 +39,7 @@ SPEC = dict(
     ),
     disk_id=SpecField(
         type=FieldType.integer,
+        conflicts_with=['source_file'],
         description=['The ID of the disk to clone this image from.'],
     ),
     recreate=SpecField(
@@ -52,6 +53,7 @@ SPEC = dict(
     ),
     source_file=SpecField(
         type=FieldType.string,
+        conflicts_with=['disk_id'],
         description=['An image file to create this image with.']
     ),
     wait=SpecField(

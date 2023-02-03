@@ -34,6 +34,7 @@
 {% set name_fmt = '[`%s` (sub-options)](#%s)' % (name, name) if spec.suboptions else '`%s`' % name %}
 {% set extras_fmt = [] %}
 {% set choices_fmt = [] %}
+{% set conflicts_fmt = [] %}
 {% if spec.choices -%}
 {% for choice in spec.choices -%}
 {{ choices_fmt.append('`{}`'.format(choice|string)) or ''}}
@@ -45,6 +46,12 @@
 {%- endif %}
 {% if spec.editable -%}
 {{ extras_fmt.append("Updatable") or '' }}
+{%- endif %}
+{% if spec.conflicts_with|length > 0 -%}
+{% for conflict in spec.conflicts_with -%}
+{{ conflicts_fmt.append('`{}`'.format(conflict|string)) or ''}}
+{%- endfor %}
+{{ extras_fmt.append("Conflicts With:" + ','.join(conflicts_fmt)) or '' }}
 {%- endif %}
 | {{ name_fmt }} | <center>{{type_text}}</center> | <center>{{ required_text }}</center> | {% for line in spec.description %}{{ line }} {% endfor %} {% if extras_fmt | length > 0 %}**({{ extras_fmt|join('; ') }})**{% endif %} |
 {% endif %}

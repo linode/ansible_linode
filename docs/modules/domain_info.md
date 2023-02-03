@@ -34,8 +34,8 @@ Get info about a Linode Domain.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The unique domain name of the Domain. Optional if `domain` is defined.   |
-| `domain` | <center>`str`</center> | <center>Optional</center> | The unique id of the Domain. Optional if `id` is defined.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The unique domain name of the Domain. Optional if `domain` is defined.  **(Conflicts With:`domain`)** |
+| `domain` | <center>`str`</center> | <center>Optional</center> | The unique id of the Domain. Optional if `id` is defined.  **(Conflicts With:`id`)** |
 
 
 

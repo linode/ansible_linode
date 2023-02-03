@@ -25,6 +25,7 @@ linode_instance_info_spec = dict(
 
     id=SpecField(
         type=FieldType.integer, required=False,
+        conflicts_with=['label'],
         description=[
             'The instance’s label.',
             'Optional if `label` is defined.'
@@ -32,6 +33,7 @@ linode_instance_info_spec = dict(
 
     label=SpecField(
         type=FieldType.string, required=False,
+        conflicts_with=['id'],
         description=[
             'The unique ID of the Instance.',
             'Optional if `id` is defined.'
