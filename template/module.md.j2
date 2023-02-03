@@ -51,7 +51,7 @@
 {% for conflict in spec.conflicts_with -%}
 {{ conflicts_fmt.append('`{}`'.format(conflict|string)) or ''}}
 {%- endfor %}
-{{ extras_fmt.append("Conflicts With:" + ','.join(conflicts_fmt)) or '' }}
+{{ extras_fmt.append("Conflicts With: " + ','.join(conflicts_fmt)) or '' }}
 {%- endif %}
 | {{ name_fmt }} | <center>{{type_text}}</center> | <center>{{ required_text }}</center> | {% for line in spec.description %}{{ line }} {% endfor %} {% if extras_fmt | length > 0 %}**({{ extras_fmt|join('; ') }})**{% endif %} |
 {% endif %}

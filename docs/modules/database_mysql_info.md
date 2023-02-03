@@ -34,8 +34,8 @@ Get info about a Linode MySQL Managed Database.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`str`</center> | <center>Optional</center> | The ID of the MySQL Database.  **(Conflicts With:`label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the MySQL Database.  **(Conflicts With:`id`)** |
+| `id` | <center>`str`</center> | <center>Optional</center> | The ID of the MySQL Database.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the MySQL Database.  **(Conflicts With: `id`)** |
 
 
 
