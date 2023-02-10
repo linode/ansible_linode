@@ -57,7 +57,7 @@ Manage a Linode User.
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this user.  **(Choices: `present`, `absent`)** |
 | `restricted` | <center>`bool`</center> | <center>Optional</center> | If true, the User must be granted access to perform actions or access entities on this Account.  **(Default: `True`; Updatable)** |
 | `email` | <center>`str`</center> | <center>Optional</center> | The email address for the User. Linode sends emails to this address for account management communications. May be used for other communications as configured.   |
-| [`grants` (sub-options)](#grants) | <center>`dict`</center> | <center>Optional</center> | Update the grants a ser has.  **(Updatable)** |
+| [`grants` (sub-options)](#grants) | <center>`dict`</center> | <center>Optional</center> | Update the grants a user has.  **(Updatable)** |
 
 
 
