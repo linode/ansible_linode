@@ -6,79 +6,78 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import Optional, cast, Any, Set
+from typing import Optional, Any, Set
 
 import polling
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Volume
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume as docs
-
 linode_volume_spec = dict(
-    label=dict(
-        type='str',
-        description='The Volume’s label, which is also used in the '
-                    'filesystem_path of the resulting volume.'),
+    label=SpecField(
+        type=FieldType.string,
+        description=['The Volume’s label, which is also used in the '
+                     'filesystem_path of the resulting volume.']),
 
-    config_id=dict(
-        type='int', default=None,
-        description='When creating a Volume attached to a Linode, the ID of the Linode Config '
-                    'to include the new Volume in.'),
+    config_id=SpecField(
+        type=FieldType.integer, default=None,
+        description=['When creating a Volume attached to a Linode, the ID of the Linode Config '
+                     'to include the new Volume in.']),
 
-    linode_id=dict(
-        type='int', default=None, editable=True,
+    linode_id=SpecField(
+        type=FieldType.integer, default=None, editable=True,
         description=[
             'The Linode this volume should be attached to upon creation.',
             'If not given, the volume will be created without an attachment.'
         ]),
 
-    region=dict(
-        type='str',
+    region=SpecField(
+        type=FieldType.string,
         description=[
             'The location to deploy the volume in.',
             'See U(https://api.linode.com/v4/regions)'
         ]),
 
-    size=dict(
-        type='int', default=None, editable=True,
+    size=SpecField(
+        type=FieldType.integer, default=None, editable=True,
         description=[
             'The size of this volume, in GB.',
             'Be aware that volumes may only be resized up after creation.'
         ]),
 
-    attached=dict(
-        type='bool', default=True, editable=True,
-        description='If true, the volume will be attached to a Linode. '
-                    'Otherwise, the volume will be detached.'),
+    attached=SpecField(
+        type=FieldType.bool, default=True, editable=True,
+        description=['If true, the volume will be attached to a Linode. '
+                     'Otherwise, the volume will be detached.']),
 
-    wait_timeout=dict(
-        type='int', default=240,
-        description='The amount of time, in seconds, to wait for a volume to '
-                    'have the active status.'
-        ),
+    wait_timeout=SpecField(
+        type=FieldType.integer, default=240,
+        description=['The amount of time, in seconds, to wait for a volume to '
+                     'have the active status.']
+    ),
 
-    state=dict(type='str',
-               description='The desired state of the target.',
-               choices=['present', 'absent'], required=True),
+    state=SpecField(type=FieldType.string,
+                    description=['The desired state of the target.'],
+                    choices=['present', 'absent'], required=True),
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage a Linode Volume.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_volume_spec,
+    options=linode_volume_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        volume=dict(
+        volume=SpecReturnValue(
             description='The volume in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/volumes/#volume-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_volume_samples
         )
     )
@@ -89,7 +88,7 @@ class LinodeVolume(LinodeModuleBase):
     """Module for creating and destroying Linode Volumes"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = linode_volume_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ['state', 'label']
         self.results = dict(
             changed=False,
@@ -179,7 +178,7 @@ class LinodeVolume(LinodeModuleBase):
             self._volume.attach(linode_id, config_id)
             self.register_action(
                 'Attached volume {0} to linode_id {1} and config_id {2}'
-                    .format(label, linode_id, config_id))
+                .format(label, linode_id, config_id))
 
         if not attached:
             self._volume.detach()

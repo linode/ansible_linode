@@ -119,7 +119,7 @@ Manage Linode Firewalls.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `ipv4` | <center>`list`</center> | <center>Optional</center> | A list of IPv4 addresses or networks. Must be in IP/mask format.   |
-| `ipv6` | <center>`list`</center> | <center>Optional</center> | A list of IPv4 addresses or networks. Must be in IP/mask format.   |
+| `ipv6` | <center>`list`</center> | <center>Optional</center> | A list of IPv6 addresses or networks. Must be in IP/mask format.   |
 
 
 

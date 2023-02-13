@@ -91,9 +91,9 @@ Manage Linode Instances, Configs, and Disks.
 | [`disks` (sub-options)](#disks) | <center>`list`</center> | <center>Optional</center> | A list of Disks to create on the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#disk-create).  **(Updatable)** |
 | [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema).   |
 | `booted` | <center>`bool`</center> | <center>Optional</center> | Whether the new Instance should be booted. This will default to True if the Instance is deployed from an Image or Backup.   |
-| `backup_id` | <center>`int`</center> | <center>Optional</center> | The id of the Backup to restore to the new Instance. May not be provided if “image” is given.   |
-| `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status `running` before returning.  **(Default: `True`)** |
-| `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status `running`.  **(Default: `240`)** |
+| `backup_id` | <center>`int`</center> | <center>Optional</center> | The id of the Backup to restore to the new Instance. May not be provided if "image" is given.   |
+| `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status "running" before returning.  **(Default: `True`)** |
+| `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `240`)** |
 
 
 
@@ -107,7 +107,7 @@ Manage Linode Instances, Configs, and Disks.
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label to assign to this config.   |
 | `comments` | <center>`str`</center> | <center>Optional</center> | Arbitrary User comments on this Config.  **(Updatable)** |
 | [`helpers` (sub-options)](#helpers) | <center>`dict`</center> | <center>Optional</center> | Helpers enabled when booting to this Linode Config.   |
-| `kernel` | <center>`str`</center> | <center>Optional</center> | A Kernel ID to boot a Linode with. Defaults to “linode/latest-64bit”.  **(Updatable)** |
+| `kernel` | <center>`str`</center> | <center>Optional</center> | A Kernel ID to boot a Linode with. Defaults to "linode/latest-64bit".  **(Updatable)** |
 | `memory_limit` | <center>`int`</center> | <center>Optional</center> | Defaults to the total RAM of the Linode.  **(Updatable)** |
 | `root_device` | <center>`str`</center> | <center>Optional</center> | The root device to boot.  **(Updatable)** |
 | `run_level` | <center>`str`</center> | <center>Optional</center> | Defines the state of your Linode after booting.  **(Updatable)** |
@@ -122,14 +122,14 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| [`sda` (sub-options)](#sda) | <center>`dict`</center> | <center>Optional</center> |   |
-| [`sdb` (sub-options)](#sdb) | <center>`dict`</center> | <center>Optional</center> |   |
-| [`sdc` (sub-options)](#sdc) | <center>`dict`</center> | <center>Optional</center> |   |
-| [`sdd` (sub-options)](#sdd) | <center>`dict`</center> | <center>Optional</center> |   |
-| [`sde` (sub-options)](#sde) | <center>`dict`</center> | <center>Optional</center> |   |
-| [`sdf` (sub-options)](#sdf) | <center>`dict`</center> | <center>Optional</center> |   |
-| [`sdg` (sub-options)](#sdg) | <center>`dict`</center> | <center>Optional</center> |   |
-| [`sdh` (sub-options)](#sdh) | <center>`dict`</center> | <center>Optional</center> |   |
+| [`sda` (sub-options)](#sda) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sda   |
+| [`sdb` (sub-options)](#sdb) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdb   |
+| [`sdc` (sub-options)](#sdc) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdc   |
+| [`sdd` (sub-options)](#sdd) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdd   |
+| [`sde` (sub-options)](#sde) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sde   |
+| [`sdf` (sub-options)](#sdf) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdf   |
+| [`sdg` (sub-options)](#sdg) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdg   |
+| [`sdh` (sub-options)](#sdh) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdh   |
 
 
 

@@ -6,40 +6,39 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import List, Any, Optional
+from typing import Any, Optional
 
-from linode_api4 import Image, IPAddress
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    filter_null_values
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
+from linode_api4 import IPAddress
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import filter_null_values
 
 spec = dict(
     # Disable the default values
-    state=dict(type='str', required=False, doc_hide=True),
-    label=dict(type='str', required=False, doc_hide=True),
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
+    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    address=dict(type='str', required=True,
-                 description='The IP address to operate on.'),
+    address=SpecField(type=FieldType.string, required=True,
+                      description=['The IP address to operate on.']),
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Get info about a Linode IP.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=spec,
+    options=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        ip=dict(
+        ip=SpecReturnValue(
             description='The IP in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/networking/#ip-address-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_ip_samples
         )
     )
@@ -50,7 +49,7 @@ class Module(LinodeModuleBase):
     """Module for getting info about a Linode user"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results = {
             'ip': None
         }

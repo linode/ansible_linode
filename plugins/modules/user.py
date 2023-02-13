@@ -6,209 +6,204 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-import copy
-from typing import Optional, cast, Any, Set, Dict, List
+from typing import Optional, Any, Dict, List
 
-import polling
+from ansible_specdoc.objects import SpecDocMeta, SpecReturnValue, FieldType, SpecField
 from linode_api4 import User
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user as docs
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     handle_updates, filter_null_values
 
 SPEC_GRANTS_GLOBAL = {
-    'account_access': {
-        'type:': 'str',
-        'choices': ['read_only', 'read_write'],
-        'description': [
-            'The level of access this User has to Account-level actions, '
-            'like billing information.',
-            'A restricted User will never be able to manage users.'],
-        'default': None,
-        'editable': True,
-    },
-    'add_databases': {
-        'type': 'bool',
-        'description': 'If true, this User may add Managed Databases.',
-        'default': False,
-        'editable': True,
-    },
-    'add_domains': {
-        'type': 'bool',
-        'description': 'If true, this User may add Domains.',
-        'default': False,
-        'editable': True,
-    },
-    'add_firewalls': {
-        'type': 'bool',
-        'description': 'If true, this User may add firewalls.',
-        'default': False,
-        'editable': True,
-    },
-    'add_images': {
-        'type': 'bool',
-        'description': 'If true, this User may add images.',
-        'default': False,
-        'editable': True,
-    },
-    'add_linodes': {
-        'type': 'bool',
-        'description': 'If true, this User may add Linodes.',
-        'default': False,
-        'editable': True,
-    },
-    'add_longview': {
-        'type': 'bool',
-        'description': 'If true, this User may add LongView.',
-        'default': False,
-        'editable': True,
-    },
-    'add_nodebalancers': {
-        'type': 'bool',
-        'description': 'If true, this User may add NodeBalancers.',
-        'default': False,
-        'editable': True,
-    },
-    'add_stackscripts': {
-        'type': 'bool',
-        'description': 'If true, this User may add StackScripts.',
-        'default': False,
-        'editable': True,
-    },
-    'add_volumes': {
-        'type': 'bool',
-        'description': 'If true, this User may add volumes.',
-        'default': False,
-        'editable': True,
-    },
-    'cancel_account': {
-        'type': 'bool',
-        'description': 'If true, this User may add cancel the entire account.',
-        'default': False,
-        'editable': True,
-    },
-    'longview_subscription': {
-        'type': 'bool',
-        'description': 'If true, this User may manage the Account’s '
-                       'Longview subscription.',
-        'default': False,
-        'editable': True,
-    },
+    'account_access': SpecField(
+        type=FieldType.string,
+        choices=['read_only', 'read_write'],
+        description=['The level of access this User has to Account-level actions, '
+                     'like billing information.',
+                     'A restricted User will never be able to manage users.'],
+        default=None,
+        editable=True,
+    ),
+    'add_databases': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may add Managed Databases.'],
+        default=False,
+        editable=True,
+    ),
+    'add_domains': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may add Domains.'],
+        default=False,
+        editable=True,
+    ),
+    'add_firewalls': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may add Firewalls.'],
+        default=False,
+        editable=True,
+    ),
+    'add_images': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may add Images.'],
+        default=False,
+        editable=True,
+    ),
+    'add_linodes': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may add Linodes.'],
+        default=False,
+        editable=True,
+    ),
+    'add_longview': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may add Longview.'],
+        default=False,
+        editable=True,
+    ),
+    'add_nodebalancers': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may add NodeBalancers.'],
+        default=False,
+        editable=True,
+    ),
+    'add_stackscripts': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may add StackScripts.'],
+        default=False,
+        editable=True,
+    ),
+    'add_volumes': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may add Volumes.'],
+        default=False,
+        editable=True,
+    ),
+    'cancel_account': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may add cancel the entire account.'],
+        default=False,
+        editable=True,
+    ),
+    'longview_subscription': SpecField(
+        type=FieldType.bool,
+        description=['If true, this User may manage the Account’s '
+                     'Longview subscription.'],
+        default=False,
+        editable=True,
+    ),
 }
 
 SPEC_GRANTS_RESOURCE = {
-    'type': {
-        'type:': 'str',
-        'choices': ['domain', 'image', 'linode', 'longview',
-                    'nodebalancer', 'stackscript', 'volume'],
-        'description': [
-            'The type of resource to grant access to.'],
-        'required': True,
-        'editable': True,
-    },
-    'id': {
-        'type': 'int',
-        'description': 'The ID of the resource to grant access to.',
-        'required': True,
-        'editable': True,
-    },
-    'permissions': {
-        'type': 'str',
-        'choices': ['read_only', 'read_write'],
-        'description': 'The level of access this User has to this entity. '
-                       'If null, this User has no access.',
-        'required': True,
-        'editable': True,
-    },
+    'type': SpecField(
+        type=FieldType.string,
+        choices=[
+            'domain', 'image', 'linode', 'longview',
+            'nodebalancer', 'stackscript', 'volume', 'database'
+        ],
+        description=['The type of resource to grant access to.'],
+        required=True,
+        editable=True
+    ),
+    'id': SpecField(
+        type=FieldType.integer,
+        description=['The ID of the resource to grant access to.'],
+        required=True,
+        editable=True
+    ),
+    'permissions': SpecField(
+        type=FieldType.string,
+        choices=['read_only', 'read_write'],
+        description=['The level of access this User has to this entity. '
+                     'If null, this User has no access.'],
+        required=True,
+        editable=True
+    )
 }
 
 SPEC_GRANTS = {
-    'global': {
-        'type': 'dict',
-        'description': 'A structure containing the Account-level grants a User has.',
-        'options': SPEC_GRANTS_GLOBAL,
-        'editable': True,
-    },
-    'resources': {
-        'description': 'A list of resource grants to give to the user.',
-        'type': 'list',
-        'elements': 'dict',
-        'options': SPEC_GRANTS_RESOURCE,
-        'editable': True,
-    }
+    'global': SpecField(
+        type=FieldType.dict,
+        description=['A structure containing the Account-level grants a User has.'],
+        suboptions=SPEC_GRANTS_GLOBAL,
+        editable=True,
+    ),
+    'resources': SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        editable=True,
+        suboptions=SPEC_GRANTS_RESOURCE,
+        description=['A list of resource grants to give to the user.']
+    )
 }
 
 SPEC = {
     # We don't use label for this module
-    'label': {
-        'type': 'str',
-        'required': False,
-        'doc_hide': True
-    },
-    'username': {
-        'type': 'str',
-        'required': True,
-        'description': 'The username of this user.',
-    },
-    'state': {
-        'type': 'str',
-        'choices': ['present', 'absent'],
-        'required': True,
-        'description': 'The state of this user.',
-    },
-    'restricted': {
-        'type': 'bool',
-        'description': 'If true, the User must be granted access to perform '
-                       'actions or access entities on this Account.',
-        'default': True,
-        'editable': True,
-    },
-    'email': {
-        'type': 'str',
-        'description': ['The email address for the User.',
-                        'Linode sends emails to this address for account '
-                        'management communications.',
-                        'May be used for other communications as configured.']
-    },
-    'grants': {
-        'type': 'dict',
-        'description': 'Update the grants a User has.',
-        'options': SPEC_GRANTS,
-        'editable': True,
-    }
+    'label': SpecField(
+        type=FieldType.string,
+        doc_hide=True,
+    ),
+
+    'username': SpecField(
+        type=FieldType.string,
+        required=True,
+        description=['The username of this user.']
+    ),
+    'state': SpecField(
+        type=FieldType.string,
+        choices=['present', 'absent'],
+        required=True,
+        description=['The state of this user.']
+    ),
+    'restricted': SpecField(
+        type=FieldType.bool,
+        description=['If true, the User must be granted access to perform '
+                     'actions or access entities on this Account.'],
+        default=True,
+        editable=True,
+    ),
+    'email': SpecField(
+        type=FieldType.string,
+        description=['The email address for the User.',
+                     'Linode sends emails to this address for account '
+                     'management communications.',
+                     'May be used for other communications as configured.']
+    ),
+    'grants': SpecField(
+        type=FieldType.dict,
+        description=['Update the grants a user has.'],
+        suboptions=SPEC_GRANTS,
+        editable=True,
+    )
 }
 
-specdoc_meta = {
-    'description': [
+SPECDOC_META = SpecDocMeta(
+    description=[
         'Manage a Linode User.'
     ],
-    'requirements': global_requirements,
-    'author': global_authors,
-    'spec': SPEC,
-    'examples': docs.specdoc_examples,
-    'return_values': {
-        'user': {
-            'description': 'The user in JSON serialized form.',
-            'docs_url': 'https://www.linode.com/docs/api/account/'
-                        '#user-view__response-samples',
-            'type': 'dict',
-            'sample': docs.result_user_samples
-        },
-        'grants': {
-            'description': 'The grants info in JSON serialized form.',
-            'docs_url': 'https://www.linode.com/docs/api/account/'
-                        '#users-grants-view__response-samples',
-            'type': 'dict',
-            'sample': docs.result_grants_samples
-        }
-    }
-}
+    requirements=global_requirements,
+    author=global_authors,
+    options=SPEC,
+    examples=docs.specdoc_examples,
+    return_values=dict(
+        user=SpecReturnValue(
+            description='The user in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/account/#user-view__response-samples',
+            type=FieldType.dict,
+            sample=docs.result_user_samples
+        ),
+        grants=SpecReturnValue(
+            description='The grants info in JSON serialized form.',
+            docs_url='https://www.linode.com/docs/api/account/'
+                     '#users-grants-view__response-samples',
+            type=FieldType.dict,
+            sample=docs.result_grants_samples
+        )
+    )
+)
 
 MUTABLE_FIELDS = {
     'restricted'
@@ -219,7 +214,7 @@ class Module(LinodeModuleBase):
     """Module for creating and destroying Linode Users"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = SPEC
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ['state', 'username']
         self.results = dict(
             changed=False,

@@ -9,191 +9,189 @@ import copy
 from typing import Optional, cast, Any, List, Set, Tuple
 
 import linode_api4
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
+# pylint: disable=unused-import
+from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     paginated_list_to_json, dict_select_matching, filter_null_values
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
-
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer as docs
-
-# pylint: disable=unused-import
-from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList
-
 linode_nodes_spec = dict(
-    label=dict(
-        type='str', required=True,
-        description='The label for this node.'),
+    label=SpecField(
+        type=FieldType.string, required=True,
+        description=['The label for this node.']),
 
-    address=dict(
-        type='str', required=True, editable=True,
+    address=SpecField(
+        type=FieldType.string, required=True, editable=True,
         description=[
             'The private IP Address where this backend can be reached.',
             'This must be a private IP address.'
         ]),
 
-    weight=dict(
-        type='int', required=False, editable=True,
-        description='Nodes with a higher weight will receive more traffic.',
+    weight=SpecField(
+        type=FieldType.integer, required=False, editable=True,
+        description=['Nodes with a higher weight will receive more traffic.'],
     ),
 
-    mode=dict(
-        type='str', required=False, editable=True,
-        description='The mode this NodeBalancer should use when sending traffic to this backend.',
+    mode=SpecField(
+        type=FieldType.string, required=False, editable=True,
+        description=['The mode this NodeBalancer should use when sending traffic to this backend.'],
         choices=['accept', 'reject', 'drain', 'backup']),
 
 )
 
 linode_configs_spec = dict(
-    algorithm=dict(
-        type='str', required=False, editable=True,
-        description='What algorithm this NodeBalancer should use for routing traffic to backends.',
+    algorithm=SpecField(
+        type=FieldType.string, required=False, editable=True,
+        description=['What algorithm this NodeBalancer should use '
+                     'for routing traffic to backends.'],
         choices=['roundrobin', 'leastconn', 'source']),
 
-    check=dict(
-        type='str', required=False, editable=True,
-        description='The type of check to perform against backends to ensure they are '
-                    'serving requests.',
+    check=SpecField(
+        type=FieldType.string, required=False, editable=True,
+        description=['The type of check to perform against backends to ensure they are '
+                     'serving requests.'],
         choices=['none', 'connection', 'http', 'http_body']),
 
-    check_attempts=dict(
-        type='int', required=False, editable=True,
-        description='How many times to attempt a check before considering a backend to be down.'),
+    check_attempts=SpecField(
+        type=FieldType.integer, required=False, editable=True,
+        description=['How many times to attempt a check before considering a backend to be down.']),
 
-    check_body=dict(
-        type='str', required=False, default='', editable=True,
+    check_body=SpecField(
+        type=FieldType.string, required=False, default='', editable=True,
         description=[
             'This value must be present in the response body of the check in order for it to pass.',
             'If this value is not present in the response body of a check request, the backend is '
             'considered to be down.'
         ]),
 
-    check_interval=dict(
-        type='int', required=False, editable=True,
-        description='How often, in seconds, to check that backends are up and serving requests.'),
+    check_interval=SpecField(
+        type=FieldType.integer, required=False, editable=True,
+        description=['How often, in seconds, to check that backends are up and serving requests.']),
 
-    check_passive=dict(
-        type='bool', required=False, editable=True,
-        description='If true, any response from this backend with a 5xx status code will be enough '
-                    'for it to be considered unhealthy and taken out of rotation.'),
+    check_passive=SpecField(
+        type=FieldType.bool, required=False, editable=True,
+        description=['If true, any response from this backend with a 5xx '
+                     'status code will be enough for it to be considered unhealthy '
+                     'and taken out of rotation.']),
 
-    check_path=dict(
-        type='str', required=False, editable=True,
-        description='The URL path to check on each backend. If the backend does '
-                    'not respond to this request it is considered to be down.'),
+    check_path=SpecField(
+        type=FieldType.string, required=False, editable=True,
+        description=['The URL path to check on each backend. If the backend does '
+                     'not respond to this request it is considered to be down.']),
 
-    check_timeout=dict(
-        type='int', required=False, editable=True,
-        description='How long, in seconds, to wait for a check attempt before considering it '
-                    'failed.'),
+    check_timeout=SpecField(
+        type=FieldType.integer, required=False, editable=True,
+        description=['How long, in seconds, to wait for a check attempt before considering it '
+                     'failed.']),
 
-    cipher_suite=dict(
-        type='str', required=False, default='recommended', editable=True,
-        description='What ciphers to use for SSL connections served by this NodeBalancer.',
+    cipher_suite=SpecField(
+        type=FieldType.string, required=False, default='recommended', editable=True,
+        description=['What ciphers to use for SSL connections served by this NodeBalancer.'],
         choices=['recommended', 'legacy']),
 
-    port=dict(
-        type='int', required=False, editable=True,
-        description='The port this Config is for.'),
+    port=SpecField(
+        type=FieldType.integer, required=False, editable=True,
+        description=['The port this Config is for.']),
 
-    protocol=dict(
-        type='str', required=False, editable=True,
-        description='The protocol this port is configured to serve.',
+    protocol=SpecField(
+        type=FieldType.string, required=False, editable=True,
+        description=['The protocol this port is configured to serve.'],
         choices=['http', 'https', 'tcp']),
 
-    proxy_protocol=dict(
-        type='str', required=False, editable=True,
-        description='ProxyProtocol is a TCP extension that sends initial TCP connection '
-                    'information such as source/destination IPs and ports to backend devices.',
+    proxy_protocol=SpecField(
+        type=FieldType.string, required=False, editable=True,
+        description=['ProxyProtocol is a TCP extension that sends initial TCP connection '
+                     'information such as source/destination IPs and ports to backend devices.'],
         choices=['none', 'v1', 'v2']),
 
-    recreate=dict(
-        type='bool', required=False, default=False,
-        description='If true, the config will be forcibly recreated on every run. '
-                    'This is useful for updates to redacted fields (`ssl_cert`, `ssl_key`)'
+    recreate=SpecField(
+        type=FieldType.bool, required=False, default=False,
+        description=['If true, the config will be forcibly recreated on every run. '
+                     'This is useful for updates to redacted fields (`ssl_cert`, `ssl_key`)']
     ),
 
-    ssl_cert=dict(
-        type='str', required=False, editable=True,
-        description='The PEM-formatted public SSL certificate (or the combined '
-                    'PEM-formatted SSL certificate and Certificate Authority chain) '
-                    'that should be served on this NodeBalancerConfig’s port.'),
+    ssl_cert=SpecField(
+        type=FieldType.string, required=False, editable=True,
+        description=['The PEM-formatted public SSL certificate (or the combined '
+                     'PEM-formatted SSL certificate and Certificate Authority chain) '
+                     'that should be served on this NodeBalancerConfig’s port.']),
 
-    ssl_key=dict(
-        type='str', required=False, editable=True,
-        description='The PEM-formatted private key for the SSL certificate '
-                    'set in the ssl_cert field.'),
+    ssl_key=SpecField(
+        type=FieldType.string, required=False, editable=True,
+        description=['The PEM-formatted private key for the SSL certificate '
+                     'set in the ssl_cert field.']),
 
-    stickiness=dict(
-        type='str', required=False, editable=True,
-        description='Controls how session stickiness is handled on this port.',
+    stickiness=SpecField(
+        type=FieldType.string, required=False, editable=True,
+        description=['Controls how session stickiness is handled on this port.'],
         choices=['none', 'table', 'http_cookie']),
 
-    nodes=dict(
-        type='list', required=False, elements='dict', options=linode_nodes_spec, editable=True,
-        description='A list of nodes to apply to this config. '
-                    'These can alternatively be configured through the nodebalancer_node module.')
+    nodes=SpecField(
+        type=FieldType.list, required=False, element_type=FieldType.dict,
+        suboptions=linode_nodes_spec, editable=True,
+        description=['A list of nodes to apply to this config. '
+                     'These can alternatively be configured through the nodebalancer_node module.'])
 )
 
 linode_nodebalancer_spec = dict(
-    label=dict(
-        type='str',
-        description='The unique label to give this NodeBalancer.',
+    label=SpecField(
+        type=FieldType.string,
+        description=['The unique label to give this NodeBalancer.'],
         required=True,
     ),
 
-    client_conn_throttle=dict(
-        type='int', editable=True,
+    client_conn_throttle=SpecField(
+        type=FieldType.integer, editable=True,
         description=[
             'Throttle connections per second.',
             'Set to 0 (zero) to disable throttling.'
         ]),
 
-    region=dict(
-        type='str',
-        description='The ID of the Region to create this NodeBalancer in.',
+    region=SpecField(
+        type=FieldType.string,
+        description=['The ID of the Region to create this NodeBalancer in.'],
     ),
 
-    state=dict(type='str',
-               description='The desired state of the target.',
-               choices=['present', 'absent'], required=True),
+    state=SpecField(type=FieldType.string,
+                    description=['The desired state of the target.'],
+                    choices=['present', 'absent'], required=True),
 
-    configs=dict(
-        type='list', elements='dict', options=linode_configs_spec, editable=True,
-        description='A list of configs to apply to the NodeBalancer.')
+    configs=SpecField(
+        type=FieldType.list, element_type=FieldType.dict,
+        suboptions=linode_configs_spec, editable=True,
+        description=['A list of configs to apply to the NodeBalancer.'])
 )
 
-
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage a Linode NodeBalancer.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_nodebalancer_spec,
+    options=linode_nodebalancer_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        node_balancer=dict(
+        node_balancer=SpecReturnValue(
             description='The NodeBalancer in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_node_balancer_samples
         ),
-        configs=dict(
+        configs=SpecReturnValue(
             description='A list of configs applied to the NodeBalancer.',
             docs_url='https://www.linode.com/docs/api/nodebalancers/#config-view__responses',
-            type='list',
+            type=FieldType.list,
             sample=docs.result_configs_samples
         ),
-        nodes=dict(
+        nodes=SpecReturnValue(
             description='A list of configs applied to the NodeBalancer.',
             docs_url='https://www.linode.com/docs/api/nodebalancers/#node-view',
-            type='list',
+            type=FieldType.list,
             sample=docs.result_nodes_samples
         )
     )
@@ -209,7 +207,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
     """Configuration class for Linode NodeBalancer resource"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = linode_nodebalancer_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ['state', 'label']
         self.results = dict(
             changed=False,
@@ -425,7 +423,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
                 self.fail(
                     'failed to update nodebalancer {0}: {1} is a non-updatable field'
-                        .format(self._node_balancer.label, key))
+                    .format(self._node_balancer.label, key))
 
         if should_update:
             self._node_balancer.save()

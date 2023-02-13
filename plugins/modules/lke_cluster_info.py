@@ -8,74 +8,73 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 from typing import List, Any, Optional, Dict
 
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import LKECluster, ApiError
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and,\
-    jsonify_node_pool, filter_null_values
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster \
     as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    jsonify_node_pool, filter_null_values
 
 linode_lke_cluster_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
-    state=dict(type='str', required=False, doc_hide=True),
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=dict(
-        type='int', required=False,
+    id=SpecField(
+        type=FieldType.integer, required=False,
         description=[
             'The ID of the LKE cluster.',
             'Optional if `label` is defined.'
         ]),
 
-    label=dict(
-        type='str', required=False,
+    label=SpecField(
+        type=FieldType.string, required=False,
         description=[
             'The label of the LKE cluster.',
             'Optional if `id` is defined.'
         ])
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Get info about a Linode LKE cluster.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_lke_cluster_info_spec,
+    options=linode_lke_cluster_info_spec,
     examples=docs.examples,
     return_values=dict(
-        cluster=dict(
+        cluster=SpecReturnValue(
             description='The LKE cluster in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/'
                      '#kubernetes-cluster-view__response-samples',
-            type='dict',
+            type=FieldType.dict,
             sample=docs_parent.result_cluster
         ),
-        node_pools=dict(
+        node_pools=SpecReturnValue(
             description='A list of node pools in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/'
                      '#node-pools-list__response-samples',
-            type='list',
+            type=FieldType.list,
             sample=docs_parent.result_node_pools
         ),
-        kubeconfig=dict(
-            description=[
-                'The Base64-encoded kubeconfig used to access this cluster.',
-                'NOTE: This value may be unavailable if the cluster is not fully provisioned.'
-            ],
+        kubeconfig=SpecReturnValue(
+            description='The Base64-encoded kubeconfig used to access this cluster. \n'
+                        'NOTE: This value may be unavailable if the cluster is not '
+                        'fully provisioned.',
             docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/'
                      '#kubeconfig-view__responses',
-            type='str'
+            type=FieldType.string
         ),
-        dashboard_url=dict(
+        dashboard_url=SpecReturnValue(
             description='The Cluster Dashboard access URL.',
             docs_url='https://www.linode.com/docs/api/linode-kubernetes-engine-lke/'
                      '#kubernetes-cluster-dashboard-url-view__responses',
-            type='str'
+            type=FieldType.string
         )
     )
 )
@@ -89,7 +88,7 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
     """Module for getting info about a Linode Volume"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = linode_lke_cluster_info_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
         self.results: Dict[str, Any] = dict(
             cluster=None,

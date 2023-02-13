@@ -48,7 +48,7 @@ Manage Linode Domains.
 | `soa_email` | <center>`str`</center> | <center>Optional</center> | The Start of Authority email address.  **(Updatable)** |
 | `status` | <center>`str`</center> | <center>Optional</center> | Used to control whether this Domain is currently being rendered.  **(Updatable)** |
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object.  **(Updatable)** |
-| `ttl_sec` | <center>`int`</center> | <center>Optional</center> | the amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.  **(Updatable)** |
+| `ttl_sec` | <center>`int`</center> | <center>Optional</center> | The amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.  **(Updatable)** |
 | `type` | <center>`str`</center> | <center>Optional</center> | Whether this Domain represents the authoritative source of information for the domain it describes (master), or whether it is a read-only copy of a master (slave).  **(Updatable)** |
 
 

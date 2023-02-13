@@ -8,48 +8,48 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 from typing import List, Any, Optional
 
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Volume
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and
 
 linode_volume_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
-    state=dict(type='str', required=False, doc_hide=True),
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=dict(
-        type='int', required=False,
+    id=SpecField(
+        type=FieldType.integer, required=False,
         description=[
             'The ID of the Volume.',
             'Optional if `label` is defined.'
         ]),
 
-    label=dict(
-        type='str', required=False,
+    label=SpecField(
+        type=FieldType.string, required=False,
         description=[
             'The label of the Volume.',
             'Optional if `id` is defined.'
         ])
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Get info about a Linode Volume.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_volume_info_spec,
+    options=linode_volume_info_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        volume=dict(
+        volume=SpecReturnValue(
             description='The volume in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/volumes/#volume-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs_parent.result_volume_samples
         )
     )
@@ -64,7 +64,7 @@ class LinodeVolumeInfo(LinodeModuleBase):
     """Module for getting info about a Linode Volume"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = linode_volume_info_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
         self.results = dict(
             volume=None,

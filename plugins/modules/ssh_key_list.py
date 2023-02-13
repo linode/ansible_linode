@@ -7,6 +7,8 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Any, Dict, Optional
 
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
+
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ssh_key_list as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
@@ -21,8 +23,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 )
 
 spec_filter = dict(
-    name=dict(
-        type="str",
+    name=SpecField(
+        type=FieldType.string,
         required=True,
         description=[
             "The name of the field to filter on.",
@@ -33,9 +35,9 @@ spec_filter = dict(
             ),
         ],
     ),
-    values=dict(
-        type="list",
-        elements="str",
+    values=SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
         required=True,
         description=[
             "A list of values to allow for this field.",
@@ -46,23 +48,23 @@ spec_filter = dict(
 
 spec = dict(
     # Disable the default values
-    state=dict(type="str", required=False, doc_hide=True),
-    label=dict(type="str", required=False, doc_hide=True),
-    order=dict(
-        type="str",
-        description="The order to list ssh keys in.",
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
+    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
+    order=SpecField(
+        type=FieldType.string,
+        description=["The order to list ssh keys in."],
         default="asc",
         choices=["desc", "asc"],
     ),
-    order_by=dict(type="str", description="The attribute to order ssh keys by."),
-    filters=dict(
-        type="list",
-        elements="dict",
-        options=spec_filter,
-        description="A list of filters to apply to the resulting ssh keys.",
+    order_by=SpecField(type=FieldType.string, description=["The attribute to order ssh keys by."]),
+    filters=SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=spec_filter,
+        description=["A list of filters to apply to the resulting ssh keys."],
     ),
-    count=dict(
-        type="int",
+    count=SpecField(
+        type=FieldType.integer,
         description=[
             "The number of results to return.",
             "If undefined, all results will be returned.",
@@ -70,18 +72,18 @@ spec = dict(
     ),
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=["List and filter on SSH keys in the Linode profile."],
     requirements=global_requirements,
     author=global_authors,
-    spec=spec,
+    options=spec,
     examples=docs.ssh_key_list_specdoc_examples,
     return_values=dict(
-        ssh_keys=dict(
+        ssh_keys=SpecReturnValue(
             description="The returned SSH keys.",
             docs_url=("https://www.linode.com/docs/api/profile/" "#ssh-keys-list"),
-            type="list",
-            elements="dict",
+            type=FieldType.list,
+            elements=FieldType.dict,
             sample=docs.result_ssh_key_list_samples,
         )
     ),
@@ -92,7 +94,7 @@ class SSHKeyListModule(LinodeModuleBase):
     """Module for getting a list of SSH keys in the Linode profile"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results: Dict[str, Any] = {"ssh_keys": []}
 
         super().__init__(module_arg_spec=self.module_arg_spec)

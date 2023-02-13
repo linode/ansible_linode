@@ -7,73 +7,72 @@ from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
 import copy
-from typing import Optional, cast, Any, Set, List
+from typing import Optional, Any, Set, List
 
 import linode_api4
-from linode_api4 import Domain
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json, handle_updates
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_node as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    handle_updates
 
 MODULE_SPEC = dict(
-    nodebalancer_id=dict(
-        type='int', required=True,
-        description='The ID of the NodeBalancer that contains this node.',
-        ),
-
-    config_id=dict(
-        type='int', required=True,
-        description='The ID of the NodeBalancer Config that contains this node.',
-        ),
-
-    label=dict(
-        type='str', required=True,
-        description='The label for this node. This is used to identify nodes within a config.',
+    nodebalancer_id=SpecField(
+        type=FieldType.integer, required=True,
+        description=['The ID of the NodeBalancer that contains this node.'],
     ),
 
-    address=dict(
-        type='str', editable=True,
-        description='The private IP Address where this backend can be reached. '
-                    'This must be a private IP address.',
+    config_id=SpecField(
+        type=FieldType.integer, required=True,
+        description=['The ID of the NodeBalancer Config that contains this node.'],
     ),
 
-    state=dict(
-        type='str',
-        description='Whether the NodeBalancer node should be present or absent.',
+    label=SpecField(
+        type=FieldType.string, required=True,
+        description=['The label for this node. This is used to identify nodes within a config.'],
+    ),
+
+    address=SpecField(
+        type=FieldType.string, editable=True,
+        description=['The private IP Address where this backend can be reached. '
+                     'This must be a private IP address.'],
+    ),
+
+    state=SpecField(
+        type=FieldType.string,
+        description=['Whether the NodeBalancer node should be present or absent.'],
         choices=['present', 'absent'],
         required=True
     ),
 
-    mode=dict(
-        type='str', editable=True,
-        description='The mode this NodeBalancer should use when sending traffic to this backend.',
+    mode=SpecField(
+        type=FieldType.string, editable=True,
+        description=['The mode this NodeBalancer should use when sending traffic to this backend.'],
         choices=['accept', 'reject', 'drain', 'backup'],
     ),
 
-    weight=dict(
-        type='int', editable=True,
-        description='Nodes with a higher weight will receive more traffic.',
+    weight=SpecField(
+        type=FieldType.integer, editable=True,
+        description=['Nodes with a higher weight will receive more traffic.'],
     ),
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage Linode NodeBalancer Nodes.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=MODULE_SPEC,
+    options=MODULE_SPEC,
     examples=docs.specdoc_examples,
     return_values=dict(
-        node=dict(
+        node=SpecReturnValue(
             description='The NodeBalancer Node in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/nodebalancers/#node-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_node_samples
         )
     )
@@ -90,7 +89,7 @@ class LinodeNodeBalancerNode(LinodeModuleBase):
     """Module for managing Linode NodeBalancer nodes"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = MODULE_SPEC
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
         self.results = dict(
             changed=False,
@@ -186,7 +185,7 @@ def main() -> None:
 if __name__ == '__main__':
     main()
 
-DOCUMENTATION='''
+DOCUMENTATION = '''
 author:
 - Luke Murphy (@decentral1se)
 - Charles Kenney (@charliekenney23)

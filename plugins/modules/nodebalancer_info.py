@@ -7,64 +7,64 @@ from __future__ import absolute_import, division, print_function
 
 from typing import List, Optional, Any
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    create_filter_and
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
+# pylint: disable=unused-import
+from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode
+
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer \
+    as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_info \
+    as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer\
-    as docs_parent
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_info\
-    as docs
-
-# pylint: disable=unused-import
-from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, PaginatedList, and_
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    create_filter_and
 
 linode_nodebalancer_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
-    state=dict(type='str', required=False, doc_hide=True),
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=dict(
-        type='int', required=False,
+    id=SpecField(
+        type=FieldType.integer, required=False,
         description=[
             'The ID of this NodeBalancer.',
             'Optional if `label` is defined.'
         ]),
 
-    label=dict(
-        type='str', required=False,
+    label=SpecField(
+        type=FieldType.string, required=False,
         description=[
             'The label of this NodeBalancer.',
             'Optional if `id` is defined.'
         ])
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Get info about a Linode NodeBalancer.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_nodebalancer_info_spec,
+    options=linode_nodebalancer_info_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        node_balancer=dict(
+        node_balancer=SpecReturnValue(
             description='The NodeBalancer in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses',
             type='dict',
             sample=docs_parent.result_node_balancer_samples
         ),
-        configs=dict(
+        configs=SpecReturnValue(
             description='A list of configs applied to the NodeBalancer.',
             docs_url='https://www.linode.com/docs/api/nodebalancers/#config-view__responses',
-            type='list',
+            type=FieldType.list,
             sample=docs_parent.result_configs_samples
         ),
-        nodes=dict(
+        nodes=SpecReturnValue(
             description='A list of configs applied to the NodeBalancer.',
             docs_url='https://www.linode.com/docs/api/nodebalancers/#node-view',
-            type='list',
+            type=FieldType.list,
             sample=docs_parent.result_nodes_samples
         )
     )
@@ -79,7 +79,7 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
     """Module for getting info about a Linode NodeBalancer"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = linode_nodebalancer_info_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
         self.results: dict = dict(
             node_balancer=None,

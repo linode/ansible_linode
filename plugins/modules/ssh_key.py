@@ -7,50 +7,48 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Optional, Any
 
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import SSHKey
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ssh_key as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     handle_updates
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ssh_key as docs
-
 ssh_key_spec = dict(
-    label=dict(
-        type='str',
+    label=SpecField(
+        type=FieldType.string,
         required=True,
-        description='This SSH key\'s unique label.'),
-    state=dict(
-        type='str',
+        description=['This SSH key\'s unique label.']),
+    state=SpecField(
+        type=FieldType.string,
         choices=['present', 'absent'],
         required=True,
-        description='The state of this SSH key.',
+        description=['The state of this SSH key.'],
     ),
-    ssh_key=dict(
-        type='str',
+    ssh_key=SpecField(
+        type=FieldType.string,
         editable=True,
-        description='The SSH public key value.'
+        description=['The SSH public key value.']
     )
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Manage a Linode SSH key.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=ssh_key_spec,
+    options=ssh_key_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        ssh_key=dict(
+        ssh_key=SpecReturnValue(
             description='The created SSH key in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/profile/'
                      '#ssh-key-add__response-samples',
-            type='dict',
+            type=FieldType.dict,
             sample=docs.result_ssh_key_samples
         )
     )
@@ -58,11 +56,12 @@ specdoc_meta = dict(
 
 MUTABLE_FIELDS = {'label'}
 
+
 class SSHKeyModule(LinodeModuleBase):
     """Module for creating and destroying Linode SSH keys"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = ssh_key_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results = dict(
             changed=False,
             actions=[],

@@ -6,40 +6,39 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import List, Any, Optional
+from typing import Any, Optional
 
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Image
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    filter_null_values
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import filter_null_values
 
 spec = dict(
     # Disable the default values
-    state=dict(type='str', required=False, doc_hide=True),
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=dict(type='str', description='The ID of the image.'),
-    label=dict(type='str', description='The label of the image.'),
+    id=SpecField(type=FieldType.string, description=['The ID of the image.']),
+    label=SpecField(type=FieldType.string, description=['The label of the image.']),
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Get info about a Linode Image.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=spec,
+    options=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        image=dict(
+        image=SpecReturnValue(
             description='The image in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/images/#image-view__responses',
-            type='dict',
+            type=FieldType.dict,
             sample=docs_parent.result_image_samples
         )
     )
@@ -50,7 +49,7 @@ class Module(LinodeModuleBase):
     """Module for getting info about a Linode user"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results = {
             'image': None
         }

@@ -8,53 +8,53 @@ from __future__ import absolute_import, division, print_function
 # pylint: disable=unused-import
 from typing import List, Any, Optional
 
+from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 from linode_api4 import Domain
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
-    paginated_list_to_json
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
+    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import create_filter_and, \
+    paginated_list_to_json
 
 linode_domain_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
-    state=dict(type='str', required=False, doc_hide=True),
-    label=dict(type='str', required=False, doc_hide=True),
+    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
+    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=dict(type='int', required=False,
-            description=[
-                'The unique domain name of the Domain.',
-                'Optional if `domain` is defined.'
-            ]),
-    domain=dict(type='str', required=False,
-                description=[
-                    'The unique id of the Domain.',
-                    'Optional if `id` is defined.'
-                ])
+    id=SpecField(type=FieldType.integer, required=False,
+                 description=[
+                     'The unique domain name of the Domain.',
+                     'Optional if `domain` is defined.'
+                 ]),
+    domain=SpecField(type=FieldType.string, required=False,
+                     description=[
+                         'The unique id of the Domain.',
+                         'Optional if `id` is defined.'
+                     ])
 )
 
-specdoc_meta = dict(
+SPECDOC_META = SpecDocMeta(
     description=[
         'Get info about a Linode Domain.'
     ],
     requirements=global_requirements,
     author=global_authors,
-    spec=linode_domain_info_spec,
+    options=linode_domain_info_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        domain=dict(
+        domain=SpecReturnValue(
             description='The domain in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/domains/#domain-view',
-            type='dict',
+            type=FieldType.dict,
             sample=docs_parent.result_domain_samples
         ),
-        records=dict(
+        records=SpecReturnValue(
             description='The domain record in JSON serialized form.',
             docs_url='https://www.linode.com/docs/api/domains/#domain-record-view',
-            type='list',
+            type=FieldType.list,
             sample=docs_parent.result_records_samples
         )
     )
@@ -69,7 +69,7 @@ class LinodeDomainInfo(LinodeModuleBase):
     """Module for getting info about a Linode Domain"""
 
     def __init__(self) -> None:
-        self.module_arg_spec = linode_domain_info_spec
+        self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
         self.results = dict(
             domain=None,
