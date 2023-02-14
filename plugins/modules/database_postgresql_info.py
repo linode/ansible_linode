@@ -27,8 +27,16 @@ spec = dict(
     # Disable the default values
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=SpecField(type=FieldType.string, description=['The ID of the PostgreSQL Database.']),
-    label=SpecField(type=FieldType.string, description=['The label of the PostgreSQL Database.']),
+    id=SpecField(
+        type=FieldType.string,
+        conflicts_with=['label'],
+        description=['The ID of the PostgreSQL Database.']
+    ),
+    label=SpecField(
+        type=FieldType.string,
+        conflicts_with=['id'],
+        description=['The label of the PostgreSQL Database.']
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(

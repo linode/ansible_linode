@@ -200,6 +200,7 @@ linode_instance_spec = dict(
 
     image=SpecField(
         type=FieldType.string,
+        conflicts_with=['disks', 'configs'],
         description=['The image ID to deploy the instance disk from.']),
 
     authorized_keys=SpecField(
@@ -252,6 +253,7 @@ linode_instance_spec = dict(
     configs=SpecField(
         type=FieldType.list, element_type=FieldType.dict, suboptions=linode_instance_config_spec,
         editable=True,
+        conflicts_with=['image', 'interfaces'],
         description=[
             'A list of Instance configs to apply to the Linode.',
             'See the [Linode API documentation](https://www.linode.com/docs'
@@ -261,6 +263,7 @@ linode_instance_spec = dict(
     disks=SpecField(
         type=FieldType.list, element_type=FieldType.dict, suboptions=linode_instance_disk_spec,
         editable=True,
+        conflicts_with=['image', 'interfaces'],
         description=[
             'A list of Disks to create on the Linode.',
             'See the [Linode API documentation](https://www.linode.com/'
@@ -269,6 +272,7 @@ linode_instance_spec = dict(
 
     interfaces=SpecField(
         type=FieldType.list, element_type=FieldType.dict, suboptions=linode_instance_interface_spec,
+        conflicts_with=['disks', 'configs'],
         description=[
             'A list of network interfaces to apply to the Linode.',
             'See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/'

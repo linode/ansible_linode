@@ -27,15 +27,20 @@ linode_domain_record_spec = dict(
     domain=SpecField(type=FieldType.string,
                      description=['The name of the parent Domain.']),
 
-    record_id=SpecField(type=FieldType.integer,
-                        description=['The id of the record to modify.']),
+    record_id=SpecField(
+        type=FieldType.integer,
+        conflicts_with=['name'],
+        description=['The id of the record to modify.']
+    ),
 
-    name=SpecField(type=FieldType.string,
-                   description=[
-                       'The name of this Record.',
-                       'NOTE: If the name of the record ends with the domain, '
-                       'it will be dropped from the resulting record\'s name.'
-                   ]),
+    name=SpecField(
+        type=FieldType.string,
+        conflicts_with=['record_id'],
+        description=[
+            'The name of this Record.',
+            'NOTE: If the name of the record ends with the domain, '
+            'it will be dropped from the resulting record\'s name.'
+        ]),
     port=SpecField(type=FieldType.integer, editable=True,
                    description=[
                        'The port this Record points to.',
@@ -241,7 +246,7 @@ class LinodeDomainRecord(LinodeModuleBase):
 
                 self.fail(
                     'failed to update domain record {0}: {1} is a non-updatable field'
-                    .format(self._record.name, key))
+                        .format(self._record.name, key))
 
         if should_update:
             self._record.save()

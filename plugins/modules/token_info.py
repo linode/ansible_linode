@@ -22,8 +22,16 @@ spec = dict(
     # Disable the default values
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=SpecField(type=FieldType.integer, description=['The ID of the token.']),
-    label=SpecField(type=FieldType.string, description=['The label of the token.']),
+    id=SpecField(
+        type=FieldType.integer,
+        description=['The ID of the token.'],
+        conflicts_with=['label'],
+    ),
+    label=SpecField(
+        type=FieldType.string,
+        description=['The label of the token.'],
+        conflicts_with=['id']
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(

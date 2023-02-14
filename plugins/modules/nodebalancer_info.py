@@ -27,6 +27,7 @@ linode_nodebalancer_info_spec = dict(
 
     id=SpecField(
         type=FieldType.integer, required=False,
+        conflicts_with=['label'],
         description=[
             'The ID of this NodeBalancer.',
             'Optional if `label` is defined.'
@@ -34,6 +35,7 @@ linode_nodebalancer_info_spec = dict(
 
     label=SpecField(
         type=FieldType.string, required=False,
+        conflicts_with=['id'],
         description=[
             'The label of this NodeBalancer.',
             'Optional if `id` is defined.'

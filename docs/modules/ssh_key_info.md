@@ -34,8 +34,8 @@ Get info about the Linode SSH public key.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the SSH key.   |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the SSH key.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the SSH key.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the SSH key.  **(Conflicts With: `id`)** |
 
 
 
