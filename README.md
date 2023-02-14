@@ -104,11 +104,11 @@ You can install the Linode collection with the Ansible Galaxy CLI:
 ansible-galaxy collection install linode.cloud
 ```
 
-The python module dependencies are not installed by `ansible-galaxy`.  They can
+The Python module dependencies are not installed by `ansible-galaxy`.  They can
 be manually installed using pip:
 
 ```shell
-pip install -r requirements.txt
+pip install -r https://raw.githubusercontent.com/linode/ansible_linode/main/requirements.txt
 ```
 
 ## Usage
