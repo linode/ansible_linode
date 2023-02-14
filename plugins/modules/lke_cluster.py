@@ -18,7 +18,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, jsonify_node_pool, validate_required, poll_condition, filter_null_values_recursive
+    jsonify_node_pool, validate_required, poll_condition, filter_null_values_recursive
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import handle_updates
 
 linode_lke_cluster_autoscaler = dict(
