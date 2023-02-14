@@ -18,7 +18,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, jsonify_node_pool, validate_required, poll_condition
+    jsonify_node_pool, validate_required, poll_condition, filter_null_values_recursive
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import handle_updates
 
 linode_lke_cluster_autoscaler = dict(
@@ -177,6 +177,15 @@ REQUIRED_PRESENT: Set[str] = {
     'node_pools'
 }
 
+CREATE_FIELDS: Set[str] = {
+    'label',
+    'region',
+    'tags',
+    'k8s_version',
+    'node_pools',
+    'control_plane',
+    'high_availability'
+}
 
 class LinodeLKECluster(LinodeModuleBase):
     """Module for creating and destroying Linode LKE clusters"""
@@ -228,7 +237,7 @@ class LinodeLKECluster(LinodeModuleBase):
             self.fail('failed to wait for lke cluster: timeout period expired')
 
     def _create_cluster(self) -> Optional[LKECluster]:
-        params = filter_null_values(self.module.params)
+        params = filter_null_values_recursive(self.module.params)
 
         label = params.get('label')
 
@@ -238,6 +247,9 @@ class LinodeLKECluster(LinodeModuleBase):
         params['control_plane'] = {
             'high_availability': high_avail
         }
+
+        # Let's filter down to valid keys
+        params = {k: v for k, v in params.items() if k in CREATE_FIELDS}
 
         try:
             self.register_action('Created LKE cluster {0}'.format(label))
@@ -283,7 +295,9 @@ class LinodeLKECluster(LinodeModuleBase):
     def _update_cluster(self, cluster: LKECluster) -> None:
         """Handles all update functionality for the current LKE cluster"""
 
-        new_params = copy.deepcopy(self.module.params)
+        new_params = filter_null_values_recursive(copy.deepcopy(self.module.params))
+        new_params = {k: v for k, v in new_params.items() if k in CREATE_FIELDS}
+
         pools = new_params.pop('node_pools')
 
         # These are handled separately
