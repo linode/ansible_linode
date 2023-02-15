@@ -2,7 +2,6 @@
 
 Get info about a Linode NodeBalancer.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -22,25 +21,12 @@ Get info about a Linode NodeBalancer.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of this NodeBalancer. Optional if `label` is defined.  **(Conflicts With: `label`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of this NodeBalancer. Optional if `id` is defined.  **(Conflicts With: `id`)** |
-
-
-
-
-
 
 ## Return Values
 

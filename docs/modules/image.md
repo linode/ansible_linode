@@ -2,7 +2,6 @@
 
 Manage a Linode Image.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -35,14 +34,6 @@ Manage a Linode Image.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -56,11 +47,6 @@ Manage a Linode Image.
 | `source_file` | <center>`str`</center> | <center>Optional</center> | An image file to create this image with.  **(Conflicts With: `disk_id`)** |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the image to have status `available` before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an image to have status `available`.  **(Default: `600`)** |
-
-
-
-
-
 
 ## Return Values
 

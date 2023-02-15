@@ -2,7 +2,6 @@
 
 Get info about a Linode IP.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -16,24 +15,11 @@ Get info about a Linode IP.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `address` | <center>`str`</center> | <center>**Required**</center> | The IP address to operate on.   |
-
-
-
-
-
 
 ## Return Values
 

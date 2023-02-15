@@ -2,7 +2,6 @@
 
 Manage Linode Domains.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -25,14 +24,6 @@ Manage Linode Domains.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -50,11 +41,6 @@ Manage Linode Domains.
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object.  **(Updatable)** |
 | `ttl_sec` | <center>`int`</center> | <center>Optional</center> | The amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.  **(Updatable)** |
 | `type` | <center>`str`</center> | <center>Optional</center> | Whether this Domain represents the authoritative source of information for the domain it describes (master), or whether it is a read-only copy of a master (slave).  **(Updatable)** |
-
-
-
-
-
 
 ## Return Values
 

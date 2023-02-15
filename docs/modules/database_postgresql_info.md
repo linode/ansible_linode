@@ -2,7 +2,6 @@
 
 Get info about a Linode PostgreSQL Managed Database.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -22,25 +21,12 @@ Get info about a Linode PostgreSQL Managed Database.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `id` | <center>`str`</center> | <center>Optional</center> | The ID of the PostgreSQL Database.  **(Conflicts With: `label`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the PostgreSQL Database.  **(Conflicts With: `id`)** |
-
-
-
-
-
 
 ## Return Values
 

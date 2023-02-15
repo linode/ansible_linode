@@ -2,7 +2,6 @@
 
 Manage a Linode StackScript.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -30,14 +29,6 @@ Manage a Linode StackScript.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -49,11 +40,6 @@ Manage a Linode StackScript.
 | `is_public` | <center>`bool`</center> | <center>Optional</center> | This determines whether other users can use your StackScript.  **(Updatable)** |
 | `rev_note` | <center>`str`</center> | <center>Optional</center> | This field allows you to add notes for the set of revisions made to this StackScript.  **(Updatable)** |
 | `script` | <center>`str`</center> | <center>Optional</center> | The script to execute when provisioning a new Linode with this StackScript.  **(Updatable)** |
-
-
-
-
-
 
 ## Return Values
 

@@ -4,7 +4,6 @@ Manage Linode Domain Records.
 
 NOTE: Domain records are identified by their name, target, and type.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -30,14 +29,6 @@ NOTE: Domain records are identified by their name, target, and type.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -56,11 +47,6 @@ NOTE: Domain records are identified by their name, target, and type.
 | `ttl_sec` | <center>`int`</center> | <center>Optional</center> | The amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.  **(Updatable)** |
 | `type` | <center>`str`</center> | <center>Optional</center> | The type of Record this is in the DNS system.   |
 | `weight` | <center>`int`</center> | <center>Optional</center> | The relative weight of this Record used in the case of identical priority.  **(Updatable)** |
-
-
-
-
-
 
 ## Return Values
 

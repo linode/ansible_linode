@@ -2,7 +2,6 @@
 
 Manage a Linode MySQL database.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -45,14 +44,6 @@ Manage a Linode MySQL database.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -71,10 +62,6 @@ Manage a Linode MySQL database.
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the database to have status `available` before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an image to have status `available`.  **(Default: `3600`)** |
 
-
-
-
-
 ### updates
 
 | Field     | Type | Required | Description                                                                  |
@@ -84,11 +71,6 @@ Manage a Linode MySQL database.
 | `hour_of_day` | <center>`int`</center> | <center>**Required**</center> | The hour to begin maintenance based in UTC time.   |
 | `frequency` | <center>`str`</center> | <center>Optional</center> | Whether maintenance occurs on a weekly or monthly basis.  **(Choices: `weekly`, `monthly`; Default: `weekly`)** |
 | `week_of_month` | <center>`int`</center> | <center>Optional</center> | The week of the month to perform monthly frequency updates. Defaults to None. Required for monthly frequency updates. Must be null for weekly frequency updates.   |
-
-
-
-
-
 
 ## Return Values
 

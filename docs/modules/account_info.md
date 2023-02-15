@@ -2,7 +2,6 @@
 
 Get info about a Linode Account.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -13,14 +12,6 @@ Get info about a Linode Account.
 - name: Get info about the current Linode account
   linode.cloud.account_info: {}
 ```
-
-
-
-
-
-
-
-
 
 
 ## Return Values

@@ -2,7 +2,6 @@
 
 Manage Linode LKE cluster node pools.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -43,14 +42,6 @@ Manage Linode LKE cluster node pools.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -65,10 +56,6 @@ Manage Linode LKE cluster node pools.
 | `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the node pool to be ready.  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The period to wait for the node pool to be ready in seconds.  **(Default: `600`)** |
 
-
-
-
-
 ### autoscaler
 
 | Field     | Type | Required | Description                                                                  |
@@ -77,21 +64,12 @@ Manage Linode LKE cluster node pools.
 | `max` | <center>`int`</center> | <center>Optional</center> | The maximum number of nodes to autoscale to. Defaults to the value provided by the count field.  **(Updatable)** |
 | `min` | <center>`int`</center> | <center>Optional</center> | The minimum number of nodes to autoscale to. Defaults to the Node Pool’s count.  **(Updatable)** |
 
-
-
-
-
 ### disks
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `type` | <center>`str`</center> | <center>**Required**</center> | This custom disk partition’s filesystem type.  **(Choices: `raw`, `ext4`)** |
 | `size` | <center>`int`</center> | <center>**Required**</center> | The size of this custom disk partition in MB.   |
-
-
-
-
-
 
 ## Return Values
 

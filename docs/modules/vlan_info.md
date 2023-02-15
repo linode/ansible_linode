@@ -2,7 +2,6 @@
 
 Get info about a Linode VLAN.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -16,24 +15,11 @@ Get info about a Linode VLAN.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | The VLAN’s label.   |
-
-
-
-
-
 
 ## Return Values
 
