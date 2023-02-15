@@ -2,7 +2,6 @@
 
 Manage a Linode NodeBalancer.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -34,14 +33,6 @@ Manage a Linode NodeBalancer.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -51,10 +42,6 @@ Manage a Linode NodeBalancer.
 | `client_conn_throttle` | <center>`int`</center> | <center>Optional</center> | Throttle connections per second. Set to 0 (zero) to disable throttling.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>Optional</center> | The ID of the Region to create this NodeBalancer in.   |
 | [`configs` (sub-options)](#configs) | <center>`list`</center> | <center>Optional</center> | A list of configs to apply to the NodeBalancer.  **(Updatable)** |
-
-
-
-
 
 ### configs
 
@@ -78,10 +65,6 @@ Manage a Linode NodeBalancer.
 | `stickiness` | <center>`str`</center> | <center>Optional</center> | Controls how session stickiness is handled on this port.  **(Choices: `none`, `table`, `http_cookie`; Updatable)** |
 | [`nodes` (sub-options)](#nodes) | <center>`list`</center> | <center>Optional</center> | A list of nodes to apply to this config. These can alternatively be configured through the nodebalancer_node module.  **(Updatable)** |
 
-
-
-
-
 ### nodes
 
 | Field     | Type | Required | Description                                                                  |
@@ -90,11 +73,6 @@ Manage a Linode NodeBalancer.
 | `address` | <center>`str`</center> | <center>**Required**</center> | The private IP Address where this backend can be reached. This must be a private IP address.  **(Updatable)** |
 | `weight` | <center>`int`</center> | <center>Optional</center> | Nodes with a higher weight will receive more traffic.  **(Updatable)** |
 | `mode` | <center>`str`</center> | <center>Optional</center> | The mode this NodeBalancer should use when sending traffic to this backend.  **(Choices: `accept`, `reject`, `drain`, `backup`; Updatable)** |
-
-
-
-
-
 
 ## Return Values
 

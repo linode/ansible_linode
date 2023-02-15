@@ -2,7 +2,6 @@
 
 Get info about a Linode IPv6 range.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -16,24 +15,11 @@ Get info about a Linode IPv6 range.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `range` | <center>`str`</center> | <center>Optional</center> | The IPv6 range to access.   |
-
-
-
-
-
 
 ## Return Values
 

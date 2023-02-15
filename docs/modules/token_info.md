@@ -2,7 +2,6 @@
 
 Get info about a Linode Personal Access Token.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -22,25 +21,12 @@ Get info about a Linode Personal Access Token.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the token.  **(Conflicts With: `label`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the token.  **(Conflicts With: `id`)** |
-
-
-
-
-
 
 ## Return Values
 

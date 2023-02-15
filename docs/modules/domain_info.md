@@ -2,7 +2,6 @@
 
 Get info about a Linode Domain.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -22,25 +21,12 @@ Get info about a Linode Domain.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `id` | <center>`int`</center> | <center>Optional</center> | The unique domain name of the Domain. Optional if `domain` is defined.  **(Conflicts With: `domain`)** |
 | `domain` | <center>`str`</center> | <center>Optional</center> | The unique id of the Domain. Optional if `id` is defined.  **(Conflicts With: `id`)** |
-
-
-
-
-
 
 ## Return Values
 

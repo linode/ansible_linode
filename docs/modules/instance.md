@@ -2,7 +2,6 @@
 
 Manage Linode Instances, Configs, and Disks.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -64,14 +63,6 @@ Manage Linode Instances, Configs, and Disks.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -95,10 +86,6 @@ Manage Linode Instances, Configs, and Disks.
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status "running" before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `240`)** |
 
-
-
-
-
 ### configs
 
 | Field     | Type | Required | Description                                                                  |
@@ -114,10 +101,6 @@ Manage Linode Instances, Configs, and Disks.
 | `virt_mode` | <center>`str`</center> | <center>Optional</center> | Controls the virtualization mode.  **(Choices: `paravirt`, `fullvirt`; Updatable)** |
 | [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create__request-body-schema).  **(Updatable)** |
 
-
-
-
-
 ### devices
 
 | Field     | Type | Required | Description                                                                  |
@@ -131,10 +114,6 @@ Manage Linode Instances, Configs, and Disks.
 | [`sdg` (sub-options)](#sdg) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdg   |
 | [`sdh` (sub-options)](#sdh) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdh   |
 
-
-
-
-
 ### sda
 
 | Field     | Type | Required | Description                                                                  |
@@ -142,10 +121,6 @@ Manage Linode Instances, Configs, and Disks.
 | `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
 | `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
 | `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
-
-
-
-
 
 ### sdb
 
@@ -155,10 +130,6 @@ Manage Linode Instances, Configs, and Disks.
 | `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
 | `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
 
-
-
-
-
 ### sdc
 
 | Field     | Type | Required | Description                                                                  |
@@ -166,10 +137,6 @@ Manage Linode Instances, Configs, and Disks.
 | `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
 | `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
 | `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
-
-
-
-
 
 ### sdd
 
@@ -179,10 +146,6 @@ Manage Linode Instances, Configs, and Disks.
 | `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
 | `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
 
-
-
-
-
 ### sde
 
 | Field     | Type | Required | Description                                                                  |
@@ -190,10 +153,6 @@ Manage Linode Instances, Configs, and Disks.
 | `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
 | `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
 | `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
-
-
-
-
 
 ### sdf
 
@@ -203,10 +162,6 @@ Manage Linode Instances, Configs, and Disks.
 | `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
 | `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
 
-
-
-
-
 ### sdg
 
 | Field     | Type | Required | Description                                                                  |
@@ -215,10 +170,6 @@ Manage Linode Instances, Configs, and Disks.
 | `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
 | `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
 
-
-
-
-
 ### sdh
 
 | Field     | Type | Required | Description                                                                  |
@@ -226,10 +177,6 @@ Manage Linode Instances, Configs, and Disks.
 | `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
 | `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
 | `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
-
-
-
-
 
 ### helpers
 
@@ -241,10 +188,6 @@ Manage Linode Instances, Configs, and Disks.
 | `network` | <center>`bool`</center> | <center>Optional</center> | Automatically configures static networking.   |
 | `updatedb_disabled` | <center>`bool`</center> | <center>Optional</center> | Disables updatedb cron job to avoid disk thrashing.   |
 
-
-
-
-
 ### interfaces
 
 | Field     | Type | Required | Description                                                                  |
@@ -252,10 +195,6 @@ Manage Linode Instances, Configs, and Disks.
 | `purpose` | <center>`str`</center> | <center>**Required**</center> | The type of interface.  **(Choices: `public`, `vlan`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces.   |
 | `ipam_address` | <center>`str`</center> | <center>Optional</center> | This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.   |
-
-
-
-
 
 ### disks
 
@@ -270,11 +209,6 @@ Manage Linode Instances, Configs, and Disks.
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The root user’s password on the newly-created Linode.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
-
-
-
-
-
 
 ## Return Values
 

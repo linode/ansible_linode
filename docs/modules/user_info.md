@@ -2,7 +2,6 @@
 
 Get info about a Linode User.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -16,24 +15,11 @@ Get info about a Linode User.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `username` | <center>`str`</center> | <center>**Required**</center> | The username of the user.   |
-
-
-
-
-
 
 ## Return Values
 

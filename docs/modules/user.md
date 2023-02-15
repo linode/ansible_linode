@@ -2,7 +2,6 @@
 
 Manage a Linode User.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -41,14 +40,6 @@ Manage a Linode User.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -59,20 +50,12 @@ Manage a Linode User.
 | `email` | <center>`str`</center> | <center>Optional</center> | The email address for the User. Linode sends emails to this address for account management communications. May be used for other communications as configured.   |
 | [`grants` (sub-options)](#grants) | <center>`dict`</center> | <center>Optional</center> | Update the grants a user has.  **(Updatable)** |
 
-
-
-
-
 ### grants
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | [`global` (sub-options)](#global) | <center>`dict`</center> | <center>Optional</center> | A structure containing the Account-level grants a User has.  **(Updatable)** |
 | [`resources` (sub-options)](#resources) | <center>`list`</center> | <center>Optional</center> | A list of resource grants to give to the user.  **(Updatable)** |
-
-
-
-
 
 ### global
 
@@ -91,10 +74,6 @@ Manage a Linode User.
 | `cancel_account` | <center>`bool`</center> | <center>Optional</center> | If true, this User may add cancel the entire account.  **(Default: `False`; Updatable)** |
 | `longview_subscription` | <center>`bool`</center> | <center>Optional</center> | If true, this User may manage the Account’s Longview subscription.  **(Default: `False`; Updatable)** |
 
-
-
-
-
 ### resources
 
 | Field     | Type | Required | Description                                                                  |
@@ -102,11 +81,6 @@ Manage a Linode User.
 | `type` | <center>`str`</center> | <center>**Required**</center> | The type of resource to grant access to.  **(Choices: `domain`, `image`, `linode`, `longview`, `nodebalancer`, `stackscript`, `volume`, `database`; Updatable)** |
 | `id` | <center>`int`</center> | <center>**Required**</center> | The ID of the resource to grant access to.  **(Updatable)** |
 | `permissions` | <center>`str`</center> | <center>**Required**</center> | The level of access this User has to this entity. If null, this User has no access.  **(Choices: `read_only`, `read_write`; Updatable)** |
-
-
-
-
-
 
 ## Return Values
 

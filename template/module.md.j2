@@ -5,7 +5,7 @@
 {{ line }}
 
 {% endfor %}
-{% endif %}
+{%- endif -%}
 
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -17,92 +17,85 @@
 ```
 
 {% endfor %}
-
 {% set blocks = {} %}
-
-{% macro accumulate_blocks(opts) %}
+{%- macro accumulate_blocks(opts) -%}
 {% for name, spec in opts.items() %}{% if spec.suboptions %}{{ blocks.__setitem__(name, spec.suboptions) or '' }}{{ accumulate_blocks(spec.suboptions) or '' }}{% endif %}{% endfor %}
-{% endmacro %}
-
+{%- endmacro -%}
 {{ accumulate_blocks(options) }}
-
 {% macro options_display_req(opts, required) %}
-{% for name, spec in opts.items() %}
-{% if not spec.doc_hide and ((spec.required and required) or (not spec.required and not required)) %}
-{% set required_text = '**Required**' if spec.required else 'Optional' %}
-{% set type_text = '`%s`' % spec.type if spec.type else '' %}
-{% set name_fmt = '[`%s` (sub-options)](#%s)' % (name, name) if spec.suboptions else '`%s`' % name %}
-{% set extras_fmt = [] %}
-{% set choices_fmt = [] %}
-{% set conflicts_fmt = [] %}
-{% if spec.choices -%}
-{% for choice in spec.choices -%}
+    {% for name, spec in opts.items() %}
+        {% if not spec.doc_hide and ((spec.required and required) or (not spec.required and not required)) %}
+            {% set required_text = '**Required**' if spec.required else 'Optional' %}
+            {% set type_text = '`%s`' % spec.type if spec.type else '' %}
+            {% set name_fmt = '[`%s` (sub-options)](#%s)' % (name, name) if spec.suboptions else '`%s`' % name %}
+            {% set extras_fmt = [] %}
+            {% set choices_fmt = [] %}
+            {% set conflicts_fmt = [] %}
+            {% if spec.choices -%}
+                {% for choice in spec.choices -%}
 {{ choices_fmt.append('`{}`'.format(choice|string)) or ''}}
-{%- endfor %}
+                {%- endfor %}
 {{ extras_fmt.append("Choices: " + ', '.join(choices_fmt)) or '' }}
-{%- endif %}
-{% if spec.default or spec.default == False -%}
+            {%- endif %}
+            {% if spec.default or spec.default == False -%}
 {{ extras_fmt.append('Default: `{}`'.format(spec.default)) or ''}}
-{%- endif %}
-{% if spec.editable -%}
+            {%- endif %}
+            {% if spec.editable -%}
 {{ extras_fmt.append("Updatable") or '' }}
-{%- endif %}
-{% if spec.conflicts_with|length > 0 -%}
-{% for conflict in spec.conflicts_with -%}
+            {%- endif %}
+            {% if spec.conflicts_with|length > 0 -%}
+                {% for conflict in spec.conflicts_with -%}
 {{ conflicts_fmt.append('`{}`'.format(conflict|string)) or ''}}
-{%- endfor %}
+                {%- endfor %}
 {{ extras_fmt.append("Conflicts With: " + ','.join(conflicts_fmt)) or '' }}
-{%- endif %}
+            {%- endif %}
 | {{ name_fmt }} | <center>{{type_text}}</center> | <center>{{ required_text }}</center> | {% for line in spec.description %}{{ line }} {% endfor %} {% if extras_fmt | length > 0 %}**({{ extras_fmt|join('; ') }})**{% endif %} |
-{% endif %}
-{% endfor %}
+        {% endif %}
+    {% endfor %}
 {% endmacro %}
 
-{% macro options_display(opts) %}
+{%- macro options_display(opts) -%}
 {{ options_display_req(opts, True) }}{{ options_display_req(opts, False) }}
-{% endmacro %}
+{%- endmacro -%}
 
-{% macro options_table(opts) %}
+{%- macro options_table(opts) -%}
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 {{ options_display(opts) }}
-{% endmacro %}
-
-{% if options | length > 0 %}
+{% endmacro -%}
+{%- if options | length > 0 -%}
 
 ## Parameters
 
 {{ options_table(options) }}
 
-{% for name, spec in blocks.items() %}
+{%- for name, spec in blocks.items() -%}
 
 ### {{ name }}
 
 {{ options_table(spec) }}
-
-{% endfor %}
-
-{% endif %}
+{%- endfor -%}
+{%- endif -%}
 
 ## Return Values
 
 {% for name, spec in return_values.items() %}
 - `{{ name }}`{% if spec.description %} - {% for line in spec.description %}{{ line }}{% endfor %}{% endif %}
 
-{% if spec.sample %}
+    {% if spec.sample %}
 
     - Sample Response:
-{% for sample in spec.sample %}
+        {% for sample in spec.sample %}
         ```json
-{% for line in sample.split('\n') %}
+            {% for line in sample.split('\n') %}
         {{ line }}
-{% endfor %}
+            {% endfor %}
         ```
-{% endfor %}
-{% endif %}
-{% if spec.docs_url %}
+        {% endfor %}
+    {% endif %}
+    {% if spec.docs_url %}
     - See the [Linode API response documentation]({{spec.docs_url}}) for a list of returned fields
-{% endif %}
+    {% endif %}
 
 
 {% endfor %}

@@ -2,7 +2,6 @@
 
 Get info about a Linode Object Storage Cluster.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -22,14 +21,6 @@ Get info about a Linode Object Storage Cluster.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -38,11 +29,6 @@ Get info about a Linode Object Storage Cluster.
 | `region` | <center>`str`</center> | <center>Optional</center> | The region the clusters are in.   |
 | `domain` | <center>`str`</center> | <center>Optional</center> | The domain of the clusters.   |
 | `static_site_domain` | <center>`str`</center> | <center>Optional</center> | The static-site domain of the clusters.   |
-
-
-
-
-
 
 ## Return Values
 

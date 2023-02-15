@@ -4,7 +4,6 @@ Manage a Linode Token.
 
 NOTE: The full Personal Access Token is only returned when a new token has been created.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -35,14 +34,6 @@ NOTE: The full Personal Access Token is only returned when a new token has been 
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -51,11 +42,6 @@ NOTE: The full Personal Access Token is only returned when a new token has been 
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this token.  **(Choices: `present`, `absent`)** |
 | `expiry` | <center>`str`</center> | <center>Optional</center> | When this token should be valid until.   |
 | `scopes` | <center>`str`</center> | <center>Optional</center> | The OAuth scopes to create the token with.   |
-
-
-
-
-
 
 ## Return Values
 

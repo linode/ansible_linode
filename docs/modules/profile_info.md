@@ -2,7 +2,6 @@
 
 Get info about a Linode Profile.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -13,14 +12,6 @@ Get info about a Linode Profile.
 - name: Get info about the current Linode profile
   linode.cloud.profile_info: {}
 ```
-
-
-
-
-
-
-
-
 
 
 ## Return Values

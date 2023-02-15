@@ -2,7 +2,6 @@
 
 Manage a Linode SSH key.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -24,14 +23,6 @@ Manage a Linode SSH key.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -39,11 +30,6 @@ Manage a Linode SSH key.
 | `label` | <center>`str`</center> | <center>**Required**</center> | This SSH key's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this SSH key.  **(Choices: `present`, `absent`)** |
 | `ssh_key` | <center>`str`</center> | <center>Optional</center> | The SSH public key value.  **(Updatable)** |
-
-
-
-
-
 
 ## Return Values
 
