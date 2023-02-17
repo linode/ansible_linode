@@ -20,7 +20,163 @@
       assert:
         that:
           - create.changed
+    - name: Set Linode Firewall with just IPv4
+      linode.cloud.firewall:
+        state: present
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+        devices: []
+        rules:
+          inbound_policy: DROP
+          inbound:
+            - label: tcpacl
+              action: ACCEPT
+              protocol: TCP
+              addresses:
+                ipv4: ['0.0.0.0/0']
+          outbound_policy: DROP
+          outbound: []
+        status: disabled
+      register: initialfirewall
 
+    - name: Assert firewall created properly
+      assert:
+        that:
+          - initialfirewall.changed
+          - initialfirewall.firewall.rules.inbound | length == 1
+          - initialfirewall.firewall.rules.inbound[0].addresses['ipv6'] is not defined
+          - initialfirewall.firewall.rules.inbound[0].addresses['ipv4'] is defined
+
+    - name: Update Linode Firewall with ipv4 addresses (issue 295)
+      linode.cloud.firewall:
+        state: update
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+        devices: []
+        rules:
+          inbound_policy: DROP
+          inbound:
+            - label: tcpacl
+              action: ACCEPT
+              protocol: TCP
+              addresses:
+                ipv4: ['1.1.1.0/24']
+          outbound_policy: DROP
+          outbound: []
+      register: updated_firewall
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall updated properly with ipv4 addresses
+      assert:
+        that:
+          - updated_firewall.changed
+          - updated_firewall.firewall.rules.inbound | length == 1
+          - (updated_firewall.firewall.rules.inbound[0].addresses['ipv4'] is defined)
+          - (updated_firewall.firewall.rules.inbound[0].addresses['ipv6'] is not defined)
+          
+          - firewall_info.firewall.id == create.firewall.id
+          - firewall_info.devices|length == updated_firewall.devices|length
+          - firewall_info.firewall.status == updated_firewall.firewall.status
+          - firewall_info.firewall.rules.inbound_policy == updated_firewall.firewall.rules.inbound_policy
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].addresses['ipv4'] is not defined and firewall_info.firewall.rules.inbound[0].addresses['ipv4'] is not defined) or (firewall_info.firewall.rules.inbound[0].addresses['ipv4'] == updated_firewall.firewall.rules.inbound[0].addresses['ipv4']))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].addresses['ipv6'] is not defined and firewall_info.firewall.rules.inbound[0].addresses['ipv6'] is not defined) or (firewall_info.firewall.rules.inbound[0].addresses['ipv6'] == updated_firewall.firewall.rules.inbound[0].addresses['ipv6']))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].label is not defined and updated_firewall.firewall.rules.inbound[0].label is not defined) or (firewall_info.firewall.rules.inbound[0].label == updated_firewall.firewall.rules.inbound[0].label))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].description is not defined and updated_firewall.firewall.rules.inbound[0].description is not defined) or (firewall_info.firewall.rules.inbound[0].description == updated_firewall.firewall.rules.inbound[0].description))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].ports is not defined and updated_firewall.firewall.rules.inbound[0].ports is not defined) or (firewall_info.firewall.rules.inbound[0].ports == updated_firewall.firewall.rules.inbound[0].ports))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].protocol is not defined and updated_firewall.firewall.rules.inbound[0].protocol is not defined) or (firewall_info.firewall.rules.inbound[0].protocol == updated_firewall.firewall.rules.inbound[0].protocol))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].action is not defined and updated_firewall.firewall.rules.inbound[0].action is not defined) or (firewall_info.firewall.rules.inbound[0].action == updated_firewall.firewall.rules.inbound[0].action))
+          - firewall_info.firewall.rules.outbound_policy == updated_firewall.firewall.rules.outbound_policy
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].addresses['ipv4'] is not defined and firewall_info.firewall.rules.outbound[0].addresses['ipv4'] is not defined) or (firewall_info.firewall.rules.outbound[0].addresses['ipv4'] == updated_firewall.firewall.rules.outbound[0].addresses['ipv4']))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].addresses['ipv6'] is not defined and firewall_info.firewall.rules.outbound[0].addresses['ipv6'] is not defined) or (firewall_info.firewall.rules.outbound[0].addresses['ipv6'] == updated_firewall.firewall.rules.outbound[0].addresses['ipv6']))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].label is not defined and updated_firewall.firewall.rules.outbound[0].label is not defined) or (firewall_info.firewall.rules.outbound[0].label == updated_firewall.firewall.rules.outbound[0].label))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].description is not defined and updated_firewall.firewall.rules.outbound[0].description is not defined) or (firewall_info.firewall.rules.outbound[0].description == updated_firewall.firewall.rules.outbound[0].description))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
+    - name: Set Linode Firewall with ipv6 addresses
+      linode.cloud.firewall:
+        state: present
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+        devices: []
+        rules:
+          inbound_policy: DROP
+          inbound:
+            - label: tcpacl
+              action: ACCEPT
+              addresses:
+                ipv6: ['ff00::/8']
+              protocol: TCP
+          outbound_policy: DROP
+          outbound: []
+        status: disabled
+      register: initialfirewall
+
+    - name: Assert firewall created properly
+      assert:
+        that:
+          - initialfirewall.changed
+          - initialfirewall.firewall.rules.inbound | length == 1
+          - initialfirewall.firewall.rules.inbound[0].addresses['ipv6'] is defined
+          - initialfirewall.firewall.rules.inbound[0].addresses['ipv6'] == ['ff00::/8']
+          - initialfirewall.firewall.rules.inbound[0].addresses['ipv4'] is not defined
+
+    - name: Update Linode Firewall with ipv6 addresses (issue 295)
+      linode.cloud.firewall:
+        state: update
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+        devices: []
+        rules:
+          inbound_policy: DROP
+          inbound:
+            - label: tcpacl
+              action: ACCEPT
+              addresses:
+                ipv6: ['dead:beef::/64']
+              protocol: TCP
+          outbound_policy: DROP
+          outbound: []
+      register: updated_firewall
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall updated properly
+      assert:
+        that:
+          - updated_firewall.changed
+          - updated_firewall.firewall.rules.inbound | length == 1
+          - (updated_firewall.firewall.rules.inbound[0].addresses['ipv4'] is not defined)
+          - (updated_firewall.firewall.rules.inbound[0].addresses['ipv6'] is defined)
+          
+          - firewall_info.firewall.id == create.firewall.id
+          - firewall_info.devices|length == updated_firewall.devices|length
+          - firewall_info.firewall.status == updated_firewall.firewall.status
+          - firewall_info.firewall.rules.inbound_policy == updated_firewall.firewall.rules.inbound_policy
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].addresses['ipv4'] is not defined and firewall_info.firewall.rules.inbound[0].addresses['ipv4'] is not defined) or (firewall_info.firewall.rules.inbound[0].addresses['ipv4'] == updated_firewall.firewall.rules.inbound[0].addresses['ipv4']))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].addresses['ipv6'] is not defined and firewall_info.firewall.rules.inbound[0].addresses['ipv6'] is not defined) or (firewall_info.firewall.rules.inbound[0].addresses['ipv6'] == updated_firewall.firewall.rules.inbound[0].addresses['ipv6']))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].label is not defined and updated_firewall.firewall.rules.inbound[0].label is not defined) or (firewall_info.firewall.rules.inbound[0].label == updated_firewall.firewall.rules.inbound[0].label))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].description is not defined and updated_firewall.firewall.rules.inbound[0].description is not defined) or (firewall_info.firewall.rules.inbound[0].description == updated_firewall.firewall.rules.inbound[0].description))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].ports is not defined and updated_firewall.firewall.rules.inbound[0].ports is not defined) or (firewall_info.firewall.rules.inbound[0].ports == updated_firewall.firewall.rules.inbound[0].ports))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].protocol is not defined and updated_firewall.firewall.rules.inbound[0].protocol is not defined) or (firewall_info.firewall.rules.inbound[0].protocol == updated_firewall.firewall.rules.inbound[0].protocol))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].action is not defined and updated_firewall.firewall.rules.inbound[0].action is not defined) or (firewall_info.firewall.rules.inbound[0].action == updated_firewall.firewall.rules.inbound[0].action))
+          - firewall_info.firewall.rules.outbound_policy == updated_firewall.firewall.rules.outbound_policy
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].addresses['ipv4'] is not defined and firewall_info.firewall.rules.outbound[0].addresses['ipv4'] is not defined) or (firewall_info.firewall.rules.outbound[0].addresses['ipv4'] == updated_firewall.firewall.rules.outbound[0].addresses['ipv4']))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].addresses['ipv6'] is not defined and firewall_info.firewall.rules.outbound[0].addresses['ipv6'] is not defined) or (firewall_info.firewall.rules.outbound[0].addresses['ipv6'] == updated_firewall.firewall.rules.outbound[0].addresses['ipv6']))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].label is not defined and updated_firewall.firewall.rules.outbound[0].label is not defined) or (firewall_info.firewall.rules.outbound[0].label == updated_firewall.firewall.rules.outbound[0].label))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].description is not defined and updated_firewall.firewall.rules.outbound[0].description is not defined) or (firewall_info.firewall.rules.outbound[0].description == updated_firewall.firewall.rules.outbound[0].description))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
     - name: Set Linode Firewall with ipv6 addresses
       linode.cloud.firewall:
         state: present
@@ -52,7 +208,6 @@
     - name: Update Linode Firewall with ipv4 addresses (issue 257)
       linode.cloud.firewall:
         state: update
-        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -70,6 +225,7 @@
 
     - name: Get info about the firewall
       linode.cloud.firewall_info:
+
         api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
@@ -101,11 +257,12 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
+    - name: Print Firewall info
+      debug: var=firewall_info
 
     - name: Set Linode Firewall disabled
       linode.cloud.firewall:
         state: present
-        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -148,11 +305,9 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
-
     - name: Update Linode Firewall to enabled
       linode.cloud.firewall:
         state: update
-        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -161,10 +316,10 @@
 
     - name: Get info about the firewall
       linode.cloud.firewall_info:
+
         api_version: v4beta
         label: '{{ create.firewall.label }}'
       register: firewall_info
-
     - name: Assert firewall updated to enabled and has the same info as updated_firewall
       assert:
         that:
@@ -190,11 +345,9 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
-
     - name: Update Linode Firewall inbound/outbound policy to ACCEPT
       linode.cloud.firewall:
         state: update
-        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -236,11 +389,9 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
-
     - name: Set Linode Firewall inbound/outbound rules + policy to DROP
       linode.cloud.firewall:
         state: present
-        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -315,11 +466,9 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
-
     - name: Update labeled rules to action=ACCEPT
       linode.cloud.firewall:
         state: update
-        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -377,11 +526,9 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
-
     - name: Update labeled rules description to "Amazing rule."
       linode.cloud.firewall:
         state: update
-        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -442,11 +589,9 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
-
     - name: Update labeled rules ipv4 addresses
       linode.cloud.firewall:
         state: update
-        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -509,11 +654,74 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
+    - name: remove labeled rules ipv4 addresses
+      linode.cloud.firewall:
+        state: update
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+        devices: []
+        rules:
+          inbound:
+            - label: cool-http-in
+              action: ACCEPT
+              addresses:
+                ipv4: ['0.0.0.0/0' ]
+          outbound:
+            - label: cool-http-out
+              action: ACCEPT
+              addresses:
+                ipv4: ['0.0.0.0/0','8.8.8.8/32' ]
+      register: updated_firewall
 
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+      register: firewall_info
+
+    - name: Assert firewall rules updated
+      assert:
+        that:
+          - updated_firewall.changed
+
+          - updated_firewall.devices|length == 0
+          - updated_firewall.firewall.rules.inbound[0].label == 'cool-http-in'
+          - updated_firewall.firewall.rules.inbound[0].description == 'Amazing rule.'
+          - updated_firewall.firewall.rules.inbound[0].ports == '80,443'
+          - updated_firewall.firewall.rules.inbound[0].protocol == 'TCP'
+          - updated_firewall.firewall.rules.inbound[0].action == 'ACCEPT'
+          - updated_firewall.firewall.rules.inbound[0].addresses['ipv4'] == ['0.0.0.0/0' ]
+          - updated_firewall.firewall.rules.inbound_policy == 'DROP'
+          - updated_firewall.firewall.rules.outbound[0].label == 'cool-http-out'
+          - updated_firewall.firewall.rules.outbound[0].description == 'Amazing rule.'
+          - updated_firewall.firewall.rules.outbound[0].ports == '80,443'
+          - updated_firewall.firewall.rules.outbound[0].protocol == 'TCP'
+          - updated_firewall.firewall.rules.outbound[0].action == 'ACCEPT'
+          - updated_firewall.firewall.rules.outbound[0].addresses['ipv4'] == ['0.0.0.0/0','8.8.8.8/32' ]
+          - updated_firewall.firewall.rules.outbound_policy == 'DROP'
+          
+          - firewall_info.firewall.id == create.firewall.id
+          - firewall_info.devices|length == updated_firewall.devices|length
+          - firewall_info.firewall.status == updated_firewall.firewall.status
+          - firewall_info.firewall.rules.inbound_policy == updated_firewall.firewall.rules.inbound_policy
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].addresses['ipv4'] is not defined and firewall_info.firewall.rules.inbound[0].addresses['ipv4'] is not defined) or (firewall_info.firewall.rules.inbound[0].addresses['ipv4'] == updated_firewall.firewall.rules.inbound[0].addresses['ipv4']))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].addresses['ipv6'] is not defined and firewall_info.firewall.rules.inbound[0].addresses['ipv6'] is not defined) or (firewall_info.firewall.rules.inbound[0].addresses['ipv6'] == updated_firewall.firewall.rules.inbound[0].addresses['ipv6']))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].label is not defined and updated_firewall.firewall.rules.inbound[0].label is not defined) or (firewall_info.firewall.rules.inbound[0].label == updated_firewall.firewall.rules.inbound[0].label))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].description is not defined and updated_firewall.firewall.rules.inbound[0].description is not defined) or (firewall_info.firewall.rules.inbound[0].description == updated_firewall.firewall.rules.inbound[0].description))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].ports is not defined and updated_firewall.firewall.rules.inbound[0].ports is not defined) or (firewall_info.firewall.rules.inbound[0].ports == updated_firewall.firewall.rules.inbound[0].ports))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].protocol is not defined and updated_firewall.firewall.rules.inbound[0].protocol is not defined) or (firewall_info.firewall.rules.inbound[0].protocol == updated_firewall.firewall.rules.inbound[0].protocol))
+          - (firewall_info.firewall.rules.inbound | length == 0 and updated_firewall.firewall.rules.inbound | length == 0) or ((firewall_info.firewall.rules.inbound[0].action is not defined and updated_firewall.firewall.rules.inbound[0].action is not defined) or (firewall_info.firewall.rules.inbound[0].action == updated_firewall.firewall.rules.inbound[0].action))
+          - firewall_info.firewall.rules.outbound_policy == updated_firewall.firewall.rules.outbound_policy
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].addresses['ipv4'] is not defined and firewall_info.firewall.rules.outbound[0].addresses['ipv4'] is not defined) or (firewall_info.firewall.rules.outbound[0].addresses['ipv4'] == updated_firewall.firewall.rules.outbound[0].addresses['ipv4']))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].addresses['ipv6'] is not defined and firewall_info.firewall.rules.outbound[0].addresses['ipv6'] is not defined) or (firewall_info.firewall.rules.outbound[0].addresses['ipv6'] == updated_firewall.firewall.rules.outbound[0].addresses['ipv6']))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].label is not defined and updated_firewall.firewall.rules.outbound[0].label is not defined) or (firewall_info.firewall.rules.outbound[0].label == updated_firewall.firewall.rules.outbound[0].label))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].description is not defined and updated_firewall.firewall.rules.outbound[0].description is not defined) or (firewall_info.firewall.rules.outbound[0].description == updated_firewall.firewall.rules.outbound[0].description))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
+          - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
     - name: Update Description of Linode Firewall rules
       linode.cloud.firewall:
         state: update
-        
         api_version: v4beta
         label: '{{ create.firewall.label }}'
         devices: []
@@ -560,7 +768,6 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
-
     - name: Update IP addresses Linode Firewall rules
       linode.cloud.firewall:
         api_version: v4beta
@@ -610,7 +817,6 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
-
     - name: Make update that should not cause any Linode Firewall changes
       linode.cloud.firewall:
         api_version: v4beta
