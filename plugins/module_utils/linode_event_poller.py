@@ -67,6 +67,10 @@ class EventPoller:
 
                 nonlocal result_event
                 result_event = event
+
+                # Merge the new events into the cache
+                self._previous_event_cache = {**self._previous_event_cache, **result['data']}
+
                 return True
 
             return False
