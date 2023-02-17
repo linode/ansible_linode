@@ -69,7 +69,11 @@ class EventPoller:
                 result_event = event
 
                 # Merge the new events into the cache
-                self._previous_event_cache = {**self._previous_event_cache, **result['data']}
+                for event in result['data']:
+                    if event['id'] in self._previous_event_cache:
+                        continue
+
+                    self._previous_event_cache[event['id']] = event
 
                 return True
 
