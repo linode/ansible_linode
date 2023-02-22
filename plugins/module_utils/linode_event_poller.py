@@ -2,7 +2,7 @@
 Contains a helper class for polling for resource events.
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
 
 import polling
 from linode_api4 import LinodeClient, Event
@@ -18,14 +18,14 @@ class EventPoller:
     EventPoller allows modules to dynamically poll for Linode events
     """
 
-    def __init__(self, client: LinodeClient, entity_type: str, action: str, entity_id: int = 0):
+    def __init__(self, client: LinodeClient, entity_type: str, action: str, entity_id: int = None):
         self._client = client
         self._entity_type = entity_type
         self._entity_id = entity_id
         self._action = action
 
         # Initialize with an empty cache if no entity is specified
-        if self._entity_id == 0:
+        if self._entity_id is None:
             self._previous_event_cache = {}
             return
 
@@ -37,7 +37,7 @@ class EventPoller:
     def _build_filter(self) -> Dict[str, Any]:
         """Generates a filter dict to use in HTTP requests"""
         return {
-            '+order': 'desc',
+            '+order': 'asc',
             '+order_by': 'created',
             'entity.id': self._entity_id,
             'entity.type': self._entity_type,
@@ -52,6 +52,30 @@ class EventPoller:
         """
         self._entity_id = entity_id
 
+    def _attempt_merge_event_into_cache(self, event: Dict[str, Any]):
+        """
+        Attempts to merge the given event into the event cache.
+        """
+
+        if event['id'] in self._previous_event_cache:
+            return
+
+        self._previous_event_cache[event['id']] = event
+
+    def _check_has_new_event(self, events: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+        """
+        If a new event is found in the given list, return it.
+        """
+
+        for event in events:
+            # Ignore cached events
+            if event['id'] in self._previous_event_cache:
+                continue
+
+            return event
+
+        return None
+
     def wait_for_next_event(self, timeout: int) -> Event:
         """
         Waits for and returns the next event matching the
@@ -61,23 +85,16 @@ class EventPoller:
 
         def poll_func():
             result = self._client.get('/account/events', filters=self._build_filter())
-            for event in result['data']:
-                if event['id'] in self._previous_event_cache:
-                    continue
 
+            new_event = self._check_has_new_event(result['data'])
+            event_exists = new_event is not None
+
+            if event_exists:
                 nonlocal result_event
-                result_event = event
+                result_event = new_event
+                self._attempt_merge_event_into_cache(new_event)
 
-                # Merge the new events into the cache
-                for event in result['data']:
-                    if event['id'] in self._previous_event_cache:
-                        continue
-
-                    self._previous_event_cache[event['id']] = event
-
-                return True
-
-            return False
+            return event_exists
 
         if poll_func():
             return Event(self._client, result_event['id'], json=result_event)
