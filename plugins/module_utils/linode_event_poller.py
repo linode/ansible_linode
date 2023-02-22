@@ -84,9 +84,10 @@ class EventPoller:
         result_event: Dict[str, Any] = {}
 
         def poll_func():
-            result = self._client.get('/account/events', filters=self._build_filter())
+            new_event = self._check_has_new_event(
+                self._client.get('/account/events', filters=self._build_filter())['data']
+            )
 
-            new_event = self._check_has_new_event(result['data'])
             event_exists = new_event is not None
 
             if event_exists:
