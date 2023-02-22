@@ -19,6 +19,7 @@
 
     - name: Resolve a VLAN
       linode.cloud.vlan_list:
+        api_version: v4beta
         count: 1
         order_by: created
         order: desc
