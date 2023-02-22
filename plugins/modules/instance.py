@@ -17,6 +17,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
     LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import EventPoller
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     filter_null_values, paginated_list_to_json, drop_empty_strings, mapping_to_dict, \
     request_retry, filter_null_values_recursive
@@ -539,15 +540,16 @@ class LinodeInstance(LinodeModuleBase):
 
     def _create_disk_register(self, **kwargs: Any) -> None:
         size = kwargs.pop('size')
-        result = self._instance.disk_create(size, **kwargs)
 
-        if isinstance(result, tuple):
-            disk = result[0]
-        else:
-            disk = result
+        create_poller = EventPoller(
+            self.client,
+            'disks',
+            'disk_create',
+            entity_id=self._instance.id)
+        self._instance.disk_create(size, **kwargs)
 
         # The disk must be ready before the next disk is created
-        self._wait_for_disk_status(disk, {'ready'}, self.module.params.get('wait_timeout'))
+        create_poller.wait_for_next_event_finished(self._timeout_ctx.seconds_remaining)
 
         self.register_action('Created disk {0}'.format(kwargs.get('label')))
 
@@ -555,9 +557,10 @@ class LinodeInstance(LinodeModuleBase):
         self.register_action('Deleted disk {0}'.format(disk.label))
         disk.delete()
 
-    def _wait_for_instance_status(self, instance: Instance, status: Set[str], timeout: int,
+    def _wait_for_instance_status(self, instance: Instance, status: Set[str],
                                   not_status: bool = False) -> None:
         def poll_func() -> bool:
+            instance._api_get()
             return (instance.status in status) != not_status
 
         # Initial attempt
@@ -567,23 +570,11 @@ class LinodeInstance(LinodeModuleBase):
         try:
             polling.poll(
                 poll_func,
-                step=10,
-                timeout=timeout,
+                step=3,
+                timeout=self._timeout_ctx.seconds_remaining,
             )
         except polling.TimeoutException:
             self.fail(msg='failed to wait for instance: timeout period expired')
-
-    def _wait_for_disk_status(
-            self, disk: Disk, status: Set[str], timeout: int, not_status: bool = False) \
-            -> None:
-        try:
-            polling.poll(
-                lambda: (disk.status in status) != not_status,
-                step=10,
-                timeout=timeout,
-            )
-        except polling.TimeoutException:
-            self.fail(msg='failed to wait for disk: timeout period expired')
 
     def _update_interfaces(self) -> None:
         config = self._get_boot_config()
@@ -674,11 +665,23 @@ class LinodeInstance(LinodeModuleBase):
         new_size = disk_params.pop('size')
 
         if disk.size != new_size:
+            resize_poller = EventPoller(
+                self.client,
+                'disks',
+                'disk_resize',
+                entity_id=self._instance.id
+            )
+
             disk.resize(new_size)
+
+            resize_poller.wait_for_next_event_finished(
+                self._timeout_ctx.seconds_remaining
+            )
+
             self.register_action('Resized disk {0}: {1} -> {2}'
                                  .format(disk.label, disk.size, new_size))
             disk._api_get()
-            self._wait_for_disk_status(disk, {'ready'}, self._timeout_ctx.seconds_remaining)
+
 
         for key, new_value in filter_null_values(disk_params).items():
             if not hasattr(disk, key):
@@ -770,23 +773,32 @@ class LinodeInstance(LinodeModuleBase):
 
         self._instance._api_get()
 
-        desired_status = None
+        event_poller = None
 
         if boot_status and self._instance.status != 'running':
+            event_poller = EventPoller(
+                self.client,
+                'linode',
+                'linode_boot',
+                entity_id=self._instance.id
+            )
+
             self._instance.boot(self._get_boot_config())
             self.register_action('Booted instance {0}'.format(self.module.params.get('label')))
-            desired_status = {'running'}
 
         if not boot_status and self._instance.status != 'offline':
+            event_poller = EventPoller(
+                self.client,
+                'linode',
+                'linode_shutdown',
+                entity_id=self._instance.id
+            )
+
             self._instance.shutdown()
             self.register_action('Shutdown instance {0}'.format(self.module.params.get('label')))
-            desired_status = {'offline'}
 
-        if should_poll and desired_status is not None:
-            self._wait_for_instance_status(
-                self._instance,
-                desired_status,
-                self._timeout_ctx.seconds_remaining)
+        if should_poll and event_poller is not None:
+            event_poller.wait_for_next_event_finished(self._timeout_ctx.seconds_remaining)
 
     def _handle_present(self) -> None:
         """Updates the instance defined in kwargs"""
@@ -795,12 +807,19 @@ class LinodeInstance(LinodeModuleBase):
 
         self._instance = self._get_instance_by_label(label)
 
-        if self._instance is None:
+        create_poller = EventPoller(self.client, 'linode', 'linode_create')
+        should_create = self._instance is None
+
+        if should_create:
             result = self._create_instance()
+
             self._instance = cast(Instance, result.get('instance'))
             self._root_pass = str(result.get('root_pass'))
 
             self.register_action('Created instance {0}'.format(label))
+
+
+            create_poller.set_entity_id(self._instance.id)
         else:
             self._update_instance()
 
@@ -810,10 +829,9 @@ class LinodeInstance(LinodeModuleBase):
         configs = self.module.params.get('configs') or []
 
         if len(configs) > 0 or len(disks) > 0:
-            self._wait_for_instance_status(
-                self._instance,
-                {'offline', 'running'},
-                self._timeout_ctx.seconds_remaining)
+            # Let's wait for the instance to be created before continuing
+            if should_create:
+                create_poller.wait_for_next_event_finished(self._timeout_ctx.seconds_remaining)
 
             self._update_disks()
             self._update_configs()
