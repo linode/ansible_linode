@@ -38,7 +38,7 @@
         that:
           - ip_info.ip.address == instance_create.instance.ipv4[0]
           - ip_rdns_modified.ip.rdns == new_rdns
-          - ip_rdns_removed.ip.address != new_rdns
+          - ip_rdns_removed.ip.rdns != new_rdns
 
   always:
     - ignore_errors: true
