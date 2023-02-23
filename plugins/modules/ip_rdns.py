@@ -78,7 +78,7 @@ class ReverseDNSModule(LinodeModuleBase):
             required_if=[["state", "present", ["rdns"]]],
         )
 
-    def update_rdns(self, rdns: str):
+    def update_rdns(self, rdns: str) -> None:
         """
         Update the reverse DNS of the IP address.
         """
