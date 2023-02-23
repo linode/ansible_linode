@@ -63,7 +63,7 @@ SPECDOC_META = SpecDocMeta(
 
 
 class ReverseDNSModule(LinodeModuleBase):
-    """Module for creating and destroying Linode rDNS"""
+    """Module for updating Linode IP address's reverse DNS value"""
 
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
@@ -89,16 +89,16 @@ class ReverseDNSModule(LinodeModuleBase):
             ip_obj.save()
             ip_obj._api_get()
             self.register_action(
-                f"Updated the rDNS of IP address {ip_str} to be {rdns}"
+                f"Updated reverse DNS of IP address {ip_str} to be {rdns}"
             )
         except Exception as exception:
-            self.fail(f"Failed to update rDNS of IP address {ip_str}, {exception}")
+            self.fail(f"Failed to update reverse DNS of IP address {ip_str}, {exception}")
         self.results["ip"] = ip_obj._raw_json
 
     def _handle_present(self) -> None:
         rdns = self.module.params.get("rdns")
         if not rdns:
-            self.fail("rdns is required to update the IP address")
+            self.fail("`rdns` attribute is required to update the IP address")
         else:
             self.update_rdns(rdns)
 
@@ -106,7 +106,7 @@ class ReverseDNSModule(LinodeModuleBase):
         self.update_rdns(None)
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for rDNS module"""
+        """Entrypoint for reverse DNS module"""
         state = kwargs.get("state", "present")
 
         if state == "absent":
@@ -118,7 +118,7 @@ class ReverseDNSModule(LinodeModuleBase):
 
 
 def main() -> None:
-    """Constructs and calls the rDNS module"""
+    """Constructs and calls the reverse DNS module"""
     ReverseDNSModule()
 
 
