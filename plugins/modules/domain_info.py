@@ -24,16 +24,22 @@ linode_domain_info_spec = dict(
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
     label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=SpecField(type=FieldType.integer, required=False,
-                 description=[
-                     'The unique domain name of the Domain.',
-                     'Optional if `domain` is defined.'
-                 ]),
-    domain=SpecField(type=FieldType.string, required=False,
-                     description=[
-                         'The unique id of the Domain.',
-                         'Optional if `id` is defined.'
-                     ])
+    id=SpecField(
+        type=FieldType.integer,
+        required=False,
+        conflicts_with=['domain'],
+        description=[
+            'The unique domain name of the Domain.',
+            'Optional if `domain` is defined.'
+        ]),
+    domain=SpecField(
+        type=FieldType.string,
+        required=False,
+        conflicts_with=['id'],
+        description=[
+            'The unique id of the Domain.',
+            'Optional if `id` is defined.'
+        ])
 )
 
 SPECDOC_META = SpecDocMeta(

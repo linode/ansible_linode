@@ -2,7 +2,6 @@
 
 Get info about a Linode LKE cluster.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -22,25 +21,12 @@ Get info about a Linode LKE cluster.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the LKE cluster. Optional if `label` is defined.   |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the LKE cluster. Optional if `id` is defined.   |
-
-
-
-
-
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the LKE cluster. Optional if `label` is defined.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the LKE cluster. Optional if `id` is defined.  **(Conflicts With: `id`)** |
 
 ## Return Values
 

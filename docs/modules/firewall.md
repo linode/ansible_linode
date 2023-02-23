@@ -2,7 +2,6 @@
 
 Manage Linode Firewalls.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -53,14 +52,6 @@ Manage Linode Firewalls.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -71,20 +62,12 @@ Manage Linode Firewalls.
 | [`rules` (sub-options)](#rules) | <center>`dict`</center> | <center>Optional</center> | The inbound and outbound access rules to apply to this Firewall.  **(Updatable)** |
 | `status` | <center>`str`</center> | <center>Optional</center> | The status of this Firewall.  **(Updatable)** |
 
-
-
-
-
 ### devices
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `id` | <center>`int`</center> | <center>**Required**</center> | The unique ID of the device to attach to this Firewall.   |
 | `type` | <center>`str`</center> | <center>Optional</center> | The type of device to be attached to this Firewall.  **(Default: `linode`)** |
-
-
-
-
 
 ### rules
 
@@ -94,10 +77,6 @@ Manage Linode Firewalls.
 | `inbound_policy` | <center>`str`</center> | <center>Optional</center> | The default behavior for inbound traffic.   |
 | [`outbound` (sub-options)](#outbound) | <center>`list`</center> | <center>Optional</center> | A list of rules for outbound traffic.   |
 | `outbound_policy` | <center>`str`</center> | <center>Optional</center> | The default behavior for outbound traffic.   |
-
-
-
-
 
 ### inbound
 
@@ -110,20 +89,12 @@ Manage Linode Firewalls.
 | `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)   |
 | `protocol` | <center>`str`</center> | <center>Optional</center> | The type of network traffic to allow.   |
 
-
-
-
-
 ### addresses
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `ipv4` | <center>`list`</center> | <center>Optional</center> | A list of IPv4 addresses or networks. Must be in IP/mask format.   |
 | `ipv6` | <center>`list`</center> | <center>Optional</center> | A list of IPv6 addresses or networks. Must be in IP/mask format.   |
-
-
-
-
 
 ### outbound
 
@@ -135,11 +106,6 @@ Manage Linode Firewalls.
 | `description` | <center>`str`</center> | <center>Optional</center> | A description for this rule.   |
 | `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)   |
 | `protocol` | <center>`str`</center> | <center>Optional</center> | The type of network traffic to allow.   |
-
-
-
-
-
 
 ## Return Values
 

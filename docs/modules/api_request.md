@@ -4,7 +4,6 @@ Make an arbitrary Linode API request.
 
 The Linode API documentation can be found here: https://www.linode.com/docs/api
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -30,28 +29,15 @@ The Linode API documentation can be found here: https://www.linode.com/docs/api
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `path` | <center>`str`</center> | <center>**Required**</center> | The relative path to the endpoint to make a request to. e.g. "linode/instances"   |
 | `method` | <center>`str`</center> | <center>**Required**</center> | The HTTP method of the request or response.  **(Choices: `POST`, `PUT`, `GET`, `DELETE`)** |
-| `body` | <center>`dict`</center> | <center>Optional</center> | The body of the request. This is a YAML structure that will be marshalled to JSON.   |
-| `body_json` | <center>`str`</center> | <center>Optional</center> | The body of the request in JSON format.   |
+| `body` | <center>`dict`</center> | <center>Optional</center> | The body of the request. This is a YAML structure that will be marshalled to JSON.  **(Conflicts With: `body_json`)** |
+| `body_json` | <center>`str`</center> | <center>Optional</center> | The body of the request in JSON format.  **(Conflicts With: `body`)** |
 | `filters` | <center>`dict`</center> | <center>Optional</center> | A YAML structure corresponding to the X-Filter request header. See: https://www.linode.com/docs/api/#filtering-and-sorting   |
-
-
-
-
-
 
 ## Return Values
 

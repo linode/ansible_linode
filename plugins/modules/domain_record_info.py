@@ -26,28 +26,36 @@ linode_domain_record_info_spec = dict(
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
     label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    domain_id=SpecField(type=FieldType.integer,
-                        description=[
-                            'The ID of the parent Domain.',
-                            'Optional if `domain` is defined.'
-                        ]),
-    domain=SpecField(type=FieldType.string,
-                     description=[
-                         'The name of the parent Domain.',
-                         'Optional if `domain_id` is defined.'
-                     ]),
+    domain_id=SpecField(
+        type=FieldType.integer,
+        conflicts_with=['domain'],
+        description=[
+            'The ID of the parent Domain.',
+            'Optional if `domain` is defined.'
+        ]),
+    domain=SpecField(
+        type=FieldType.string,
+        conflicts_with=['domain_id'],
+        description=[
+            'The name of the parent Domain.',
+            'Optional if `domain_id` is defined.'
+        ]),
 
-    id=SpecField(type=FieldType.integer,
-                 description=[
-                     'The unique id of the subdomain.',
-                     'Optional if `name` is defined.'
-                 ]),
+    id=SpecField(
+        type=FieldType.integer,
+        conflicts_with=['name'],
+        description=[
+            'The unique id of the subdomain.',
+            'Optional if `name` is defined.'
+        ]),
 
-    name=SpecField(type=FieldType.string,
-                   description=[
-                       'The name of the domain record.',
-                       'Optional if `id` is defined.'
-                   ]),
+    name=SpecField(
+        type=FieldType.string,
+        conflicts_with=['id'],
+        description=[
+            'The name of the domain record.',
+            'Optional if `id` is defined.'
+        ]),
 )
 
 SPECDOC_META = SpecDocMeta(

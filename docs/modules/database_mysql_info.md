@@ -2,7 +2,6 @@
 
 Get info about a Linode MySQL Managed Database.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -22,25 +21,12 @@ Get info about a Linode MySQL Managed Database.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`str`</center> | <center>Optional</center> | The ID of the MySQL Database.   |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the MySQL Database.   |
-
-
-
-
-
+| `id` | <center>`str`</center> | <center>Optional</center> | The ID of the MySQL Database.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the MySQL Database.  **(Conflicts With: `id`)** |
 
 ## Return Values
 

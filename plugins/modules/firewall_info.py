@@ -23,16 +23,22 @@ linode_firewall_info_spec = dict(
     # We need to overwrite attributes to exclude them as requirements
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=SpecField(type=FieldType.integer, required=False,
-                 description=[
-                     'The unique id of the Firewall.',
-                     'Optional if `label` is defined.'
-                 ]),
-    label=SpecField(type=FieldType.string, required=False,
-                    description=[
-                        'The Firewall’s label.',
-                        'Optional if `id` is defined.'
-                    ])
+    id=SpecField(
+        type=FieldType.integer,
+        required=False,
+        conflicts_with=['label'],
+        description=[
+            'The unique id of the Firewall.',
+            'Optional if `label` is defined.'
+        ]),
+    label=SpecField(
+        type=FieldType.string,
+        required=False,
+        conflicts_with=['id'],
+        description=[
+            'The Firewall’s label.',
+            'Optional if `id` is defined.'
+        ])
 )
 
 SPECDOC_META = SpecDocMeta(

@@ -2,7 +2,6 @@
 
 Get info about a Linode Volume.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -20,25 +19,12 @@ Get info about a Linode Volume.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Volume. Optional if `label` is defined.   |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Volume. Optional if `id` is defined.   |
-
-
-
-
-
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Volume. Optional if `label` is defined.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Volume. Optional if `id` is defined.  **(Conflicts With: `id`)** |
 
 ## Return Values
 

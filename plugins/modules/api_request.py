@@ -37,6 +37,7 @@ SPEC = dict(
     ),
     body=SpecField(
         type=FieldType.dict,
+        conflicts_with=["body_json"],
         description=[
             'The body of the request.',
             'This is a YAML structure that will be marshalled to JSON.'
@@ -44,6 +45,7 @@ SPEC = dict(
     ),
     body_json=SpecField(
         type=FieldType.string,
+        conflicts_with=["body"],
         description=[
             'The body of the request in JSON format.'
         ]

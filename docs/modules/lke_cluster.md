@@ -2,7 +2,6 @@
 
 Manage Linode LKE clusters.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -47,14 +46,6 @@ Manage Linode LKE clusters.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
@@ -68,10 +59,6 @@ Manage Linode LKE clusters.
 | `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the cluster to be ready.  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The period to wait for the cluster to be ready in seconds.  **(Default: `600`)** |
 
-
-
-
-
 ### node_pools
 
 | Field     | Type | Required | Description                                                                  |
@@ -80,10 +67,6 @@ Manage Linode LKE clusters.
 | `type` | <center>`str`</center> | <center>**Required**</center> | The Linode Type for all of the nodes in the Node Pool.   |
 | [`autoscaler` (sub-options)](#autoscaler) | <center>`dict`</center> | <center>Optional</center> | When enabled, the number of nodes autoscales within the defined minimum and maximum values.  **(Updatable)** |
 
-
-
-
-
 ### autoscaler
 
 | Field     | Type | Required | Description                                                                  |
@@ -91,11 +74,6 @@ Manage Linode LKE clusters.
 | `enabled` | <center>`bool`</center> | <center>Optional</center> | Whether autoscaling is enabled for this Node Pool. NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.  **(Updatable)** |
 | `max` | <center>`int`</center> | <center>Optional</center> | The maximum number of nodes to autoscale to. Defaults to the value provided by the count field.  **(Updatable)** |
 | `min` | <center>`int`</center> | <center>Optional</center> | The minimum number of nodes to autoscale to. Defaults to the Node Pool’s count.  **(Updatable)** |
-
-
-
-
-
 
 ## Return Values
 

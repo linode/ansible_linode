@@ -22,8 +22,16 @@ linode_ssh_key_info_spec = dict(
     # Disable the default values
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=SpecField(type=FieldType.integer, description=['The ID of the SSH key.']),
-    label=SpecField(type=FieldType.string, description=['The label of the SSH key.']),
+    id=SpecField(
+        type=FieldType.integer,
+        conflicts_with=['label'],
+        description=['The ID of the SSH key.']
+    ),
+    label=SpecField(
+        type=FieldType.string,
+        conflicts_with=['id'],
+        description=['The label of the SSH key.']
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(

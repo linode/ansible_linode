@@ -2,7 +2,6 @@
 
 Get info about a Linode StackScript.
 
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -22,25 +21,12 @@ Get info about a Linode StackScript.
 ```
 
 
-
-
-
-
-
-
-
-
 ## Parameters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript.   |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the StackScript.   |
-
-
-
-
-
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the StackScript.  **(Conflicts With: `id`)** |
 
 ## Return Values
 

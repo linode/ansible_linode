@@ -24,8 +24,16 @@ spec = dict(
     # Disable the default values
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    id=SpecField(type=FieldType.integer, description=['The ID of the StackScript.']),
-    label=SpecField(type=FieldType.string, description=['The label of the StackScript.']),
+    id=SpecField(
+        type=FieldType.integer,
+        description=['The ID of the StackScript.'],
+        conflicts_with=['label'],
+    ),
+    label=SpecField(
+        type=FieldType.string,
+        description=['The label of the StackScript.'],
+        conflicts_with=['id']
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(
