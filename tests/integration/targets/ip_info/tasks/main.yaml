@@ -1,4 +1,4 @@
-- name: stackscript_basic
+- name: ip_info_basic
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -23,7 +23,7 @@
           - ip_info.ip.address == instance_create.instance.ipv4[0]
 
   always:
-    - ignore_errors: yes
+    - ignore_errors: true
       block:
         - linode.cloud.instance:
             label: '{{ instance_create.instance.label }}'
