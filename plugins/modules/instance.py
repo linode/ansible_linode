@@ -17,7 +17,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
     LinodeModuleBase
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
     global_requirements
-from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import EventPoller
+from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import EventPoller, \
+    wait_for_resource_free
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
     filter_null_values, paginated_list_to_json, drop_empty_strings, mapping_to_dict, \
     request_retry, filter_null_values_recursive
@@ -557,25 +558,6 @@ class LinodeInstance(LinodeModuleBase):
         self.register_action('Deleted disk {0}'.format(disk.label))
         disk.delete()
 
-    def _wait_for_instance_status(self, instance: Instance, status: Set[str],
-                                  not_status: bool = False) -> None:
-        def poll_func() -> bool:
-            instance._api_get()
-            return (instance.status in status) != not_status
-
-        # Initial attempt
-        if poll_func():
-            return
-
-        try:
-            polling.poll(
-                poll_func,
-                step=3,
-                timeout=self._timeout_ctx.seconds_remaining,
-            )
-        except polling.TimeoutException:
-            self.fail(msg='failed to wait for instance: timeout period expired')
-
     def _update_interfaces(self) -> None:
         config = self._get_boot_config()
         param_interfaces: List[Any] = self.module.params.get('interfaces')
@@ -766,10 +748,12 @@ class LinodeInstance(LinodeModuleBase):
         should_poll = self.module.params.get('wait')
 
         # Wait for instance to not be busy
-        self._wait_for_instance_status(
-            self._instance,
-            {'running', 'offline'},
-            self._timeout_ctx.seconds_remaining)
+        wait_for_resource_free(
+            self.client,
+            'linode',
+            self._instance.id,
+            self._timeout_ctx.seconds_remaining
+        )
 
         self._instance._api_get()
 
@@ -798,19 +782,20 @@ class LinodeInstance(LinodeModuleBase):
             self.register_action('Shutdown instance {0}'.format(self.module.params.get('label')))
 
         if should_poll and event_poller is not None:
+            # Poll for the instance to be booted if necessary
             event_poller.wait_for_next_event_finished(self._timeout_ctx.seconds_remaining)
 
     def _handle_present(self) -> None:
         """Updates the instance defined in kwargs"""
 
         label = self.module.params.get('label')
+        should_wait = self.module.params.get('wait')
 
         self._instance = self._get_instance_by_label(label)
 
-        create_poller = EventPoller(self.client, 'linode', 'linode_create')
-        should_create = self._instance is None
+        if self._instance is None:
+            create_poller = EventPoller(self.client, 'linode', 'linode_create')
 
-        if should_create:
             result = self._create_instance()
 
             self._instance = cast(Instance, result.get('instance'))
@@ -818,8 +803,10 @@ class LinodeInstance(LinodeModuleBase):
 
             self.register_action('Created instance {0}'.format(label))
 
-
             create_poller.set_entity_id(self._instance.id)
+
+            if should_wait:
+                create_poller.wait_for_next_event_finished(self._timeout_ctx.seconds_remaining)
         else:
             self._update_instance()
 
@@ -829,9 +816,12 @@ class LinodeInstance(LinodeModuleBase):
         configs = self.module.params.get('configs') or []
 
         if len(configs) > 0 or len(disks) > 0:
-            # Let's wait for the instance to be created before continuing
-            if should_create:
-                create_poller.wait_for_next_event_finished(self._timeout_ctx.seconds_remaining)
+            wait_for_resource_free(
+                self.client,
+                'linode',
+                self._instance.id,
+                self._timeout_ctx.seconds_remaining
+            )
 
             self._update_disks()
             self._update_configs()

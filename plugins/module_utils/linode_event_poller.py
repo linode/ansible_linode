@@ -130,3 +130,35 @@ class EventPoller:
         )
 
         return event
+
+
+def wait_for_resource_free(client: LinodeClient, entity_type: str, entity_id: int, timeout: int):
+    """
+    Waits for all events relevant events to not be scheduled or in-progress.
+    """
+
+    timeout_ctx = TimeoutContext(timeout_seconds=timeout)
+
+    filter = {
+        '+order': 'desc',
+        '+order_by': 'created',
+        'entity.id': entity_id,
+        'entity.type': entity_type,
+    }
+
+    def poll_func():
+        events = client.get('/account/events', filters=filter)['data']
+        for event in events:
+            if event['status'] in ('scheduled', 'started'):
+                return False
+
+        return True
+
+    if poll_func():
+        return
+
+    polling.poll(
+        poll_func,
+        step=POLL_INTERVAL_SECONDS,
+        timeout=timeout_ctx.seconds_remaining,
+    )
