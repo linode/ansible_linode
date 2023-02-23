@@ -16,9 +16,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    handle_updates,
-)
 from ansible_specdoc.objects import FieldType, SpecDocMeta, SpecField, SpecReturnValue
 from linode_api4 import IPAddress
 
@@ -82,6 +79,9 @@ class ReverseDNSModule(LinodeModuleBase):
         )
 
     def update_rdns(self, rdns: str) -> Optional[IPAddress]:
+        """
+        Update the reverse DNS of the IP address.
+        """
         ip_str = self.module.params.get("address")
         ip_obj = self._get_resource_by_id(IPAddress, ip_str)
         ip_obj.rdns = rdns
@@ -91,8 +91,8 @@ class ReverseDNSModule(LinodeModuleBase):
             self.register_action(
                 f"Updated the rDNS of IP address {ip_str} to be {rdns}"
             )
-        except Exception as e:
-            self.fail(f"Failed to update rDNS of IP address {ip_str}, {e}")
+        except Exception as exception:
+            self.fail(f"Failed to update rDNS of IP address {ip_str}, {exception}")
         self.results["ip"] = ip_obj._raw_json
 
     def _handle_present(self) -> None:
