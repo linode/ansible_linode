@@ -139,7 +139,7 @@ def wait_for_resource_free(client: LinodeClient, entity_type: str, entity_id: in
 
     timeout_ctx = TimeoutContext(timeout_seconds=timeout)
 
-    filter = {
+    api_filter = {
         '+order': 'desc',
         '+order_by': 'created',
         'entity.id': entity_id,
@@ -147,7 +147,7 @@ def wait_for_resource_free(client: LinodeClient, entity_type: str, entity_id: in
     }
 
     def poll_func():
-        events = client.get('/account/events', filters=filter)['data']
+        events = client.get('/account/events', filters=api_filter)['data']
         for event in events:
             if event['status'] in ('scheduled', 'started'):
                 return False

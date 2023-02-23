@@ -6,10 +6,9 @@
 from __future__ import absolute_import, division, print_function
 
 import copy
-from typing import Optional, Any, cast, Set, List, Dict, Union
+from typing import Optional, Any, cast, List, Dict, Union
 
 import linode_api4
-import polling
 from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
