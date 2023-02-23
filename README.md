@@ -30,6 +30,7 @@ Name | Description |
 [linode.cloud.firewall_device](./docs/modules/firewall_device.md)|Manage Linode Firewall Devices.|
 [linode.cloud.image](./docs/modules/image.md)|Manage a Linode Image.|
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
+[linode.cloud.ip_rdns](./docs/modules/ip_rdns.md)|Manage a Linode IP address's rDNS.|
 [linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|Manage Linode LKE clusters.|
 [linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|Manage Linode LKE cluster node pools.|
 [linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|Manage a Linode NodeBalancer.|
