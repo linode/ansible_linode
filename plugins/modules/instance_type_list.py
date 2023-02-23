@@ -14,7 +14,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
      global_requirements
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance_type_list as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance_type_list \
+     as docs
 
 spec_filter = dict(
     name=SpecField(type=FieldType.string, required=True,
@@ -36,9 +37,11 @@ spec = dict(
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
     label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    order=SpecField(type=FieldType.string, description=['The order to list instance types in.'],
+    order=SpecField(type=FieldType.string, 
+               description=['The order to list instance types in.'],
                default='asc', choices=['desc', 'asc']),
-    order_by=SpecField(type=FieldType.string, description=['The attribute to order instance types by.']),
+    order_by=SpecField(type=FieldType.string, 
+               description=['The attribute to order instance types by.']),
     filters=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=spec_filter,
                  description=['A list of filters to apply to the resulting instance types.']),
     count=SpecField(type=FieldType.integer,
