@@ -37,10 +37,10 @@ spec = dict(
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
     label=SpecField(type=FieldType.string, required=False, doc_hide=True),
 
-    order=SpecField(type=FieldType.string, 
+    order=SpecField(type=FieldType.string,
                description=['The order to list instance types in.'],
                default='asc', choices=['desc', 'asc']),
-    order_by=SpecField(type=FieldType.string, 
+    order_by=SpecField(type=FieldType.string,
                description=['The attribute to order instance types by.']),
     filters=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=spec_filter,
                  description=['A list of filters to apply to the resulting instance types.']),
