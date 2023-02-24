@@ -63,7 +63,7 @@ SPECDOC_META = SpecDocMeta(
                      '#regions-list__response-samples',
             type=FieldType.list,
             elements=FieldType.dict,
-            sample=docs.result_images_samples
+            sample=docs.result_regions_samples
         )
     )
 )

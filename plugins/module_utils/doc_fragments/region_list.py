@@ -9,7 +9,7 @@ specdoc_examples = ['''
       - name: id
         values: us-east''']
 
-result_images_samples = ['''[
+result_regions_samples = ['''[
    {
       "capabilities": [
         "Linodes",
