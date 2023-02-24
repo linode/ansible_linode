@@ -1,4 +1,4 @@
-- name: ip_info_basic
+- name: ip_rdns_basic
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -6,9 +6,9 @@
     - name: Create an instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-central
         type: g6-standard-1
-        image: linode/alpine3.16
+        image: linode/ubuntu22.04
         wait: no
         state: present
       register: instance_create
@@ -17,10 +17,28 @@
       linode.cloud.ip_info:
         address: '{{ instance_create.instance.ipv4[0] }}'
       register: ip_info
+    
+    - set_fact:
+        new_rdns: '{{ instance_create.instance.ipv4[0] }}.nip.io'
+
+    - name: Modify reverse DNS of the IP
+      linode.cloud.ip_rdns:
+        state: present
+        address: '{{ instance_create.instance.ipv4[0] }}'
+        rdns: '{{ new_rdns }}'
+      register: ip_rdns_modified
+    
+    - name: Remove reverse DNS of the IP
+      linode.cloud.ip_rdns:
+        state: absent
+        address: '{{ instance_create.instance.ipv4[0] }}'
+      register: ip_rdns_removed
 
     - assert:
         that:
           - ip_info.ip.address == instance_create.instance.ipv4[0]
+          - ip_rdns_modified.ip.rdns == new_rdns
+          - ip_rdns_removed.ip.rdns != new_rdns
 
   always:
     - ignore_errors: true

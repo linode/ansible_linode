@@ -30,6 +30,7 @@ Name | Description |
 [linode.cloud.firewall_device](./docs/modules/firewall_device.md)|Manage Linode Firewall Devices.|
 [linode.cloud.image](./docs/modules/image.md)|Manage a Linode Image.|
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
+[linode.cloud.ip_rdns](./docs/modules/ip_rdns.md)|Manage a Linode IP address's rDNS.|
 [linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|Manage Linode LKE clusters.|
 [linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|Manage Linode LKE cluster node pools.|
 [linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|Manage a Linode NodeBalancer.|
@@ -79,6 +80,7 @@ Name | Description |
 [linode.cloud.database_list](./docs/modules/database_list.md)|List and filter on Linode Managed Databases.|
 [linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Linode events.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Linode images.|
+[linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Linode Instances.|
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|List and filter on Linode Instance Types.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH keys in the Linode profile.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on Linode stackscripts.|

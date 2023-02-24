@@ -21,9 +21,9 @@ from ansible.module_utils.basic import (AnsibleModule, env_fallback,
                                         missing_required_lib)
 
 try:
-    from linode_api4 import (ApiError, Base, Image, LinodeClient,
+    from linode_api4 import (ApiError, Base as LinodeAPIType, Image, LinodeClient,
                              MySQLDatabase, PersonalAccessToken,
-                             PostgreSQLDatabase, SSHKey, StackScript)
+                             PostgreSQLDatabase, SSHKey, StackScript, IPAddress)
 
     HAS_LINODE = True
 except ImportError:
@@ -69,8 +69,6 @@ LINODE_LABEL_ARGS = dict(
         description='The label to assign to this resource.'),
 )
 
-LinodeAPIType = Base
-
 RESOURCE_NAMES = {
     Image: "image",
     MySQLDatabase: "MySQL database",
@@ -78,6 +76,7 @@ RESOURCE_NAMES = {
     PostgreSQLDatabase: "PostgreSQL database",
     SSHKey: "SSH key",
     StackScript: "stackscript",
+    IPAddress: "IP address",
 } if HAS_LINODE else {}
 
 class LinodeModuleBase:
