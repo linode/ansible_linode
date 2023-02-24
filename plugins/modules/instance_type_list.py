@@ -59,7 +59,7 @@ SPECDOC_META = SpecDocMeta(
     options=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        instances=SpecReturnValue(
+        instanceTypes=SpecReturnValue(
             description='The returned instance types.',
             docs_url='https://www.linode.com/docs/api/linode-types/'
                      '#types-list__response-samples',
