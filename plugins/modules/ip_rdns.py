@@ -85,22 +85,18 @@ class ReverseDNSModule(LinodeModuleBase):
         ip_str = self.module.params.get("address")
         ip_obj = self._get_resource_by_id(IPAddress, ip_str)
         ip_obj.rdns = rdns
-        try:
-            ip_obj.save()
-            ip_obj._api_get()
-            self.register_action(
-                f"Updated reverse DNS of IP address {ip_str} to be {rdns}"
-            )
-        except Exception as exception:
-            self.fail(f"Failed to update reverse DNS of IP address {ip_str}, {exception}")
+        ip_obj.save()
+        ip_obj._api_get()
+        self.register_action(
+            f"Updated reverse DNS of IP address {ip_str} to be {rdns}"
+        )
         self.results["ip"] = ip_obj._raw_json
 
     def _handle_present(self) -> None:
         rdns = self.module.params.get("rdns")
         if not rdns:
             self.fail("`rdns` attribute is required to update the IP address")
-        else:
-            self.update_rdns(rdns)
+        self.update_rdns(rdns)
 
     def _handle_absent(self) -> None:
         self.update_rdns(None)
