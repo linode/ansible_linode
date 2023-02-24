@@ -1,0 +1,25 @@
+- name: region_list
+  block:
+    - name: List regions with no filter
+      linode.cloud.region_list:
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.regions | length >= 0
+
+    - name: List regions with filter on country
+      linode.cloud.region_list:
+        filters:
+          - name: country
+            values: us
+      register: filter
+
+    - assert:
+        that:
+          - filter.regions | length >= 0
+          - filter.regions[0].country == 'us'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
