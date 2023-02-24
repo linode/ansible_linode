@@ -40,7 +40,7 @@ List and filter on Linode Instance Types.
 
 ## Return Values
 
-- `instances` - The returned instance types.
+- `instanceTypes` - The returned instance types.
 
     - Sample Response:
         ```json
