@@ -9,7 +9,7 @@ specdoc_examples = ['''
       - name: engine
         values: mysql''']
 
-result_images_samples = ['''[
+result_engines_samples = ['''[
    {
       "engine": "mysql",
       "id": "mysql/8.0.26",

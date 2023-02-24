@@ -65,7 +65,7 @@ SPECDOC_META = SpecDocMeta(
                      '#managed-database-engines-list__response-samples',
             type=FieldType.list,
             elements=FieldType.dict,
-            sample=docs.result_images_samples
+            sample=docs.result_engines_samples
         )
     )
 )
