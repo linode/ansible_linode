@@ -148,11 +148,7 @@ def wait_for_resource_free(client: LinodeClient, entity_type: str, entity_id: in
 
     def poll_func():
         events = client.get('/account/events', filters=api_filter)['data']
-        for event in events:
-            if event['status'] in ('scheduled', 'started'):
-                return False
-
-        return True
+        return all(event['status'] not in ('scheduled', 'started') for event in events)
 
     if poll_func():
         return
