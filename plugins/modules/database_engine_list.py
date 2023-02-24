@@ -43,7 +43,7 @@ spec = dict(
     order_by=SpecField(type=FieldType.string,
                description=['The attribute to order database engine types by.']),
     filters=SpecField(type=FieldType.list, element_type=FieldType.dict, suboptions=spec_filter,
-                 description=['A list of filters to apply to the resulting database engine types.']),
+               description=['A list of filters to apply to the resulting database engine types.']),
     count=SpecField(type=FieldType.integer,
                description=[
                    'The number of results to return.',
