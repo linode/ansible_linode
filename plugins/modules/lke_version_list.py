@@ -9,8 +9,7 @@ from typing import Any, Optional, Dict
 from ansible_specdoc.objects import SpecDocMeta, SpecReturnValue, FieldType, SpecField
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-     construct_api_filter, get_all_paginated
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import get_all_paginated
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
      global_requirements
 
@@ -23,7 +22,8 @@ spec = dict(
 
     order=SpecField(type=FieldType.string, description=['The order to list lke versions in.'],
                default='asc', choices=['desc', 'asc']),
-    order_by=SpecField(type=FieldType.string, description=['The attribute to order lke versions by.']),
+    order_by=SpecField(type=FieldType.string, 
+               description=['The attribute to order lke versions by.']),
     count=SpecField(type=FieldType.integer,
                description=[
                    'The number of results to return.',
@@ -63,7 +63,7 @@ class Module(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for lke version list module"""
-        
+
         self.results['lke_versions'] = get_all_paginated(self.client, '/lke/versions',
                                          None, num_results=self.module.params['count'])
 
