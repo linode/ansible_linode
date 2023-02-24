@@ -1,0 +1,25 @@
+- name: instance_type_list
+  block:
+    - name: List instance types with no filter
+      linode.cloud.instance_type_list:
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.instance_types | length >= 0
+
+    - name: List instance types with filter on class
+      linode.cloud.instance_type_list:
+        filters:
+          - name: class
+            values: nanode
+      register: filter
+
+    - assert:
+        that:
+          - filter.instance_types | length >= 0
+          - filter.instance_types[0].class == 'nanode'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
