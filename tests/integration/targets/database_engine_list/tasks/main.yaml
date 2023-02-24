@@ -1,0 +1,25 @@
+- name: database_engine_list
+  block:
+    - name: List database engines with no filter
+      linode.cloud.database_engine_list:
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.database_engines | length >= 0
+
+    - name: List database engines with filter on engine
+      linode.cloud.database_engine_list:
+        filters:
+          - name: engine
+            values: mysql
+      register: filter
+
+    - assert:
+        that:
+          - filter.database_engines | length >= 0
+          - filter.database_engines[0].engine == 'mysql'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
