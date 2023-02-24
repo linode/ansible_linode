@@ -57,7 +57,7 @@ SPECDOC_META = SpecDocMeta(
     options=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        instances=SpecReturnValue(
+        regions=SpecReturnValue(
             description='The returned regions.',
             docs_url='https://www.linode.com/docs/api/regions/'
                      '#regions-list__response-samples',
