@@ -40,7 +40,7 @@ List and filter on Linode Regions.
 
 ## Return Values
 
-- `instances` - The returned regions.
+- `regions` - The returned regions.
 
     - Sample Response:
         ```json
