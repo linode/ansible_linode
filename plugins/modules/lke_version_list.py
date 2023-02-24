@@ -22,7 +22,7 @@ spec = dict(
 
     order=SpecField(type=FieldType.string, description=['The order to list lke versions in.'],
                default='asc', choices=['desc', 'asc']),
-    order_by=SpecField(type=FieldType.string, 
+    order_by=SpecField(type=FieldType.string,
                description=['The attribute to order lke versions by.']),
     count=SpecField(type=FieldType.integer,
                description=[
