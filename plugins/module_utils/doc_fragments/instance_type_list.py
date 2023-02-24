@@ -9,7 +9,7 @@ specdoc_examples = ['''
       - name: class
         values: nanode''']
 
-result_images_samples = ['''[
+result_instance_type_samples = ['''[
    {
       "addons": {
         "backups": {
