@@ -88,7 +88,7 @@ class ReverseDNSModule(LinodeModuleBase):
         ip_obj.save()
         ip_obj._api_get()
         self.register_action(
-            f"Updated reverse DNS of IP address {ip_str} to be {rdns}"
+            f"Updated reverse DNS of the IP address {ip_str} to be {rdns}"
         )
         self.results["ip"] = ip_obj._raw_json
 
