@@ -7,8 +7,6 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Any, Dict, Optional
 
-from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ssh_key_list as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
@@ -20,6 +18,12 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     construct_api_filter,
     get_all_paginated,
+)
+from ansible_specdoc.objects import (
+    FieldType,
+    SpecDocMeta,
+    SpecField,
+    SpecReturnValue,
 )
 
 spec_filter = dict(
@@ -56,7 +60,10 @@ spec = dict(
         default="asc",
         choices=["desc", "asc"],
     ),
-    order_by=SpecField(type=FieldType.string, description=["The attribute to order ssh keys by."]),
+    order_by=SpecField(
+        type=FieldType.string,
+        description=["The attribute to order ssh keys by."],
+    ),
     filters=SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
@@ -81,7 +88,9 @@ SPECDOC_META = SpecDocMeta(
     return_values=dict(
         ssh_keys=SpecReturnValue(
             description="The returned SSH keys.",
-            docs_url=("https://www.linode.com/docs/api/profile/" "#ssh-keys-list"),
+            docs_url=(
+                "https://www.linode.com/docs/api/profile/" "#ssh-keys-list"
+            ),
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_ssh_key_list_samples,

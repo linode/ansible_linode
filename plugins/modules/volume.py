@@ -6,81 +6,105 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import Optional, Any, Set
-
-import polling
-from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
-from linode_api4 import Volume
+from typing import Any, Optional, Set
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume as docs
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
+import polling
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    LinodeModuleBase,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
+    global_authors,
+    global_requirements,
+)
+from ansible_specdoc.objects import (
+    FieldType,
+    SpecDocMeta,
+    SpecField,
+    SpecReturnValue,
+)
+from linode_api4 import Volume
 
 linode_volume_spec = dict(
     label=SpecField(
         type=FieldType.string,
-        description=['The Volume’s label, which is also used in the '
-                     'filesystem_path of the resulting volume.']),
-
-    config_id=SpecField(
-        type=FieldType.integer, default=None,
-        description=['When creating a Volume attached to a Linode, the ID of the Linode Config '
-                     'to include the new Volume in.']),
-
-    linode_id=SpecField(
-        type=FieldType.integer, default=None, editable=True,
         description=[
-            'The Linode this volume should be attached to upon creation.',
-            'If not given, the volume will be created without an attachment.'
-        ]),
-
+            "The Volume’s label, which is also used in the "
+            "filesystem_path of the resulting volume."
+        ],
+    ),
+    config_id=SpecField(
+        type=FieldType.integer,
+        default=None,
+        description=[
+            "When creating a Volume attached to a Linode, the ID of the Linode Config "
+            "to include the new Volume in."
+        ],
+    ),
+    linode_id=SpecField(
+        type=FieldType.integer,
+        default=None,
+        editable=True,
+        description=[
+            "The Linode this volume should be attached to upon creation.",
+            "If not given, the volume will be created without an attachment.",
+        ],
+    ),
     region=SpecField(
         type=FieldType.string,
         description=[
-            'The location to deploy the volume in.',
-            'See U(https://api.linode.com/v4/regions)'
-        ]),
-
-    size=SpecField(
-        type=FieldType.integer, default=None, editable=True,
-        description=[
-            'The size of this volume, in GB.',
-            'Be aware that volumes may only be resized up after creation.'
-        ]),
-
-    attached=SpecField(
-        type=FieldType.bool, default=True, editable=True,
-        description=['If true, the volume will be attached to a Linode. '
-                     'Otherwise, the volume will be detached.']),
-
-    wait_timeout=SpecField(
-        type=FieldType.integer, default=240,
-        description=['The amount of time, in seconds, to wait for a volume to '
-                     'have the active status.']
+            "The location to deploy the volume in.",
+            "See U(https://api.linode.com/v4/regions)",
+        ],
     ),
-
-    state=SpecField(type=FieldType.string,
-                    description=['The desired state of the target.'],
-                    choices=['present', 'absent'], required=True),
+    size=SpecField(
+        type=FieldType.integer,
+        default=None,
+        editable=True,
+        description=[
+            "The size of this volume, in GB.",
+            "Be aware that volumes may only be resized up after creation.",
+        ],
+    ),
+    attached=SpecField(
+        type=FieldType.bool,
+        default=True,
+        editable=True,
+        description=[
+            "If true, the volume will be attached to a Linode. "
+            "Otherwise, the volume will be detached."
+        ],
+    ),
+    wait_timeout=SpecField(
+        type=FieldType.integer,
+        default=240,
+        description=[
+            "The amount of time, in seconds, to wait for a volume to "
+            "have the active status."
+        ],
+    ),
+    state=SpecField(
+        type=FieldType.string,
+        description=["The desired state of the target."],
+        choices=["present", "absent"],
+        required=True,
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        'Manage a Linode Volume.'
-    ],
+    description=["Manage a Linode Volume."],
     requirements=global_requirements,
     author=global_authors,
     options=linode_volume_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
         volume=SpecReturnValue(
-            description='The volume in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/volumes/#volume-view__responses',
+            description="The volume in JSON serialized form.",
+            docs_url="https://www.linode.com/docs/api/volumes/#volume-view__responses",
             type=FieldType.dict,
-            sample=docs.result_volume_samples
+            sample=docs.result_volume_samples,
         )
-    )
+    ),
 )
 
 
@@ -89,7 +113,7 @@ class LinodeVolume(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
-        self.required_one_of = ['state', 'label']
+        self.required_one_of = ["state", "label"]
         self.results = dict(
             changed=False,
             actions=[],
@@ -98,8 +122,10 @@ class LinodeVolume(LinodeModuleBase):
 
         self._volume: Optional[Volume] = None
 
-        super().__init__(module_arg_spec=self.module_arg_spec,
-                         required_one_of=self.required_one_of)
+        super().__init__(
+            module_arg_spec=self.module_arg_spec,
+            required_one_of=self.required_one_of,
+        )
 
     def _get_volume_by_label(self, label: str) -> Optional[Volume]:
         try:
@@ -107,21 +133,29 @@ class LinodeVolume(LinodeModuleBase):
         except IndexError:
             return None
         except Exception as exception:
-            return self.fail(msg='failed to get volume {0}: {1}'.format(label, exception))
+            return self.fail(
+                msg="failed to get volume {0}: {1}".format(label, exception)
+            )
 
     def _create_volume(self) -> Optional[Volume]:
         params = self.module.params
-        label = params.pop('label')
-        region = params.pop('region')
-        linode_id = params.pop('linode_id')
-        size = params.pop('size')
+        label = params.pop("label")
+        region = params.pop("region")
+        linode_id = params.pop("linode_id")
+        size = params.pop("size")
 
         try:
-            return self.client.volume_create(label, region, linode_id, size, **params)
+            return self.client.volume_create(
+                label, region, linode_id, size, **params
+            )
         except Exception as exception:
-            return self.fail(msg='failed to create volume: {0}'.format(exception))
+            return self.fail(
+                msg="failed to create volume: {0}".format(exception)
+            )
 
-    def _wait_for_volume_status(self, volume: Volume, status: Set[str], timeout: int) -> None:
+    def _wait_for_volume_status(
+        self, volume: Volume, status: Set[str], timeout: int
+    ) -> None:
         def poll_func() -> bool:
             volume._api_get()
             return volume.status in status
@@ -137,29 +171,30 @@ class LinodeVolume(LinodeModuleBase):
                 timeout=timeout,
             )
         except polling.TimeoutException:
-            self.fail('failed to wait for volume status: timeout period expired')
+            self.fail(
+                "failed to wait for volume status: timeout period expired"
+            )
 
     def _wait_for_volume_active(self) -> None:
         self._wait_for_volume_status(
-            self._volume, {'active'},
-            self._timeout_ctx.seconds_remaining
+            self._volume, {"active"}, self._timeout_ctx.seconds_remaining
         )
 
     def _handle_volume(self) -> None:
         params = self.module.params
 
-        label: str = params.get('label')
-        size: int = params.get('size')
-        linode_id: int = params.get('linode_id')
-        config_id: int = params.get('config_id')
-        attached: bool = params.pop('attached')
+        label: str = params.get("label")
+        size: int = params.get("size")
+        linode_id: int = params.get("linode_id")
+        config_id: int = params.get("config_id")
+        attached: bool = params.pop("attached")
 
         self._volume = self._get_volume_by_label(label)
 
         # Create the volume if it does not already exist
         if self._volume is None:
             self._volume = self._create_volume()
-            self.register_action('Created volume {0}'.format(label))
+            self.register_action("Created volume {0}".format(label))
 
         # Ensure volume is active before continuing
         self._wait_for_volume_active()
@@ -167,8 +202,9 @@ class LinodeVolume(LinodeModuleBase):
         # Resize the volume if its size does not match
         if size is not None and self._volume.size != size:
             self._volume.resize(size)
-            self.register_action('Resized volume {0} to size {1}'
-                                 .format(label, size))
+            self.register_action(
+                "Resized volume {0} to size {1}".format(label, size)
+            )
 
             # Wait for resize to complete
             self._wait_for_volume_active()
@@ -177,35 +213,35 @@ class LinodeVolume(LinodeModuleBase):
         if linode_id is not None and self._volume.linode_id != linode_id:
             self._volume.attach(linode_id, config_id)
             self.register_action(
-                'Attached volume {0} to linode_id {1} and config_id {2}'
-                .format(label, linode_id, config_id))
+                "Attached volume {0} to linode_id {1} and config_id {2}".format(
+                    label, linode_id, config_id
+                )
+            )
 
         if not attached:
             self._volume.detach()
-            self.register_action(
-                'Detached volume {0}'.format(label)
-            )
+            self.register_action("Detached volume {0}".format(label))
 
         # Force lazy-loading
         self._volume._api_get()
 
-        self.results['volume'] = self._volume._raw_json
+        self.results["volume"] = self._volume._raw_json
 
     def _handle_volume_absent(self) -> None:
-        label: str = self.module.params.get('label')
+        label: str = self.module.params.get("label")
 
         self._volume = self._get_volume_by_label(label)
 
         if self._volume is not None:
-            self.results['volume'] = self._volume._raw_json
+            self.results["volume"] = self._volume._raw_json
             self._volume.delete()
-            self.register_action('Deleted volume {0}'.format(label))
+            self.register_action("Deleted volume {0}".format(label))
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for volume module"""
-        state = kwargs.get('state')
+        state = kwargs.get("state")
 
-        if state == 'absent':
+        if state == "absent":
             self._handle_volume_absent()
             return self.results
 
@@ -219,5 +255,5 @@ def main() -> None:
     LinodeVolume()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

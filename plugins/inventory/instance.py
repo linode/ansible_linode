@@ -3,22 +3,23 @@
 
 """This module contains the logic for the Linode instance inventory module."""
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
 # pylint: disable=invalid-name
 __metaclass__ = type
 
 import os
-from typing import List, Dict, Any, Optional, Tuple, Set
-
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common \
-    import COLLECTION_USER_AGENT
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from ansible.errors import AnsibleError, AnsibleParserError
 from ansible.module_utils.six import string_types
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    COLLECTION_USER_AGENT,
+)
 from linode_api4.objects import Instance
 
-DOCUMENTATION = r'''
+DOCUMENTATION = r"""
     name: instance
     author:
       - Luke Murphy (@decentral1se)
@@ -56,9 +57,9 @@ DOCUMENTATION = r'''
           description: Populate inventory with instances with this type.
           default: []
           type: list
-'''
+"""
 
-EXAMPLES = r'''
+EXAMPLES = r"""
 # Minimal example. `LINODE_API_TOKEN` is exposed in environment.
 plugin: linode.cloud.instance
 
@@ -83,13 +84,14 @@ groups:
   mailservers: "'mail' in (tags|list)"
 compose:
   ansible_port: 2222
-'''
+"""
 
 
 try:
     from linode_api4 import LinodeClient
     from linode_api4.errors import ApiError as LinodeApiError
     from linode_api4.objects.filtering import Filter
+
     HAS_LINODE = True
 except ImportError:
     HAS_LINODE = False
@@ -98,7 +100,7 @@ except ImportError:
 class InventoryModule(BaseInventoryPlugin, Constructable):
     """Linode instance inventory plugin"""
 
-    NAME = 'linode.cloud.instance'
+    NAME = "linode.cloud.instance"
 
     def __init__(self) -> None:
         super().__init__()
@@ -109,26 +111,27 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
     def _build_client(self) -> None:
         """Build the Linode client."""
 
-        api_token = self.get_option('api_token')
+        api_token = self.get_option("api_token")
 
         if api_token is None:
             try:
-                api_token = os.environ['LINODE_API_TOKEN']
+                api_token = os.environ["LINODE_API_TOKEN"]
             except KeyError:
                 pass
 
         if api_token is None:
-            raise AnsibleError((
-                'Could not retrieve Linode API Token '
-                'from plugin configuration or environment'
-            ))
+            raise AnsibleError(
+                (
+                    "Could not retrieve Linode API Token "
+                    "from plugin configuration or environment"
+                )
+            )
 
-        self.client = LinodeClient(
-            api_token,
-            user_agent=COLLECTION_USER_AGENT)
+        self.client = LinodeClient(api_token, user_agent=COLLECTION_USER_AGENT)
 
-    def _get_instances_inventory(self, regions: List[str], types: List[str], tags: List[str]) \
-            -> None:
+    def _get_instances_inventory(
+        self, regions: List[str], types: List[str], tags: List[str]
+    ) -> None:
         """Retrieve Linode instance information from cloud inventory."""
         filters = self._construct_config_filter(regions)
 
@@ -138,7 +141,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             else:
                 self.instances = self.client.linode.instances()
         except LinodeApiError as exception:
-            raise AnsibleError('Linode client raised: %s' % exception) from exception
+            raise AnsibleError(
+                "Linode client raised: %s" % exception
+            ) from exception
 
         if types:
             self._filter_instance_types(types)
@@ -149,11 +154,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
     def _add_groups(self) -> None:
         """Add Linode instance groups to the dynamic inventory."""
         self.linode_groups = set(
-            filter(None, [
-                instance.group
-                for instance
-                in self.instances
-            ])
+            filter(None, [instance.group for instance in self.instances])
         )
 
         for linode_group in self.linode_groups:
@@ -161,34 +162,44 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
     @staticmethod
     def _construct_list_filter(attr: str, values: List[str]) -> Dict[str, Any]:
-        return {'+or': [{attr: value} for value in values]}
+        return {"+or": [{attr: value} for value in values]}
 
     def _construct_config_filter(self, regions: List[str]) -> Optional[Filter]:
         filters = []
 
         if regions:
-            filters.append(self._construct_list_filter('region', regions))
+            filters.append(self._construct_list_filter("region", regions))
 
         if len(filters) < 1:
             return None
 
-        return Filter({
-            '+and': filters,
-        })
+        return Filter(
+            {
+                "+and": filters,
+            }
+        )
 
     def _filter_instance_tags(self, valid_tags: List[str]) -> None:
-        self.instances = [instance for instance in self.instances
-                          if any(tag in instance.tags for tag in valid_tags)]
+        self.instances = [
+            instance
+            for instance in self.instances
+            if any(tag in instance.tags for tag in valid_tags)
+        ]
 
     def _filter_instance_types(self, valid_types: List[str]) -> None:
-        self.instances = [instance for instance in self.instances
-                          if instance.type.id in valid_types]
+        self.instances = [
+            instance
+            for instance in self.instances
+            if instance.type.id in valid_types
+        ]
 
     def _add_instances_to_groups(self) -> None:
         """Add instance names to their dynamic inventory groups."""
         for instance in self.instances:
             self.inventory.add_host(instance.label, group=instance.group)
-            self.inventory.set_variable(instance.label, 'ansible_host', instance.ipv4[0])
+            self.inventory.set_variable(
+                instance.label, "ansible_host", instance.ipv4[0]
+            )
 
     def _add_hostvars_for_instances(self) -> None:
         """Add hostvars for instances in the dynamic inventory."""
@@ -196,13 +207,13 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             hostvars = instance._raw_json
             for hostvar_key in hostvars:
                 self.inventory.set_variable(
-                    instance.label,
-                    hostvar_key,
-                    hostvars[hostvar_key]
+                    instance.label, hostvar_key, hostvars[hostvar_key]
                 )
 
     @staticmethod
-    def _validate_option(name: str, desired_type: Any, option_value: Any) -> Any:
+    def _validate_option(
+        name: str, desired_type: Any, option_value: Any
+    ) -> Any:
         """Validate user specified configuration data against types."""
         if isinstance(option_value, string_types) and desired_type == list:
             option_value = [option_value]
@@ -212,40 +223,36 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
 
         if not isinstance(option_value, desired_type):
             raise AnsibleParserError(
-                'The option %s (%s) must be a %s' % (
-                    name, option_value, desired_type
-                )
+                "The option %s (%s) must be a %s"
+                % (name, option_value, desired_type)
             )
 
         return option_value
 
-    def _get_query_options(self, config_data: Dict[str, Any]) -> Tuple[Any, Any, Any]:
+    def _get_query_options(
+        self, config_data: Dict[str, Any]
+    ) -> Tuple[Any, Any, Any]:
         """Get user specified query options from the configuration."""
         options = {
-            'regions': {
-                'type_to_be': list,
-                'value': config_data.get('regions', [])
+            "regions": {
+                "type_to_be": list,
+                "value": config_data.get("regions", []),
             },
-            'types': {
-                'type_to_be': list,
-                'value': config_data.get('types', [])
+            "types": {
+                "type_to_be": list,
+                "value": config_data.get("types", []),
             },
-            'tags': {
-                'type_to_be': list,
-                'value': config_data.get('tags', [])
-            },
+            "tags": {"type_to_be": list, "value": config_data.get("tags", [])},
         }
 
         for name in options:
-            options[name]['value'] = self._validate_option(
-                name,
-                options[name]['type_to_be'],
-                options[name]['value']
+            options[name]["value"] = self._validate_option(
+                name, options[name]["type_to_be"], options[name]["value"]
             )
 
-        regions = options['regions']['value']
-        types = options['types']['value']
-        tags = options['tags']['value']
+        regions = options["regions"]["value"]
+        types = options["types"]["value"]
+        tags = options["tags"]["value"]
 
         return regions, types, tags
 
@@ -254,20 +261,24 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         if not super().verify_file(path):
             return False
 
-        endings = ('linode.yaml', 'linode.yml', 'instance.yaml', 'instance.yml')
+        endings = ("linode.yaml", "linode.yml", "instance.yaml", "instance.yml")
         return any((path.endswith(ending) for ending in endings))
 
-    def parse(self, inventory: Any, loader: Any, path: str, cache: bool = True) -> None:
+    def parse(
+        self, inventory: Any, loader: Any, path: str, cache: bool = True
+    ) -> None:
         """Dynamically parse Linode the cloud inventory."""
         super().parse(inventory, loader, path)
 
         if not HAS_LINODE:
-            raise AnsibleError('the Linode dynamic inventory plugin requires linode_api4.')
+            raise AnsibleError(
+                "the Linode dynamic inventory plugin requires linode_api4."
+            )
 
         config_data = self._read_config_data(path)
         self._build_client()
 
-        strict = self.get_option('strict')
+        strict = self.get_option("strict")
 
         regions, types, tags = self._get_query_options(config_data)
         self._get_instances_inventory(regions, types, tags)
@@ -279,17 +290,20 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         for instance in self.instances:
             variables = self.inventory.get_host(instance.label).get_vars()
             self._add_host_to_composed_groups(
-                self.get_option('groups'),
+                self.get_option("groups"),
                 variables,
                 instance.label,
-                strict=strict)
+                strict=strict,
+            )
             self._add_host_to_keyed_groups(
-                self.get_option('keyed_groups'),
+                self.get_option("keyed_groups"),
                 variables,
                 instance.label,
-                strict=strict)
+                strict=strict,
+            )
             self._set_composite_vars(
-                self.get_option('compose'),
+                self.get_option("compose"),
                 variables,
                 instance.label,
-                strict=strict)
+                strict=strict,
+            )
