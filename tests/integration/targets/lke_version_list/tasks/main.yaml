@@ -1,0 +1,13 @@
+- name: lke_version_list
+  block:
+    - name: List lke versions with no filter
+      linode.cloud.lke_version_list:
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.lke_versions | length >= 0
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

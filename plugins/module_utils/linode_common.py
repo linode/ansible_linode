@@ -6,12 +6,10 @@ import traceback
 from typing import Any, Type
 
 import polling
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    format_api_error,
-)
-from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import (
-    TimeoutContext,
-)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
+    format_api_error, format_generic_error
+from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import \
+    TimeoutContext
 
 try:
     from ansible.module_utils.ansible_release import (
@@ -27,18 +25,10 @@ from ansible.module_utils.basic import (
 )
 
 try:
-    from linode_api4 import ApiError
-    from linode_api4 import Base as LinodeAPIType
-    from linode_api4 import (
-        Image,
-        IPAddress,
-        LinodeClient,
-        MySQLDatabase,
-        PersonalAccessToken,
-        PostgreSQLDatabase,
-        SSHKey,
-        StackScript,
-    )
+    from linode_api4 import (ApiError, Base as LinodeAPIType, Image, LinodeClient,
+                             MySQLDatabase, PersonalAccessToken,
+                             PostgreSQLDatabase, SSHKey, StackScript,
+                             IPAddress, UnexpectedResponseError)
 
     HAS_LINODE = True
 except ImportError:
@@ -167,9 +157,12 @@ class LinodeModuleBase:
                 # We don't want to return a stack trace for an API error
                 self.fail(msg=format_api_error(err))
             except polling.TimeoutException as err:
-                self.fail(
-                    msg="failed to wait for condition: timeout period expired"
-                )
+                self.fail(msg='failed to wait for condition: timeout period expired')
+            except (
+                    ValueError, RuntimeError, UnexpectedResponseError,
+                    TypeError, IndexError
+            ) as err:
+                self.fail(msg=format_generic_error(err))
 
             self.module.exit_json(**res)
 

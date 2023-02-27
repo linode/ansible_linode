@@ -323,9 +323,13 @@ def format_api_error(err: ApiError) -> str:
     return f"Error from Linode API: [{err.status}] {';'.join(err.errors)}"
 
 
-def poll_condition(
-    condition_func: Callable[[], bool], step: int, timeout: int
-) -> None:
+def format_generic_error(err: Exception) -> str:
+    """Formats a generic error into a readable string"""
+
+    return f"{type(err).__name__}: {str(err)}"
+
+
+def poll_condition(condition_func: Callable[[], bool], step: int, timeout: int) -> None:
     """Polls for the given condition using the given step and timeout values."""
     # Initial attempt
     if condition_func():

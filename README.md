@@ -83,6 +83,7 @@ Name | Description |
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Linode images.|
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Linode Instances.|
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|List and filter on Linode Instance Types.|
+[linode.cloud.lke_version_list](./docs/modules/lke_version_list.md)|List Kubernetes versions available for deployment to a Kubernetes cluster.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Linode Regions.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH keys in the Linode profile.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on Linode stackscripts.|
