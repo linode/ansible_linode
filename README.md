@@ -77,6 +77,7 @@ Modules for retrieving and filtering on multiple Linode resources.
 
 Name | Description |
 --- | ------------ |
+[linode.cloud.database_engine_list](./docs/modules/database_engine_list.md)|List and filter on Managed Database engine types.|
 [linode.cloud.database_list](./docs/modules/database_list.md)|List and filter on Linode Managed Databases.|
 [linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Linode events.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Linode images.|
