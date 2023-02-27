@@ -329,7 +329,9 @@ def format_generic_error(err: Exception) -> str:
     return f"{type(err).__name__}: {str(err)}"
 
 
-def poll_condition(condition_func: Callable[[], bool], step: int, timeout: int) -> None:
+def poll_condition(
+    condition_func: Callable[[], bool], step: int, timeout: int
+) -> None:
     """Polls for the given condition using the given step and timeout values."""
     # Initial attempt
     if condition_func():
