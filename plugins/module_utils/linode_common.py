@@ -23,7 +23,8 @@ from ansible.module_utils.basic import (AnsibleModule, env_fallback,
 try:
     from linode_api4 import (ApiError, Base as LinodeAPIType, Image, LinodeClient,
                              MySQLDatabase, PersonalAccessToken,
-                             PostgreSQLDatabase, SSHKey, StackScript, IPAddress, UnexpectedResponseError)
+                             PostgreSQLDatabase, SSHKey, StackScript,
+                             IPAddress, UnexpectedResponseError)
 
     HAS_LINODE = True
 except ImportError:
