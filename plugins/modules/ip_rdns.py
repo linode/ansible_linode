@@ -16,13 +16,17 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
 )
-from ansible_specdoc.objects import FieldType, SpecDocMeta, SpecField, SpecReturnValue
+from ansible_specdoc.objects import (
+    FieldType,
+    SpecDocMeta,
+    SpecField,
+    SpecReturnValue,
+)
 from linode_api4 import IPAddress
 
 ip_rdns_spec = dict(
     # Disable the default values
     label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-
     state=SpecField(
         type=FieldType.string,
         choices=["present", "absent"],

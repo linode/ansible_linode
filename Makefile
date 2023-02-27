@@ -31,6 +31,21 @@ lint:
 	mypy plugins/modules
 	mypy plugins/inventory
 
+	isort --check-only plugins
+	autoflake --check plugins --quiet
+	black --check plugins
+
+black:
+	black plugins
+
+isort:
+	isort plugins
+
+autoflake:
+	autoflake plugins
+
+format: black isort autoflake
+
 gendocs:
 	rm -rf $(DOCS_PATH)/modules $(DOCS_PATH)/inventory
 	mkdir -p $(DOCS_PATH)/modules $(DOCS_PATH)/inventory

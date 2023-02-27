@@ -6,356 +6,421 @@
 from __future__ import absolute_import, division, print_function
 
 import copy
-from typing import Optional, Any, cast, List, Dict, Union
-
-import linode_api4
-from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
+from typing import Any, Dict, List, Optional, Union, cast
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import \
-    LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
-from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import EventPoller, \
-    wait_for_resource_free
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    filter_null_values, paginated_list_to_json, drop_empty_strings, mapping_to_dict, \
-    request_retry, filter_null_values_recursive
+import linode_api4
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    LinodeModuleBase,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
+    global_authors,
+    global_requirements,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import (
+    EventPoller,
+    wait_for_resource_free,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    drop_empty_strings,
+    filter_null_values,
+    filter_null_values_recursive,
+    mapping_to_dict,
+    paginated_list_to_json,
+    request_retry,
+)
+from ansible_specdoc.objects import (
+    FieldType,
+    SpecDocMeta,
+    SpecField,
+    SpecReturnValue,
+)
 
 try:
-    from linode_api4 import Instance, Config, ConfigInterface, Disk, Volume
+    from linode_api4 import Config, ConfigInterface, Disk, Instance, Volume
 except ImportError:
     # handled in module_utils.linode_common
     pass
 
 linode_instance_disk_spec = dict(
     authorized_keys=SpecField(
-        type=FieldType.list, element_type=FieldType.string,
-        description=['A list of SSH public key parts to deploy for the root user.']),
-
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "A list of SSH public key parts to deploy for the root user."
+        ],
+    ),
     authorized_users=SpecField(
-        type=FieldType.list, element_type=FieldType.string,
-        description=['A list of usernames.']),
-
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=["A list of usernames."],
+    ),
     filesystem=SpecField(
         type=FieldType.string,
-        description=['The filesystem to create this disk with.']),
-
+        description=["The filesystem to create this disk with."],
+    ),
     image=SpecField(
         type=FieldType.string,
-        description=['An Image ID to deploy the Disk from.']),
-
+        description=["An Image ID to deploy the Disk from."],
+    ),
     label=SpecField(
-        type=FieldType.string, required=True,
-        description=['The label to give this Disk.']),
-
+        type=FieldType.string,
+        required=True,
+        description=["The label to give this Disk."],
+    ),
     root_pass=SpecField(
         type=FieldType.string,
-        description=['The root user’s password on the newly-created Linode.']),
-
+        description=["The root user’s password on the newly-created Linode."],
+    ),
     size=SpecField(
-        type=FieldType.integer, required=True, editable=True,
-        description=['The size of the Disk in MB.']),
-
+        type=FieldType.integer,
+        required=True,
+        editable=True,
+        description=["The size of the Disk in MB."],
+    ),
     stackscript_id=SpecField(
         type=FieldType.integer,
         description=[
-            'The ID of the StackScript to use when creating the instance.',
-            'See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).'
-        ]),
-
+            "The ID of the StackScript to use when creating the instance.",
+            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+        ],
+    ),
     stackscript_data=SpecField(
         type=FieldType.dict,
         description=[
-            'An object containing arguments to any User Defined Fields present in '
-            'the StackScript used when creating the instance.',
-            'Only valid when a stackscript_id is provided.',
-            'See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).'
-        ])
+            "An object containing arguments to any User Defined Fields present in "
+            "the StackScript used when creating the instance.",
+            "Only valid when a stackscript_id is provided.",
+            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+        ],
+    ),
 )
 
 linode_instance_device_spec = dict(
     disk_label=SpecField(
         type=FieldType.string,
-        description=['The label of the disk to attach to this Linode.']),
-
+        description=["The label of the disk to attach to this Linode."],
+    ),
     disk_id=SpecField(
         type=FieldType.integer,
-        description=['The ID of the disk to attach to this Linode.']),
-
+        description=["The ID of the disk to attach to this Linode."],
+    ),
     volume_id=SpecField(
         type=FieldType.integer,
-        description=['The ID of the volume to attach to this Linode.'])
+        description=["The ID of the volume to attach to this Linode."],
+    ),
 )
 
 linode_instance_devices_spec = {
-    f'sd{k}': SpecField(
+    f"sd{k}": SpecField(
         type=FieldType.dict,
-        description=[f'The device to be mapped to /dev/sd{k}'],
-        suboptions=linode_instance_device_spec) for k in 'abcdefgh'
+        description=[f"The device to be mapped to /dev/sd{k}"],
+        suboptions=linode_instance_device_spec,
+    )
+    for k in "abcdefgh"
 }
 
 linode_instance_helpers_spec = dict(
     devtmpfs_automount=SpecField(
         type=FieldType.bool,
-        description=['Populates the /dev directory early during boot without udev.']),
-
+        description=[
+            "Populates the /dev directory early during boot without udev."
+        ],
+    ),
     distro=SpecField(
         type=FieldType.bool,
-        description=['Helps maintain correct inittab/upstart console device.']),
-
+        description=["Helps maintain correct inittab/upstart console device."],
+    ),
     modules_dep=SpecField(
         type=FieldType.bool,
-        description=['Creates a modules dependency file for the Kernel you run.']),
-
+        description=[
+            "Creates a modules dependency file for the Kernel you run."
+        ],
+    ),
     network=SpecField(
         type=FieldType.bool,
-        description=['Automatically configures static networking.']),
-
+        description=["Automatically configures static networking."],
+    ),
     updatedb_disabled=SpecField(
         type=FieldType.bool,
-        description=['Disables updatedb cron job to avoid disk thrashing.'])
+        description=["Disables updatedb cron job to avoid disk thrashing."],
+    ),
 )
 
 linode_instance_interface_spec = dict(
     purpose=SpecField(
-        type=FieldType.string, required=True,
-        description=['The type of interface.'],
-        choices=[
-            'public',
-            'vlan'
-        ]),
-
+        type=FieldType.string,
+        required=True,
+        description=["The type of interface."],
+        choices=["public", "vlan"],
+    ),
     label=SpecField(
         type=FieldType.string,
         description=[
-            'The name of this interface.',
-            'Required for vlan purpose interfaces.',
-            'Must be an empty string or null for public purpose interfaces.'
-        ]),
-
+            "The name of this interface.",
+            "Required for vlan purpose interfaces.",
+            "Must be an empty string or null for public purpose interfaces.",
+        ],
+    ),
     ipam_address=SpecField(
         type=FieldType.string,
-        description=['This Network Interface’s private IP address in Classless '
-                     'Inter-Domain Routing (CIDR) notation.']
-    )
+        description=[
+            "This Network Interface’s private IP address in Classless "
+            "Inter-Domain Routing (CIDR) notation."
+        ],
+    ),
 )
 
 linode_instance_config_spec = dict(
     comments=SpecField(
-        type=FieldType.string, editable=True,
-        description=['Arbitrary User comments on this Config.']),
-
+        type=FieldType.string,
+        editable=True,
+        description=["Arbitrary User comments on this Config."],
+    ),
     devices=SpecField(
-        type=FieldType.dict, required=True, suboptions=linode_instance_devices_spec,
-        description=['The devices to map to this configuration.']),
-
+        type=FieldType.dict,
+        required=True,
+        suboptions=linode_instance_devices_spec,
+        description=["The devices to map to this configuration."],
+    ),
     helpers=SpecField(
-        type=FieldType.dict, suboptions=linode_instance_helpers_spec,
-        description=['Helpers enabled when booting to this Linode Config.']),
-
+        type=FieldType.dict,
+        suboptions=linode_instance_helpers_spec,
+        description=["Helpers enabled when booting to this Linode Config."],
+    ),
     kernel=SpecField(
-        type=FieldType.string, editable=True,
-        description=['A Kernel ID to boot a Linode with. Defaults to "linode/latest-64bit".']),
-
-    label=SpecField(
-        type=FieldType.string, required=True,
-        description=['The label to assign to this config.']),
-
-    memory_limit=SpecField(
-        type=FieldType.integer, editable=True,
-        description=['Defaults to the total RAM of the Linode.']),
-
-    root_device=SpecField(
-        type=FieldType.string, editable=True,
-        description=['The root device to boot.']),
-
-    run_level=SpecField(
-        type=FieldType.string, editable=True,
-        description=['Defines the state of your Linode after booting.']),
-
-    virt_mode=SpecField(
-        type=FieldType.string, editable=True,
-        description=['Controls the virtualization mode.'],
-        choices=[
-            'paravirt',
-            'fullvirt'
-        ]),
-    interfaces=SpecField(
-        type=FieldType.list, element_type=FieldType.dict, suboptions=linode_instance_interface_spec,
+        type=FieldType.string,
         editable=True,
         description=[
-            'A list of network interfaces to apply to the Linode.',
-            'See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances'
-            '/#configuration-profile-create__request-body-schema).'
-        ]),
+            'A Kernel ID to boot a Linode with. Defaults to "linode/latest-64bit".'
+        ],
+    ),
+    label=SpecField(
+        type=FieldType.string,
+        required=True,
+        description=["The label to assign to this config."],
+    ),
+    memory_limit=SpecField(
+        type=FieldType.integer,
+        editable=True,
+        description=["Defaults to the total RAM of the Linode."],
+    ),
+    root_device=SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=["The root device to boot."],
+    ),
+    run_level=SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=["Defines the state of your Linode after booting."],
+    ),
+    virt_mode=SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=["Controls the virtualization mode."],
+        choices=["paravirt", "fullvirt"],
+    ),
+    interfaces=SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_instance_interface_spec,
+        editable=True,
+        description=[
+            "A list of network interfaces to apply to the Linode.",
+            "See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances"
+            "/#configuration-profile-create__request-body-schema).",
+        ],
+    ),
 )
 
 linode_instance_spec = dict(
-    type=SpecField(type=FieldType.string, description=['The unique label to give this instance.']),
+    type=SpecField(
+        type=FieldType.string,
+        description=["The unique label to give this instance."],
+    ),
     region=SpecField(
         type=FieldType.string,
         description=[
-            'The location to deploy the instance in.',
-            'See the [Linode API documentation](https://api.linode.com/v4/regions).']),
-
+            "The location to deploy the instance in.",
+            "See the [Linode API documentation](https://api.linode.com/v4/regions).",
+        ],
+    ),
     image=SpecField(
         type=FieldType.string,
-        conflicts_with=['disks', 'configs'],
-        description=['The image ID to deploy the instance disk from.']),
-
+        conflicts_with=["disks", "configs"],
+        description=["The image ID to deploy the instance disk from."],
+    ),
     authorized_keys=SpecField(
-        type=FieldType.list, element_type=FieldType.string,
-        description=['A list of SSH public key parts to deploy for the root user.']),
-
-    root_pass=SpecField(
-        type=FieldType.string, no_log=True,
+        type=FieldType.list,
+        element_type=FieldType.string,
         description=[
-            'The password for the root user.',
-            'If not specified, one will be generated.',
-            'This generated password will be available in the task success JSON.'
-        ]),
-
+            "A list of SSH public key parts to deploy for the root user."
+        ],
+    ),
+    root_pass=SpecField(
+        type=FieldType.string,
+        no_log=True,
+        description=[
+            "The password for the root user.",
+            "If not specified, one will be generated.",
+            "This generated password will be available in the task success JSON.",
+        ],
+    ),
     stackscript_id=SpecField(
         type=FieldType.integer,
         description=[
-            'The ID of the StackScript to use when creating the instance.',
-            'See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).'
-        ]),
-
+            "The ID of the StackScript to use when creating the instance.",
+            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+        ],
+    ),
     stackscript_data=SpecField(
         type=FieldType.dict,
         description=[
-            'An object containing arguments to any User Defined Fields present in '
-            'the StackScript used when creating the instance.',
-            'Only valid when a stackscript_id is provided.',
-            'See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).'
-        ]),
-
-    state=SpecField(type=FieldType.string,
-                    description=['The desired state of the target.'],
-                    choices=['present', 'absent'], required=True),
-
+            "An object containing arguments to any User Defined Fields present in "
+            "the StackScript used when creating the instance.",
+            "Only valid when a stackscript_id is provided.",
+            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+        ],
+    ),
+    state=SpecField(
+        type=FieldType.string,
+        description=["The desired state of the target."],
+        choices=["present", "absent"],
+        required=True,
+    ),
     private_ip=SpecField(
         type=FieldType.bool,
-        description=['If true, the created Linode will have private networking enabled.']),
-
-    group=SpecField(
-        type=FieldType.string, editable=True,
         description=[
-            'The group that the instance should be marked under.',
-            'Please note, that group labelling is deprecated but still supported.',
-            'The encouraged method for marking instances is to use tags.']),
-
+            "If true, the created Linode will have private networking enabled."
+        ],
+    ),
+    group=SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[
+            "The group that the instance should be marked under.",
+            "Please note, that group labelling is deprecated but still supported.",
+            "The encouraged method for marking instances is to use tags.",
+        ],
+    ),
     boot_config_label=SpecField(
         type=FieldType.string,
-        description=['The label of the config to boot from.']),
-
+        description=["The label of the config to boot from."],
+    ),
     configs=SpecField(
-        type=FieldType.list, element_type=FieldType.dict, suboptions=linode_instance_config_spec,
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_instance_config_spec,
         editable=True,
-        conflicts_with=['image', 'interfaces'],
+        conflicts_with=["image", "interfaces"],
         description=[
-            'A list of Instance configs to apply to the Linode.',
-            'See the [Linode API documentation](https://www.linode.com/docs'
-            '/api/linode-instances/#configuration-profile-create).'
-        ]),
-
+            "A list of Instance configs to apply to the Linode.",
+            "See the [Linode API documentation](https://www.linode.com/docs"
+            "/api/linode-instances/#configuration-profile-create).",
+        ],
+    ),
     disks=SpecField(
-        type=FieldType.list, element_type=FieldType.dict, suboptions=linode_instance_disk_spec,
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_instance_disk_spec,
         editable=True,
-        conflicts_with=['image', 'interfaces'],
+        conflicts_with=["image", "interfaces"],
         description=[
-            'A list of Disks to create on the Linode.',
-            'See the [Linode API documentation](https://www.linode.com/'
-            'docs/api/linode-instances/#disk-create).'
-        ]),
-
+            "A list of Disks to create on the Linode.",
+            "See the [Linode API documentation](https://www.linode.com/"
+            "docs/api/linode-instances/#disk-create).",
+        ],
+    ),
     interfaces=SpecField(
-        type=FieldType.list, element_type=FieldType.dict, suboptions=linode_instance_interface_spec,
-        conflicts_with=['disks', 'configs'],
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_instance_interface_spec,
+        conflicts_with=["disks", "configs"],
         description=[
-            'A list of network interfaces to apply to the Linode.',
-            'See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/'
-            '#linode-create__request-body-schema).'
-        ]),
-
+            "A list of network interfaces to apply to the Linode.",
+            "See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/"
+            "#linode-create__request-body-schema).",
+        ],
+    ),
     booted=SpecField(
         type=FieldType.bool,
         description=[
-            'Whether the new Instance should be booted.',
-            'This will default to True if the Instance is deployed from an Image or Backup.'
-        ]),
-
+            "Whether the new Instance should be booted.",
+            "This will default to True if the Instance is deployed from an Image or Backup.",
+        ],
+    ),
     backup_id=SpecField(
         type=FieldType.integer,
         description=[
-            'The id of the Backup to restore to the new Instance.',
-            'May not be provided if "image" is given.']),
-
+            "The id of the Backup to restore to the new Instance.",
+            'May not be provided if "image" is given.',
+        ],
+    ),
     wait=SpecField(
-        type=FieldType.bool, default=True,
-        description=['Wait for the instance to have status "running" before returning.']),
-
+        type=FieldType.bool,
+        default=True,
+        description=[
+            'Wait for the instance to have status "running" before returning.'
+        ],
+    ),
     wait_timeout=SpecField(
-        type=FieldType.integer, default=240,
-        description=['The amount of time, in seconds, to wait for an instance to '
-                     'have status "running".']
-    )
+        type=FieldType.integer,
+        default=240,
+        description=[
+            "The amount of time, in seconds, to wait for an instance to "
+            'have status "running".'
+        ],
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        'Manage Linode Instances, Configs, and Disks.'
-    ],
+    description=["Manage Linode Instances, Configs, and Disks."],
     requirements=global_requirements,
     author=global_authors,
     options=linode_instance_spec,
     examples=docs.specdoc_examples,
     return_values=dict(
         instance=SpecReturnValue(
-            description='The instance description in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/linode-instances/#linode-view__responses',
+            description="The instance description in JSON serialized form.",
+            docs_url="https://www.linode.com/docs/api/linode-instances/#linode-view__responses",
             type=FieldType.dict,
-            sample=docs.result_instance_samples
+            sample=docs.result_instance_samples,
         ),
         configs=SpecReturnValue(
-            description='A list of configs tied to this Linode Instance.',
-            docs_url='https://www.linode.com/docs/api/linode-instances/'
-                     '#configuration-profile-view__responses',
+            description="A list of configs tied to this Linode Instance.",
+            docs_url="https://www.linode.com/docs/api/linode-instances/"
+            "#configuration-profile-view__responses",
             type=FieldType.list,
-            sample=docs.result_configs_samples
+            sample=docs.result_configs_samples,
         ),
         disks=SpecReturnValue(
-            description='A list of disks tied to this Linode Instance.',
-            docs_url='https://www.linode.com/docs/api/linode-instances/#disk-view__responses',
+            description="A list of disks tied to this Linode Instance.",
+            docs_url="https://www.linode.com/docs/api/linode-instances/#disk-view__responses",
             type=FieldType.list,
-            sample=docs.result_disks_samples
+            sample=docs.result_disks_samples,
         ),
         networking=SpecReturnValue(
-            description='Networking information about this Linode Instance.',
-            docs_url='https://www.linode.com/docs/api/linode-instances/'
-                     '#networking-information-list__responses',
+            description="Networking information about this Linode Instance.",
+            docs_url="https://www.linode.com/docs/api/linode-instances/"
+            "#networking-information-list__responses",
             type=FieldType.dict,
-            sample=docs.result_networking_samples
-        )
-    )
+            sample=docs.result_networking_samples,
+        ),
+    ),
 )
 
 # Fields that can be updated on an existing instance
-linode_instance_mutable = {
-    'group',
-    'tags'
-}
+linode_instance_mutable = {"group", "tags"}
 
 linode_instance_config_mutable = {
-    'comments',
-    'kernel',
-    'memory_limit',
-    'root_device',
-    'run_level',
-    'virt_mode',
-    'interfaces'
+    "comments",
+    "kernel",
+    "memory_limit",
+    "root_device",
+    "run_level",
+    "virt_mode",
+    "interfaces",
 }
 
 
@@ -366,10 +431,10 @@ class LinodeInstance(LinodeModuleBase):
         self.module_arg_spec = SPECDOC_META.ansible_spec
 
         self.mutually_exclusive = [
-            ('image', 'disks'),
-            ('image', 'configs'),
-            ('interfaces', 'configs'),
-            ('interfaces', 'disks')
+            ("image", "disks"),
+            ("image", "configs"),
+            ("interfaces", "configs"),
+            ("interfaces", "disks"),
         ]
 
         self.results: dict = dict(
@@ -381,11 +446,12 @@ class LinodeInstance(LinodeModuleBase):
         )
 
         self._instance: Optional[Instance] = None
-        self._root_pass: str = ''
+        self._root_pass: str = ""
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
-            mutually_exclusive=self.mutually_exclusive)
+            mutually_exclusive=self.mutually_exclusive,
+        )
 
     def _get_instance_by_label(self, label: str) -> Optional[Instance]:
         """Gets a Linode instance by label"""
@@ -395,28 +461,37 @@ class LinodeInstance(LinodeModuleBase):
         except IndexError:
             return None
         except Exception as exception:
-            return self.fail(msg='failed to get instance {0}: {1}'.format(label, exception))
+            return self.fail(
+                msg="failed to get instance {0}: {1}".format(label, exception)
+            )
 
     def _get_desired_instance_status(self) -> str:
-        booted = self.module.params.get('booted')
-        disks = self.module.params.get('disks')
-        configs = self.module.params.get('configs')
+        booted = self.module.params.get("booted")
+        disks = self.module.params.get("disks")
+        configs = self.module.params.get("configs")
 
-        if not booted or \
-                (disks is not None and len(disks) > 0) or \
-                (configs is not None and len(configs) > 0):
-            return 'offline'
+        if (
+            not booted
+            or (disks is not None and len(disks) > 0)
+            or (configs is not None and len(configs) > 0)
+        ):
+            return "offline"
 
-        return 'running'
+        return "running"
 
     def _get_boot_config(self) -> Optional[Config]:
-        config_label = self.module.params.get('boot_config_label')
+        config_label = self.module.params.get("boot_config_label")
 
         if config_label is not None:
             # Find the config with the matching label
             return next(
-                (config for config in self._instance.configs if config.label == config_label),
-                None)
+                (
+                    config
+                    for config in self._instance.configs
+                    if config.label == config_label
+                ),
+                None,
+            )
 
         if len(self._instance.configs) > 0:
             return self._instance.configs[0]
@@ -425,102 +500,105 @@ class LinodeInstance(LinodeModuleBase):
 
     def _get_disk_by_label(self, label: str) -> Optional[Disk]:
         # Find the disk with the matching label
-        return next((disk for disk in self._instance.disks if disk.label == label), None)
+        return next(
+            (disk for disk in self._instance.disks if disk.label == label), None
+        )
 
     def _get_networking(self) -> Dict[str, Any]:
-        return self.client.get('/linode/instances/{0}/ips'.format(self._instance.id))
+        return self.client.get(
+            "/linode/instances/{0}/ips".format(self._instance.id)
+        )
 
     @staticmethod
     def _device_to_param_mapping(device: Union[Disk, Volume]) -> Dict[str, int]:
-        id_key = ''
+        id_key = ""
 
         if isinstance(device, Volume):
-            id_key = 'volume_id'
+            id_key = "volume_id"
 
         if isinstance(device, Disk):
-            id_key = 'disk_id'
+            id_key = "disk_id"
 
-        return {
-            id_key: device.id
-        }
+        return {id_key: device.id}
 
     def _compare_param_to_device(
-            self, device_param: Dict[str, Any], device: Union[Disk, Volume]) -> bool:
+        self, device_param: Dict[str, Any], device: Union[Disk, Volume]
+    ) -> bool:
         if device is None or device_param is None:
             return device == device_param
 
         device_mapping = self._device_to_param_mapping(device)
 
-        disk_label = device_param.get('disk_label')
+        disk_label = device_param.get("disk_label")
         if disk_label is not None:
             disk = self._get_disk_by_label(disk_label)
             if disk is None:
-                self.fail(msg='invalid disk specified')
+                self.fail(msg="invalid disk specified")
 
-            device_param = {
-                'disk_id': disk.id
-            }
+            device_param = {"disk_id": disk.id}
 
-        return filter_null_values(device_mapping) == filter_null_values(device_param)
+        return filter_null_values(device_mapping) == filter_null_values(
+            device_param
+        )
 
     def _create_instance(self) -> dict:
         """Creates a Linode instance"""
         params = copy.deepcopy(self.module.params)
 
-        if 'root_pass' in params.keys() and params.get('root_pass') is None:
-            params.pop('root_pass')
+        if "root_pass" in params.keys() and params.get("root_pass") is None:
+            params.pop("root_pass")
 
-        ltype = params.pop('type')
-        region = params.pop('region')
+        ltype = params.pop("type")
+        region = params.pop("region")
 
-        result = {
-            'instance': None,
-            'root_pass': ''
-        }
+        result = {"instance": None, "root_pass": ""}
 
         # We want to retry on 408s
         response = request_retry(
-            lambda: self.client.linode.instance_create(ltype, region, **params))
+            lambda: self.client.linode.instance_create(ltype, region, **params)
+        )
 
         # Weird variable return type
         if isinstance(response, tuple):
-            result['instance'] = response[0]
-            result['root_pass'] = response[1]
+            result["instance"] = response[0]
+            result["root_pass"] = response[1]
         else:
-            result['instance'] = response
+            result["instance"] = response
 
         return result
 
-    def _param_device_to_device(self, device: Dict[str, Any]) -> Union[Disk, Volume, None]:
+    def _param_device_to_device(
+        self, device: Dict[str, Any]
+    ) -> Union[Disk, Volume, None]:
         if device is None:
             return None
 
-        disk_label = device.get('disk_label')
-        disk_id = device.get('disk_id')
-        volume_id = device.get('volume_id')
+        disk_label = device.get("disk_label")
+        disk_id = device.get("disk_id")
+        volume_id = device.get("volume_id")
 
         if disk_label is not None:
             disk = self._get_disk_by_label(disk_label)
             if disk is None:
-                self.fail(msg='invalid disk label: {0}'.format(disk_label))
+                self.fail(msg="invalid disk label: {0}".format(disk_label))
 
             return disk
 
         if disk_id is not None:
-            return Disk(self.client, device.get('disk_id'), self._instance.id)
+            return Disk(self.client, device.get("disk_id"), self._instance.id)
 
         if volume_id is not None:
-            return Volume(self.client, device.get('volume_id'))
+            return Volume(self.client, device.get("volume_id"))
 
         return None
 
     def _create_config_register(self, config_params: Dict[str, Any]) -> None:
-        device_params = config_params.pop('devices')
+        device_params = config_params.pop("devices")
         devices = []
 
         if device_params is not None:
-            for device_suffix in ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']:
-                device_name = 'sd{0}'.format(device_suffix)
+            for device_suffix in ["a", "b", "c", "d", "e", "f", "g", "h"]:
+                device_name = "sd{0}".format(device_suffix)
                 if device_name not in device_params:
                     continue
 
@@ -528,44 +606,50 @@ class LinodeInstance(LinodeModuleBase):
                 devices.append(self._param_device_to_device(device_dict))
 
         try:
-            self._instance.config_create(devices=devices, **filter_null_values(config_params))
+            self._instance.config_create(
+                devices=devices, **filter_null_values(config_params)
+            )
         except ValueError as err:
-            self.fail(msg=';'.join(err.args))
+            self.fail(msg=";".join(err.args))
 
-        self.register_action('Created config {0}'.format(config_params.get('label')))
+        self.register_action(
+            "Created config {0}".format(config_params.get("label"))
+        )
 
     def _delete_config_register(self, config: Config) -> None:
-        self.register_action('Deleted config {0}'.format(config.label))
+        self.register_action("Deleted config {0}".format(config.label))
         config.delete()
 
     def _create_disk_register(self, **kwargs: Any) -> None:
-        size = kwargs.pop('size')
+        size = kwargs.pop("size")
 
         create_poller = EventPoller(
-            self.client,
-            'disks',
-            'disk_create',
-            entity_id=self._instance.id)
+            self.client, "disks", "disk_create", entity_id=self._instance.id
+        )
         self._instance.disk_create(size, **kwargs)
 
         # The disk must be ready before the next disk is created
-        create_poller.wait_for_next_event_finished(self._timeout_ctx.seconds_remaining)
+        create_poller.wait_for_next_event_finished(
+            self._timeout_ctx.seconds_remaining
+        )
 
-        self.register_action('Created disk {0}'.format(kwargs.get('label')))
+        self.register_action("Created disk {0}".format(kwargs.get("label")))
 
     def _delete_disk_register(self, disk: Disk) -> None:
-        self.register_action('Deleted disk {0}'.format(disk.label))
+        self.register_action("Deleted disk {0}".format(disk.label))
         disk.delete()
 
     def _update_interfaces(self) -> None:
         config = self._get_boot_config()
-        param_interfaces: List[Any] = self.module.params.get('interfaces')
+        param_interfaces: List[Any] = self.module.params.get("interfaces")
 
         if config is None or param_interfaces is None:
             return
 
         param_interfaces = [drop_empty_strings(v) for v in param_interfaces]
-        remote_interfaces = [drop_empty_strings(v._serialize()) for v in config.interfaces]
+        remote_interfaces = [
+            drop_empty_strings(v._serialize()) for v in config.interfaces
+        ]
 
         if remote_interfaces == param_interfaces:
             return
@@ -573,10 +657,15 @@ class LinodeInstance(LinodeModuleBase):
         config.interfaces = [ConfigInterface(**v) for v in param_interfaces]
         config.save()
 
-        self.register_action('Updated interfaces for instance {0} config {1}'
-                             .format(self._instance.label, config.id))
+        self.register_action(
+            "Updated interfaces for instance {0} config {1}".format(
+                self._instance.label, config.id
+            )
+        )
 
-    def _update_config(self, config: Config, config_params: Dict[str, Any]) -> None:
+    def _update_config(
+        self, config: Config, config_params: Dict[str, Any]
+    ) -> None:
         should_update = False
         params = filter_null_values(config_params)
 
@@ -587,31 +676,44 @@ class LinodeInstance(LinodeModuleBase):
             old_value = mapping_to_dict(getattr(config, key))
 
             # Special handling for the ConfigInterface type
-            if key == 'interfaces':
-                old_value = filter_null_values_recursive([
-                    drop_empty_strings(v._serialize()) for v in old_value])
-                new_value = filter_null_values_recursive([
-                    drop_empty_strings(v) for v in new_value
-                ])
+            if key == "interfaces":
+                old_value = filter_null_values_recursive(
+                    [drop_empty_strings(v._serialize()) for v in old_value]
+                )
+                new_value = filter_null_values_recursive(
+                    [drop_empty_strings(v) for v in new_value]
+                )
 
             # Special diffing due to handling in linode_api4-python
-            if key == 'devices':
+            if key == "devices":
                 for device_key, device in old_value.items():
-                    if not self._compare_param_to_device(new_value[device_key], device):
-                        self.fail(msg='failed to update config: {0} is a non-mutable field'
-                                  .format('devices'))
+                    if not self._compare_param_to_device(
+                        new_value[device_key], device
+                    ):
+                        self.fail(
+                            msg="failed to update config: {0} is a non-mutable field".format(
+                                "devices"
+                            )
+                        )
 
                 continue
 
             if new_value != old_value:
                 if key in linode_instance_config_mutable:
                     setattr(config, key, new_value)
-                    self.register_action('Updated Config {0}: "{1}" -> "{2}"'.
-                                         format(key, old_value, new_value))
+                    self.register_action(
+                        'Updated Config {0}: "{1}" -> "{2}"'.format(
+                            key, old_value, new_value
+                        )
+                    )
                     should_update = True
                     continue
 
-                self.fail(msg='failed to update config: {0} is a non-mutable field'.format(key))
+                self.fail(
+                    msg="failed to update config: {0} is a non-mutable field".format(
+                        key
+                    )
+                )
 
         if should_update:
             config.save()
@@ -619,17 +721,17 @@ class LinodeInstance(LinodeModuleBase):
     def _update_configs(self) -> None:
         current_configs = self._instance.configs
 
-        if self.module.params.get('image') is not None:
+        if self.module.params.get("image") is not None:
             return
 
-        config_params = self.module.params['configs'] or []
+        config_params = self.module.params["configs"] or []
         config_map: Dict[str, Config] = {}
 
         for config in current_configs:
             config_map[config.label] = config
 
         for config in config_params:
-            config_label = config['label']
+            config_label = config["label"]
 
             if config_label in config_map:
                 self._update_config(config_map[config_label], config)
@@ -643,14 +745,11 @@ class LinodeInstance(LinodeModuleBase):
             self._delete_config_register(config)
 
     def _update_disk(self, disk: Disk, disk_params: Dict[str, Any]) -> None:
-        new_size = disk_params.pop('size')
+        new_size = disk_params.pop("size")
 
         if disk.size != new_size:
             resize_poller = EventPoller(
-                self.client,
-                'disks',
-                'disk_resize',
-                entity_id=self._instance.id
+                self.client, "disks", "disk_resize", entity_id=self._instance.id
             )
 
             disk.resize(new_size)
@@ -659,10 +758,12 @@ class LinodeInstance(LinodeModuleBase):
                 self._timeout_ctx.seconds_remaining
             )
 
-            self.register_action('Resized disk {0}: {1} -> {2}'
-                                 .format(disk.label, disk.size, new_size))
+            self.register_action(
+                "Resized disk {0}: {1} -> {2}".format(
+                    disk.label, disk.size, new_size
+                )
+            )
             disk._api_get()
-
 
         for key, new_value in filter_null_values(disk_params).items():
             if not hasattr(disk, key):
@@ -670,16 +771,20 @@ class LinodeInstance(LinodeModuleBase):
 
             old_value = getattr(disk, key)
             if new_value != old_value:
-                self.fail(msg='failed to update disk: {0} is a non-mutable field'.format(key))
+                self.fail(
+                    msg="failed to update disk: {0} is a non-mutable field".format(
+                        key
+                    )
+                )
 
     def _update_disks(self) -> None:
         current_disks = self._instance.disks
 
         # Instances with implicit disks should be ignored
-        if self.module.params.get('image') is not None:
+        if self.module.params.get("image") is not None:
             return
 
-        disk_params = self.module.params['disks'] or []
+        disk_params = self.module.params["disks"] or []
 
         disk_map: Dict[str, Disk] = {}
 
@@ -687,7 +792,7 @@ class LinodeInstance(LinodeModuleBase):
             disk_map[disk.label] = disk
 
         for disk in disk_params:
-            disk_label = disk['label']
+            disk_label = disk["label"]
 
             if disk_label in disk_map:
                 self._update_disk(disk_map[disk_label], disk)
@@ -698,7 +803,9 @@ class LinodeInstance(LinodeModuleBase):
             self._create_disk_register(**disk)
 
         if len(disk_map.values()) > 0:
-            self.fail(msg='unable to update disks: disks must be removed manually')
+            self.fail(
+                msg="unable to update disks: disks must be removed manually"
+            )
 
     def _update_instance(self) -> None:
         """Update instance handles all update functionality for the current instance"""
@@ -710,7 +817,7 @@ class LinodeInstance(LinodeModuleBase):
             if not hasattr(self._instance, key):
                 continue
 
-            if key in {'configs', 'disks', 'boot_config_label'}:
+            if key in {"configs", "disks", "boot_config_label"}:
                 continue
 
             old_value = getattr(self._instance, key)
@@ -719,22 +826,27 @@ class LinodeInstance(LinodeModuleBase):
             if type(old_value) in {
                 linode_api4.objects.linode.Type,
                 linode_api4.objects.linode.Region,
-                linode_api4.objects.linode.Image
+                linode_api4.objects.linode.Image,
             }:
                 old_value = old_value.id
 
             if new_value != old_value:
                 if key in linode_instance_mutable:
                     setattr(self._instance, key, new_value)
-                    self.register_action('Updated instance {0}: "{1}" -> "{2}"'.
-                                         format(key, old_value, new_value))
+                    self.register_action(
+                        'Updated instance {0}: "{1}" -> "{2}"'.format(
+                            key, old_value, new_value
+                        )
+                    )
 
                     should_update = True
                     continue
 
                 self.fail(
-                    'failed to update instance {0}: {1} is a non-updatable field'
-                    .format(self._instance.label, key))
+                    "failed to update instance {0}: {1} is a non-updatable field".format(
+                        self._instance.label, key
+                    )
+                )
 
         if should_update:
             self._instance.save()
@@ -743,120 +855,130 @@ class LinodeInstance(LinodeModuleBase):
         self._update_interfaces()
 
     def _handle_instance_boot(self) -> None:
-        boot_status = self.module.params.get('booted')
-        should_poll = self.module.params.get('wait')
+        boot_status = self.module.params.get("booted")
+        should_poll = self.module.params.get("wait")
 
         # Wait for instance to not be busy
         wait_for_resource_free(
             self.client,
-            'linode',
+            "linode",
             self._instance.id,
-            self._timeout_ctx.seconds_remaining
+            self._timeout_ctx.seconds_remaining,
         )
 
         self._instance._api_get()
 
         event_poller = None
 
-        if boot_status and self._instance.status != 'running':
+        if boot_status and self._instance.status != "running":
             event_poller = EventPoller(
                 self.client,
-                'linode',
-                'linode_boot',
-                entity_id=self._instance.id
+                "linode",
+                "linode_boot",
+                entity_id=self._instance.id,
             )
 
             self._instance.boot(self._get_boot_config())
-            self.register_action('Booted instance {0}'.format(self.module.params.get('label')))
+            self.register_action(
+                "Booted instance {0}".format(self.module.params.get("label"))
+            )
 
-        if not boot_status and self._instance.status != 'offline':
+        if not boot_status and self._instance.status != "offline":
             event_poller = EventPoller(
                 self.client,
-                'linode',
-                'linode_shutdown',
-                entity_id=self._instance.id
+                "linode",
+                "linode_shutdown",
+                entity_id=self._instance.id,
             )
 
             self._instance.shutdown()
-            self.register_action('Shutdown instance {0}'.format(self.module.params.get('label')))
+            self.register_action(
+                "Shutdown instance {0}".format(self.module.params.get("label"))
+            )
 
         if should_poll and event_poller is not None:
             # Poll for the instance to be booted if necessary
-            event_poller.wait_for_next_event_finished(self._timeout_ctx.seconds_remaining)
+            event_poller.wait_for_next_event_finished(
+                self._timeout_ctx.seconds_remaining
+            )
 
     def _handle_present(self) -> None:
         """Updates the instance defined in kwargs"""
 
-        label = self.module.params.get('label')
-        should_wait = self.module.params.get('wait')
+        label = self.module.params.get("label")
+        should_wait = self.module.params.get("wait")
 
         self._instance = self._get_instance_by_label(label)
 
         if self._instance is None:
-            create_poller = EventPoller(self.client, 'linode', 'linode_create')
+            create_poller = EventPoller(self.client, "linode", "linode_create")
 
             result = self._create_instance()
 
-            self._instance = cast(Instance, result.get('instance'))
-            self._root_pass = str(result.get('root_pass'))
+            self._instance = cast(Instance, result.get("instance"))
+            self._root_pass = str(result.get("root_pass"))
 
-            self.register_action('Created instance {0}'.format(label))
+            self.register_action("Created instance {0}".format(label))
 
             create_poller.set_entity_id(self._instance.id)
 
             if should_wait:
-                create_poller.wait_for_next_event_finished(self._timeout_ctx.seconds_remaining)
+                create_poller.wait_for_next_event_finished(
+                    self._timeout_ctx.seconds_remaining
+                )
         else:
             self._update_instance()
 
         # Wait for Linode to not be busy if configs or disks need to be created
         # This eliminates the need for unnecessary polling
-        disks = self.module.params.get('disks') or []
-        configs = self.module.params.get('configs') or []
+        disks = self.module.params.get("disks") or []
+        configs = self.module.params.get("configs") or []
 
         if len(configs) > 0 or len(disks) > 0:
             wait_for_resource_free(
                 self.client,
-                'linode',
+                "linode",
                 self._instance.id,
-                self._timeout_ctx.seconds_remaining
+                self._timeout_ctx.seconds_remaining,
             )
 
             self._update_disks()
             self._update_configs()
 
-        if self.module.params.get('booted') is not None:
+        if self.module.params.get("booted") is not None:
             self._handle_instance_boot()
 
         self._instance._api_get()
         inst_result = self._instance._raw_json
-        inst_result['root_pass'] = self._root_pass
+        inst_result["root_pass"] = self._root_pass
 
-        self.results['instance'] = inst_result
-        self.results['configs'] = paginated_list_to_json(self._instance.configs)
-        self.results['disks'] = paginated_list_to_json(self._instance.disks)
-        self.results['networking'] = self._get_networking()
+        self.results["instance"] = inst_result
+        self.results["configs"] = paginated_list_to_json(self._instance.configs)
+        self.results["disks"] = paginated_list_to_json(self._instance.disks)
+        self.results["networking"] = self._get_networking()
 
     def _handle_absent(self) -> None:
         """Destroys the instance defined in kwargs"""
-        label = self.module.params.get('label')
+        label = self.module.params.get("label")
 
         self._instance = self._get_instance_by_label(label)
 
         if self._instance is not None:
-            self.results['instance'] = self._instance._raw_json
-            self.results['configs'] = paginated_list_to_json(self._instance.configs)
-            self.results['disks'] = paginated_list_to_json(self._instance.disks)
-            self.results['networking'] = self._get_networking()
-            self.register_action('Deleted instance {0}'.format(label))
+            self.results["instance"] = self._instance._raw_json
+            self.results["configs"] = paginated_list_to_json(
+                self._instance.configs
+            )
+            self.results["disks"] = paginated_list_to_json(self._instance.disks)
+            self.results["networking"] = self._get_networking()
+            self.register_action("Deleted instance {0}".format(label))
             self._instance.delete()
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Instance module"""
 
-        state = kwargs.get('state')
+        state = kwargs.get("state")
 
-        if state == 'absent':
+        if state == "absent":
             self._handle_absent()
             return self.results
 
@@ -871,5 +993,5 @@ def main() -> None:
     LinodeInstance()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

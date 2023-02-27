@@ -6,47 +6,55 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import List, Any, Optional
-
-from ansible_specdoc.objects import SpecField, FieldType, SpecDocMeta, SpecReturnValue
-from linode_api4 import User
+from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user_info as docs
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    LinodeModuleBase,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
+    global_authors,
+    global_requirements,
+)
+from ansible_specdoc.objects import (
+    FieldType,
+    SpecDocMeta,
+    SpecField,
+    SpecReturnValue,
+)
+from linode_api4 import User
 
 spec = dict(
     # Disable the default values
     label=SpecField(type=FieldType.string, required=False, doc_hide=True),
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-
-    username=SpecField(type=FieldType.string, required=True,
-                       description=['The username of the user.'])
+    username=SpecField(
+        type=FieldType.string,
+        required=True,
+        description=["The username of the user."],
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        'Get info about a Linode User.'
-    ],
+    description=["Get info about a Linode User."],
     requirements=global_requirements,
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
         user=SpecReturnValue(
-            description='The user info in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/account/#user-view',
+            description="The user info in JSON serialized form.",
+            docs_url="https://www.linode.com/docs/api/account/#user-view",
             type=FieldType.dict,
-            sample=docs.result_user_samples
+            sample=docs.result_user_samples,
         ),
         grants=SpecReturnValue(
-            description='The grants info in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/account/#users-grants-view__response-samples',
+            description="The grants info in JSON serialized form.",
+            docs_url="https://www.linode.com/docs/api/account/#users-grants-view__response-samples",
             type=FieldType.dict,
-            sample=docs.result_grants_samples
-        )
-    )
+            sample=docs.result_grants_samples,
+        ),
+    ),
 )
 
 
@@ -61,17 +69,21 @@ class Module(LinodeModuleBase):
 
         self.module_arg_spec = SPECDOC_META.ansible_spec
 
-        super().__init__(module_arg_spec=self.module_arg_spec,
-                         required_one_of=self.required_one_of)
+        super().__init__(
+            module_arg_spec=self.module_arg_spec,
+            required_one_of=self.required_one_of,
+        )
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for user info module"""
 
-        user = self.client.account.users(User.username == self.module.params.get('username'))
+        user = self.client.account.users(
+            User.username == self.module.params.get("username")
+        )
         grants = user.grants
 
-        self.results['user'] = user._raw_json
-        self.results['grants'] = grants._raw_json
+        self.results["user"] = user._raw_json
+        self.results["grants"] = grants._raw_json
 
         return self.results
 
@@ -81,5 +93,5 @@ def main() -> None:
     Module()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
