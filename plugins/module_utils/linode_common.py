@@ -7,7 +7,7 @@ from typing import Any, Type
 
 import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import \
-    format_api_error
+    format_api_error, format_generic_error
 from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import \
     TimeoutContext
 
@@ -23,7 +23,8 @@ from ansible.module_utils.basic import (AnsibleModule, env_fallback,
 try:
     from linode_api4 import (ApiError, Base as LinodeAPIType, Image, LinodeClient,
                              MySQLDatabase, PersonalAccessToken,
-                             PostgreSQLDatabase, SSHKey, StackScript, IPAddress)
+                             PostgreSQLDatabase, SSHKey, StackScript,
+                             IPAddress, UnexpectedResponseError)
 
     HAS_LINODE = True
 except ImportError:
@@ -132,6 +133,11 @@ class LinodeModuleBase:
                 self.fail(msg=format_api_error(err))
             except polling.TimeoutException as err:
                 self.fail(msg='failed to wait for condition: timeout period expired')
+            except (
+                    ValueError, RuntimeError, UnexpectedResponseError,
+                    TypeError, IndexError
+            ) as err:
+                self.fail(msg=format_generic_error(err))
 
             self.module.exit_json(**res)
 
