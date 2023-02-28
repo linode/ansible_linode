@@ -6,7 +6,9 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Any, Dict, Optional
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.object_cluster_list as docs
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    object_cluster_list as docs,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
