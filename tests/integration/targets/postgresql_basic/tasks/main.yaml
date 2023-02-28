@@ -7,7 +7,7 @@
       linode.cloud.database_postgresql:
         label: 'ansible-test-{{ r }}'
         region: us-east
-        engine: postgresql/13.2
+        engine: postgresql/14.6
         type: g6-standard-1
         allow_list:
           - 0.0.0.0/0
@@ -19,7 +19,7 @@
           - db_create.database.allow_list | length == 1
           - db_create.database.allow_list[0] == '0.0.0.0/0'
           - db_create.database.engine == 'postgresql'
-          - db_create.database.version == '13.2'
+          - db_create.database.version == '14.6'
           - db_create.database.region == 'us-east'
           - db_create.database.type == 'g6-standard-1'
 
@@ -38,13 +38,13 @@
           - by_label.database.allow_list | length == 1
           - by_label.database.allow_list[0] == '0.0.0.0/0'
           - by_label.database.engine == 'postgresql'
-          - by_label.database.version == '13.2'
+          - by_label.database.version == '14.6'
           - by_label.database.region == 'us-east'
           - by_label.database.type == 'g6-standard-1'
           - by_id.database.allow_list | length == 1
           - by_id.database.allow_list[0] == '0.0.0.0/0'
           - by_id.database.engine == 'postgresql'
-          - by_id.database.version == '13.2'
+          - by_id.database.version == '14.6'
           - by_id.database.region == 'us-east'
           - by_id.database.type == 'g6-standard-1'
 
@@ -52,7 +52,7 @@
       linode.cloud.database_postgresql:
         label: 'ansible-test-{{ r }}'
         region: us-east
-        engine: postgresql/13.2
+        engine: postgresql/14.6
         type: g6-standard-1
         allow_list:
           - 10.0.0.1/32
@@ -68,7 +68,7 @@
       linode.cloud.database_postgresql:
         label: 'ansible-test-{{ r }}'
         region: us-east
-        engine: postgresql/13.2
+        engine: postgresql/14.6
         type: g6-standard-1
         allow_list:
           - 10.0.0.1/32

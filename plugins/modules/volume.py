@@ -149,6 +149,7 @@ class LinodeVolume(LinodeModuleBase):
                 label, region, linode_id, size, **params
             )
         except Exception as exception:
+            print(label, region, linode_id, size, params)
             return self.fail(
                 msg="failed to create volume: {0}".format(exception)
             )

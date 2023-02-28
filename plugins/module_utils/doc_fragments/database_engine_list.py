@@ -12,7 +12,7 @@ specdoc_examples = ['''
 result_engines_samples = ['''[
    {
       "engine": "mysql",
-      "id": "mysql/8.0.26",
-      "version": "8.0.26"
+      "id": "mysql/8.0.30",
+      "version": "8.0.30"
     }
 ]''']

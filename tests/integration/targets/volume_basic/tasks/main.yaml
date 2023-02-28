@@ -99,7 +99,7 @@
           - not detach_volume.volume.linode_id|d(False)
 
   always:
-    - ignore_errors: yes
+    - ignore_errors: true
       block:
         - name: Delete the instance volume
           linode.cloud.volume:

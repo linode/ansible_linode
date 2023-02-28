@@ -13,7 +13,7 @@ Manage a Linode PostgreSQL database.
   linode.cloud.database_postgresql:
     label: my-db
     region: us-east
-    engine: postgresql/13.2
+    engine: postgresql/14.6
     type: g6-standard-1
     allow_list:
       - 0.0.0.0/0
@@ -25,7 +25,7 @@ Manage a Linode PostgreSQL database.
   linode.cloud.database_postgresql:
     label: my-db
     region: us-east
-    engine: postgresql/13.2
+    engine: postgresql/14.6
     type: g6-standard-1
     allow_list:
       - 0.0.0.0/0
@@ -110,7 +110,7 @@ Manage a Linode PostgreSQL database.
             "hour_of_day": 0,
             "week_of_month": null
           },
-          "version": "13.2"
+          "version": "14.6"
         }
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-postgresql-database-view__response-samples) for a list of returned fields
