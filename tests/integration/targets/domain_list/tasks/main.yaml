@@ -1,0 +1,72 @@
+- name: domain_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a domain
+      linode.cloud.domain:
+        description: 'really cool domain'
+        domain: 'ansible-test-domain-{{ r }}.com'
+        expire_sec: 300
+        master_ips:
+          - '127.0.0.1'
+        refresh_sec: 3600
+        retry_sec: 7200
+        soa_email: 'realemail@example.com'
+        status: 'active'
+        ttl_sec: 14400
+        type: 'master'
+        state: present
+      register: create
+
+    - name: Assert domain created
+      assert:
+        that:
+          - create.domain.description == 'really cool domain'
+          - create.domain.expire_sec == 300
+          - create.domain.master_ips[0] == '127.0.0.1'
+          - create.domain.refresh_sec == 3600
+          - create.domain.retry_sec == 7200
+          - create.domain.soa_email == 'realemail@example.com'
+          - create.domain.status == 'active'
+          - create.domain.ttl_sec == 14400
+          - create.domain.type == 'master'
+
+    - name: List domains with no filter
+      linode.cloud.domain_list:
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.domains | length >= 0
+
+    - name: List domains with filter on domain
+      linode.cloud.domain_list:
+        order_by: created
+        order: desc
+        filters:
+          - name: domain
+            values: ansible-test-domain-{{ r }}.com
+      register: filter
+
+    - assert:
+        that:
+          - filter.domains | length >= 0
+          - filter.domains[0].domain == 'ansible-test-domain-{{ r }}.com'
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the domain
+          linode.cloud.domain:
+            domain: '{{ create.domain.domain }}'
+            state: absent
+          register: delete
+
+        - name: Assert domain delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.domain.id == create.domain.id
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
