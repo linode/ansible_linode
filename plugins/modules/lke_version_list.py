@@ -53,7 +53,7 @@ SPECDOC_META = SpecDocMeta(
     examples=docs.specdoc_examples,
     return_values=dict(
         lke_versions=SpecReturnValue(
-            description="The returned lke versions.",
+            description="The returned LKE versions.",
             docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
             "#kubernetes-versions-list__response-samples",
             type=FieldType.list,
@@ -69,7 +69,7 @@ class Module(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
-        self.results: Dict[str, Any] = {"lke_versionss": []}
+        self.results: Dict[str, Any] = {"lke_versions": []}
 
         super().__init__(module_arg_spec=self.module_arg_spec)
 

@@ -4,13 +4,11 @@
         r: "{{ 1000000000 | random }}"
 
     - name: Resolve the latest K8s version
-      linode.cloud.api_request:
-        method: GET
-        path: lke/versions
+      linode.cloud.lke_version_list: {}
       register: lke_versions
 
     - set_fact:
-        kube_version: '{{ lke_versions.body.data[0].id }}'
+        kube_version: '{{ lke_versions.lke_versions[0].id }}'
 
     - name: Create a minimal LKE cluster
       linode.cloud.lke_cluster:
