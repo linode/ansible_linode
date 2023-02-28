@@ -47,8 +47,8 @@ List and filter on Managed Database engine types.
         [
            {
               "engine": "mysql",
-              "id": "mysql/8.0.26",
-              "version": "8.0.26"
+              "id": "mysql/8.0.30",
+              "version": "8.0.30"
             }
         ]
         ```

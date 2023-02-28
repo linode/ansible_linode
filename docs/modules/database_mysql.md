@@ -13,7 +13,7 @@ Manage a Linode MySQL database.
   linode.cloud.database_mysql:
     label: my-db
     region: us-east
-    engine: mysql/8.0.26
+    engine: mysql/8.0.30
     type: g6-standard-1
     allow_list:
       - 0.0.0.0/0
@@ -25,7 +25,7 @@ Manage a Linode MySQL database.
   linode.cloud.database_mysql:
     label: my-db
     region: us-east
-    engine: mysql/8.0.26
+    engine: mysql/8.0.30
     type: g6-standard-1
     allow_list:
       - 0.0.0.0/0
@@ -107,7 +107,7 @@ Manage a Linode MySQL database.
             "hour_of_day": 0,
             "week_of_month": null
           },
-          "version": "8.0.26"
+          "version": "8.0.30"
         }
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-mysql-database-view__response-samples) for a list of returned fields

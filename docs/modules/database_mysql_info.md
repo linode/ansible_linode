@@ -63,7 +63,7 @@ Get info about a Linode MySQL Managed Database.
             "hour_of_day": 0,
             "week_of_month": null
           },
-          "version": "8.0.26"
+          "version": "8.0.30"
         }
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-mysql-database-view__response-samples) for a list of returned fields
