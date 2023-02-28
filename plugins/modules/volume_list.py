@@ -120,7 +120,7 @@ class Module(LinodeModuleBase):
 def main() -> None:
     """Constructs and calls the module"""
     Module()
-    
+
 
 if __name__ == "__main__":
     main()
