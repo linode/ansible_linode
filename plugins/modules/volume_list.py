@@ -94,6 +94,7 @@ SPECDOC_META = SpecDocMeta(
     ),
 )
 
+
 class Module(LinodeModuleBase):
     """Module for getting a list of Linode volumes"""
 
