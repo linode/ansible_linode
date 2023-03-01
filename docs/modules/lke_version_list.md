@@ -10,7 +10,7 @@ List Kubernetes versions available for deployment to a Kubernetes cluster.
 
 ```yaml
 - name: List all Kubernetes versions available for deployment to a Kubernetes cluster
-  linode.cloud.lke_versions: {}
+  linode.cloud.lke_version_list: {}
 ```
 
 
@@ -23,7 +23,7 @@ List Kubernetes versions available for deployment to a Kubernetes cluster.
 
 ## Return Values
 
-- `lke_versions` - The returned lke versions.
+- `lke_versions` - The returned LKE versions.
 
     - Sample Response:
         ```json

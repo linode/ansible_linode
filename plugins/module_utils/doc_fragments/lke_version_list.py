@@ -2,7 +2,7 @@
 
 specdoc_examples = ['''
 - name: List all Kubernetes versions available for deployment to a Kubernetes cluster
-  linode.cloud.lke_versions: {}''']
+  linode.cloud.lke_version_list: {}''']
 
 result_lke_versions_samples = ['''[
     {
