@@ -89,6 +89,7 @@ Name | Description |
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on Linode stackscripts.|
 [linode.cloud.type_list](./docs/modules/type_list.md)|List and filter on Linode Instance Types.|
 [linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
+[linode.cloud.volume_list](./docs/modules/volume_list.md)|List and filter on Linode Volumes.|
 
 
 ### Inventory Plugins
