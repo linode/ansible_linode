@@ -1,0 +1,64 @@
+- name: firewall_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode Firewall
+      linode.cloud.firewall:
+        api_version: v4beta
+        label: 'ansible-test-{{ r }}'
+        devices: []
+        rules:
+          inbound: []
+          inbound_policy: DROP
+          outbound: []
+          outbound_policy: DROP
+        state: present
+      register: create
+
+    - name: Assert firewall created
+      assert:
+        that:
+          - create.changed
+
+    - name: List firewalls with no filter
+      linode.cloud.firewall_list:
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.firewalls | length >= 0
+
+    - name: List firewalls with filter on label
+      linode.cloud.firewall_list:
+        order_by: created
+        order: desc
+        filters:
+          - name: label
+            values: ansible-test-{{ r }}
+      register: filter
+
+    - assert:
+        that:
+          - filter.firewalls | length >= 0
+          - filter.firewalls[0].label == 'ansible-test-{{ r }}'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode Firewall
+          linode.cloud.firewall:
+            api_version: v4beta
+            label: '{{ create.firewall.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert Firewall delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.firewall.id == create.firewall.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
