@@ -85,11 +85,14 @@ Name | Description |
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Linode Instances.|
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|List and filter on Linode Instance Types.|
 [linode.cloud.lke_version_list](./docs/modules/lke_version_list.md)|List Kubernetes versions available for deployment to a Kubernetes cluster.|
+[linode.cloud.nodebalancer_list](./docs/modules/nodebalancer_list.md)|List and filter on Nodebalancers.|
+[linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|List and filter on Object Storage Clusters.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Linode Regions.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH keys in the Linode profile.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on Linode stackscripts.|
 [linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Linode Account tokens.|
 [linode.cloud.type_list](./docs/modules/type_list.md)|List and filter on Linode Instance Types.|
+[linode.cloud.user_list](./docs/modules/user_list.md)|List Users.|
 [linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
 [linode.cloud.volume_list](./docs/modules/volume_list.md)|List and filter on Linode Volumes.|
 
