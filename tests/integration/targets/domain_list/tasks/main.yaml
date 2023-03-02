@@ -51,7 +51,7 @@
 
     - assert:
         that:
-          - filter.domains | length >= 0
+          - filter.domains | length > 0
           - filter.domains[0].domain == 'ansible-test-domain-{{ r }}.com'
   always:
     - ignore_errors: yes
