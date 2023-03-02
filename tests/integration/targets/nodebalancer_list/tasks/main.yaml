@@ -1,0 +1,58 @@
+- name: nodebalancer_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: create empty nodebalancer
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-empty-{{ r }}'
+        region: us-east
+        state: present
+      register: create
+
+    - name: Assert empty NodeBalancer is created
+      assert:
+        that:
+          - create.changed
+          - create.configs|length == 0
+
+    - name: List nodebalancers with no filter
+      linode.cloud.nodebalancer_list:
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.nodebalancers | length >= 0
+
+    - name: List nodebalancers with filter on region
+      linode.cloud.nodebalancer_list:
+        order_by: created
+        order: desc
+        filters:
+          - name: region
+            values: us-east
+      register: filter
+
+    - assert:
+        that:
+          - filter.nodebalancers | length >= 0
+          - filter.nodebalancers[0].region == 'us-east'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the empty NodeBalancer
+          linode.cloud.nodebalancer:
+            label: '{{ create.node_balancer.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert empty NodeBalancer delete
+          assert:
+            that:
+              - delete.changed
+              - create.node_balancer.id == delete.node_balancer.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

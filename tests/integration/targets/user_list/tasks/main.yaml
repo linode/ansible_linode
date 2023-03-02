@@ -1,0 +1,37 @@
+- name: user_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create Linode User
+      linode.cloud.user:
+        username: 'ansible-test-{{ r }}'
+        email: 'ansible-test-{{ r }}@linode.com'
+        state: present
+      register: create
+
+    - name: Assert user created
+      assert:
+        that:
+          - create.user.email != None
+          - create.user.restricted == True
+
+    - name: List users with no filter
+      linode.cloud.user_list:
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.users | length >= 0
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode User
+          linode.cloud.user:
+            username: '{{ create.user.username }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
