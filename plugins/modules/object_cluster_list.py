@@ -87,7 +87,7 @@ SPECDOC_META = SpecDocMeta(
     options=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
-        object_clusters=SpecReturnValue(
+        clusters=SpecReturnValue(
             description="The returned object storage clusters.",
             docs_url="https://www.linode.com/docs/api/object-storage/"
             "#clusters-list__response-samples",

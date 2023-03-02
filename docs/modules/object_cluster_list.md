@@ -40,7 +40,7 @@ List and filter on Object Storage Clusters.
 
 ## Return Values
 
-- `object_clusters` - The returned object storage clusters.
+- `clusters` - The returned object storage clusters.
 
     - Sample Response:
         ```json
