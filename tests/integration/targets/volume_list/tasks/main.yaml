@@ -23,7 +23,7 @@
 
     - assert:
         that:
-          - no_filter.volumes | length >= 0
+          - no_filter.volumes | length >= 1
 
     - name: List volumes with filter on region
       linode.cloud.volume_list:
@@ -36,7 +36,7 @@
     
     - assert:
         that:
-          - filter.volumes | length >= 0
+          - filter.volumes | length >= 1
           - filter.volumes[0].region == 'us-east'
 
   always:
