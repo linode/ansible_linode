@@ -22,7 +22,7 @@
 
     - assert:
         that:
-          - no_filter.nodebalancers | length >= 0
+          - no_filter.nodebalancers | length >= 1
 
     - name: List nodebalancers with filter on region
       linode.cloud.nodebalancer_list:
@@ -35,7 +35,7 @@
 
     - assert:
         that:
-          - filter.nodebalancers | length >= 0
+          - filter.nodebalancers | length >= 1
           - filter.nodebalancers[0].region == 'us-east'
 
   always:

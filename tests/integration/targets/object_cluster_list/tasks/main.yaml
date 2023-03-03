@@ -6,7 +6,7 @@
 
     - assert:
         that:
-          - no_filter.clusters | length >= 0
+          - no_filter.clusters | length >= 1
 
     - name: List regions with filter on region
       linode.cloud.object_cluster_list:
@@ -17,7 +17,7 @@
 
     - assert:
         that:
-          - filter.clusters | length >= 0
+          - filter.clusters | length >= 1
           - filter.clusters[0].region == 'us-east'
 
   environment:

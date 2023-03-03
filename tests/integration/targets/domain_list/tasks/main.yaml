@@ -38,7 +38,7 @@
 
     - assert:
         that:
-          - no_filter.domains | length >= 0
+          - no_filter.domains | length >= 1
 
     - name: List domains with filter on domain
       linode.cloud.domain_list:
@@ -51,7 +51,7 @@
 
     - assert:
         that:
-          - filter.domains | length > 0
+          - filter.domains | length >= 1
           - filter.domains[0].domain == 'ansible-test-domain-{{ r }}.com'
   always:
     - ignore_errors: yes
