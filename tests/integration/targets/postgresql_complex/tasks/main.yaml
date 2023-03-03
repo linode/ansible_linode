@@ -3,11 +3,26 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
+    - name: Get available postgresql engines list
+      linode.cloud.database_engine_list:
+        filters:
+          - name: engine
+            values: postgresql
+      register: available_engines
+
+    - assert:
+        that:
+          - available_engines.database_engines | length >= 1
+
+    - set_fact:
+        engine_id: "{{ available_engines.database_engines[0]['id'] }}"
+        engine_version: "{{ available_engines.database_engines[0]['version'] }}"
+
     - name: Validation check
       linode.cloud.database_postgresql:
         label: 'ansible-test-{{ r }}'
         region: us-east
-        engine: postgresql/14.6
+        engine: '{{ engine_id }}'
         type: g6-standard-1
         allow_list:
           - 0.0.0.0
@@ -19,7 +34,7 @@
       linode.cloud.database_postgresql:
         label: 'ansible-test-{{ r }}'
         region: us-east
-        engine: postgresql/14.6
+        engine: '{{ engine_id }}'
         type: g6-standard-1
         allow_list:
           - 0.0.0.0/0
@@ -42,7 +57,7 @@
           - db_create.database.allow_list | length == 1
           - db_create.database.allow_list[0] == '0.0.0.0/0'
           - db_create.database.engine == 'postgresql'
-          - db_create.database.version == '14.6'
+          - db_create.database.version == '{{ engine_version }}'
           - db_create.database.region == 'us-east'
           - db_create.database.type == 'g6-standard-1'
           - db_create.database.cluster_size == 3
@@ -60,7 +75,7 @@
           - db_create.database.updates.week_of_month == 2
 
   always:
-    - ignore_errors: yes
+    - ignore_errors: true
       block:
         - linode.cloud.database_postgresql:
             label: '{{ db_create.database.label }}'
