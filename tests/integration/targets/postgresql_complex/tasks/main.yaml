@@ -57,7 +57,7 @@
           - db_create.database.allow_list | length == 1
           - db_create.database.allow_list[0] == '0.0.0.0/0'
           - db_create.database.engine == 'postgresql'
-          - db_create.database.version == ''{{ engine_version }}''
+          - db_create.database.version == '{{ engine_version }}'
           - db_create.database.region == 'us-east'
           - db_create.database.type == 'g6-standard-1'
           - db_create.database.cluster_size == 3
