@@ -34,7 +34,7 @@
           - db_create.database.allow_list | length == 1
           - db_create.database.allow_list[0] == '0.0.0.0/0'
           - db_create.database.engine == 'mysql'
-          - db_create.database.version == '{{ version }}'
+          - db_create.database.version == '{{ engine_version }}'
           - db_create.database.region == 'us-east'
           - db_create.database.type == 'g6-standard-1'
 
@@ -53,7 +53,7 @@
           - by_label.database.allow_list | length == 1
           - by_label.database.allow_list[0] == '0.0.0.0/0'
           - by_label.database.engine == 'mysql'
-          - by_label.database.version == '{{ version }}'
+          - by_label.database.version == '{{ engine_version }}'
           - by_label.database.region == 'us-east'
           - by_label.database.type == 'g6-standard-1'
           - by_label.ssl_cert != None
@@ -62,7 +62,7 @@
           - by_id.database.allow_list | length == 1
           - by_id.database.allow_list[0] == '0.0.0.0/0'
           - by_id.database.engine == 'mysql'
-          - by_id.database.version == '{{ version }}'
+          - by_id.database.version == '{{ engine_version }}'
           - by_id.database.region == 'us-east'
           - by_id.database.type == 'g6-standard-1'
           - by_id.ssl_cert != None
