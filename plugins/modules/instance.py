@@ -563,7 +563,7 @@ class LinodeInstance(LinodeModuleBase):
         response = request_retry(
             lambda: self.client.linode.instance_create(ltype, region, **params)
         )
-        
+
         # Weird variable return type
         if isinstance(response, tuple):
             result["instance"] = response[0]
@@ -857,9 +857,9 @@ class LinodeInstance(LinodeModuleBase):
             if key == "additional_ipv4":
                 if len(new_value) != len(old_value):
                     self.fail(
-                        "failed to update instance {0}: additional_ipv4 is a non-updatable field".format(
-                            self._instance.label
-                        )
+                        "failed to update instance {0}: additional_ipv4 "
+                        + "is a non-updatable field"
+                        + "self._instance.label"
                     )
 
         if should_update:
