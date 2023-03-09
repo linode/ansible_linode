@@ -21,6 +21,26 @@
           - create.instance.ipv4|length > 1
           - create.networking.ipv4.public[0].address != None
 
+    - name: Create a Linode instance with additional ips and without a root password
+      linode.cloud.instance:
+        label: 'ansible-test-additional-ips-nopass-{{ r }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        private_ip: true
+        wait: false
+        state: present
+        additional_ipv4:
+          - "public"
+      register: create_additional_ips
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_additional_ips.changed
+          - create_additional_ips.instance.ipv4|length == 3
+          - create_additional_ips.networking.ipv4.public[0].address != None
+
     - name: Update the instance region and type (recreate disallowed)
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
@@ -33,6 +53,35 @@
       register: invalid_update
       failed_when:
         - invalid_update.changed == true
+
+    - name: Attempt to add additional ips to an instance
+      linode.cloud.instance:
+        label: '{{ create_additional_ips.instance.label }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        private_ip: true
+        wait: false
+        state: present
+        additional_ipv4:
+          - "public"
+          - "public"
+      register: invalid_update_add_ips
+      failed_when:
+        - invalid_update_add_ips.changed == true
+
+    - name: Attempt to remove additional ips from an instance
+      linode.cloud.instance:
+        label: '{{ create_additional_ips.instance.label }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        private_ip: true
+        wait: false
+        state: present
+      register: invalid_update_remove_ips
+      failed_when:
+        - invalid_update_remove_ips.changed == true
 
     - name: Update the instance
       linode.cloud.instance:
@@ -89,6 +138,18 @@
             that:
               - delete_nopass.changed
               - delete_nopass.instance.id == update.instance.id
+
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create_additional_ips.instance.label }}'
+            state: absent
+          register: delete_nopass_ips
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_nopass_ips.changed
+              - delete_nopass_ips.instance.id == create_additional_ips.instance.id
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'

@@ -372,6 +372,12 @@ linode_instance_spec = dict(
             'have status "running".'
         ],
     ),
+    additional_ipv4=SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=["Additional ipv4 addresses to allocate."],
+        editable=False,
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(
@@ -557,7 +563,7 @@ class LinodeInstance(LinodeModuleBase):
         response = request_retry(
             lambda: self.client.linode.instance_create(ltype, region, **params)
         )
-
+        
         # Weird variable return type
         if isinstance(response, tuple):
             result["instance"] = response[0]
@@ -848,6 +854,14 @@ class LinodeInstance(LinodeModuleBase):
                     )
                 )
 
+            if key == "additional_ipv4":
+                if len(new_value) != len(old_value):
+                    self.fail(
+                        "failed to update instance {0}: additional_ipv4 is a non-updatable field".format(
+                            self._instance.label
+                        )
+                    )
+
         if should_update:
             self._instance.save()
 
@@ -926,6 +940,15 @@ class LinodeInstance(LinodeModuleBase):
                 create_poller.wait_for_next_event_finished(
                     self._timeout_ctx.seconds_remaining
                 )
+
+            if self.module.params.get("additional_ipv4") is not None:
+                additional_ip_types = self.module.params.get("additional_ipv4")
+
+                for ip_type in additional_ip_types:
+                    if ip_type == "public":
+                        self._instance.ip_allocate(public=True)
+                    elif ip_type == "private":
+                        self._instance.ip_allocate(public=False)
         else:
             self._update_instance()
 

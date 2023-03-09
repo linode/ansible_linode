@@ -18,6 +18,25 @@ specdoc_examples = ['''
     tags:
       - env=prod
     state: present''', '''
+- name: Create a new Linode instance with an additional public IPv4 address.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-east
+    image: linode/ubuntu20.04
+    root_pass: verysecurepassword!!!
+    private_ip: false
+    authorized_keys:
+      - "ssh-rsa ..."
+    stackscript_id: 1337
+    stackscript_data:
+      variable: value
+    group: app
+    tags:
+      - env=prod
+    state: present
+    additional_ipv4:
+      - "public"''', '''
 - name: Create a Linode Instance with explicit configs and disks.
   linode.cloud.instance:
     label: 'my-complex-instance'
