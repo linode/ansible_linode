@@ -234,6 +234,12 @@ linode_instance_config_spec = dict(
     ),
 )
 
+spec_additional_ipv4 = dict(
+    public=SpecField(
+        type=FieldType.bool, description="fill this in", required=True
+    )
+)
+
 linode_instance_spec = dict(
     type=SpecField(
         type=FieldType.string,
@@ -374,7 +380,8 @@ linode_instance_spec = dict(
     ),
     additional_ipv4=SpecField(
         type=FieldType.list,
-        element_type=FieldType.string,
+        element_type=FieldType.dict,
+        suboptions=spec_additional_ipv4,
         description=["Additional ipv4 addresses to allocate."],
         editable=False,
     ),
@@ -854,16 +861,41 @@ class LinodeInstance(LinodeModuleBase):
                     )
                 )
 
-            if key == "additional_ipv4":
-                if len(new_value) != len(old_value):
-                    self.fail(
-                        "failed to update instance {0}: additional_ipv4 "
-                        + "is a non-updatable field"
-                        + "self._instance.label"
-                    )
+            # if key == "ipv4":
+            #     if getattr(self._instance, "private"):
+            #         if len(new_value) != len(old_value) - 1:
+            #             self.fail(
+            #                 "failed to update instance {0}: {1} is a non-updatable field".format(
+            #                     self._instance.label, key
+            #                 )
+            #             )
+            #     else:
+            #         if len(new_value) != len(old_value):
+            #             self.fail(
+            #                 "failed to update instance {0}: {1} is a non-updatable field".format(
+            #                     self._instance.label, key
+            #                 )
+            #             )
 
         if should_update:
             self._instance.save()
+
+        ipv4Length = len(self.module.params.get("additional_ipv4") or [])
+
+        if self.module.params.get("private_ip"):
+            if ipv4Length != len(getattr(self._instance, "ipv4")) - 2:
+                self.fail(
+                    "failed to update instance {0}: additional_ipv4 is a non-updatable field".format(
+                        self._instance.label
+                    )
+                )
+        else:
+            if ipv4Length != len(getattr(self._instance, "ipv4")) - 1:
+                self.fail(
+                    "failed to update instance {0}: additional_ipv4 is a non-updatable field".format(
+                        self._instance.label
+                    )
+                )
 
         # Update interfaces
         self._update_interfaces()
@@ -945,10 +977,7 @@ class LinodeInstance(LinodeModuleBase):
                 additional_ip_types = self.module.params.get("additional_ipv4")
 
                 for ip_type in additional_ip_types:
-                    if ip_type == "public":
-                        self._instance.ip_allocate(public=True)
-                    elif ip_type == "private":
-                        self._instance.ip_allocate(public=False)
+                    self._instance.ip_allocate(public=ip_type["public"])
         else:
             self._update_instance()
 

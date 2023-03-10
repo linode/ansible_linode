@@ -36,7 +36,7 @@ specdoc_examples = ['''
       - env=prod
     state: present
     additional_ipv4:
-      - "public"''', '''
+      - public: true''', '''
 - name: Create a Linode Instance with explicit configs and disks.
   linode.cloud.instance:
     label: 'my-complex-instance'

@@ -31,7 +31,7 @@
         wait: false
         state: present
         additional_ipv4:
-          - "public"
+          - public: true
       register: create_additional_ips
 
     - name: Assert instance created
@@ -64,11 +64,11 @@
         wait: false
         state: present
         additional_ipv4:
-          - "public"
-          - "public"
+          - public: true
+          - public: true
       register: invalid_update_add_ips
       failed_when:
-        - invalid_update_add_ips.changed == true
+        - "'additional_ipv4' not in invalid_update_add_ips.msg"
 
     - name: Attempt to remove additional ips from an instance
       linode.cloud.instance:
@@ -81,7 +81,7 @@
         state: present
       register: invalid_update_remove_ips
       failed_when:
-        - invalid_update_remove_ips.changed == true
+        - "'additional_ipv4' not in invalid_update_remove_ips.msg"
 
     - name: Update the instance
       linode.cloud.instance:
