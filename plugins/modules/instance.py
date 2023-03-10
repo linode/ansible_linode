@@ -861,38 +861,22 @@ class LinodeInstance(LinodeModuleBase):
                     )
                 )
 
-            # if key == "ipv4":
-            #     if getattr(self._instance, "private"):
-            #         if len(new_value) != len(old_value) - 1:
-            #             self.fail(
-            #                 "failed to update instance {0}: {1} is a non-updatable field".format(
-            #                     self._instance.label, key
-            #                 )
-            #             )
-            #     else:
-            #         if len(new_value) != len(old_value):
-            #             self.fail(
-            #                 "failed to update instance {0}: {1} is a non-updatable field".format(
-            #                     self._instance.label, key
-            #                 )
-            #             )
-
         if should_update:
             self._instance.save()
 
-        ipv4Length = len(self.module.params.get("additional_ipv4") or [])
+        ipv4_length = len(self.module.params.get("additional_ipv4") or [])
 
         if self.module.params.get("private_ip"):
-            if ipv4Length != len(getattr(self._instance, "ipv4")) - 2:
+            if ipv4_length != len(getattr(self._instance, "ipv4")) - 2:
                 self.fail(
-                    "failed to update instance {0}: additional_ipv4 is a non-updatable field".format(
+                    "failed to update instance {0}:additional_ipv4 is a non-updatable field".format(
                         self._instance.label
                     )
                 )
         else:
-            if ipv4Length != len(getattr(self._instance, "ipv4")) - 1:
+            if ipv4_length != len(getattr(self._instance, "ipv4")) - 1:
                 self.fail(
-                    "failed to update instance {0}: additional_ipv4 is a non-updatable field".format(
+                    "failed to update instance {0}:additional_ipv4 is a non-updatable field".format(
                         self._instance.label
                     )
                 )
