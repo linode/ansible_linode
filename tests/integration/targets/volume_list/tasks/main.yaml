@@ -1,0 +1,59 @@
+- name: volume_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a volume
+      linode.cloud.volume:
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        size: 42
+        state: present
+      register: create
+
+    - name: Assert volume is valid
+      assert:
+        that:
+          - create.changed
+          - create.volume.size == 42
+
+    - name: List volumes with no filter
+      linode.cloud.volume_list:
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.volumes | length >= 0
+
+    - name: List volumes with filter on region
+      linode.cloud.volume_list:
+        order_by: created
+        order: desc
+        filters:
+          - name: region
+            values: us-east
+      register: filter
+    
+    - assert:
+        that:
+          - filter.volumes | length >= 0
+          - filter.volumes[0].region == 'us-east'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode volume
+          linode.cloud.volume:
+            label: '{{ create.volume.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert volume delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.volume.id == create.volume.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

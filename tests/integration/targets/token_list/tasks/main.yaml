@@ -1,0 +1,54 @@
+- name: token_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create Linode Token
+      linode.cloud.token:
+        label: 'ansible-test-{{ r }}'
+        expiry: '2222-07-09T16:59:26'
+        scopes: '*'
+        state: present
+      register: create
+
+    - name: Assert token created
+      assert:
+        that:
+          - create.token.id != None
+
+          # We want to make sure we're getting full-length API tokens
+          - create.token.token|length > 16
+
+    - name: List tokens with no filter
+      linode.cloud.token_list:
+      register: no_filter
+
+    - assert:
+        that:
+          - no_filter.tokens | length >= 0
+
+    - name: List tokens with filter on label
+      linode.cloud.token_list:
+        order_by: created
+        order: desc
+        filters:
+          - name: label
+            values: ansible-test-{{ r }}
+      register: filter
+
+    - assert:
+        that:
+          - filter.tokens | length >= 0
+          - filter.tokens[0].label == 'ansible-test-{{ r }}'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode Token
+          linode.cloud.token:
+            label: '{{ create.token.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

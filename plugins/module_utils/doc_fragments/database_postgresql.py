@@ -5,7 +5,7 @@ specdoc_examples = ['''
   linode.cloud.database_postgresql:
     label: my-db
     region: us-east
-    engine: postgresql/13.2
+    engine: postgresql/14.6
     type: g6-standard-1
     allow_list:
       - 0.0.0.0/0
@@ -14,7 +14,7 @@ specdoc_examples = ['''
   linode.cloud.database_postgresql:
     label: my-db
     region: us-east
-    engine: postgresql/13.2
+    engine: postgresql/14.6
     type: g6-standard-1
     allow_list:
       - 0.0.0.0/0
@@ -59,7 +59,7 @@ result_database_samples = ['''{
     "hour_of_day": 0,
     "week_of_month": null
   },
-  "version": "13.2"
+  "version": "14.6"
 }''']
 
 result_credentials_samples = ['''{

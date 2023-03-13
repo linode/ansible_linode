@@ -6,14 +6,22 @@
 from __future__ import absolute_import, division, print_function
 
 # pylint: disable=unused-import
-from typing import List, Any, Optional
-
-from ansible_specdoc.objects import SpecDocMeta, SpecReturnValue, FieldType, SpecField
+from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.account_info as docs
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_authors, \
-    global_requirements
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    LinodeModuleBase,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
+    global_authors,
+    global_requirements,
+)
+from ansible_specdoc.objects import (
+    FieldType,
+    SpecDocMeta,
+    SpecField,
+    SpecReturnValue,
+)
 
 spec = dict(
     # Disable the default values
@@ -22,21 +30,19 @@ spec = dict(
 )
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        'Get info about a Linode Account.'
-    ],
+    description=["Get info about a Linode Account."],
     requirements=global_requirements,
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
     return_values=dict(
         account=SpecReturnValue(
-            description='The account info in JSON serialized form.',
-            docs_url='https://www.linode.com/docs/api/account/#account-view__response-samples',
+            description="The account info in JSON serialized form.",
+            docs_url="https://www.linode.com/docs/api/account/#account-view__response-samples",
             type=FieldType.dict,
-            sample=docs.result_account_samples
+            sample=docs.result_account_samples,
         )
-    )
+    ),
 )
 
 
@@ -51,13 +57,15 @@ class Module(LinodeModuleBase):
 
         self.module_arg_spec = SPECDOC_META.ansible_spec
 
-        super().__init__(module_arg_spec=self.module_arg_spec,
-                         required_one_of=self.required_one_of)
+        super().__init__(
+            module_arg_spec=self.module_arg_spec,
+            required_one_of=self.required_one_of,
+        )
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for volume info module"""
 
-        self.results['account'] = self.client.account()._raw_json
+        self.results["account"] = self.client.account()._raw_json
 
         return self.results
 
@@ -67,5 +75,5 @@ def main() -> None:
     Module()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

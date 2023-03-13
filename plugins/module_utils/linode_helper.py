@@ -1,12 +1,23 @@
 """This module contains helper functions for various Linode modules."""
 import math
 import time
-from typing import Tuple, Any, Optional, cast, Dict, Set, Callable, List
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
 
 import linode_api4
 import polling
-from linode_api4 import and_, MappedObject, LKENodePool, LKENodePoolNode, ApiError, LinodeClient
-from linode_api4.objects.filtering import Filter, FilterableAttribute, FilterableMetaclass
+from linode_api4 import (
+    ApiError,
+    LinodeClient,
+    LKENodePool,
+    LKENodePoolNode,
+    MappedObject,
+    and_,
+)
+from linode_api4.objects.filtering import (
+    Filter,
+    FilterableAttribute,
+    FilterableMetaclass,
+)
 
 MAX_RETRIES = 5
 RETRY_INTERVAL_SECONDS = 4
@@ -30,12 +41,18 @@ def dict_select_matching(d_1: dict, d_2: dict) -> Tuple[dict, dict]:
 
 def filter_null_values(input_dict: dict) -> dict:
     """Returns a copy of the given dict with all keys containing null values removed"""
-    return {key: value for key, value in input_dict.items() if value is not None}
+    return {
+        key: value for key, value in input_dict.items() if value is not None
+    }
 
 
 def drop_empty_strings(input_dict: dict) -> dict:
     """Returns a copy of the given dict with all keys containing null and empty values removed"""
-    return {key: value for key, value in input_dict.items() if value is not None and value != ''}
+    return {
+        key: value
+        for key, value in input_dict.items()
+        if value is not None and value != ""
+    }
 
 
 def paginated_list_to_json(target_list: list) -> list:
@@ -44,7 +61,9 @@ def paginated_list_to_json(target_list: list) -> list:
 
 
 # There might be a better way to do this, but this works for now
-def create_filter_and(obj: FilterableMetaclass, filter_dict: dict) -> Optional[Filter]:
+def create_filter_and(
+    obj: FilterableMetaclass, filter_dict: dict
+) -> Optional[Filter]:
     """Returns a filter statement that requires all keys in the dict are matched."""
 
     keys = list(filter_dict.keys())
@@ -53,14 +72,18 @@ def create_filter_and(obj: FilterableMetaclass, filter_dict: dict) -> Optional[F
     if len(keys) < 1:
         return None
 
-    filter_statement: Filter = cast(FilterableAttribute, getattr(obj, keys[0])) == values[0]
+    filter_statement: Filter = (
+        cast(FilterableAttribute, getattr(obj, keys[0])) == values[0]
+    )
 
     if len(keys) == 1:
         return filter_statement
 
     for key, value in filter_dict.items():
-        filter_statement = and_(filter_statement, cast(FilterableAttribute,
-                                                       getattr(obj, key)) == value)
+        filter_statement = and_(
+            filter_statement,
+            cast(FilterableAttribute, getattr(obj, key)) == value,
+        )
 
     return filter_statement
 
@@ -80,8 +103,9 @@ def mapping_to_dict(obj: Any) -> Any:
     return obj
 
 
-def handle_updates(obj: linode_api4.Base, params: dict,
-                   mutable_fields: set, register_func: Any) -> Set[str]:
+def handle_updates(
+    obj: linode_api4.Base, params: dict, mutable_fields: set, register_func: Any
+) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
     obj._api_get()
@@ -102,14 +126,18 @@ def handle_updates(obj: linode_api4.Base, params: dict,
             if key in mutable_fields:
                 put_request[key] = new_value
                 result.add(key)
-                register_func('Updated {0}: "{1}" -> "{2}"'.
-                              format(key, old_value, new_value))
+                register_func(
+                    'Updated {0}: "{1}" -> "{2}"'.format(
+                        key, old_value, new_value
+                    )
+                )
 
                 continue
 
             raise RuntimeError(
-                'failed to update {} -> {}: {} is a non-updatable'
-                ' field'.format(old_value, new_value, key))
+                "failed to update {} -> {}: {} is a non-updatable"
+                " field".format(old_value, new_value, key)
+            )
 
     if len(put_request.keys()) > 0:
         obj._client.put(type(obj).api_endpoint, model=obj, data=put_request)
@@ -128,7 +156,7 @@ def parse_linode_types(value: any) -> any:
         linode_api4.objects.linode.Type,
         linode_api4.objects.linode.Region,
         linode_api4.objects.linode.Image,
-        linode_api4.objects.lke.KubeVersion
+        linode_api4.objects.lke.KubeVersion,
     }:
         return value.id
 
@@ -143,7 +171,7 @@ def jsonify_node_pool(pool: LKENodePool) -> Dict[str, Any]:
 
     result = pool._raw_json
 
-    result['nodes'] = [jsonify_node_pool_node(node) for node in pool.nodes]
+    result["nodes"] = [jsonify_node_pool_node(node) for node in pool.nodes]
 
     return result
 
@@ -152,9 +180,9 @@ def jsonify_node_pool_node(node: LKENodePoolNode) -> Dict[str, Any]:
     """Converts an LKENodePoolNode into a JSON-compatible dict"""
 
     return {
-        'id': node.id,
-        'instance_id': node.instance_id,
-        'status': node.status,
+        "id": node.id,
+        "instance_id": node.instance_id,
+        "status": node.status,
     }
 
 
@@ -170,11 +198,15 @@ def validate_required(required_fields: Set[str], params: Dict[str, Any]):
             has_missing_field = True
 
     if has_missing_field:
-        raise Exception("missing fields: {}".format(', '.join(missing_fields)))
+        raise Exception("missing fields: {}".format(", ".join(missing_fields)))
 
 
-def request_retry(request_func: Callable, retry_statuses=None,
-                  retry_interval=RETRY_INTERVAL_SECONDS, max_retries=MAX_RETRIES) -> any:
+def request_retry(
+    request_func: Callable,
+    retry_statuses=None,
+    retry_interval=RETRY_INTERVAL_SECONDS,
+    max_retries=MAX_RETRIES,
+) -> any:
     """Retries requests if the response status code matches the retry_statuses set."""
     # Default value for set
     if retry_statuses is None:
@@ -199,13 +231,19 @@ def request_retry(request_func: Callable, retry_statuses=None,
 
         return response
 
-    raise Exception('exceeded maximum number of retries: {0}'.format(max_retries))
+    raise Exception(
+        "exceeded maximum number of retries: {0}".format(max_retries)
+    )
 
 
 def filter_null_values_recursive(obj: Any) -> Any:
     """Recursively removes null values and keys from a structure."""
     if isinstance(obj, dict):
-        return {k: filter_null_values_recursive(v) for k, v in obj.items() if v is not None}
+        return {
+            k: filter_null_values_recursive(v)
+            for k, v in obj.items()
+            if v is not None
+        }
 
     if isinstance(obj, (list, set, tuple)):
         return [filter_null_values_recursive(v) for v in obj if v is not None]
@@ -218,30 +256,33 @@ def construct_api_filter(params: Dict[str, Any]) -> Dict[str, Any]:
 
     value_filters = []
 
-    if params.get('filters') is not None:
-        for filter_opt in params['filters']:
+    if params.get("filters") is not None:
+        for filter_opt in params["filters"]:
             current = []
 
-            for value in filter_opt['values']:
-                current.append({filter_opt['name']: value})
+            for value in filter_opt["values"]:
+                current.append({filter_opt["name"]: value})
 
-            value_filters.append({
-                '+or': current,
-            })
+            value_filters.append(
+                {
+                    "+or": current,
+                }
+            )
 
-    result = {
-        '+and': value_filters,
-        '+order': params['order']
-    }
+    result = {"+and": value_filters, "+order": params["order"]}
 
-    if params.get('order_by') is not None:
-        result['+order_by'] = params['order_by']
+    if params.get("order_by") is not None:
+        result["+order_by"] = params["order_by"]
 
     return result
 
 
-def get_all_paginated(client: LinodeClient, endpoint: str, filters: Dict[str, Any],
-                      num_results=None) -> List[Any]:
+def get_all_paginated(
+    client: LinodeClient,
+    endpoint: str,
+    filters: Dict[str, Any],
+    num_results=None,
+) -> List[Any]:
     """Returns a list of paginated JSON responses for the given API endpoint."""
     result = []
     current_page = 1
@@ -253,19 +294,21 @@ def get_all_paginated(client: LinodeClient, endpoint: str, filters: Dict[str, An
         page_size = max(min(num_results, 100), 25)
 
     while current_page <= num_pages or num_pages == -1:
-        response = client.get(endpoint + '?page={}&page_size={}'
-                              .format(current_page, page_size), filters=filters)
+        response = client.get(
+            endpoint + "?page={}&page_size={}".format(current_page, page_size),
+            filters=filters,
+        )
 
-        if 'data' not in response or 'page' not in response:
-            raise Exception('Invalid list response')
+        if "data" not in response or "page" not in response:
+            raise Exception("Invalid list response")
 
         if num_pages == -1:
             if num_results is not None:
-                num_pages = math.floor(num_results / response['pages'])
+                num_pages = math.floor(num_results / response["pages"])
             else:
-                num_pages = math.floor(response['results'] / response['pages'])
+                num_pages = math.floor(response["results"] / response["pages"])
 
-        result.extend(response['data'])
+        result.extend(response["data"])
         current_page += 1
 
     if num_results is not None:
@@ -280,7 +323,15 @@ def format_api_error(err: ApiError) -> str:
     return f"Error from Linode API: [{err.status}] {';'.join(err.errors)}"
 
 
-def poll_condition(condition_func: Callable[[], bool], step: int, timeout: int) -> None:
+def format_generic_error(err: Exception) -> str:
+    """Formats a generic error into a readable string"""
+
+    return f"{type(err).__name__}: {str(err)}"
+
+
+def poll_condition(
+    condition_func: Callable[[], bool], step: int, timeout: int
+) -> None:
     """Polls for the given condition using the given step and timeout values."""
     # Initial attempt
     if condition_func():

@@ -14,7 +14,7 @@ jobs:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: checkout repo
-        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # pin@v3
+        uses: actions/checkout@v3
         with:
           path: .ansible/collections/ansible_collections/linode/cloud
 
@@ -25,7 +25,7 @@ jobs:
         run: sudo apt-get install -y build-essential
 
       - name: setup python 3
-        uses: actions/setup-python@7f80679172b057fc5e90d70d197929d454754a5a # pin@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
