@@ -866,20 +866,13 @@ class LinodeInstance(LinodeModuleBase):
 
         ipv4_length = len(self.module.params.get("additional_ipv4") or [])
 
-        if self.module.params.get("private_ip"):
-            if ipv4_length != len(getattr(self._instance, "ipv4")) - 2:
-                self.fail(
-                    "failed to update instance {0}:additional_ipv4 is a non-updatable field".format(
-                        self._instance.label
-                    )
+        min_ips = 2 if self.module.params.get("private_ip") else 1
+        if ipv4_length != len(getattr(self._instance, "ipv4")) - min_ips:
+            self.fail(
+                "failed to update instance {0}:additional_ipv4 is a non-updatable field".format(
+                    self._instance.label
                 )
-        else:
-            if ipv4_length != len(getattr(self._instance, "ipv4")) - 1:
-                self.fail(
-                    "failed to update instance {0}:additional_ipv4 is a non-updatable field".format(
-                        self._instance.label
-                    )
-                )
+            )
 
         # Update interfaces
         self._update_interfaces()
