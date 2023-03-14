@@ -319,7 +319,7 @@ class LinodeFirewall(LinodeModuleBase):
                 remote_addresses = remote_rule.get("addresses", {})
                 local_addresses = local_rule.get("addresses", {})
                 local_addresses[ip_version] = remote_addresses.get(
-                    ip_version, []
+                    ip_version, None
                 )
                 local_rule["addresses"] = local_addresses
 
