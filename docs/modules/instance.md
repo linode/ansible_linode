@@ -237,7 +237,7 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `public` | <center>`bool`</center> | <center>**Required**</center> | fill this in   |
+| `public` | <center>`bool`</center> | <center>**Required**</center> | Additional IPv4 addresses allocated to a Linode.   |
 
 ## Return Values
 
