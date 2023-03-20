@@ -237,7 +237,7 @@ linode_instance_config_spec = dict(
 spec_additional_ipv4 = dict(
     public=SpecField(
         type=FieldType.bool,
-        description="Additional IPv4 addresses allocated to a Linode.",
+        description="Whether the allocated IPv4 address should be public or private.",
         required=True,
     )
 )
