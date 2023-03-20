@@ -29,6 +29,28 @@ Manage Linode Instances, Configs, and Disks.
 ```
 
 ```yaml
+- name: Create a new Linode instance with an additional public IPv4 address.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-east
+    image: linode/ubuntu20.04
+    root_pass: verysecurepassword!!!
+    private_ip: false
+    authorized_keys:
+      - "ssh-rsa ..."
+    stackscript_id: 1337
+    stackscript_data:
+      variable: value
+    group: app
+    tags:
+      - env=prod
+    state: present
+    additional_ipv4:
+      - public: true
+```
+
+```yaml
 - name: Create a Linode Instance with explicit configs and disks.
   linode.cloud.instance:
     label: 'my-complex-instance'
@@ -85,6 +107,7 @@ Manage Linode Instances, Configs, and Disks.
 | `backup_id` | <center>`int`</center> | <center>Optional</center> | The id of the Backup to restore to the new Instance. May not be provided if "image" is given.   |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status "running" before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `240`)** |
+| [`additional_ipv4` (sub-options)](#additional_ipv4) | <center>`list`</center> | <center>Optional</center> | Additional ipv4 addresses to allocate.   |
 
 ### configs
 
@@ -209,6 +232,12 @@ Manage Linode Instances, Configs, and Disks.
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The root user’s password on the newly-created Linode.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
+
+### additional_ipv4
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `public` | <center>`bool`</center> | <center>**Required**</center> | Whether the allocated IPv4 address should be public or private.   |
 
 ## Return Values
 

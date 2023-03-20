@@ -234,6 +234,14 @@ linode_instance_config_spec = dict(
     ),
 )
 
+spec_additional_ipv4 = dict(
+    public=SpecField(
+        type=FieldType.bool,
+        description="Whether the allocated IPv4 address should be public or private.",
+        required=True,
+    )
+)
+
 linode_instance_spec = dict(
     type=SpecField(
         type=FieldType.string,
@@ -371,6 +379,13 @@ linode_instance_spec = dict(
             "The amount of time, in seconds, to wait for an instance to "
             'have status "running".'
         ],
+    ),
+    additional_ipv4=SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=spec_additional_ipv4,
+        description=["Additional ipv4 addresses to allocate."],
+        editable=False,
     ),
 )
 
@@ -851,6 +866,16 @@ class LinodeInstance(LinodeModuleBase):
         if should_update:
             self._instance.save()
 
+        ipv4_length = len(self.module.params.get("additional_ipv4") or [])
+
+        min_ips = 2 if self.module.params.get("private_ip") else 1
+        if ipv4_length != len(getattr(self._instance, "ipv4")) - min_ips:
+            self.fail(
+                "failed to update instance {0}:additional_ipv4 is a non-updatable field".format(
+                    self._instance.label
+                )
+            )
+
         # Update interfaces
         self._update_interfaces()
 
@@ -926,6 +951,12 @@ class LinodeInstance(LinodeModuleBase):
                 create_poller.wait_for_next_event_finished(
                     self._timeout_ctx.seconds_remaining
                 )
+
+            if self.module.params.get("additional_ipv4") is not None:
+                additional_ip_types = self.module.params.get("additional_ipv4")
+
+                for ip_type in additional_ip_types:
+                    self._instance.ip_allocate(public=ip_type["public"])
         else:
             self._update_instance()
 
