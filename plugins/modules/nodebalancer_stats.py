@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     nodebalancer_stats as docs,
@@ -23,6 +23,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
+from linode_api4 import NodeBalancer
 
 linode_nodebalancer_stats_spec = dict(
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
@@ -31,12 +32,14 @@ linode_nodebalancer_stats_spec = dict(
         description=[
             "The id of the nodebalancer for which the statistics apply to."
         ],
+        conflicts_with=["label"],
     ),
     label=SpecField(
         type=FieldType.string,
         description=[
             "The label of the nodebalancer for which the statistics apply to."
         ],
+        conflicts_with=["id"],
     ),
 )
 
@@ -63,9 +66,7 @@ class Module(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.required_one_of: List[str] = []
-        self.results = dict(
-            node_balancer_stats=None,
-        )
+        self.results: Dict[str, Any] = {"node_balancer_stats": {}}
 
         self.module_arg_spec = SPECDOC_META.ansible_spec
 
@@ -74,12 +75,46 @@ class Module(LinodeModuleBase):
             required_one_of=self.required_one_of,
         )
 
+    def _get_stats_by_label(self, label: str) -> Optional[dict]:
+        try:
+            nodebalancer = self.client.nodebalancers(
+                NodeBalancer.label == label
+            )[0]
+            return self.client.get(
+                "/nodebalancers/{}/stats".format(nodebalancer.id)
+            )
+        except IndexError:
+            return self.fail(
+                msg="failed to find nodebalancer with label {0}: "
+                "nodebalancer does not exist".format(label)
+            )
+        except Exception as exception:
+            return self.fail(
+                msg="failed to get nodebalancer {0}: {1}".format(
+                    label, exception
+                )
+            )
+
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for NodeBalancer Statistics module"""
 
-        self.results["node_balancer_stats"] = self.client.get(
-            "/nodebalancers/{}/stats".format(kwargs["id"])
-        )
+        if (kwargs["id"] is None and kwargs["label"] is None) or (
+            kwargs["id"] is not None and kwargs["label"] is not None
+        ):
+            return self.fail(
+                msg="Label and ID are mutually exclusive and one "
+                + "must be used to resolve Nodebalancer statistics."
+            )
+
+        if kwargs["id"] is not None:
+            self.results["node_balancer_stats"] = self.client.get(
+                "/nodebalancers/{}/stats".format(kwargs["id"])
+            )
+
+        if kwargs["label"] is not None:
+            self.results["node_balancer_stats"] = self._get_stats_by_label(
+                kwargs["label"]
+            )
 
         return self.results
 
