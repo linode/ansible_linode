@@ -72,9 +72,9 @@
 
     - name: Get stats about the Nodebalancer by id
       linode.cloud.nodebalancer_stats:
-        label: '{{ create_populated_nodebalancer.node_balancer.id }}'
+        id: '{{ create_populated_nodebalancer.node_balancer.id }}'
       register: nodebalancer_stats
-      failed_when: '"200" not in nodebalancer_stats.msg'
+      failed_when: '"Stats are unavailable at this time" not in nodebalancer_stats.msg'
 
   always:
     - ignore_errors: yes
