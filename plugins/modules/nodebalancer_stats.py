@@ -7,7 +7,9 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Any, List, Optional
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer_stats as docs
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    nodebalancer_stats as docs,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
@@ -22,48 +24,18 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 
-traffic_spec = {
-    "in": SpecField(
-        type=FieldType.list,
-        element_type=FieldType.integer,
-        description=[
-            "An array of key/value pairs representing unix timestamp and reading for inbound traffic."
-        ],
-    ),
-    "out": SpecField(
-        type=FieldType.list,
-        element_type=FieldType.integer,
-        description=[
-            "An array of key/value pairs representing unix timestamp and reading for outbound traffic."
-        ],
-    ),
-}
-
 linode_nodebalancer_stats_spec = dict(
     state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    connections=SpecField(
-        type=FieldType.list,
-        element_type=FieldType.integer,
-        description=[
-            "An array of key/value pairs representing unix timestamp and reading for connections to this NodeBalancer."
-        ],
-    ),
-    traffic=SpecField(
-        type=FieldType.dict,
-        suboptions=traffic_spec,
-        description=["Traffic statistics for this NodeBalancer."],
-    ),
-    title=SpecField(
-        type=FieldType.string,
-        description=[
-            "The title for the statistics generated in this response."
-        ],
-    ),
     id=SpecField(
         type=FieldType.integer,
         description=[
             "The id of the nodebalancer for which the statistics apply to."
+        ],
+    ),
+    label=SpecField(
+        type=FieldType.string,
+        description=[
+            "The label of the nodebalancer for which the statistics apply to."
         ],
     ),
 )
@@ -77,7 +49,8 @@ SPECDOC_META = SpecDocMeta(
     return_values=dict(
         node_balancer_stats=SpecReturnValue(
             description="The NodeBalancer Stats in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/#nodebalancer-statistics-view__responses",
+            docs_url="https://www.linode.com/docs/api/nodebalancers/"
+            + "#nodebalancer-statistics-view__responses",
             type=FieldType.dict,
             sample=docs.result_nodebalancer_stats_samples,
         ),

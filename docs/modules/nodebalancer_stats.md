@@ -19,17 +19,8 @@ View a Linode NodeBalancers Stats.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `connections` | <center>`list`</center> | <center>Optional</center> | An array of key/value pairs representing unix timestamp and reading for connections to this NodeBalancer.   |
-| [`traffic` (sub-options)](#traffic) | <center>`dict`</center> | <center>Optional</center> | Traffic statistics for this NodeBalancer.   |
-| `title` | <center>`str`</center> | <center>Optional</center> | The title for the statistics generated in this response.   |
 | `id` | <center>`int`</center> | <center>Optional</center> | The id of the nodebalancer for which the statistics apply to.   |
-
-### traffic
-
-| Field     | Type | Required | Description                                                                  |
-|-----------|------|----------|------------------------------------------------------------------------------|
-| `in` | <center>`list`</center> | <center>Optional</center> | An array of key/value pairs representing unix timestamp and reading for inbound traffic.   |
-| `out` | <center>`list`</center> | <center>Optional</center> | An array of key/value pairs representing unix timestamp and reading for outbound traffic.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the nodebalancer for which the statistics apply to.   |
 
 ## Return Values
 
