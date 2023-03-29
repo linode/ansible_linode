@@ -1,0 +1,114 @@
+- name: nodebalancer_stats
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create node
+      linode.cloud.instance:
+        label: 'ansible-test-node-{{ r }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        root_pass: Fn$$oobar123
+        private_ip: true
+        state: present
+
+      register: node_inst
+
+    - name: Assert node is created
+      assert:
+        that:
+          - node_inst.changed
+          - node_inst.instance.ipv4|length > 1
+
+    # Create populated NodeBalancers
+    - name: Create a populated NodeBalancer
+      linode.cloud.nodebalancer:
+        label: 'ansible-nb-populated-{{ r }}'
+        region: us-east
+        state: present
+        configs:
+          - port: 80
+            algorithm: roundrobin
+            check: http
+            check_attempts: 3
+            check_interval: 90
+            check_passive: false
+            check_path: /
+            check_timeout: 10
+            cipher_suite: recommended
+            protocol: http
+            proxy_protocol: none
+            stickiness: none
+            nodes:
+              - label: node
+                address: '{{ node_inst.instance.ipv4[1] }}:80'
+                mode: accept
+                weight: 10
+      register: create_populated_nodebalancer
+
+    - debug:
+        var: create_populated_nodebalancer
+
+    - name: Assert populated NodeBalancer is created
+      assert:
+        that:
+          - create_populated_nodebalancer.changed
+          - create_populated_nodebalancer.node_balancer.region == 'us-east'
+          - create_populated_nodebalancer.configs|length == 1
+          - create_populated_nodebalancer.configs[0].port == 80
+          - create_populated_nodebalancer.configs[0].protocol == 'http'
+          - create_populated_nodebalancer.configs[0].algorithm == 'roundrobin'
+          - create_populated_nodebalancer.configs[0].check == 'http'
+          - create_populated_nodebalancer.configs[0].check_attempts == 3
+          - create_populated_nodebalancer.configs[0].check_interval == 90
+          - create_populated_nodebalancer.configs[0].check_passive == false
+          - create_populated_nodebalancer.configs[0].check_path == '/'
+          - create_populated_nodebalancer.configs[0].check_timeout == 10
+          - create_populated_nodebalancer.configs[0].cipher_suite == 'recommended'
+          - create_populated_nodebalancer.configs[0].proxy_protocol == 'none'
+          - create_populated_nodebalancer.configs[0].stickiness == 'none'
+          - create_populated_nodebalancer.nodes|length == 1
+
+    - name: Get stats about the Nodebalancer by id
+      linode.cloud.nodebalancer_stats:
+        id: '{{ create_populated_nodebalancer.node_balancer.id }}'
+      register: nodebalancer_stats_id
+      failed_when: '"Stats are unavailable at this time" not in nodebalancer_stats_id.msg'
+
+    - name: Get stats about the Nodebalancer by label
+      linode.cloud.nodebalancer_stats:
+        label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+      register: nodebalancer_stats_label
+      failed_when: '"Stats are unavailable at this time" not in nodebalancer_stats_label.msg'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the populated NodeBalancer
+          linode.cloud.nodebalancer:
+            label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+            state: absent
+          register: delete_populated
+
+        - name: Assert populated NodeBalancer delete
+          assert:
+            that:
+              - delete_populated.changed
+              - delete_populated.node_balancer.id == create_populated_nodebalancer.node_balancer.id
+
+        - name: Delete node
+          linode.cloud.instance:
+            label: '{{ node_inst.instance.label }}'
+            state: absent
+          register: delete_node
+
+        - name: Assert node delete
+          assert:
+            that:
+              - delete_node.changed
+              - delete_node.instance.id == node_inst.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
