@@ -1,0 +1,60 @@
+- name: domain_zone_file
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a domain
+      linode.cloud.domain:
+        description: 'really cool domain'
+        domain: 'ansible-test-domain-{{ r }}.com'
+        expire_sec: 300
+        master_ips:
+          - '127.0.0.1'
+        refresh_sec: 3600
+        retry_sec: 7200
+        soa_email: 'realemail@example.com'
+        status: 'active'
+        ttl_sec: 14400
+        type: 'master'
+        state: present
+      register: create
+      until: create.zone_file.zone_file | length > 0
+      retries: 5
+      delay: 10
+
+    - assert:
+        that:
+          - create.domain.description == 'really cool domain'
+          - create.domain.expire_sec == 300
+          - create.domain.master_ips[0] == '127.0.0.1'
+          - create.domain.refresh_sec == 3600
+          - create.domain.retry_sec == 7200
+          - create.domain.soa_email == 'realemail@example.com'
+          - create.domain.status == 'active'
+          - create.domain.ttl_sec == 14400
+          - create.domain.type == 'master'
+
+    - name: Get domain info
+      linode.cloud.domain_info:
+        domain: '{{ create.domain.domain }}'
+      register: info
+      until: info.zone_file.zone_file | length > 0
+      retries: 5
+      delay: 10
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the domain
+          linode.cloud.domain:            
+            domain: '{{ create.domain.domain }}'
+            state: absent
+          register: delete
+
+        - assert:
+            that:
+              - delete.changed
+              - delete.domain.id == create.domain.id
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

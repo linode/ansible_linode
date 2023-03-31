@@ -151,6 +151,12 @@ SPECDOC_META = SpecDocMeta(
             type=FieldType.list,
             sample=docs.result_records_samples,
         ),
+        zone_file=SpecReturnValue(
+            description="The zone file for the last rendered zone for the specified domain.",
+            docs_url="https://www.linode.com/docs/api/domains/#domain-zone-file-view",
+            type=FieldType.list,
+            sample=docs.result_zone_file_samples,
+        ),
     ),
 )
 
@@ -180,6 +186,7 @@ class LinodeDomain(LinodeModuleBase):
             changed=False,
             actions=[],
             domain=None,
+            zone_file=None,
         )
 
         self._domain: Optional[Domain] = None
@@ -270,6 +277,9 @@ class LinodeDomain(LinodeModuleBase):
 
         self.results["domain"] = self._domain._raw_json
         self.results["records"] = paginated_list_to_json(self._domain.records)
+        self.results["zone_file"] = self.client.get(
+            "/domains/{}/zone-file".format(self._domain.id)
+        )
 
     def _handle_domain_absent(self) -> None:
         domain_name: str = self.module.params.get("domain")

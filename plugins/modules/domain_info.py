@@ -72,6 +72,12 @@ SPECDOC_META = SpecDocMeta(
             type=FieldType.list,
             sample=docs_parent.result_records_samples,
         ),
+        zone_file=SpecReturnValue(
+            description="The zone file for the last rendered zone for the specified domain.",
+            docs_url="https://www.linode.com/docs/api/domains/#domain-zone-file-view",
+            type=FieldType.list,
+            sample=docs_parent.result_zone_file_samples,
+        ),
     ),
 )
 
@@ -84,7 +90,7 @@ class LinodeDomainInfo(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results = dict(domain=None, records=None)
+        self.results = dict(domain=None, records=None, zone_file=None)
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
@@ -124,6 +130,9 @@ class LinodeDomainInfo(LinodeModuleBase):
 
         self.results["domain"] = domain._raw_json
         self.results["records"] = paginated_list_to_json(domain.records)
+        self.results["zone_file"] = self.client.get(
+            "/domains/{}/zone-file".format(domain.id)
+        )
 
         return self.results
 
