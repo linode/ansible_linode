@@ -17,17 +17,17 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
 )
+from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import (
+    EventPoller,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    request_retry,
+)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
     SpecField,
     SpecReturnValue,
-)
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    request_retry,
-)
-from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import (
-    EventPoller,
 )
 from linode_api4 import Volume
 
@@ -99,7 +99,7 @@ linode_volume_spec = dict(
         type=FieldType.integer,
         required=False,
         description=["The volume id of the desired volume to clone."],
-    )
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(
@@ -196,7 +196,7 @@ class LinodeVolume(LinodeModuleBase):
 
         source_id = params.get("source_volume_id")
         source_volume = Volume(self.client, source_id)
-        source_volume._api_get() # Force lazy-loading
+        source_volume._api_get()  # Force lazy-loading
 
         # Check if source volume was found
         if source_volume is None:
@@ -209,7 +209,7 @@ class LinodeVolume(LinodeModuleBase):
             return self.fail(
                 msg="Specified region does not match source volume region."
             )
-        
+
         resize = False
 
         if params.get("size") != source_volume.size:
@@ -217,25 +217,44 @@ class LinodeVolume(LinodeModuleBase):
 
         # Perform the clone operation
         vol = request_retry(
-            lambda: self.client.post("/volumes/{}/clone".format(source_id), data={"label": params.get("label")})
+            lambda: self.client.post(
+                "/volumes/{}/clone".format(source_id),
+                data={"label": params.get("label")},
+            )
         )
 
         cloned_volume = Volume(self.client, vol.get("id"))
-        cloned_volume._api_get() # Force lazy-loading
+        cloned_volume._api_get()  # Force lazy-loading
 
-        self.register_action("Cloned volume with source id {0}".format(source_id))
+        self.register_action(
+            "Cloned volume with source id {0}".format(source_id)
+        )
         self._wait_for_volume_active(cloned_volume)
 
         # Resize if necessary
         if resize:
-            self.client.post("/volumes/{}/resize".format(cloned_volume.id), data={"size": params.get("size")})
-            self.register_action("Resized cloned volume from {0} to {1}".format(params.get("size"), source_volume.size))
+            self.client.post(
+                "/volumes/{}/resize".format(cloned_volume.id),
+                data={"size": params.get("size")},
+            )
+            self.register_action(
+                "Resized cloned volume from {0} to {1}".format(
+                    params.get("size"), source_volume.size
+                )
+            )
             self._wait_for_volume_active(cloned_volume)
 
         # Attach if necessary
         if params.get("linode_id") is not None:
-            self.client.post("/volumes/{}/attach".format(cloned_volume.id), data={"linode_id": params.get("linode_id")})
-            self.register_action("Attaching linode with linode_id {0} to cloned volume".format(params.get("linode_id")))
+            self.client.post(
+                "/volumes/{}/attach".format(cloned_volume.id),
+                data={"linode_id": params.get("linode_id")},
+            )
+            self.register_action(
+                "Attaching linode with linode_id {0} to cloned volume".format(
+                    params.get("linode_id")
+                )
+            )
             self._wait_for_volume_active(cloned_volume)
 
         return cloned_volume
@@ -285,7 +304,10 @@ class LinodeVolume(LinodeModuleBase):
 
         if not attached:
             detach_poller = EventPoller(
-                self.client, "volume", "volume_detach", entity_id=self._volume.id
+                self.client,
+                "volume",
+                "volume_detach",
+                entity_id=self._volume.id,
             )
 
             self._volume.detach()
