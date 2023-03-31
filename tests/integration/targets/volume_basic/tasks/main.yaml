@@ -225,7 +225,7 @@
             state: absent
           register: delete_volume_noinst
           until: delete_volume_noinst.changed
-          retries: 10
+          retries: 5
           delay: 10
 
         - name: Assert the volume was deleted

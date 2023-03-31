@@ -246,6 +246,13 @@ class LinodeVolume(LinodeModuleBase):
 
         # Attach if necessary
         if params.get("linode_id") is not None:
+            attach_poller = EventPoller(
+                self.client,
+                "volume",
+                "volume_attach",
+                entity_id=cloned_volume.id,
+            )
+
             self.client.post(
                 "/volumes/{}/attach".format(cloned_volume.id),
                 data={"linode_id": params.get("linode_id")},
@@ -255,6 +262,11 @@ class LinodeVolume(LinodeModuleBase):
                     params.get("linode_id")
                 )
             )
+
+            attach_poller.wait_for_next_event_finished(
+                self._timeout_ctx.seconds_remaining
+            )
+
             self._wait_for_volume_active(cloned_volume)
 
         return cloned_volume
@@ -295,11 +307,22 @@ class LinodeVolume(LinodeModuleBase):
 
         # Attach the volume to a Linode
         if linode_id is not None and self._volume.linode_id != linode_id:
+            attach_poller = EventPoller(
+                self.client,
+                "volume",
+                "volume_attach",
+                entity_id=self._volume.id,
+            )
+
             self._volume.attach(linode_id, config_id)
             self.register_action(
                 "Attached volume {0} to linode_id {1} and config_id {2}".format(
                     label, linode_id, config_id
                 )
+            )
+
+            attach_poller.wait_for_next_event_finished(
+                self._timeout_ctx.seconds_remaining
             )
 
         if not attached:
