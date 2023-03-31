@@ -23,6 +23,12 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    request_retry,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import (
+    EventPoller,
+)
 from linode_api4 import Volume
 
 linode_volume_spec = dict(
@@ -89,6 +95,11 @@ linode_volume_spec = dict(
         choices=["present", "absent"],
         required=True,
     ),
+    source_volume_id=SpecField(
+        type=FieldType.integer,
+        required=False,
+        description=["The volume id of the desired volume to clone."],
+    )
 )
 
 SPECDOC_META = SpecDocMeta(
@@ -175,13 +186,67 @@ class LinodeVolume(LinodeModuleBase):
                 "failed to wait for volume status: timeout period expired"
             )
 
-    def _wait_for_volume_active(self) -> None:
+    def _wait_for_volume_active(self, volume: Volume) -> None:
         self._wait_for_volume_status(
-            self._volume, {"active"}, self._timeout_ctx.seconds_remaining
+            volume, {"active"}, self._timeout_ctx.seconds_remaining
         )
+
+    def _clone_volume(self) -> Volume:
+        params = self.module.params
+
+        source_id = params.get("source_volume_id")
+        source_volume = Volume(self.client, source_id)
+        source_volume._api_get() # Force lazy-loading
+
+        # Check if source volume was found
+        if source_volume is None:
+            return self.fail(
+                msg="Volume with is {0} could not be found.".format(source_id)
+            )
+
+        # If regions don't match up, it is an invalid clone operation
+        if params.get("region") != source_volume.region.id:
+            return self.fail(
+                msg="Specified region does not match source volume region."
+            )
+        
+        resize = False
+
+        if params.get("size") != source_volume.size:
+            resize = True
+
+        # Perform the clone operation
+        vol = request_retry(
+            lambda: self.client.post("/volumes/{}/clone".format(source_id), data={"label": params.get("label")})
+        )
+
+        cloned_volume = Volume(self.client, vol.get("id"))
+        cloned_volume._api_get() # Force lazy-loading
+
+        self.register_action("Cloned volume with source id {0}".format(source_id))
+        self._wait_for_volume_active(cloned_volume)
+
+        # Resize if necessary
+        if resize:
+            self.client.post("/volumes/{}/resize".format(cloned_volume.id), data={"size": params.get("size")})
+            self.register_action("Resized cloned volume from {0} to {1}".format(params.get("size"), source_volume.size))
+            self._wait_for_volume_active(cloned_volume)
+
+        # Attach if necessary
+        if params.get("linode_id") is not None:
+            self.client.post("/volumes/{}/attach".format(cloned_volume.id), data={"linode_id": params.get("linode_id")})
+            self.register_action("Attaching linode with linode_id {0} to cloned volume".format(params.get("linode_id")))
+            self._wait_for_volume_active(cloned_volume)
+
+        return cloned_volume
 
     def _handle_volume(self) -> None:
         params = self.module.params
+
+        if params.get("source_volume_id") is not None:
+            self._volume = self._clone_volume()
+            self.results["volume"] = self._volume._raw_json
+            return
 
         label: str = params.get("label")
         size: int = params.get("size")
@@ -197,7 +262,7 @@ class LinodeVolume(LinodeModuleBase):
             self.register_action("Created volume {0}".format(label))
 
         # Ensure volume is active before continuing
-        self._wait_for_volume_active()
+        self._wait_for_volume_active(self._volume)
 
         # Resize the volume if its size does not match
         if size is not None and self._volume.size != size:
@@ -207,7 +272,7 @@ class LinodeVolume(LinodeModuleBase):
             )
 
             # Wait for resize to complete
-            self._wait_for_volume_active()
+            self._wait_for_volume_active(self._volume)
 
         # Attach the volume to a Linode
         if linode_id is not None and self._volume.linode_id != linode_id:
@@ -219,8 +284,16 @@ class LinodeVolume(LinodeModuleBase):
             )
 
         if not attached:
+            detach_poller = EventPoller(
+                self.client, "volume", "volume_detach", entity_id=self._volume.id
+            )
+
             self._volume.detach()
             self.register_action("Detached volume {0}".format(label))
+
+            detach_poller.wait_for_next_event_finished(
+                self._timeout_ctx.seconds_remaining
+            )
 
         # Force lazy-loading
         self._volume._api_get()

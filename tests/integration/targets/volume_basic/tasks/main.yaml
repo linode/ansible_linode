@@ -34,6 +34,16 @@
           - create_volume_inst.volume.size == 30
           - create_volume_inst.volume.linode_id == create_inst.instance.id
 
+    - name: Detach the attached volume
+      linode.cloud.volume:
+        label: '{{ create_volume_inst.volume.label }}'
+        attached: false
+        state: present
+      register: detach_attached_volume
+      until: detach_attached_volume.volume.linode_id == None
+      retries: 5
+      delay: 10
+
     - name: Create a volume without an instance
       linode.cloud.volume:
         label: 'ansible-test-{{ r }}'
@@ -91,12 +101,89 @@
         attached: false
         state: present
       register: detach_volume
+      until: detach_volume.volume.linode_id == None
+      retries: 5
+      delay: 10
 
     - name: Assert the volume is detached
       assert:
         that:
           - detach_volume.changed
           - not detach_volume.volume.linode_id|d(False)
+    
+    - name: Clone a volume
+      linode.cloud.volume: 
+        source_volume_id: '{{create_volume_noinst.volume.id}}'
+        label: 'cloned-volume-{{ r }}'
+        region: '{{create_volume_noinst.volume.region}}'
+        size: 50
+        state: present
+      register: cloned_volume
+
+    - name: Assert cloned volume is valid
+      assert:
+        that:
+          - cloned_volume.changed
+          - cloned_volume.volume.size == 50
+
+    - name: Attempt to clone a volume with mismatched regions
+      linode.cloud.volume: 
+        source_volume_id: '{{create_volume_noinst.volume.id}}'
+        label: volume_clone
+        region: us-south
+        size: 50
+        state: present
+      register: cloned_volume_fail
+      failed_when: '"Specified region does not match source volume region" not in cloned_volume_fail.msg'
+
+    - name: Clone a volume with different specified size
+      linode.cloud.volume: 
+        source_volume_id: '{{create_volume_noinst.volume.id}}'
+        label: 'cloned-volume-resize-{{ r }}'
+        region: '{{create_volume_noinst.volume.region}}'
+        size: 60
+        state: present
+      register: cloned_volume_resize
+
+    - name: Assert cloned volume is valid and size was updated
+      assert:
+        that:
+          - cloned_volume_resize.changed
+          - cloned_volume_resize.volume.size == 60
+
+    - name: Clone a volume with an attached linode instance
+      linode.cloud.volume: 
+        source_volume_id: '{{create_volume_noinst.volume.id}}'
+        label: 'cloned-volume-attached-{{ r }}'
+        region: '{{create_volume_noinst.volume.region}}'
+        size: 50
+        state: present
+        linode_id: '{{ create_inst.instance.id }}'
+      register: cloned_volume_attached
+
+    - name: Assert the cloned volume is attached and valid
+      assert:
+        that:
+          - cloned_volume_attached.changed
+          - cloned_volume_attached.volume.size == 50
+          - cloned_volume_attached.volume.linode_id == create_inst.instance.id
+
+    - name: Clone a volume with an attached linode instance and resize
+      linode.cloud.volume: 
+        source_volume_id: '{{create_volume_noinst.volume.id}}'
+        label: 'cloned-attached-resize-{{ r }}'
+        region: '{{create_volume_noinst.volume.region}}'
+        size: 60
+        state: present
+        linode_id: '{{ create_inst.instance.id }}'
+      register: cloned_volume_attached_resize
+
+    - name: Assert the cloned volume is attached, resized, and valid
+      assert:
+        that:
+          - cloned_volume_attached_resize.changed
+          - cloned_volume_attached_resize.volume.size == 60
+          - cloned_volume_attached_resize.volume.linode_id == create_inst.instance.id
 
   always:
     - ignore_errors: true
@@ -134,6 +221,28 @@
             that:
               - delete_inst.changed
               - delete_inst.instance.id == create_inst.instance.id
+
+        - name: Delete the cloned volume
+          linode.cloud.volume:
+            label: '{{ cloned_volume.volume.label }}'
+            state: absent
+          register: delete_cloned_volume
+
+        - name: Assert the volume was deleted
+          assert:
+            that:
+              - delete_cloned_volume.changed
+
+        # - name: Delete the resized cloned volume
+        #   linode.cloud.volume:
+        #     label: '{{ cloned_volume_resize.volume.label }}'
+        #     state: absent
+        #   register: delete_cloned_volume_resize
+
+        # - name: Assert the volume was deleted
+        #   assert:
+        #     that:
+        #       - delete_cloned_volume_resize.changed
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
