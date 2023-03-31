@@ -22,7 +22,7 @@
 
     - assert:
         that:
-          - no_filter.users | length >= 0
+          - no_filter.users | length >= 1
 
   always:
     - ignore_errors: yes

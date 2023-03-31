@@ -27,7 +27,7 @@
 
     - assert:
         that:
-          - no_filter.firewalls | length >= 0
+          - no_filter.firewalls | length >= 1
 
     - name: List firewalls with filter on label
       linode.cloud.firewall_list:
@@ -40,7 +40,7 @@
 
     - assert:
         that:
-          - filter.firewalls | length >= 0
+          - filter.firewalls | length >= 1
           - filter.firewalls[0].label == 'ansible-test-{{ r }}'
 
   always:

@@ -35,6 +35,7 @@ Name | Description |
 [linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|Manage Linode LKE cluster node pools.|
 [linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|Manage a Linode NodeBalancer.|
 [linode.cloud.nodebalancer_node](./docs/modules/nodebalancer_node.md)|Manage Linode NodeBalancer Nodes.|
+[linode.cloud.nodebalancer_stats](./docs/modules/nodebalancer_stats.md)|View a Linode NodeBalancers Stats.|
 [linode.cloud.object_keys](./docs/modules/object_keys.md)|Manage Linode Object Storage Keys.|
 [linode.cloud.ssh_key](./docs/modules/ssh_key.md)|Manage a Linode SSH key.|
 [linode.cloud.stackscript](./docs/modules/stackscript.md)|Manage a Linode StackScript.|

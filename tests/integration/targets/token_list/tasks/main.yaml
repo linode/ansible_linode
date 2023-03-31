@@ -25,7 +25,7 @@
 
     - assert:
         that:
-          - no_filter.tokens | length >= 0
+          - no_filter.tokens | length >= 1
 
     - name: List tokens with filter on label
       linode.cloud.token_list:
@@ -38,7 +38,7 @@
 
     - assert:
         that:
-          - filter.tokens | length >= 0
+          - filter.tokens | length >= 1
           - filter.tokens[0].label == 'ansible-test-{{ r }}'
 
   always:

@@ -6,7 +6,7 @@
 
     - assert:
         that:
-          - no_filter.instance_types | length >= 0
+          - no_filter.instance_types | length >= 1
 
     - name: List instance types with filter on class
       linode.cloud.instance_type_list:
@@ -17,7 +17,7 @@
 
     - assert:
         that:
-          - filter.instance_types | length >= 0
+          - filter.instance_types | length >= 1
           - filter.instance_types[0].class == 'nanode'
 
   environment:

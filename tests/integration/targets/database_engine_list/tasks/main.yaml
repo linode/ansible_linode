@@ -6,7 +6,7 @@
 
     - assert:
         that:
-          - no_filter.database_engines | length >= 0
+          - no_filter.database_engines | length >= 1
 
     - name: List database engines with filter on engine
       linode.cloud.database_engine_list:
@@ -17,7 +17,7 @@
 
     - assert:
         that:
-          - filter.database_engines | length >= 0
+          - filter.database_engines | length >= 1
           - filter.database_engines[0].engine == 'mysql'
 
   environment:
