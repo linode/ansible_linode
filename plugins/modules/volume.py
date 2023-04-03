@@ -210,11 +210,6 @@ class LinodeVolume(LinodeModuleBase):
                 msg="Specified region does not match source volume region."
             )
 
-        resize = False
-
-        if params.get("size") != source_volume.size:
-            resize = True
-
         # Perform the clone operation
         vol = request_retry(
             lambda: self.client.post(
@@ -232,7 +227,7 @@ class LinodeVolume(LinodeModuleBase):
         self._wait_for_volume_active(cloned_volume)
 
         # Resize if necessary
-        if resize:
+        if params.get("size") != source_volume.size:
             self.client.post(
                 "/volumes/{}/resize".format(cloned_volume.id),
                 data={"size": params.get("size")},
