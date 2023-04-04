@@ -226,53 +226,10 @@ class LinodeVolume(LinodeModuleBase):
         )
         self._wait_for_volume_active(cloned_volume)
 
-        # Resize if necessary
-        if params.get("size") != source_volume.size:
-            self.client.post(
-                "/volumes/{}/resize".format(cloned_volume.id),
-                data={"size": params.get("size")},
-            )
-            self.register_action(
-                "Resized cloned volume from {0} to {1}".format(
-                    params.get("size"), source_volume.size
-                )
-            )
-            self._wait_for_volume_active(cloned_volume)
-
-        # Attach if necessary
-        if params.get("linode_id") is not None:
-            attach_poller = EventPoller(
-                self.client,
-                "volume",
-                "volume_attach",
-                entity_id=cloned_volume.id,
-            )
-
-            self.client.post(
-                "/volumes/{}/attach".format(cloned_volume.id),
-                data={"linode_id": params.get("linode_id")},
-            )
-            self.register_action(
-                "Attaching linode with linode_id {0} to cloned volume".format(
-                    params.get("linode_id")
-                )
-            )
-
-            attach_poller.wait_for_next_event_finished(
-                self._timeout_ctx.seconds_remaining
-            )
-
-            self._wait_for_volume_active(cloned_volume)
-
         return cloned_volume
 
     def _handle_volume(self) -> None:
         params = self.module.params
-
-        if params.get("source_volume_id") is not None:
-            self._volume = self._clone_volume()
-            self.results["volume"] = self._volume._raw_json
-            return
 
         label: str = params.get("label")
         size: int = params.get("size")
@@ -282,9 +239,13 @@ class LinodeVolume(LinodeModuleBase):
 
         self._volume = self._get_volume_by_label(label)
 
-        # Create the volume if it does not already exist
+        # Create the volume if it does not already exist or 
+        # clone if source volume id was provided
         if self._volume is None:
-            self._volume = self._create_volume()
+            if params.get("source_volume_id") is not None:
+                self._volume = self._clone_volume()
+            else:
+                self._volume = self._create_volume()
             self.register_action("Created volume {0}".format(label))
 
         # Ensure volume is active before continuing
