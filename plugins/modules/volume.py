@@ -239,7 +239,7 @@ class LinodeVolume(LinodeModuleBase):
 
         self._volume = self._get_volume_by_label(label)
 
-        # Create the volume if it does not already exist or 
+        # Create the volume if it does not already exist or
         # clone if source volume id was provided
         if self._volume is None:
             if params.get("source_volume_id") is not None:
