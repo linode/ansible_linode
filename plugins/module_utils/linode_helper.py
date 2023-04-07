@@ -152,10 +152,14 @@ def parse_linode_types(value: any) -> any:
     if isinstance(value, list):
         return [parse_linode_types(elem) for elem in value]
 
+    if isinstance(value, dict):
+        return {k: parse_linode_types(elem) for k, elem in value.items()}
+
     if type(value) in {
         linode_api4.objects.linode.Type,
         linode_api4.objects.linode.Region,
         linode_api4.objects.linode.Image,
+        linode_api4.objects.linode.Kernel,
         linode_api4.objects.lke.KubeVersion,
     }:
         return value.id

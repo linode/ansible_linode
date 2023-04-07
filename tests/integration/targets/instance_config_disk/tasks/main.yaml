@@ -52,6 +52,39 @@
           - create.configs[0].label == 'cool-config'
           - create.configs[0].devices.sda.disk_id != None
 
+    - name: Keep the config unchanged
+      linode.cloud.instance:
+        label: 'ansible-test-dc-{{ r }}'
+        region: us-east
+        type: g6-standard-1
+        booted: false
+        disks:
+          - label: test-disk
+            filesystem: ext4
+            size: 10
+        configs:
+          - label: cool-config
+            comments: really cool config
+            kernel: linode/latest-64bit
+            memory_limit: 512
+            run_level: single
+            virt_mode: paravirt
+            helpers:
+              devtmpfs_automount: true
+              distro: true
+              modules_dep: true
+              network: true
+              updatedb_disabled: true
+            devices:
+              sda:
+                disk_label: test-disk
+        state: present
+      register: unchanged
+
+    - assert:
+        that:
+          - unchanged.changed == False
+
     - name: Update the config
       linode.cloud.instance:
         label: 'ansible-test-dc-{{ r }}'

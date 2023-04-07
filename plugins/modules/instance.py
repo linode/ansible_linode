@@ -27,7 +27,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     filter_null_values_recursive,
     mapping_to_dict,
     paginated_list_to_json,
-    request_retry,
+    request_retry, parse_linode_types,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -688,7 +688,7 @@ class LinodeInstance(LinodeModuleBase):
             if not hasattr(config, key):
                 continue
 
-            old_value = mapping_to_dict(getattr(config, key))
+            old_value = parse_linode_types(getattr(config, key))
 
             # Special handling for the ConfigInterface type
             if key == "interfaces":
@@ -835,15 +835,7 @@ class LinodeInstance(LinodeModuleBase):
             if key in {"configs", "disks", "boot_config_label"}:
                 continue
 
-            old_value = getattr(self._instance, key)
-
-            # Convert type objects to their string IDs
-            if type(old_value) in {
-                linode_api4.objects.linode.Type,
-                linode_api4.objects.linode.Region,
-                linode_api4.objects.linode.Image,
-            }:
-                old_value = old_value.id
+            old_value = parse_linode_types(getattr(self._instance, key))
 
             if new_value != old_value:
                 if key in linode_instance_mutable:
