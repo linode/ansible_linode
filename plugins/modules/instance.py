@@ -9,7 +9,6 @@ import copy
 from typing import Any, Dict, List, Optional, Union, cast
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
-import linode_api4
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
@@ -25,9 +24,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     drop_empty_strings,
     filter_null_values,
     filter_null_values_recursive,
-    mapping_to_dict,
     paginated_list_to_json,
-    request_retry, parse_linode_types,
+    parse_linode_types,
+    request_retry,
 )
 from ansible_specdoc.objects import (
     FieldType,
