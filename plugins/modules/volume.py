@@ -224,7 +224,6 @@ class LinodeVolume(LinodeModuleBase):
         self.register_action(
             "Cloned volume with source id {0}".format(source_id)
         )
-        self._wait_for_volume_active(cloned_volume)
 
         return cloned_volume
 
@@ -246,7 +245,7 @@ class LinodeVolume(LinodeModuleBase):
                 self._volume = self._clone_volume()
             else:
                 self._volume = self._create_volume()
-            self.register_action("Created volume {0}".format(label))
+                self.register_action("Created volume {0}".format(label))
 
         # Ensure volume is active before continuing
         self._wait_for_volume_active(self._volume)
