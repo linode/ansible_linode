@@ -221,10 +221,6 @@ class LinodeVolume(LinodeModuleBase):
         cloned_volume = Volume(self.client, vol.get("id"))
         cloned_volume._api_get()  # Force lazy-loading
 
-        self.register_action(
-            "Cloned volume with source id {0}".format(source_id)
-        )
-
         return cloned_volume
 
     def _handle_volume(self) -> None:
@@ -243,6 +239,11 @@ class LinodeVolume(LinodeModuleBase):
         if self._volume is None:
             if params.get("source_volume_id") is not None:
                 self._volume = self._clone_volume()
+                self.register_action(
+                    "Cloned volume {0} with source id {1}".format(
+                        label, params.get("source_volume_id")
+                    )
+                )
             else:
                 self._volume = self._create_volume()
                 self.register_action("Created volume {0}".format(label))
