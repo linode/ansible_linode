@@ -16,7 +16,7 @@ List and filter on Linode Instances.
 ```yaml
 - name: Resolve all instances for the current Linode Account
   linode.cloud.instance_list:
-    filter:
+    filters:
       - name: label
         values: myInstanceLabel
 ```
