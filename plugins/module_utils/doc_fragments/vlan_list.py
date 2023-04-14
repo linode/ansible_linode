@@ -5,7 +5,7 @@ specdoc_examples = ['''
   linode.cloud.vlan_list: {}''', '''
 - name: List all VLANs in the us-southeast region
   linode.cloud.vlan_list:
-    filter:
+    filters:
       - name: region
         values: us-southeast
 ''']

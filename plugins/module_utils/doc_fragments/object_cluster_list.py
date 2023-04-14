@@ -5,7 +5,7 @@ specdoc_examples = ['''
   linode.cloud.object_cluster_list: {}''', '''
 - name: Resolve all object storage clusters for the current Linode Account
   linode.cloud.object_cluster_list:
-    filter:
+    filters:
       - name: region
         values: us-east''']
 
