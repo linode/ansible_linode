@@ -16,7 +16,7 @@ List and filter on Linode Managed Databases.
 ```yaml
 - name: Resolve all MySQL databases for the current Linode Account
   linode.cloud.database_list:
-    filter:
+    filters:
       - name: engine
         values: mysql
 ```

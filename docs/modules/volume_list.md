@@ -16,7 +16,7 @@ List and filter on Linode Volumes.
 ```yaml
 - name: Resolve all volumes that the user is allowed to view
   linode.cloud.volume_list:
-    filter:
+    filters:
       - name: label
         values: myVolumeLabel
 ```
