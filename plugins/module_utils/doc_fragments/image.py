@@ -19,6 +19,7 @@ specdoc_examples = ['''
     state: absent''']
 
 result_image_samples = ['''{
+  "capabilities": [],
   "created": "2021-08-14T22:44:02",
   "created_by": "linode",
   "deprecated": false,

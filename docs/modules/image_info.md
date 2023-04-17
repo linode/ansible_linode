@@ -35,6 +35,7 @@ Get info about a Linode Image.
     - Sample Response:
         ```json
         {
+          "capabilities": [],
           "created": "2021-08-14T22:44:02",
           "created_by": "linode",
           "deprecated": false,
