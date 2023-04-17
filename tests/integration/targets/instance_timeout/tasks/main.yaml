@@ -25,3 +25,5 @@
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
     LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'

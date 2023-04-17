@@ -382,7 +382,7 @@ linode_instance_spec = dict(
     ),
     metadata=SpecField(
         type=FieldType.dict,
-        suboptions=linode_instance_config_spec,
+        suboptions=linode_instance_metadata_spec,
         description=[
             "Fields relating to the Linode Metadata service."
         ]
