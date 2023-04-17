@@ -78,6 +78,19 @@ Manage Linode Instances, Configs, and Disks.
 ```
 
 ```yaml
+- name: Create a Linode Instance with custom user data.
+  linode.cloud.instance:
+    label: 'my-metadata-instance'
+    region: us-southeast
+    type: g6-standard-1
+    image: linode/ubuntu22.04
+    root_pass: verysecurepassword!!!
+    metadata:
+        user_data: myuserdata
+    state: present
+```
+
+```yaml
 - name: Delete a Linode instance.
   linode.cloud.instance:
     label: my-linode
@@ -105,6 +118,7 @@ Manage Linode Instances, Configs, and Disks.
 | [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema).  **(Conflicts With: `disks`,`configs`)** |
 | `booted` | <center>`bool`</center> | <center>Optional</center> | Whether the new Instance should be booted. This will default to True if the Instance is deployed from an Image or Backup.   |
 | `backup_id` | <center>`int`</center> | <center>Optional</center> | The id of the Backup to restore to the new Instance. May not be provided if "image" is given.   |
+| [`metadata` (sub-options)](#metadata) | <center>`dict`</center> | <center>Optional</center> | Fields relating to the Linode Metadata service.   |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status "running" before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `240`)** |
 | [`additional_ipv4` (sub-options)](#additional_ipv4) | <center>`list`</center> | <center>Optional</center> | Additional ipv4 addresses to allocate.   |
@@ -233,6 +247,21 @@ Manage Linode Instances, Configs, and Disks.
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
 
+### metadata
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| [`devices` (sub-options)](#devices) | <center>`dict`</center> | <center>**Required**</center> | The devices to map to this configuration.   |
+| `label` | <center>`str`</center> | <center>**Required**</center> | The label to assign to this config.   |
+| `comments` | <center>`str`</center> | <center>Optional</center> | Arbitrary User comments on this Config.  **(Updatable)** |
+| [`helpers` (sub-options)](#helpers) | <center>`dict`</center> | <center>Optional</center> | Helpers enabled when booting to this Linode Config.   |
+| `kernel` | <center>`str`</center> | <center>Optional</center> | A Kernel ID to boot a Linode with. Defaults to "linode/latest-64bit".  **(Updatable)** |
+| `memory_limit` | <center>`int`</center> | <center>Optional</center> | Defaults to the total RAM of the Linode.  **(Updatable)** |
+| `root_device` | <center>`str`</center> | <center>Optional</center> | The root device to boot.  **(Updatable)** |
+| `run_level` | <center>`str`</center> | <center>Optional</center> | Defines the state of your Linode after booting.  **(Updatable)** |
+| `virt_mode` | <center>`str`</center> | <center>Optional</center> | Controls the virtualization mode.  **(Choices: `paravirt`, `fullvirt`; Updatable)** |
+| [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create__request-body-schema).  **(Updatable)** |
+
 ### additional_ipv4
 
 | Field     | Type | Required | Description                                                                  |
@@ -263,6 +292,7 @@ Manage Linode Instances, Configs, and Disks.
           },
           "created": "2018-01-01T00:01:01",
           "group": "Linode-Group",
+          "has_user_data": true,
           "hypervisor": "kvm",
           "id": 123,
           "image": "linode/debian10",

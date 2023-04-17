@@ -52,6 +52,7 @@ Get info about a Linode Instance.
           },
           "created": "2018-01-01T00:01:01",
           "group": "Linode-Group",
+          "has_user_data": true,
           "hypervisor": "kvm",
           "id": 123,
           "image": "linode/debian10",
