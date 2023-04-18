@@ -16,7 +16,7 @@ List and filter on Linode Instance Types.
 ```yaml
 - name: Resolve all Linode instance types
   linode.cloud.instance_type_list:
-    filter:
+    filters:
       - name: class
         values: nanode
 ```

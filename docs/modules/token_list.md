@@ -16,7 +16,7 @@ List and filter on Linode Account tokens.
 ```yaml
 - name: Resolve all of the Personal Access Tokens active for the current user
   linode.cloud.token_list:
-    filter:
+    filters:
       - name: label
         values: myTokenLabel
 ```

@@ -48,6 +48,13 @@ Manage a Linode Volume.
   linode.cloud.volume:
     label: example-volume
     state: absent
+- name: Create an cloned volume
+  linode.cloud.volume: 
+    source_volume_id: 1234
+    label: example-volume
+    region: us-east
+    size: 30
+    state: present
 ```
 
 
@@ -63,6 +70,7 @@ Manage a Linode Volume.
 | `size` | <center>`int`</center> | <center>Optional</center> | The size of this volume, in GB. Be aware that volumes may only be resized up after creation.  **(Updatable)** |
 | `attached` | <center>`bool`</center> | <center>Optional</center> | If true, the volume will be attached to a Linode. Otherwise, the volume will be detached.  **(Default: `True`; Updatable)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for a volume to have the active status.  **(Default: `240`)** |
+| `source_volume_id` | <center>`int`</center> | <center>Optional</center> | The volume id of the desired volume to clone.   |
 
 ## Return Values
 

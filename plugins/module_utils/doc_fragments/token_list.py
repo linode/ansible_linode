@@ -5,7 +5,7 @@ specdoc_examples = ['''
   linode.cloud.token_list: {}''', '''
 - name: Resolve all of the Personal Access Tokens active for the current user
   linode.cloud.token_list:
-    filter:
+    filters:
       - name: label
         values: myTokenLabel''']
 

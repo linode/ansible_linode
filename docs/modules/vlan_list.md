@@ -16,7 +16,7 @@ List and filter on Linode VLANs.
 ```yaml
 - name: List all VLANs in the us-southeast region
   linode.cloud.vlan_list:
-    filter:
+    filters:
       - name: region
         values: us-southeast
 

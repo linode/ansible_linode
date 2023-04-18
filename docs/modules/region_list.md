@@ -16,7 +16,7 @@ List and filter on Linode Regions.
 ```yaml
 - name: Resolve all Linode regions
   linode.cloud.region_list:
-    filter:
+    filters:
       - name: id
         values: us-east
 ```

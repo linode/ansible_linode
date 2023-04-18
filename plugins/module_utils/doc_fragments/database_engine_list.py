@@ -5,7 +5,7 @@ specdoc_examples = ['''
   linode.cloud.database_engine_list: {}''', '''
 - name: Resolve all Database engine types
   linode.cloud.database_engine_list:
-    filter:
+    filters:
       - name: engine
         values: mysql''']
 

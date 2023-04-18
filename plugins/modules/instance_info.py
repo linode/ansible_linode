@@ -37,7 +37,7 @@ linode_instance_info_spec = dict(
         required=False,
         conflicts_with=["label"],
         description=[
-            "The instance’s label.",
+            "The unique ID of the instance.",
             "Optional if `label` is defined.",
         ],
     ),
@@ -46,7 +46,7 @@ linode_instance_info_spec = dict(
         required=False,
         conflicts_with=["id"],
         description=[
-            "The unique ID of the Instance.",
+            "The instance’s label.",
             "Optional if `id` is defined.",
         ],
     ),

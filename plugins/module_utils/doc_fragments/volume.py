@@ -27,7 +27,14 @@ specdoc_examples = ['''
 - name: Delete a volume
   linode.cloud.volume:
     label: example-volume
-    state: absent''']
+    state: absent
+- name: Create an cloned volume
+  linode.cloud.volume: 
+    source_volume_id: 1234
+    label: example-volume
+    region: us-east
+    size: 30
+    state: present''']
 
 result_volume_samples = ['''{
   "created": "2018-01-01T00:01:01",
