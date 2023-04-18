@@ -16,7 +16,7 @@ List and filter on Linode Instance Types.
 ```yaml
 - name: List a Linode Instance Type named Nanode 1GB
   linode.cloud.type_list:
-    filter:
+    filters:
       - name: label
         values: Nanode 1GB
 

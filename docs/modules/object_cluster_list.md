@@ -16,7 +16,7 @@ List and filter on Object Storage Clusters.
 ```yaml
 - name: Resolve all object storage clusters for the current Linode Account
   linode.cloud.object_cluster_list:
-    filter:
+    filters:
       - name: region
         values: us-east
 ```

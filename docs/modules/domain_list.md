@@ -16,7 +16,7 @@ List and filter on Domains.
 ```yaml
 - name: Resolve all domains for the current Linode Account
   linode.cloud.domain_list:
-    filter:
+    filters:
       - name: domain
         values: example.org
 ```

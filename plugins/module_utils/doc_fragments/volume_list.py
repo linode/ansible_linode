@@ -5,7 +5,7 @@ specdoc_examples = ['''
   linode.cloud.volume_list: {}''', '''
 - name: Resolve all volumes that the user is allowed to view
   linode.cloud.volume_list:
-    filter:
+    filters:
       - name: label
         values: myVolumeLabel''']
 

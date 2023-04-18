@@ -10,7 +10,7 @@ specdoc_examples = ['''
     order: desc''', '''
 - name: Resolve all Alpine Linux images
   linode.cloud.image_list:
-    filter:
+    filters:
       - name: vendor
         values: Alpine''']
 

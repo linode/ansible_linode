@@ -5,7 +5,7 @@ specdoc_examples = ['''
   linode.cloud.nodebalancer_list: {}''', '''
 - name: Resolve all Nodebalancers for the current Linode Account
   linode.cloud.nodebalancer_list:
-    filter:
+    filters:
       - name: label
         values: myNodebalancerLabel''']
 
