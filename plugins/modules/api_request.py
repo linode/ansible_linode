@@ -5,6 +5,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+import ast
+import contextlib
+
 # pylint: disable=unused-import
 import json
 from typing import Any, Optional, Tuple
@@ -132,6 +135,12 @@ class Module(LinodeModuleBase):
 
         param_body = self.module.params.get("body")
         param_body_json = self.module.params.get("body_json")
+
+        with contextlib.suppress(Exception):
+            parsed_body_json = ast.literal_eval(param_body_json)
+            parsed_body_json = json.dumps(parsed_body_json)
+
+            param_body_json = parsed_body_json
 
         request_body = None
 
