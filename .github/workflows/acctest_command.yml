@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Slash Command Dispatch
         uses: peter-evans/slash-command-dispatch@a28ee6cd74d5200f99e247ebc7b365c03ae0ef3c # pin@v3
-        env:
-          TOKEN: ${{ steps.generate_token.outputs.token }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-type: pull-request
