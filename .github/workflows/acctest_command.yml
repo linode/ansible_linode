@@ -14,8 +14,7 @@ jobs:
         env:
           TOKEN: ${{ steps.generate_token.outputs.token }}
         with:
-          token: ${{ env.TOKEN }}
-          reaction-token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           issue-type: pull-request
           commands: acctest
           named-args: true
