@@ -103,7 +103,7 @@ linode_volume_spec = dict(
     tags=SpecField(
         type=FieldType.list,
         required=False,
-        description=["The tags to be attached to the volume"]
+        description=["The tags to be attached to the volume."],
     ),
 )
 
