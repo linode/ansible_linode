@@ -100,6 +100,11 @@ linode_volume_spec = dict(
         required=False,
         description=["The volume id of the desired volume to clone."],
     ),
+    tags=SpecField(
+        type=FieldType.list,
+        required=False,
+        description=["The tags to be attached to the volume."],
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(
