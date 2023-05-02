@@ -1,0 +1,48 @@
+# this test is to test a json_body with integer inside as a value of a key
+
+- name: api_request_extra
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List all available Linode regions
+      linode.cloud.region_list:
+      register: regions
+    
+    - name: Create a volume by the api_request module
+      linode.cloud.api_request:
+        path: "/volumes"
+        method: POST
+        body_json: >
+          {
+            "label": "ansible-test-{{ r }}",
+            "size": 10,
+            "region": "{{ regions.regions[0].id }}"
+          }
+      register: response
+
+    - name: Assert volume created
+      assert:
+        that:
+          - response.changed
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete the volume
+          linode.cloud.volume:
+            label: '{{ response.body.label }}'
+            state: absent
+          register: delete_volume
+          until: delete_volume.changed
+          retries: 5
+          delay: 10
+
+        - name: Assert the volume was deleted
+          assert:
+            that:
+              - delete_volume.changed
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

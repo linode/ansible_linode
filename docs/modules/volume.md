@@ -71,6 +71,7 @@ Manage a Linode Volume.
 | `attached` | <center>`bool`</center> | <center>Optional</center> | If true, the volume will be attached to a Linode. Otherwise, the volume will be detached.  **(Default: `True`; Updatable)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for a volume to have the active status.  **(Default: `240`)** |
 | `source_volume_id` | <center>`int`</center> | <center>Optional</center> | The volume id of the desired volume to clone.   |
+| `tags` | <center>`list`</center> | <center>Optional</center> | The tags to be attached to the volume.   |
 
 ## Return Values
 

@@ -5,6 +5,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+import ast
+import contextlib
+
 # pylint: disable=unused-import
 import json
 from typing import Any, Optional, Tuple
@@ -99,6 +102,15 @@ class Module(LinodeModuleBase):
             mutually_exclusive=[("body", "body_json")],
         )
 
+    @staticmethod
+    def _parse_body_json(body_content: str) -> dict:
+        with contextlib.suppress(Exception):
+            # If this is a Python dict literal, parse and return
+            result = ast.literal_eval(body_content)
+            return result
+
+        return json.loads(body_content)
+
     def do_request(
         self, method: str, path: str, filters: dict = None, body: dict = None
     ) -> Tuple[int, Optional[dict]]:
@@ -138,7 +150,7 @@ class Module(LinodeModuleBase):
         if param_body is not None:
             request_body = param_body
         elif param_body_json is not None:
-            request_body = json.loads(param_body_json)
+            request_body = self._parse_body_json(param_body_json)
 
         response_status, response_json = self.do_request(
             param_method, param_path, filters=param_filter, body=request_body
