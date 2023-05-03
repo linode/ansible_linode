@@ -65,10 +65,7 @@ class Module(LinodeModuleBase):
 
     def _get_range(self, address: str) -> IPv6Range:
         try:
-            # Workaround for endpoint formatting issue
-            data = self.client.get(IPv6Range.api_endpoint.format(address))
-
-            result = IPv6Range(self.client, address, json=data)
+            result = self.client.load(IPv6Range, address)
             return result
         except Exception as exception:
             self.fail(
