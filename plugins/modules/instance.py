@@ -364,6 +364,13 @@ linode_instance_spec = dict(
             'May not be provided if "image" is given.',
         ],
     ),
+    backups_enabled=SpecField(
+        type=FieldType.bool,
+        default=False,
+        description=[
+            'Enroll new Instance in Linode Backup service.'
+        ],
+    ),
     wait=SpecField(
         type=FieldType.bool,
         default=True,
