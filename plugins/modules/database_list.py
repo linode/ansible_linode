@@ -33,9 +33,11 @@ spec_filter = dict(
         required=True,
         description=[
             "The name of the field to filter on.",
-            "Valid filterable attributes can be found here: "
-            "https://www.linode.com/docs/api/databases/"
-            "#managed-mongodb-databases-list__responses",
+            (
+                "Valid filterable attributes can be found here: "
+                "https://www.linode.com/docs/api/databases/"
+                "#managed-databases-list-all__responses"
+            ),
         ],
     ),
     values=SpecField(
