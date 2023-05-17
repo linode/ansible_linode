@@ -353,7 +353,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
         """Creates a config with the given kwargs within the given NodeBalancer"""
 
         try:
-            return node_balancer.config_create(None, **config_params)
+            return node_balancer.config_create(**config_params)
         except Exception as exception:
             return self.fail(
                 msg="failed to create nodebalancer config: {0}".format(

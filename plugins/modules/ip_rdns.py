@@ -22,7 +22,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import IPAddress
+from linode_api4 import ExplicitNullValue, IPAddress
 
 ip_rdns_spec = dict(
     # Disable the default values
@@ -103,7 +103,7 @@ class ReverseDNSModule(LinodeModuleBase):
         self.update_rdns(rdns)
 
     def _handle_absent(self) -> None:
-        self.update_rdns(None)
+        self.update_rdns(ExplicitNullValue())
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for reverse DNS module"""
