@@ -933,10 +933,10 @@ class LinodeInstance(LinodeModuleBase):
             )
 
     def _handle_instance_reboot(self) -> None:
-        should_poll = self.module.params.get("wait")
-
         if not self.module.params.get("rebooted"):
             return
+
+        should_poll = self.module.params.get("wait")
 
         # Wait for instance to not be busy
         wait_for_resource_free(
