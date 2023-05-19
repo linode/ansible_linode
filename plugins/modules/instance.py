@@ -386,6 +386,17 @@ linode_instance_spec = dict(
         description=["Additional ipv4 addresses to allocate."],
         editable=False,
     ),
+    rebooted=SpecField(
+        type=FieldType.bool,
+        description=[
+            "If true, the Linode Instance will be rebooted.",
+            "NOTE: The instance will only be rebooted if it was "
+            "previously in a running state.",
+            "To ensure your Linode will always be rebooted, consider "
+            "also setting the `booted` field.",
+        ],
+        default=False,
+    ),
 )
 
 SPECDOC_META = SpecDocMeta(
@@ -831,7 +842,7 @@ class LinodeInstance(LinodeModuleBase):
             if not hasattr(self._instance, key):
                 continue
 
-            if key in {"configs", "disks", "boot_config_label"}:
+            if key in {"configs", "disks", "boot_config_label", "reboot"}:
                 continue
 
             old_value = parse_linode_types(getattr(self._instance, key))
@@ -857,15 +868,18 @@ class LinodeInstance(LinodeModuleBase):
         if should_update:
             self._instance.save()
 
-        ipv4_length = len(self.module.params.get("additional_ipv4") or [])
+        needs_private_ip = self.module.params.get("private_ip")
+        additional_ipv4 = self.module.params.get("additional_ipv4")
 
-        min_ips = 2 if self.module.params.get("private_ip") else 1
-        if ipv4_length != len(getattr(self._instance, "ipv4")) - min_ips:
-            self.fail(
-                "failed to update instance {0}:additional_ipv4 is a non-updatable field".format(
-                    self._instance.label
+        if needs_private_ip or additional_ipv4:
+            ipv4_length = len(additional_ipv4 or [])
+
+            min_ips = 2 if needs_private_ip else 1
+            if ipv4_length != len(getattr(self._instance, "ipv4")) - min_ips:
+                self.fail(
+                    "failed to update instance {0}: additional_ipv4 is a "
+                    "non-updatable field".format(self._instance.label)
                 )
-            )
 
         # Update interfaces
         self._update_interfaces()
@@ -918,6 +932,40 @@ class LinodeInstance(LinodeModuleBase):
                 self._timeout_ctx.seconds_remaining
             )
 
+    def _handle_instance_reboot(self) -> None:
+        if not self.module.params.get("rebooted"):
+            return
+
+        should_poll = self.module.params.get("wait")
+
+        # Wait for instance to not be busy
+        wait_for_resource_free(
+            self.client,
+            "linode",
+            self._instance.id,
+            self._timeout_ctx.seconds_remaining,
+        )
+
+        self._instance._api_get()
+
+        # We don't want to reboot if the Linode is already offline
+        if self._instance.status != "running":
+            return
+
+        reboot_poller = EventPoller(
+            self.client, "linode", "linode_reboot", entity_id=self._instance.id
+        )
+
+        self._instance.reboot()
+        self.register_action(
+            "Rebooted instance {}".format(self._instance.label)
+        )
+
+        if should_poll:
+            reboot_poller.wait_for_next_event_finished(
+                self._timeout_ctx.seconds_remaining
+            )
+
     def _handle_present(self) -> None:
         """Updates the instance defined in kwargs"""
 
@@ -925,8 +973,9 @@ class LinodeInstance(LinodeModuleBase):
         should_wait = self.module.params.get("wait")
 
         self._instance = self._get_instance_by_label(label)
+        already_exists = self._instance is not None
 
-        if self._instance is None:
+        if not already_exists:
             create_poller = EventPoller(self.client, "linode", "linode_create")
 
             result = self._create_instance()
@@ -966,6 +1015,10 @@ class LinodeInstance(LinodeModuleBase):
 
             self._update_disks()
             self._update_configs()
+
+        # Don't reboot on instance creation
+        if self.module.params.get("rebooted") is not None and already_exists:
+            self._handle_instance_reboot()
 
         if self.module.params.get("booted") is not None:
             self._handle_instance_boot()
