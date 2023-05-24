@@ -67,7 +67,7 @@ LINODE_COMMON_ARGS = dict(
     api_url=dict(
         type="str",
         fallback=(env_fallback, ["LINODE_API_URL"]),
-        default="https://api.linode.com/"
+        default="https://api.linode.com/",
     ),
     state=dict(
         type="str",

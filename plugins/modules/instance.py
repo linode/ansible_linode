@@ -53,8 +53,8 @@ linode_instance_metadata_spec = dict(
         description=[
             "Whether the user_data field content is already encoded in Base64."
         ],
-        default=False
-    )
+        default=False,
+    ),
 )
 
 linode_instance_disk_spec = dict(
@@ -383,9 +383,7 @@ linode_instance_spec = dict(
     metadata=SpecField(
         type=FieldType.dict,
         suboptions=linode_instance_metadata_spec,
-        description=[
-            "Fields relating to the Linode Metadata service."
-        ]
+        description=["Fields relating to the Linode Metadata service."],
     ),
     wait=SpecField(
         type=FieldType.bool,
@@ -592,7 +590,7 @@ class LinodeInstance(LinodeModuleBase):
         if metadata is not None:
             params["metadata"] = self.client.linode.build_instance_metadata(
                 user_data=metadata.get("user_data"),
-                encode_user_data=not metadata.get("user_data_encoded")
+                encode_user_data=not metadata.get("user_data_encoded"),
             )
 
         result = {"instance": None, "root_pass": ""}
