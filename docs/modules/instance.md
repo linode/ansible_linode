@@ -251,16 +251,8 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| [`devices` (sub-options)](#devices) | <center>`dict`</center> | <center>**Required**</center> | The devices to map to this configuration.   |
-| `label` | <center>`str`</center> | <center>**Required**</center> | The label to assign to this config.   |
-| `comments` | <center>`str`</center> | <center>Optional</center> | Arbitrary User comments on this Config.  **(Updatable)** |
-| [`helpers` (sub-options)](#helpers) | <center>`dict`</center> | <center>Optional</center> | Helpers enabled when booting to this Linode Config.   |
-| `kernel` | <center>`str`</center> | <center>Optional</center> | A Kernel ID to boot a Linode with. Defaults to "linode/latest-64bit".  **(Updatable)** |
-| `memory_limit` | <center>`int`</center> | <center>Optional</center> | Defaults to the total RAM of the Linode.  **(Updatable)** |
-| `root_device` | <center>`str`</center> | <center>Optional</center> | The root device to boot.  **(Updatable)** |
-| `run_level` | <center>`str`</center> | <center>Optional</center> | Defines the state of your Linode after booting.  **(Updatable)** |
-| `virt_mode` | <center>`str`</center> | <center>Optional</center> | Controls the virtualization mode.  **(Choices: `paravirt`, `fullvirt`; Updatable)** |
-| [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create__request-body-schema).  **(Updatable)** |
+| `user_data` | <center>`str`</center> | <center>Optional</center> | The user-defined data to supply for the Linode through the Metadata service.   |
+| `user_data_encoded` | <center>`bool`</center> | <center>Optional</center> | Whether the user_data field content is already encoded in Base64.  **(Default: `False`)** |
 
 ### additional_ipv4
 
