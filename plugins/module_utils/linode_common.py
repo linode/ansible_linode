@@ -240,7 +240,7 @@ class LinodeModuleBase:
                 api_token,
                 base_url="https://api.linode.com/{0}".format(api_version),
                 user_agent=user_agent,
-                retry_rate_limit_interval=10,
+                retry_rate_limit_interval=10.0,
             )
 
         return self._client
