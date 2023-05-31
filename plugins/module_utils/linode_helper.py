@@ -18,10 +18,6 @@ from linode_api4.objects.filtering import (
     FilterableMetaclass,
 )
 
-MAX_RETRIES = 5
-RETRY_INTERVAL_SECONDS = 4
-RETRY_STATUSES = {408}
-
 
 def dict_select_spec(target: dict, spec: dict) -> dict:
     """Returns a new dictionary that only selects the keys from target that are specified in spec"""
