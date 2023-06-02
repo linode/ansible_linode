@@ -20,9 +20,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import (
     EventPoller,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    request_retry,
-)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -216,11 +213,9 @@ class LinodeVolume(LinodeModuleBase):
             )
 
         # Perform the clone operation
-        vol = request_retry(
-            lambda: self.client.post(
-                "/volumes/{}/clone".format(source_id),
-                data={"label": params.get("label")},
-            )
+        vol = self.client.post(
+            "/volumes/{}/clone".format(source_id),
+            data={"label": params.get("label")},
         )
 
         cloned_volume = Volume(self.client, vol.get("id"))

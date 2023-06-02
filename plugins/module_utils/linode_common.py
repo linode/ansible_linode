@@ -103,6 +103,10 @@ RESOURCE_NAMES = (
     else {}
 )
 
+MAX_RETRIES = 5
+RETRY_INTERVAL_SECONDS = float(4)
+RETRY_STATUSES = {408, 429, 502}
+
 
 class LinodeModuleBase:
     """A base for all Linode resource modules."""
@@ -240,7 +244,9 @@ class LinodeModuleBase:
                 api_token,
                 base_url="https://api.linode.com/{0}".format(api_version),
                 user_agent=user_agent,
-                retry_rate_limit_interval=10,
+                retry_rate_limit_interval=RETRY_INTERVAL_SECONDS,
+                retry_max=MAX_RETRIES,
+                retry_statuses=RETRY_STATUSES,
             )
 
         return self._client

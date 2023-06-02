@@ -26,7 +26,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     filter_null_values_recursive,
     paginated_list_to_json,
     parse_linode_types,
-    request_retry,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -579,9 +578,7 @@ class LinodeInstance(LinodeModuleBase):
         result = {"instance": None, "root_pass": ""}
 
         # We want to retry on 408s
-        response = request_retry(
-            lambda: self.client.linode.instance_create(ltype, region, **params)
-        )
+        response = self.client.linode.instance_create(ltype, region, **params)
 
         # Weird variable return type
         if isinstance(response, tuple):
