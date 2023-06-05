@@ -1,4 +1,4 @@
-boto3==1.26.145
+boto3==1.26.146
 botocore==1.29.145
 pylint==2.15.5
 ansible-doc-extractor==0.1.9
