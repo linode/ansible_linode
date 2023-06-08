@@ -61,7 +61,7 @@ jobs:
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
 
-      - uses: actions/github-script@v5
+      - uses: actions/github-script@v6
         id: update-check-run
         if: ${{ always() }}
         env:
