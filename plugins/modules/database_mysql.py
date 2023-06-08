@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Optional, Set
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs
@@ -38,19 +37,19 @@ from ansible_specdoc.objects import (
 from linode_api4 import ApiError
 from linode_api4.objects import MySQLDatabase
 
-SPEC = dict(
-    label=SpecField(
+SPEC = {
+    "label": SpecField(
         type=FieldType.string,
         required=True,
         description=["This database's unique label."],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         choices=["present", "absent"],
         required=True,
         description=["The state of this database."],
     ),
-    allow_list=SpecField(
+    "allow_list": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         description=[
@@ -60,7 +59,7 @@ SPEC = dict(
         default=[],
         editable=True,
     ),
-    cluster_size=SpecField(
+    "cluster_size": SpecField(
         type=FieldType.integer,
         description=[
             "The number of Linode Instance nodes deployed to the Managed Database."
@@ -68,19 +67,19 @@ SPEC = dict(
         choices=[1, 3],
         default=1,
     ),
-    encrypted=SpecField(
+    "encrypted": SpecField(
         type=FieldType.bool,
         description=["Whether the Managed Databases is encrypted."],
     ),
-    engine=SpecField(
+    "engine": SpecField(
         type=FieldType.string,
         description=["The Managed Database engine in engine/version format."],
     ),
-    region=SpecField(
+    "region": SpecField(
         type=FieldType.string,
         description=["The Region ID for the Managed Database."],
     ),
-    replication_type=SpecField(
+    "replication_type": SpecField(
         type=FieldType.string,
         description=[
             "The replication method used for the Managed Database.",
@@ -92,7 +91,7 @@ SPEC = dict(
         choices=["none", "asynch", "semi_synch"],
         default="none",
     ),
-    ssl_connection=SpecField(
+    "ssl_connection": SpecField(
         type=FieldType.bool,
         description=[
             "Whether to require SSL credentials to "
@@ -100,14 +99,14 @@ SPEC = dict(
         ],
         default=True,
     ),
-    type=SpecField(
+    "type": SpecField(
         type=FieldType.string,
         description=[
             "The Linode Instance type used by the "
             "Managed Database for its nodes."
         ],
     ),
-    updates=SpecField(
+    "updates": SpecField(
         type=FieldType.dict,
         suboptions=SPEC_UPDATE_WINDOW,
         description=[
@@ -116,14 +115,14 @@ SPEC = dict(
         ],
         editable=True,
     ),
-    wait=SpecField(
+    "wait": SpecField(
         type=FieldType.bool,
         default=True,
         description=[
             "Wait for the database to have status `available` before returning."
         ],
     ),
-    wait_timeout=SpecField(
+    "wait_timeout": SpecField(
         type=FieldType.integer,
         default=3600,
         description=[
@@ -131,7 +130,7 @@ SPEC = dict(
             "have status `available`."
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage a Linode MySQL database."],
@@ -139,36 +138,36 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=SPEC,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        database=SpecReturnValue(
+    return_values={
+        "database": SpecReturnValue(
             description="The database in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/databases/"
             "#managed-mysql-database-view__response-samples",
             type=FieldType.dict,
             sample=docs.result_database_samples,
         ),
-        backups=SpecReturnValue(
+        "backups": SpecReturnValue(
             description="The database backups in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/databases/"
             "#managed-mysql-database-backup-view__responses",
             type=FieldType.dict,
             sample=docs.result_backups_samples,
         ),
-        ssl_cert=SpecReturnValue(
+        "ssl_cert": SpecReturnValue(
             description="The SSL CA certificate for an accessible Managed MySQL Database.",
             docs_url="https://www.linode.com/docs/api/databases/"
             "#managed-mysql-database-ssl-certificate-view__responses",
             type=FieldType.dict,
             sample=docs.result_ssl_cert_samples,
         ),
-        credentials=SpecReturnValue(
+        "credentials": SpecReturnValue(
             description="The root username and password for an accessible Managed MySQL Database.",
             docs_url="https://www.linode.com/docs/api/databases/"
             "#managed-mysql-database-credentials-view__responses",
             type=FieldType.dict,
             sample=docs.result_credentials_samples,
         ),
-    ),
+    },
 )
 
 MUTABLE_FIELDS = {"allow_list", "updates"}
@@ -179,14 +178,14 @@ class Module(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
-        self.results = dict(
-            changed=False,
-            actions=[],
-            database=None,
-            backups=None,
-            credentials=None,
-            ssl_cert=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "database": None,
+            "backups": None,
+            "credentials": None,
+            "ssl_cert": None,
+        }
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

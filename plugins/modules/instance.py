@@ -40,50 +40,50 @@ except ImportError:
     # handled in module_utils.linode_common
     pass
 
-linode_instance_disk_spec = dict(
-    authorized_keys=SpecField(
+linode_instance_disk_spec = {
+    "authorized_keys": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         description=[
             "A list of SSH public key parts to deploy for the root user."
         ],
     ),
-    authorized_users=SpecField(
+    "authorized_users": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         description=["A list of usernames."],
     ),
-    filesystem=SpecField(
+    "filesystem": SpecField(
         type=FieldType.string,
         description=["The filesystem to create this disk with."],
     ),
-    image=SpecField(
+    "image": SpecField(
         type=FieldType.string,
         description=["An Image ID to deploy the Disk from."],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         required=True,
         description=["The label to give this Disk."],
     ),
-    root_pass=SpecField(
+    "root_pass": SpecField(
         type=FieldType.string,
         description=["The root user’s password on the newly-created Linode."],
     ),
-    size=SpecField(
+    "size": SpecField(
         type=FieldType.integer,
         required=True,
         editable=True,
         description=["The size of the Disk in MB."],
     ),
-    stackscript_id=SpecField(
+    "stackscript_id": SpecField(
         type=FieldType.integer,
         description=[
             "The ID of the StackScript to use when creating the instance.",
             "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
         ],
     ),
-    stackscript_data=SpecField(
+    "stackscript_data": SpecField(
         type=FieldType.dict,
         description=[
             "An object containing arguments to any User Defined Fields present in "
@@ -92,22 +92,22 @@ linode_instance_disk_spec = dict(
             "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
         ],
     ),
-)
+}
 
-linode_instance_device_spec = dict(
-    disk_label=SpecField(
+linode_instance_device_spec = {
+    "disk_label": SpecField(
         type=FieldType.string,
         description=["The label of the disk to attach to this Linode."],
     ),
-    disk_id=SpecField(
+    "disk_id": SpecField(
         type=FieldType.integer,
         description=["The ID of the disk to attach to this Linode."],
     ),
-    volume_id=SpecField(
+    "volume_id": SpecField(
         type=FieldType.integer,
         description=["The ID of the volume to attach to this Linode."],
     ),
-)
+}
 
 linode_instance_devices_spec = {
     f"sd{k}": SpecField(
@@ -118,41 +118,41 @@ linode_instance_devices_spec = {
     for k in "abcdefgh"
 }
 
-linode_instance_helpers_spec = dict(
-    devtmpfs_automount=SpecField(
+linode_instance_helpers_spec = {
+    "devtmpfs_automount": SpecField(
         type=FieldType.bool,
         description=[
             "Populates the /dev directory early during boot without udev."
         ],
     ),
-    distro=SpecField(
+    "distro": SpecField(
         type=FieldType.bool,
         description=["Helps maintain correct inittab/upstart console device."],
     ),
-    modules_dep=SpecField(
+    "modules_dep": SpecField(
         type=FieldType.bool,
         description=[
             "Creates a modules dependency file for the Kernel you run."
         ],
     ),
-    network=SpecField(
+    "network": SpecField(
         type=FieldType.bool,
         description=["Automatically configures static networking."],
     ),
-    updatedb_disabled=SpecField(
+    "updatedb_disabled": SpecField(
         type=FieldType.bool,
         description=["Disables updatedb cron job to avoid disk thrashing."],
     ),
-)
+}
 
-linode_instance_interface_spec = dict(
-    purpose=SpecField(
+linode_instance_interface_spec = {
+    "purpose": SpecField(
         type=FieldType.string,
         required=True,
         description=["The type of interface."],
         choices=["public", "vlan"],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         description=[
             "The name of this interface.",
@@ -160,66 +160,66 @@ linode_instance_interface_spec = dict(
             "Must be an empty string or null for public purpose interfaces.",
         ],
     ),
-    ipam_address=SpecField(
+    "ipam_address": SpecField(
         type=FieldType.string,
         description=[
             "This Network Interface’s private IP address in Classless "
             "Inter-Domain Routing (CIDR) notation."
         ],
     ),
-)
+}
 
-linode_instance_config_spec = dict(
-    comments=SpecField(
+linode_instance_config_spec = {
+    "comments": SpecField(
         type=FieldType.string,
         editable=True,
         description=["Arbitrary User comments on this Config."],
     ),
-    devices=SpecField(
+    "devices": SpecField(
         type=FieldType.dict,
         required=True,
         suboptions=linode_instance_devices_spec,
         description=["The devices to map to this configuration."],
     ),
-    helpers=SpecField(
+    "helpers": SpecField(
         type=FieldType.dict,
         suboptions=linode_instance_helpers_spec,
         description=["Helpers enabled when booting to this Linode Config."],
     ),
-    kernel=SpecField(
+    "kernel": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
             'A Kernel ID to boot a Linode with. Defaults to "linode/latest-64bit".'
         ],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         required=True,
         description=["The label to assign to this config."],
     ),
-    memory_limit=SpecField(
+    "memory_limit": SpecField(
         type=FieldType.integer,
         editable=True,
         description=["Defaults to the total RAM of the Linode."],
     ),
-    root_device=SpecField(
+    "root_device": SpecField(
         type=FieldType.string,
         editable=True,
         description=["The root device to boot."],
     ),
-    run_level=SpecField(
+    "run_level": SpecField(
         type=FieldType.string,
         editable=True,
         description=["Defines the state of your Linode after booting."],
     ),
-    virt_mode=SpecField(
+    "virt_mode": SpecField(
         type=FieldType.string,
         editable=True,
         description=["Controls the virtualization mode."],
         choices=["paravirt", "fullvirt"],
     ),
-    interfaces=SpecField(
+    "interfaces": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=linode_instance_interface_spec,
@@ -230,41 +230,41 @@ linode_instance_config_spec = dict(
             "/#configuration-profile-create__request-body-schema).",
         ],
     ),
-)
+}
 
-spec_additional_ipv4 = dict(
-    public=SpecField(
+spec_additional_ipv4 = {
+    "public": SpecField(
         type=FieldType.bool,
         description="Whether the allocated IPv4 address should be public or private.",
         required=True,
     )
-)
+}
 
-linode_instance_spec = dict(
-    type=SpecField(
+linode_instance_spec = {
+    "type": SpecField(
         type=FieldType.string,
         description=["The unique label to give this instance."],
     ),
-    region=SpecField(
+    "region": SpecField(
         type=FieldType.string,
         description=[
             "The location to deploy the instance in.",
             "See the [Linode API documentation](https://api.linode.com/v4/regions).",
         ],
     ),
-    image=SpecField(
+    "image": SpecField(
         type=FieldType.string,
         conflicts_with=["disks", "configs"],
         description=["The image ID to deploy the instance disk from."],
     ),
-    authorized_keys=SpecField(
+    "authorized_keys": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         description=[
             "A list of SSH public key parts to deploy for the root user."
         ],
     ),
-    root_pass=SpecField(
+    "root_pass": SpecField(
         type=FieldType.string,
         no_log=True,
         description=[
@@ -273,14 +273,14 @@ linode_instance_spec = dict(
             "This generated password will be available in the task success JSON.",
         ],
     ),
-    stackscript_id=SpecField(
+    "stackscript_id": SpecField(
         type=FieldType.integer,
         description=[
             "The ID of the StackScript to use when creating the instance.",
             "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
         ],
     ),
-    stackscript_data=SpecField(
+    "stackscript_data": SpecField(
         type=FieldType.dict,
         description=[
             "An object containing arguments to any User Defined Fields present in "
@@ -289,19 +289,19 @@ linode_instance_spec = dict(
             "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
         ],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
         choices=["present", "absent"],
         required=True,
     ),
-    private_ip=SpecField(
+    "private_ip": SpecField(
         type=FieldType.bool,
         description=[
             "If true, the created Linode will have private networking enabled."
         ],
     ),
-    group=SpecField(
+    "group": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
@@ -310,11 +310,11 @@ linode_instance_spec = dict(
             "The encouraged method for marking instances is to use tags.",
         ],
     ),
-    boot_config_label=SpecField(
+    "boot_config_label": SpecField(
         type=FieldType.string,
         description=["The label of the config to boot from."],
     ),
-    configs=SpecField(
+    "configs": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=linode_instance_config_spec,
@@ -326,7 +326,7 @@ linode_instance_spec = dict(
             "/api/linode-instances/#configuration-profile-create).",
         ],
     ),
-    disks=SpecField(
+    "disks": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=linode_instance_disk_spec,
@@ -338,7 +338,7 @@ linode_instance_spec = dict(
             "docs/api/linode-instances/#disk-create).",
         ],
     ),
-    interfaces=SpecField(
+    "interfaces": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=linode_instance_interface_spec,
@@ -349,28 +349,28 @@ linode_instance_spec = dict(
             "#linode-create__request-body-schema).",
         ],
     ),
-    booted=SpecField(
+    "booted": SpecField(
         type=FieldType.bool,
         description=[
             "Whether the new Instance should be booted.",
             "This will default to True if the Instance is deployed from an Image or Backup.",
         ],
     ),
-    backup_id=SpecField(
+    "backup_id": SpecField(
         type=FieldType.integer,
         description=[
             "The id of the Backup to restore to the new Instance.",
             'May not be provided if "image" is given.',
         ],
     ),
-    wait=SpecField(
+    "wait": SpecField(
         type=FieldType.bool,
         default=True,
         description=[
             'Wait for the instance to have status "running" before returning.'
         ],
     ),
-    wait_timeout=SpecField(
+    "wait_timeout": SpecField(
         type=FieldType.integer,
         default=240,
         description=[
@@ -378,14 +378,14 @@ linode_instance_spec = dict(
             'have status "running".'
         ],
     ),
-    additional_ipv4=SpecField(
+    "additional_ipv4": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=spec_additional_ipv4,
         description=["Additional ipv4 addresses to allocate."],
         editable=False,
     ),
-    rebooted=SpecField(
+    "rebooted": SpecField(
         type=FieldType.bool,
         description=[
             "If true, the Linode Instance will be rebooted.",
@@ -396,7 +396,7 @@ linode_instance_spec = dict(
         ],
         default=False,
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage Linode Instances, Configs, and Disks."],
@@ -404,34 +404,34 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_instance_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        instance=SpecReturnValue(
+    return_values={
+        "instance": SpecReturnValue(
             description="The instance description in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/linode-instances/#linode-view__responses",
             type=FieldType.dict,
             sample=docs.result_instance_samples,
         ),
-        configs=SpecReturnValue(
+        "configs": SpecReturnValue(
             description="A list of configs tied to this Linode Instance.",
             docs_url="https://www.linode.com/docs/api/linode-instances/"
             "#configuration-profile-view__responses",
             type=FieldType.list,
             sample=docs.result_configs_samples,
         ),
-        disks=SpecReturnValue(
+        "disks": SpecReturnValue(
             description="A list of disks tied to this Linode Instance.",
             docs_url="https://www.linode.com/docs/api/linode-instances/#disk-view__responses",
             type=FieldType.list,
             sample=docs.result_disks_samples,
         ),
-        networking=SpecReturnValue(
+        "networking": SpecReturnValue(
             description="Networking information about this Linode Instance.",
             docs_url="https://www.linode.com/docs/api/linode-instances/"
             "#networking-information-list__responses",
             type=FieldType.dict,
             sample=docs.result_networking_samples,
         ),
-    ),
+    },
 )
 
 # Fields that can be updated on an existing instance
@@ -461,13 +461,13 @@ class LinodeInstance(LinodeModuleBase):
             ("interfaces", "disks"),
         ]
 
-        self.results: dict = dict(
-            changed=False,
-            actions=[],
-            instance=None,
-            configs=None,
-            networking=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "instance": None,
+            "configs": None,
+            "networking": None,
+        }
 
         self._instance: Optional[Instance] = None
         self._root_pass: str = ""

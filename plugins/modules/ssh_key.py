@@ -26,24 +26,24 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import SSHKey
 
-ssh_key_spec = dict(
-    label=SpecField(
+ssh_key_spec = {
+    "label": SpecField(
         type=FieldType.string,
         required=True,
         description=["This SSH key's unique label."],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         choices=["present", "absent"],
         required=True,
         description=["The state of this SSH key."],
     ),
-    ssh_key=SpecField(
+    "ssh_key": SpecField(
         type=FieldType.string,
         editable=True,
         description=["The SSH public key value."],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage a Linode SSH key."],
@@ -51,15 +51,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=ssh_key_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        ssh_key=SpecReturnValue(
+    return_values={
+        "ssh_key": SpecReturnValue(
             description="The created SSH key in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/profile/"
             "#ssh-key-add__response-samples",
             type=FieldType.dict,
             sample=docs.result_ssh_key_samples,
         )
-    ),
+    },
 )
 
 MUTABLE_FIELDS = {"label"}
@@ -70,11 +70,11 @@ class SSHKeyModule(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
-        self.results = dict(
-            changed=False,
-            actions=[],
-            ssh_key=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "ssh_key": None,
+        }
         super().__init__(
             module_arg_spec=self.module_arg_spec,
             required_if=[["state", "present", ["ssh_key"]]],

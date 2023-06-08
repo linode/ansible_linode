@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vlan_info as docs
@@ -24,13 +23,13 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import VLAN
 
-linode_vlan_info_spec = dict(
+linode_vlan_info_spec = {
     # We need to overwrite attributes to exclude them as requirements
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    label=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "label": SpecField(
         type=FieldType.string, required=True, description=["The VLAN’s label."]
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode VLAN."],
@@ -38,14 +37,14 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_vlan_info_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        vlan=SpecReturnValue(
+    return_values={
+        "vlan": SpecReturnValue(
             description="The VLAN in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/networking/#vlans-list__response-samples",
             type=FieldType.dict,
             sample=docs.result_vlan_samples,
         )
-    ),
+    },
 )
 
 
@@ -55,9 +54,7 @@ class LinodeVLANInfo(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results = dict(
-            vlan=None,
-        )
+        self.results = {"vlan": None}
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

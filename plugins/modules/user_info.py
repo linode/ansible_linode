@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user_info as docs
@@ -24,16 +23,16 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import User
 
-spec = dict(
+spec = {
     # Disable the default values
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    username=SpecField(
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "username": SpecField(
         type=FieldType.string,
         required=True,
         description=["The username of the user."],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode User."],
@@ -41,20 +40,20 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        user=SpecReturnValue(
+    return_values={
+        "user": SpecReturnValue(
             description="The user info in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/account/#user-view",
             type=FieldType.dict,
             sample=docs.result_user_samples,
         ),
-        grants=SpecReturnValue(
+        "grants": SpecReturnValue(
             description="The grants info in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/account/#users-grants-view__response-samples",
             type=FieldType.dict,
             sample=docs.result_grants_samples,
         ),
-    ),
+    },
 )
 
 
@@ -63,9 +62,7 @@ class Module(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.required_one_of: List[str] = []
-        self.results = dict(
-            user=None,
-        )
+        self.results = {"user": None}
 
         self.module_arg_spec = SPECDOC_META.ansible_spec
 

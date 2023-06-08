@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, List, Optional, Set
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain as docs
@@ -28,10 +27,10 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import Domain
 
-linode_domain_spec = dict(
+linode_domain_spec = {
     # Unused for domain objects
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    axfr_ips=SpecField(
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "axfr_ips": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         editable=True,
@@ -39,7 +38,7 @@ linode_domain_spec = dict(
             "The list of IPs that may perform a zone transfer for this Domain."
         ],
     ),
-    description=SpecField(
+    "description": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
@@ -47,12 +46,12 @@ linode_domain_spec = dict(
             "zone transfer for this Domain."
         ],
     ),
-    domain=SpecField(
+    "domain": SpecField(
         type=FieldType.string,
         required=True,
         description=["The domain this Domain represents."],
     ),
-    expire_sec=SpecField(
+    "expire_sec": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -60,7 +59,7 @@ linode_domain_spec = dict(
             " before this Domain is no longer authoritative."
         ],
     ),
-    master_ips=SpecField(
+    "master_ips": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         editable=True,
@@ -68,7 +67,7 @@ linode_domain_spec = dict(
             "The IP addresses representing the master DNS for this Domain."
         ],
     ),
-    refresh_sec=SpecField(
+    "refresh_sec": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -76,7 +75,7 @@ linode_domain_spec = dict(
             "this Domain should be refreshed."
         ],
     ),
-    retry_sec=SpecField(
+    "retry_sec": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -84,12 +83,12 @@ linode_domain_spec = dict(
             "failed refresh should be retried."
         ],
     ),
-    soa_email=SpecField(
+    "soa_email": SpecField(
         type=FieldType.string,
         description=["The Start of Authority email address."],
         editable=True,
     ),
-    status=SpecField(
+    "status": SpecField(
         type=FieldType.string,
         description=[
             "Used to control whether this Domain is "
@@ -97,19 +96,19 @@ linode_domain_spec = dict(
         ],
         editable=True,
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
         choices=["present", "absent"],
         required=True,
     ),
-    tags=SpecField(
+    "tags": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         editable=True,
         description=["An array of tags applied to this object."],
     ),
-    ttl_sec=SpecField(
+    "ttl_sec": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -118,7 +117,7 @@ linode_domain_spec = dict(
             "or other domain servers."
         ],
     ),
-    type=SpecField(
+    "type": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
@@ -129,8 +128,8 @@ linode_domain_spec = dict(
         ],
     ),
     # Deprecated
-    group=SpecField(type=FieldType.string, doc_hide=True),
-)
+    "group": SpecField(type=FieldType.string, doc_hide=True),
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage Linode Domains."],
@@ -138,26 +137,26 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_domain_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        domain=SpecReturnValue(
+    return_values={
+        "domain": SpecReturnValue(
             description="The domain in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/domains/#domain-view",
             type=FieldType.dict,
             sample=docs.result_domain_samples,
         ),
-        records=SpecReturnValue(
+        "records": SpecReturnValue(
             description="The domain record in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/domains/#domain-record-view",
             type=FieldType.list,
             sample=docs.result_records_samples,
         ),
-        zone_file=SpecReturnValue(
+        "zone_file": SpecReturnValue(
             description="The zone file for the last rendered zone for the specified domain.",
             docs_url="https://www.linode.com/docs/api/domains/#domain-zone-file-view",
             type=FieldType.list,
             sample=docs.result_zone_file_samples,
         ),
-    ),
+    },
 )
 
 linode_domain_mutable: Set[str] = {
@@ -182,12 +181,12 @@ class LinodeDomain(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results = dict(
-            changed=False,
-            actions=[],
-            domain=None,
-            zone_file=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "domain": None,
+            "zone_file": None,
+        }
 
         self._domain: Optional[Domain] = None
 

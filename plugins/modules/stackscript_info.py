@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Optional
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
@@ -32,20 +31,20 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import StackScript
 
-spec = dict(
+spec = {
     # Disable the default values
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.integer,
         description=["The ID of the StackScript."],
         conflicts_with=["label"],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         description=["The label of the StackScript."],
         conflicts_with=["id"],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode StackScript."],
@@ -53,15 +52,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        stackscript=SpecReturnValue(
+    return_values={
+        "stackscript": SpecReturnValue(
             description="The StackScript in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/stackscripts/"
             "#stackscript-view__response-samples",
             type="dict",
             sample=docs_parent.result_stackscript_samples,
         )
-    ),
+    },
 )
 
 

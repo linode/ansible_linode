@@ -28,17 +28,15 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-
-# pylint: disable=unused-import
 from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode
 
-linode_nodes_spec = dict(
-    label=SpecField(
+linode_nodes_spec = {
+    "label": SpecField(
         type=FieldType.string,
         required=True,
         description=["The label for this node."],
     ),
-    address=SpecField(
+    "address": SpecField(
         type=FieldType.string,
         required=True,
         editable=True,
@@ -47,13 +45,13 @@ linode_nodes_spec = dict(
             "This must be a private IP address.",
         ],
     ),
-    weight=SpecField(
+    "weight": SpecField(
         type=FieldType.integer,
         required=False,
         editable=True,
         description=["Nodes with a higher weight will receive more traffic."],
     ),
-    mode=SpecField(
+    "mode": SpecField(
         type=FieldType.string,
         required=False,
         editable=True,
@@ -62,10 +60,10 @@ linode_nodes_spec = dict(
         ],
         choices=["accept", "reject", "drain", "backup"],
     ),
-)
+}
 
-linode_configs_spec = dict(
-    algorithm=SpecField(
+linode_configs_spec = {
+    "algorithm": SpecField(
         type=FieldType.string,
         required=False,
         editable=True,
@@ -75,7 +73,7 @@ linode_configs_spec = dict(
         ],
         choices=["roundrobin", "leastconn", "source"],
     ),
-    check=SpecField(
+    "check": SpecField(
         type=FieldType.string,
         required=False,
         editable=True,
@@ -85,7 +83,7 @@ linode_configs_spec = dict(
         ],
         choices=["none", "connection", "http", "http_body"],
     ),
-    check_attempts=SpecField(
+    "check_attempts": SpecField(
         type=FieldType.integer,
         required=False,
         editable=True,
@@ -93,7 +91,7 @@ linode_configs_spec = dict(
             "How many times to attempt a check before considering a backend to be down."
         ],
     ),
-    check_body=SpecField(
+    "check_body": SpecField(
         type=FieldType.string,
         required=False,
         default="",
@@ -104,7 +102,7 @@ linode_configs_spec = dict(
             "considered to be down.",
         ],
     ),
-    check_interval=SpecField(
+    "check_interval": SpecField(
         type=FieldType.integer,
         required=False,
         editable=True,
@@ -112,7 +110,7 @@ linode_configs_spec = dict(
             "How often, in seconds, to check that backends are up and serving requests."
         ],
     ),
-    check_passive=SpecField(
+    "check_passive": SpecField(
         type=FieldType.bool,
         required=False,
         editable=True,
@@ -122,7 +120,7 @@ linode_configs_spec = dict(
             "and taken out of rotation."
         ],
     ),
-    check_path=SpecField(
+    "check_path": SpecField(
         type=FieldType.string,
         required=False,
         editable=True,
@@ -131,7 +129,7 @@ linode_configs_spec = dict(
             "not respond to this request it is considered to be down."
         ],
     ),
-    check_timeout=SpecField(
+    "check_timeout": SpecField(
         type=FieldType.integer,
         required=False,
         editable=True,
@@ -140,7 +138,7 @@ linode_configs_spec = dict(
             "failed."
         ],
     ),
-    cipher_suite=SpecField(
+    "cipher_suite": SpecField(
         type=FieldType.string,
         required=False,
         default="recommended",
@@ -150,20 +148,20 @@ linode_configs_spec = dict(
         ],
         choices=["recommended", "legacy"],
     ),
-    port=SpecField(
+    "port": SpecField(
         type=FieldType.integer,
         required=False,
         editable=True,
         description=["The port this Config is for."],
     ),
-    protocol=SpecField(
+    "protocol": SpecField(
         type=FieldType.string,
         required=False,
         editable=True,
         description=["The protocol this port is configured to serve."],
         choices=["http", "https", "tcp"],
     ),
-    proxy_protocol=SpecField(
+    "proxy_protocol": SpecField(
         type=FieldType.string,
         required=False,
         editable=True,
@@ -173,7 +171,7 @@ linode_configs_spec = dict(
         ],
         choices=["none", "v1", "v2"],
     ),
-    recreate=SpecField(
+    "recreate": SpecField(
         type=FieldType.bool,
         required=False,
         default=False,
@@ -182,7 +180,7 @@ linode_configs_spec = dict(
             "This is useful for updates to redacted fields (`ssl_cert`, `ssl_key`)"
         ],
     ),
-    ssl_cert=SpecField(
+    "ssl_cert": SpecField(
         type=FieldType.string,
         required=False,
         editable=True,
@@ -192,7 +190,7 @@ linode_configs_spec = dict(
             "that should be served on this NodeBalancerConfig’s port."
         ],
     ),
-    ssl_key=SpecField(
+    "ssl_key": SpecField(
         type=FieldType.string,
         required=False,
         editable=True,
@@ -201,7 +199,7 @@ linode_configs_spec = dict(
             "set in the ssl_cert field."
         ],
     ),
-    stickiness=SpecField(
+    "stickiness": SpecField(
         type=FieldType.string,
         required=False,
         editable=True,
@@ -210,7 +208,7 @@ linode_configs_spec = dict(
         ],
         choices=["none", "table", "http_cookie"],
     ),
-    nodes=SpecField(
+    "nodes": SpecField(
         type=FieldType.list,
         required=False,
         element_type=FieldType.dict,
@@ -221,15 +219,15 @@ linode_configs_spec = dict(
             "These can alternatively be configured through the nodebalancer_node module."
         ],
     ),
-)
+}
 
-linode_nodebalancer_spec = dict(
-    label=SpecField(
+linode_nodebalancer_spec = {
+    "label": SpecField(
         type=FieldType.string,
         description=["The unique label to give this NodeBalancer."],
         required=True,
     ),
-    client_conn_throttle=SpecField(
+    "client_conn_throttle": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -237,24 +235,25 @@ linode_nodebalancer_spec = dict(
             "Set to 0 (zero) to disable throttling.",
         ],
     ),
-    region=SpecField(
+    "region": SpecField(
         type=FieldType.string,
         description=["The ID of the Region to create this NodeBalancer in."],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
         choices=["present", "absent"],
         required=True,
     ),
-    configs=SpecField(
+    "configs": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=linode_configs_spec,
         editable=True,
         description=["A list of configs to apply to the NodeBalancer."],
     ),
-)
+}
+
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage a Linode NodeBalancer."],
@@ -262,26 +261,26 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_nodebalancer_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        node_balancer=SpecReturnValue(
+    return_values={
+        "node_balancer": SpecReturnValue(
             description="The NodeBalancer in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses",
             type=FieldType.dict,
             sample=docs.result_node_balancer_samples,
         ),
-        configs=SpecReturnValue(
+        "configs": SpecReturnValue(
             description="A list of configs applied to the NodeBalancer.",
             docs_url="https://www.linode.com/docs/api/nodebalancers/#config-view__responses",
             type=FieldType.list,
             sample=docs.result_configs_samples,
         ),
-        nodes=SpecReturnValue(
+        "nodes": SpecReturnValue(
             description="A list of configs applied to the NodeBalancer.",
             docs_url="https://www.linode.com/docs/api/nodebalancers/#node-view",
             type=FieldType.list,
             sample=docs.result_nodes_samples,
         ),
-    ),
+    },
 )
 
 linode_nodebalancer_mutable: Set[str] = {"client_conn_throttle", "tags"}
@@ -293,9 +292,13 @@ class LinodeNodeBalancer(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ["state", "label"]
-        self.results = dict(
-            changed=False, actions=[], node_balancer=None, configs=[], nodes=[]
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "node_balancer": None,
+            "configs": [],
+            "nodes": [],
+        }
 
         self._node_balancer: Optional[NodeBalancer] = None
 

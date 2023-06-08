@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.account_info as docs
@@ -23,11 +22,11 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 
-spec = dict(
+spec = {
     # Disable the default values
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-)
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode Account."],
@@ -35,14 +34,14 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        account=SpecReturnValue(
+    return_values={
+        "account": SpecReturnValue(
             description="The account info in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/account/#account-view__response-samples",
             type=FieldType.dict,
             sample=docs.result_account_samples,
         )
-    ),
+    },
 )
 
 
@@ -51,9 +50,7 @@ class Module(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.required_one_of: List[str] = []
-        self.results = dict(
-            account=None,
-        )
+        self.results = {"account": None}
 
         self.module_arg_spec = SPECDOC_META.ansible_spec
 

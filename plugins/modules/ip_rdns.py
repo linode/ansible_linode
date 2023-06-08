@@ -24,25 +24,25 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import ExplicitNullValue, IPAddress
 
-ip_rdns_spec = dict(
+ip_rdns_spec = {
     # Disable the default values
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    state=SpecField(
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "state": SpecField(
         type=FieldType.string,
         choices=["present", "absent"],
         description=["The state of this rDNS of the IP address."],
     ),
-    address=SpecField(
+    "address": SpecField(
         type=FieldType.string,
         description=["The IP address."],
         required=True,
     ),
-    rdns=SpecField(
+    "rdns": SpecField(
         type=FieldType.string,
         editable=True,
         description=["The desired rDNS value."],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage a Linode IP address's rDNS."],
@@ -50,8 +50,8 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=ip_rdns_spec,
     examples=ip_rdns_docs.specdoc_examples,
-    return_values=dict(
-        ip=SpecReturnValue(
+    return_values={
+        "ip": SpecReturnValue(
             description=(
                 "The updated IP address with the new "
                 "reverse DNS in JSON serialized form."
@@ -62,7 +62,7 @@ SPECDOC_META = SpecDocMeta(
             type=FieldType.dict,
             sample=ip_docs.result_ip_samples,
         )
-    ),
+    },
 )
 
 
@@ -72,11 +72,11 @@ class ReverseDNSModule(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ["state", "rdns"]
-        self.results = dict(
-            changed=False,
-            actions=[],
-            ip=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "ip": None,
+        }
         super().__init__(
             module_arg_spec=self.module_arg_spec,
             required_if=[["state", "present", ["rdns"]]],

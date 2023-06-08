@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Dict, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall as docs_parent
@@ -29,10 +28,10 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import Firewall
 
-linode_firewall_info_spec = dict(
+linode_firewall_info_spec = {
     # We need to overwrite attributes to exclude them as requirements
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.integer,
         required=False,
         conflicts_with=["label"],
@@ -41,13 +40,13 @@ linode_firewall_info_spec = dict(
             "Optional if `label` is defined.",
         ],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         required=False,
         conflicts_with=["id"],
         description=["The Firewall’s label.", "Optional if `id` is defined."],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode Firewall."],
@@ -55,20 +54,20 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_firewall_info_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        firewall=SpecReturnValue(
+    return_values={
+        "firewall": SpecReturnValue(
             description="The Firewall description in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/networking/#firewall-view",
             type=FieldType.dict,
             sample=docs_parent.result_firewall_samples,
         ),
-        devices=SpecReturnValue(
+        "devices": SpecReturnValue(
             description="A list of Firewall devices JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/networking/#firewall-device-view",
             type=FieldType.list,
             sample=docs_parent.result_devices_samples,
         ),
-    ),
+    },
 )
 
 linode_firewall_valid_filters = ["id", "label"]
@@ -80,9 +79,7 @@ class LinodeFirewallInfo(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results: Dict[str, Any] = dict(
-            firewall=None,
-        )
+        self.results: Dict[str, Any] = {"firewall": None}
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
