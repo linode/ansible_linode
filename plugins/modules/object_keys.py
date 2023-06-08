@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, List, Optional, Union
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.object_keys as docs
@@ -24,47 +23,47 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import ObjectStorageKeys
 
-linode_access_spec = dict(
-    cluster=SpecField(
+linode_access_spec = {
+    "cluster": SpecField(
         type=FieldType.string,
         required=True,
         description=[
             "The id of the cluster that the provided bucket exists under."
         ],
     ),
-    bucket_name=SpecField(
+    "bucket_name": SpecField(
         type=FieldType.string,
         required=True,
         description=[
             "The name of the bucket to set the key's permissions for."
         ],
     ),
-    permissions=SpecField(
+    "permissions": SpecField(
         type=FieldType.string,
         required=True,
         description=["The permissions to give the key."],
         choices=["read_only", "write_only", "read_write"],
     ),
-)
+}
 
-linode_object_keys_spec = dict(
-    label=SpecField(
+linode_object_keys_spec = {
+    "label": SpecField(
         type=FieldType.string,
         description=["The unique label to give this key."],
     ),
-    access=SpecField(
+    "access": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=linode_access_spec,
         description=["A list of access permissions to give the key."],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
         choices=["present", "absent"],
         required=True,
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage Linode Object Storage Keys."],
@@ -72,15 +71,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_object_keys_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        key=SpecReturnValue(
+    return_values={
+        "key": SpecReturnValue(
             description="The Object Storage key in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/object-storage/#object-storage"
             "-key-view__responses",
             type=FieldType.dict,
             sample=docs.result_key_samples,
         )
-    ),
+    },
 )
 
 
@@ -90,11 +89,11 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ["state", "label"]
-        self.results = dict(
-            changed=False,
-            actions=[],
-            key=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "key": None,
+        }
 
         self._key: Optional[ObjectStorageKeys] = None
 

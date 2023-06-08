@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, List, Optional, Set
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain_record as docs
@@ -27,21 +26,21 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import Domain, DomainRecord
 
-linode_domain_record_spec = dict(
+linode_domain_record_spec = {
     # Unused for domain record objects
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    domain_id=SpecField(
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "domain_id": SpecField(
         type=FieldType.integer, description=["The ID of the parent Domain."]
     ),
-    domain=SpecField(
+    "domain": SpecField(
         type=FieldType.string, description=["The name of the parent Domain."]
     ),
-    record_id=SpecField(
+    "record_id": SpecField(
         type=FieldType.integer,
         conflicts_with=["name"],
         description=["The id of the record to modify."],
     ),
-    name=SpecField(
+    "name": SpecField(
         type=FieldType.string,
         conflicts_with=["record_id"],
         description=[
@@ -50,7 +49,7 @@ linode_domain_record_spec = dict(
             "it will be dropped from the resulting record's name.",
         ],
     ),
-    port=SpecField(
+    "port": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -58,7 +57,7 @@ linode_domain_record_spec = dict(
             "Only valid and required for SRV record requests.",
         ],
     ),
-    priority=SpecField(
+    "priority": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -68,7 +67,7 @@ linode_domain_record_spec = dict(
             "Required for SRV record requests.",
         ],
     ),
-    protocol=SpecField(
+    "protocol": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
@@ -77,7 +76,7 @@ linode_domain_record_spec = dict(
             "the submitted value for this property.",
         ],
     ),
-    service=SpecField(
+    "service": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
@@ -87,13 +86,13 @@ linode_domain_record_spec = dict(
             "The name of the service.",
         ],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
         choices=["present", "absent"],
         required=True,
     ),
-    tag=SpecField(
+    "tag": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
@@ -101,12 +100,12 @@ linode_domain_record_spec = dict(
             "Only valid and required for CAA record requests.",
         ],
     ),
-    target=SpecField(
+    "target": SpecField(
         type=FieldType.string,
         description=["The target for this Record."],
         default="",
     ),
-    ttl_sec=SpecField(
+    "ttl_sec": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -115,11 +114,11 @@ linode_domain_record_spec = dict(
             "or other domain servers."
         ],
     ),
-    type=SpecField(
+    "type": SpecField(
         type=FieldType.string,
         description=["The type of Record this is in the DNS system."],
     ),
-    weight=SpecField(
+    "weight": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -127,7 +126,7 @@ linode_domain_record_spec = dict(
             "used in the case of identical priority."
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=[
@@ -138,14 +137,14 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_domain_record_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        record=SpecReturnValue(
+    return_values={
+        "record": SpecReturnValue(
             description="View a single Record on this Domain.",
             docs_url="https://www.linode.com/docs/api/domains/#domain-record-view",
             type=FieldType.dict,
             sample=docs.result_record_samples,
         )
-    ),
+    },
 )
 
 linode_domain_record_mutable: Set[str] = {
@@ -170,11 +169,7 @@ class LinodeDomainRecord(LinodeModuleBase):
         ]
         self.mutually_exclusive: List[List[str]] = [["name", "record_id"]]
         self.required_together: List[List[str]] = [["name", "type"]]
-        self.results = dict(
-            changed=False,
-            actions=[],
-            record=None,
-        )
+        self.results = {"changed": False, "actions": [], "record": None}
 
         self._domain: Optional[Domain] = None
         self._record: Optional[DomainRecord] = None

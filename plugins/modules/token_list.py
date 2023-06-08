@@ -25,8 +25,8 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 
-spec_filter = dict(
-    name=SpecField(
+spec_filter = {
+    "name": SpecField(
         type=FieldType.string,
         required=True,
         description=[
@@ -36,7 +36,7 @@ spec_filter = dict(
             "#personal-access-tokens-list__responses",
         ],
     ),
-    values=SpecField(
+    "values": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         required=True,
@@ -45,36 +45,36 @@ spec_filter = dict(
             "Fields will pass this filter if at least one of these values matches.",
         ],
     ),
-)
+}
 
-spec = dict(
+spec = {
     # Disable the default values
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    order=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "order": SpecField(
         type=FieldType.string,
         description=["The order to list tokens in."],
         default="asc",
         choices=["desc", "asc"],
     ),
-    order_by=SpecField(
+    "order_by": SpecField(
         type=FieldType.string,
         description=["The attribute to order tokens by."],
     ),
-    filters=SpecField(
+    "filters": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=spec_filter,
         description=["A list of filters to apply to the resulting tokens."],
     ),
-    count=SpecField(
+    "count": SpecField(
         type=FieldType.integer,
         description=[
             "The number of results to return.",
             "If undefined, all results will be returned.",
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["List and filter on Linode Account tokens."],
@@ -82,16 +82,16 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        tokens=SpecReturnValue(
+    return_values={
+        "tokens": SpecReturnValue(
             description="The returned tokens.",
             docs_url="https://www.linode.com/docs/api/profile/"
             "#personal-access-tokens-list__response-samples",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_tokens_samples,
-        )
-    ),
+        ),
+    },
 )
 
 

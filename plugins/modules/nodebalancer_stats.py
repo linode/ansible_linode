@@ -25,23 +25,23 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import NodeBalancer
 
-linode_nodebalancer_stats_spec = dict(
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+linode_nodebalancer_stats_spec = {
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.integer,
         description=[
             "The id of the nodebalancer for which the statistics apply to."
         ],
         conflicts_with=["label"],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         description=[
             "The label of the nodebalancer for which the statistics apply to."
         ],
         conflicts_with=["id"],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["View a Linode NodeBalancers Stats."],
@@ -49,15 +49,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_nodebalancer_stats_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        node_balancer_stats=SpecReturnValue(
+    return_values={
+        "node_balancer_stats": SpecReturnValue(
             description="The NodeBalancer Stats in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/nodebalancers/"
             + "#nodebalancer-statistics-view__responses",
             type=FieldType.dict,
             sample=docs.result_nodebalancer_stats_samples,
         ),
-    ),
+    },
 )
 
 

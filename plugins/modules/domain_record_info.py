@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Dict, List, Optional
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
@@ -32,11 +31,11 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import Domain, DomainRecord
 
-linode_domain_record_info_spec = dict(
+linode_domain_record_info_spec = {
     # We need to overwrite attributes to exclude them as requirements
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    domain_id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "domain_id": SpecField(
         type=FieldType.integer,
         conflicts_with=["domain"],
         description=[
@@ -44,7 +43,7 @@ linode_domain_record_info_spec = dict(
             "Optional if `domain` is defined.",
         ],
     ),
-    domain=SpecField(
+    "domain": SpecField(
         type=FieldType.string,
         conflicts_with=["domain_id"],
         description=[
@@ -52,7 +51,7 @@ linode_domain_record_info_spec = dict(
             "Optional if `domain_id` is defined.",
         ],
     ),
-    id=SpecField(
+    "id": SpecField(
         type=FieldType.integer,
         conflicts_with=["name"],
         description=[
@@ -60,7 +59,7 @@ linode_domain_record_info_spec = dict(
             "Optional if `name` is defined.",
         ],
     ),
-    name=SpecField(
+    "name": SpecField(
         type=FieldType.string,
         conflicts_with=["id"],
         description=[
@@ -68,7 +67,7 @@ linode_domain_record_info_spec = dict(
             "Optional if `id` is defined.",
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode Domain Record."],
@@ -76,14 +75,14 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_domain_record_info_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        record=SpecReturnValue(
+    return_values={
+        "record": SpecReturnValue(
             description="View a single Record on this Domain.",
             docs_url="https://www.linode.com/docs/api/domains/#domain-record-view",
             type=FieldType.dict,
             sample=docs_parent.result_record_samples,
         )
-    ),
+    },
 )
 
 
@@ -96,7 +95,7 @@ class LinodeDomainRecordInfo(LinodeModuleBase):
             ["domain_id", "domain"],
             ["id", "name"],
         ]
-        self.results: Dict[Any, Any] = dict(records=[])
+        self.results: Dict[Any, Any] = {"records": []}
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 import os
 from typing import Any, Optional, Set
 
@@ -31,53 +30,53 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import Image
 
-SPEC = dict(
-    label=SpecField(
+SPEC = {
+    "label": SpecField(
         type=FieldType.string,
         required=True,
         description=["This Image's unique label."],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         choices=["present", "absent"],
         required=True,
         description=["The state of this Image."],
     ),
-    description=SpecField(
+    "description": SpecField(
         type=FieldType.string,
         editable=True,
         description=["A description for the Image."],
     ),
-    disk_id=SpecField(
+    "disk_id": SpecField(
         type=FieldType.integer,
         conflicts_with=["source_file"],
         description=["The ID of the disk to clone this image from."],
     ),
-    recreate=SpecField(
+    "recreate": SpecField(
         type=FieldType.bool,
         default=False,
         description=[
             "If true, the image with the given label will be deleted and recreated"
         ],
     ),
-    region=SpecField(
+    "region": SpecField(
         type=FieldType.string,
         description=["The Linode region to upload this image to."],
         default="us-east",
     ),
-    source_file=SpecField(
+    "source_file": SpecField(
         type=FieldType.string,
         conflicts_with=["disk_id"],
         description=["An image file to create this image with."],
     ),
-    wait=SpecField(
+    "wait": SpecField(
         type=FieldType.bool,
         default=True,
         description=[
             "Wait for the image to have status `available` before returning."
         ],
     ),
-    wait_timeout=SpecField(
+    "wait_timeout": SpecField(
         type=FieldType.integer,
         default=600,
         description=[
@@ -85,7 +84,7 @@ SPEC = dict(
             "have status `available`."
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage a Linode Image."],
@@ -93,15 +92,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=SPEC,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        image=SpecReturnValue(
+    return_values={
+        "image": SpecReturnValue(
             description="The Image in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/images/"
             "#image-view__response-samples",
             type=FieldType.dict,
             sample=docs.result_image_samples,
         )
-    ),
+    },
 )
 
 MUTABLE_FIELDS = {"description"}
@@ -112,11 +111,11 @@ class Module(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
-        self.results = dict(
-            changed=False,
-            actions=[],
-            image=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "image": None,
+        }
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

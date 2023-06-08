@@ -20,6 +20,7 @@ disable=protected-access,
         used-before-assignment,
         unused-variable,
         missing-timeout,
-        use-sequence-for-iteration
+        use-sequence-for-iteration,
+        broad-exception-raised
 
 extension-pkg-whitelist=math
