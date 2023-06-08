@@ -241,9 +241,13 @@ spec_additional_ipv4 = {
 }
 
 linode_instance_spec = {
-    "type": SpecField(
+    "label": SpecField(
         type=FieldType.string,
         description=["The unique label to give this instance."],
+    ),
+    "type": SpecField(
+        type=FieldType.string,
+        description=["The Linode Type of the Linode you are creating."],
     ),
     "region": SpecField(
         type=FieldType.string,
