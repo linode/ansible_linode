@@ -90,7 +90,8 @@ Manage Linode Instances, Configs, and Disks.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
-| `type` | <center>`str`</center> | <center>Optional</center> | The unique label to give this instance.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The unique label to give this instance.   |
+| `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type of the Linode you are creating.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The location to deploy the instance in. See the [Linode API documentation](https://api.linode.com/v4/regions).   |
 | `image` | <center>`str`</center> | <center>Optional</center> | The image ID to deploy the instance disk from.  **(Conflicts With: `disks`,`configs`)** |
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
