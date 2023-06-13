@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain as docs_parent
@@ -29,11 +28,11 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import Domain
 
-linode_domain_info_spec = dict(
+linode_domain_info_spec = {
     # We need to overwrite attributes to exclude them as requirements
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.integer,
         required=False,
         conflicts_with=["domain"],
@@ -42,7 +41,7 @@ linode_domain_info_spec = dict(
             "Optional if `domain` is defined.",
         ],
     ),
-    domain=SpecField(
+    "domain": SpecField(
         type=FieldType.string,
         required=False,
         conflicts_with=["id"],
@@ -51,7 +50,7 @@ linode_domain_info_spec = dict(
             "Optional if `id` is defined.",
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode Domain."],
@@ -59,26 +58,26 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_domain_info_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        domain=SpecReturnValue(
+    return_values={
+        "domain": SpecReturnValue(
             description="The domain in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/domains/#domain-view",
             type=FieldType.dict,
             sample=docs_parent.result_domain_samples,
         ),
-        records=SpecReturnValue(
+        "records": SpecReturnValue(
             description="The domain record in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/domains/#domain-record-view",
             type=FieldType.list,
             sample=docs_parent.result_records_samples,
         ),
-        zone_file=SpecReturnValue(
+        "zone_file": SpecReturnValue(
             description="The zone file for the last rendered zone for the specified domain.",
             docs_url="https://www.linode.com/docs/api/domains/#domain-zone-file-view",
             type=FieldType.list,
             sample=docs_parent.result_zone_file_samples,
         ),
-    ),
+    },
 )
 
 linode_domain_valid_filters = ["id", "domain"]
@@ -90,7 +89,7 @@ class LinodeDomainInfo(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results = dict(domain=None, records=None, zone_file=None)
+        self.results = {"domain": None, "records": None, "zone_file": None}
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

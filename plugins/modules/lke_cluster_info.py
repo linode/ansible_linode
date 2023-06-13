@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Dict, List, Optional
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
@@ -33,10 +32,10 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import ApiError, LKECluster
 
-linode_lke_cluster_info_spec = dict(
+linode_lke_cluster_info_spec = {
     # We need to overwrite attributes to exclude them as requirements
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.integer,
         required=False,
         conflicts_with=["label"],
@@ -45,7 +44,7 @@ linode_lke_cluster_info_spec = dict(
             "Optional if `label` is defined.",
         ],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         required=False,
         conflicts_with=["id"],
@@ -54,7 +53,7 @@ linode_lke_cluster_info_spec = dict(
             "Optional if `id` is defined.",
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode LKE cluster."],
@@ -62,22 +61,22 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_lke_cluster_info_spec,
     examples=docs.examples,
-    return_values=dict(
-        cluster=SpecReturnValue(
+    return_values={
+        "cluster": SpecReturnValue(
             description="The LKE cluster in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
             "#kubernetes-cluster-view__response-samples",
             type=FieldType.dict,
             sample=docs_parent.result_cluster,
         ),
-        node_pools=SpecReturnValue(
+        "node_pools": SpecReturnValue(
             description="A list of node pools in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
             "#node-pools-list__response-samples",
             type=FieldType.list,
             sample=docs_parent.result_node_pools,
         ),
-        kubeconfig=SpecReturnValue(
+        "kubeconfig": SpecReturnValue(
             description="The Base64-encoded kubeconfig used to access this cluster. \n"
             "NOTE: This value may be unavailable if the cluster is not "
             "fully provisioned.",
@@ -85,13 +84,13 @@ SPECDOC_META = SpecDocMeta(
             "#kubeconfig-view__responses",
             type=FieldType.string,
         ),
-        dashboard_url=SpecReturnValue(
+        "dashboard_url": SpecReturnValue(
             description="The Cluster Dashboard access URL.",
             docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
             "#kubernetes-cluster-dashboard-url-view__responses",
             type=FieldType.string,
         ),
-    ),
+    },
 )
 
 VALID_FILTERS = ["id", "label"]
@@ -103,9 +102,12 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results: Dict[str, Any] = dict(
-            cluster=None, node_pools=[], dashboard_url=None, kubeconfig=None
-        )
+        self.results: Dict[str, Any] = {
+            "cluster": None,
+            "node_pools": [],
+            "dashboard_url": None,
+            "kubeconfig": None,
+        }
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

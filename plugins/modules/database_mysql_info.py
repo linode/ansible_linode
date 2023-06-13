@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Optional
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
@@ -37,20 +36,20 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import MySQLDatabase
 
-spec = dict(
+spec = {
     # Disable the default values
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.string,
         conflicts_with=["label"],
         description=["The ID of the MySQL Database."],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         conflicts_with=["id"],
         description=["The label of the MySQL Database."],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode MySQL Managed Database."],
@@ -58,29 +57,29 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        database=SpecReturnValue(
+    return_values={
+        "database": SpecReturnValue(
             description="The database in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/databases/"
             "#managed-mysql-database-view__response-samples",
             type=FieldType.dict,
             sample=docs_parent.result_database_samples,
         ),
-        backups=SpecReturnValue(
+        "backups": SpecReturnValue(
             description="The database backups in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/databases/"
             "#managed-mysql-database-backup-view__responses",
             type=FieldType.dict,
             sample=docs_parent.result_backups_samples,
         ),
-        ssl_cert=SpecReturnValue(
+        "ssl_cert": SpecReturnValue(
             description="The SSL CA certificate for an accessible Managed MySQL Database.",
             docs_url="https://www.linode.com/docs/api/databases/"
             "#managed-mysql-database-ssl-certificate-view__responses",
             type=FieldType.dict,
             sample=docs_parent.result_ssl_cert_samples,
         ),
-        credentials=SpecReturnValue(
+        "credentials": SpecReturnValue(
             description="The root username and password for an accessible Managed MySQL Database.",
             docs_url="https://www.linode.com/docs/api/databases/"
             "#managed-mysql-database-credenti"
@@ -88,7 +87,7 @@ SPECDOC_META = SpecDocMeta(
             type=FieldType.dict,
             sample=docs_parent.result_credentials_samples,
         ),
-    ),
+    },
 )
 
 

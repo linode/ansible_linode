@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 import copy
 from typing import Any, Optional
 
@@ -29,37 +28,37 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import StackScript
 
-SPEC = dict(
-    label=SpecField(
+SPEC = {
+    "label": SpecField(
         type=FieldType.string,
         required=True,
         description=["This StackScript's unique label."],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         choices=["present", "absent"],
         required=True,
         description=["The state of this StackScript."],
     ),
-    description=SpecField(
+    "description": SpecField(
         type=FieldType.string,
         editable=True,
         description=["A description for the StackScript."],
     ),
-    images=SpecField(
+    "images": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         editable=True,
         description=["Images that can be deployed using this StackScript."],
     ),
-    is_public=SpecField(
+    "is_public": SpecField(
         type=FieldType.bool,
         editable=True,
         description=[
             "This determines whether other users can use your StackScript."
         ],
     ),
-    rev_note=SpecField(
+    "rev_note": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
@@ -67,14 +66,14 @@ SPEC = dict(
             "the set of revisions made to this StackScript."
         ],
     ),
-    script=SpecField(
+    "script": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
             "The script to execute when provisioning a new Linode with this StackScript."
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage a Linode StackScript."],
@@ -82,15 +81,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=SPEC,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        stackscript=SpecReturnValue(
+    return_values={
+        "stackscript": SpecReturnValue(
             description="The StackScript in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/stackscripts/"
             "#stackscript-create__response-samples",
             type=FieldType.dict,
             sample=docs.result_stackscript_samples,
         )
-    ),
+    },
 )
 
 MUTABLE_FIELDS = {"description", "images", "is_public", "rev_note", "script"}
@@ -102,11 +101,11 @@ class Module(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ["state", "label"]
-        self.results = dict(
-            changed=False,
-            actions=[],
-            stackscript=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "stackscript": None,
+        }
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

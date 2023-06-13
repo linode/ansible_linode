@@ -24,24 +24,24 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 
-spec = dict(
+spec = {
     # Disable the default values
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    order=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "order": SpecField(
         type=FieldType.string,
         description=["The order to list lke versions in."],
         default="asc",
         choices=["desc", "asc"],
     ),
-    count=SpecField(
+    "count": SpecField(
         type=FieldType.integer,
         description=[
             "The number of results to return.",
             "If undefined, all results will be returned.",
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=[
@@ -51,8 +51,8 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        lke_versions=SpecReturnValue(
+    return_values={
+        "lke_versions": SpecReturnValue(
             description="The returned LKE versions.",
             docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
             "#kubernetes-versions-list__response-samples",
@@ -60,7 +60,7 @@ SPECDOC_META = SpecDocMeta(
             elements=FieldType.dict,
             sample=docs.result_lke_versions_samples,
         )
-    ),
+    },
 )
 
 

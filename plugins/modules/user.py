@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Dict, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user as docs
@@ -213,21 +212,21 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=SPEC,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        user=SpecReturnValue(
+    return_values={
+        "user": SpecReturnValue(
             description="The user in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/account/#user-view__response-samples",
             type=FieldType.dict,
             sample=docs.result_user_samples,
         ),
-        grants=SpecReturnValue(
+        "grants": SpecReturnValue(
             description="The grants info in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/account/"
             "#users-grants-view__response-samples",
             type=FieldType.dict,
             sample=docs.result_grants_samples,
         ),
-    ),
+    },
 )
 
 MUTABLE_FIELDS = {"restricted"}
@@ -239,7 +238,12 @@ class Module(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ["state", "username"]
-        self.results = dict(changed=False, actions=[], user=None, grants=None)
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "user": None,
+            "grants": None,
+        }
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

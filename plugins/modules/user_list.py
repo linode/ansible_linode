@@ -24,24 +24,24 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 
-spec = dict(
+spec = {
     # Disable the default values
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    order=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "order": SpecField(
         type=FieldType.string,
         description=["The order to list users in."],
         default="asc",
         choices=["desc", "asc"],
     ),
-    count=SpecField(
+    "count": SpecField(
         type=FieldType.integer,
         description=[
             "The number of results to return.",
             "If undefined, all results will be returned.",
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["List Users."],
@@ -49,16 +49,18 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        users=SpecReturnValue(
+    return_values={
+        "users": SpecReturnValue(
             description="The returned users.",
-            docs_url="https://www.linode.com/docs/api/account/"
-            "#users-list__response-samples",
+            docs_url=(
+                "https://www.linode.com/docs/api/account/"
+                "#users-list__response-samples"
+            ),
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_users_samples,
         )
-    ),
+    },
 )
 
 

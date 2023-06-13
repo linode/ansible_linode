@@ -26,8 +26,8 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 
-spec_filter = dict(
-    name=SpecField(
+spec_filter = {
+    "name": SpecField(
         type=FieldType.string,
         required=True,
         description=[
@@ -39,7 +39,7 @@ spec_filter = dict(
             ),
         ],
     ),
-    values=SpecField(
+    "values": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         required=True,
@@ -48,36 +48,36 @@ spec_filter = dict(
             "Fields will pass this filter if at least one of these values matches.",
         ],
     ),
-)
+}
 
-spec = dict(
+spec = {
     # Disable the default values
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    order=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "order": SpecField(
         type=FieldType.string,
         description=["The order to list ssh keys in."],
         default="asc",
         choices=["desc", "asc"],
     ),
-    order_by=SpecField(
+    "order_by": SpecField(
         type=FieldType.string,
         description=["The attribute to order ssh keys by."],
     ),
-    filters=SpecField(
+    "filters": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=spec_filter,
         description=["A list of filters to apply to the resulting ssh keys."],
     ),
-    count=SpecField(
+    "count": SpecField(
         type=FieldType.integer,
         description=[
             "The number of results to return.",
             "If undefined, all results will be returned.",
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["List and filter on SSH keys in the Linode profile."],
@@ -85,17 +85,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.ssh_key_list_specdoc_examples,
-    return_values=dict(
-        ssh_keys=SpecReturnValue(
+    return_values={
+        "ssh_keys": SpecReturnValue(
             description="The returned SSH keys.",
-            docs_url=(
-                "https://www.linode.com/docs/api/profile/" "#ssh-keys-list"
-            ),
+            docs_url="https://www.linode.com/docs/api/profile/#ssh-keys-list",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_ssh_key_list_samples,
         )
-    ),
+    },
 )
 
 
