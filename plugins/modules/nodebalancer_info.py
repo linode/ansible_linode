@@ -29,14 +29,12 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-
-# pylint: disable=unused-import
 from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode
 
-linode_nodebalancer_info_spec = dict(
+linode_nodebalancer_info_spec = {
     # We need to overwrite attributes to exclude them as requirements
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.integer,
         required=False,
         conflicts_with=["label"],
@@ -45,7 +43,7 @@ linode_nodebalancer_info_spec = dict(
             "Optional if `label` is defined.",
         ],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         required=False,
         conflicts_with=["id"],
@@ -54,7 +52,7 @@ linode_nodebalancer_info_spec = dict(
             "Optional if `id` is defined.",
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode NodeBalancer."],
@@ -62,26 +60,26 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_nodebalancer_info_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        node_balancer=SpecReturnValue(
+    return_values={
+        "node_balancer": SpecReturnValue(
             description="The NodeBalancer in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses",
             type="dict",
             sample=docs_parent.result_node_balancer_samples,
         ),
-        configs=SpecReturnValue(
+        "configs": SpecReturnValue(
             description="A list of configs applied to the NodeBalancer.",
             docs_url="https://www.linode.com/docs/api/nodebalancers/#config-view__responses",
             type=FieldType.list,
             sample=docs_parent.result_configs_samples,
         ),
-        nodes=SpecReturnValue(
+        "nodes": SpecReturnValue(
             description="A list of configs applied to the NodeBalancer.",
             docs_url="https://www.linode.com/docs/api/nodebalancers/#node-view",
             type=FieldType.list,
             sample=docs_parent.result_nodes_samples,
         ),
-    ),
+    },
 )
 
 linode_nodebalancer_valid_filters = ["id", "label"]
@@ -93,7 +91,7 @@ class LinodeNodeBalancerInfo(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results: dict = dict(node_balancer=None, configs=[], nodes=[])
+        self.results: dict = {"node_balancer": None, "configs": [], "nodes": []}
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

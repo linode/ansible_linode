@@ -3,7 +3,6 @@
 
 """This module contains all of the functionality for Linode Domains."""
 
-# pylint: disable=unused-import
 import copy
 from typing import Any, List, Optional
 
@@ -23,20 +22,20 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 
-MODULE_SPEC = dict(
-    firewall_id=SpecField(
+MODULE_SPEC = {
+    "firewall_id": SpecField(
         type=FieldType.integer,
         required=True,
         description=["The ID of the Firewall that contains this device."],
     ),
-    entity_id=SpecField(
+    "entity_id": SpecField(
         type=FieldType.integer,
         required=True,
         description=[
             "The ID for this Firewall Device. This will be the ID of the Linode Entity."
         ],
     ),
-    entity_type=SpecField(
+    "entity_type": SpecField(
         type=FieldType.string,
         required=True,
         description=[
@@ -44,18 +43,18 @@ MODULE_SPEC = dict(
         ],
         choices=["linode"],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         required=False,
         doc_hide=True,
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
         choices=["present", "absent"],
         required=True,
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage Linode Firewall Devices."],
@@ -63,14 +62,14 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=MODULE_SPEC,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        device=SpecReturnValue(
+    return_values={
+        "device": SpecReturnValue(
             description="The Firewall Device in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/networking/#firewall-device-view__responses",
             type=FieldType.dict,
             sample=docs.result_device_samples,
         )
-    ),
+    },
 )
 
 
@@ -80,11 +79,11 @@ class LinodeFirewallDevice(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results = dict(
-            changed=False,
-            actions=[],
-            device=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "device": None,
+        }
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

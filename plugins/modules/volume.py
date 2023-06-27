@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Optional, Set
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume as docs
@@ -20,9 +19,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import (
     EventPoller,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    request_retry,
-)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -31,15 +27,15 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import Volume
 
-linode_volume_spec = dict(
-    label=SpecField(
+linode_volume_spec = {
+    "label": SpecField(
         type=FieldType.string,
         description=[
             "The Volume’s label, which is also used in the "
             "filesystem_path of the resulting volume."
         ],
     ),
-    config_id=SpecField(
+    "config_id": SpecField(
         type=FieldType.integer,
         default=None,
         description=[
@@ -47,7 +43,7 @@ linode_volume_spec = dict(
             "to include the new Volume in."
         ],
     ),
-    linode_id=SpecField(
+    "linode_id": SpecField(
         type=FieldType.integer,
         default=None,
         editable=True,
@@ -56,14 +52,14 @@ linode_volume_spec = dict(
             "If not given, the volume will be created without an attachment.",
         ],
     ),
-    region=SpecField(
+    "region": SpecField(
         type=FieldType.string,
         description=[
             "The location to deploy the volume in.",
-            "See U(https://api.linode.com/v4/regions)",
+            "See https://api.linode.com/v4/regions",
         ],
     ),
-    size=SpecField(
+    "size": SpecField(
         type=FieldType.integer,
         default=None,
         editable=True,
@@ -72,7 +68,7 @@ linode_volume_spec = dict(
             "Be aware that volumes may only be resized up after creation.",
         ],
     ),
-    attached=SpecField(
+    "attached": SpecField(
         type=FieldType.bool,
         default=True,
         editable=True,
@@ -81,7 +77,7 @@ linode_volume_spec = dict(
             "Otherwise, the volume will be detached."
         ],
     ),
-    wait_timeout=SpecField(
+    "wait_timeout": SpecField(
         type=FieldType.integer,
         default=240,
         description=[
@@ -89,23 +85,23 @@ linode_volume_spec = dict(
             "have the active status."
         ],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
         choices=["present", "absent"],
         required=True,
     ),
-    source_volume_id=SpecField(
+    "source_volume_id": SpecField(
         type=FieldType.integer,
         required=False,
         description=["The volume id of the desired volume to clone."],
     ),
-    tags=SpecField(
+    "tags": SpecField(
         type=FieldType.list,
         required=False,
         description=["The tags to be attached to the volume."],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage a Linode Volume."],
@@ -113,14 +109,14 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_volume_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        volume=SpecReturnValue(
+    return_values={
+        "volume": SpecReturnValue(
             description="The volume in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/volumes/#volume-view__responses",
             type=FieldType.dict,
             sample=docs.result_volume_samples,
         )
-    ),
+    },
 )
 
 
@@ -130,11 +126,11 @@ class LinodeVolume(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ["state", "label"]
-        self.results = dict(
-            changed=False,
-            actions=[],
-            volume=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "volume": None,
+        }
 
         self._volume: Optional[Volume] = None
 
@@ -216,11 +212,9 @@ class LinodeVolume(LinodeModuleBase):
             )
 
         # Perform the clone operation
-        vol = request_retry(
-            lambda: self.client.post(
-                "/volumes/{}/clone".format(source_id),
-                data={"label": params.get("label")},
-            )
+        vol = self.client.post(
+            "/volumes/{}/clone".format(source_id),
+            data={"label": params.get("label")},
         )
 
         cloned_volume = Volume(self.client, vol.get("id"))

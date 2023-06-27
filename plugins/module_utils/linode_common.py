@@ -52,42 +52,45 @@ COLLECTION_USER_AGENT = (
     f"Ansible/{ANSIBLE_VERSION}"
 )
 
-LINODE_COMMON_ARGS = dict(
-    api_token=dict(
-        type="str",
-        fallback=(env_fallback, ["LINODE_API_TOKEN", "LINODE_TOKEN"]),
-        required=True,
-        no_log=True,
-    ),
-    api_version=dict(
-        type="str",
-        fallback=(env_fallback, ["LINODE_API_VERSION"]),
-        default="v4",
-    ),
-    state=dict(
-        type="str",
-        required=True,
-        choices=["present", "absent"],
-    ),
-    ua_prefix=dict(
-        type="str",
-        description="An HTTP User-Agent Prefix to prepend in API requests.",
-        doc_hide=True,
-        fallback=(env_fallback, ["LINODE_UA_PREFIX"]),
-    ),
-)
+LINODE_COMMON_ARGS = {
+    "api_token": {
+        "type": "str",
+        "fallback": (env_fallback, ["LINODE_API_TOKEN", "LINODE_TOKEN"]),
+        "required": True,
+        "no_log": True,
+    },
+    "api_version": {
+        "type": "str",
+        "fallback": (env_fallback, ["LINODE_API_VERSION"]),
+        "default": "v4",
+    },
+    "state": {
+        "type": "str",
+        "required": True,
+        "choices": ["present", "absent"],
+    },
+    "ua_prefix": {
+        "type": "str",
+        "description": "An HTTP User-Agent Prefix to prepend in API requests.",
+        "doc_hide": True,
+        "fallback": (env_fallback, ["LINODE_UA_PREFIX"]),
+    },
+}
 
-LINODE_TAG_ARGS = dict(
-    tags=dict(type="list", description="The tags to assign to this resource."),
-)
+LINODE_TAG_ARGS = {
+    "tags": {
+        "type": "list",
+        "description": "The tags to assign to this resource.",
+    },
+}
 
-LINODE_LABEL_ARGS = dict(
-    label=dict(
-        type="str",
-        required=True,
-        description="The label to assign to this resource.",
-    ),
-)
+LINODE_LABEL_ARGS = {
+    "label": {
+        "type": "str",
+        "required": True,
+        "description": "The label to assign to this resource.",
+    },
+}
 
 RESOURCE_NAMES = (
     {
@@ -102,6 +105,10 @@ RESOURCE_NAMES = (
     if HAS_LINODE
     else {}
 )
+
+MAX_RETRIES = 5
+RETRY_INTERVAL_SECONDS = float(4)
+RETRY_STATUSES = {408, 429, 502}
 
 
 class LinodeModuleBase:
@@ -147,7 +154,7 @@ class LinodeModuleBase:
             required_if=required_if,
         )
 
-        self.results: dict = self.results or dict(changed=False, actions=[])
+        self.results: dict = self.results or {"changed": False, "actions": []}
 
         # This field may or may not be present depending on the module
         timeout_param = self.module.params.get("wait_timeout", 120)
@@ -240,7 +247,9 @@ class LinodeModuleBase:
                 api_token,
                 base_url="https://api.linode.com/{0}".format(api_version),
                 user_agent=user_agent,
-                retry_rate_limit_interval=10,
+                retry_rate_limit_interval=RETRY_INTERVAL_SECONDS,
+                retry_max=MAX_RETRIES,
+                retry_statuses=RETRY_STATUSES,
             )
 
         return self._client

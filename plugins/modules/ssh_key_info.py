@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ssh_key_info as docs
@@ -27,20 +26,20 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import SSHKey
 
-linode_ssh_key_info_spec = dict(
+linode_ssh_key_info_spec = {
     # Disable the default values
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.integer,
         conflicts_with=["label"],
         description=["The ID of the SSH key."],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         conflicts_with=["id"],
         description=["The label of the SSH key."],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about the Linode SSH public key."],
@@ -48,15 +47,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_ssh_key_info_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        ssh_key=SpecReturnValue(
+    return_values={
+        "ssh_key": SpecReturnValue(
             description="The SSH key in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/profile/"
             "#ssh-key-view__response-samples",
             type=FieldType.dict,
             sample=docs.ssh_key_info_response_sample,
         )
-    ),
+    },
 )
 
 

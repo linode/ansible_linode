@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.token as docs_parent
@@ -28,20 +27,20 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import PersonalAccessToken
 
-spec = dict(
+spec = {
     # Disable the default values
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.integer,
         description=["The ID of the token."],
         conflicts_with=["label"],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         description=["The label of the token."],
         conflicts_with=["id"],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode Personal Access Token."],
@@ -49,15 +48,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        token=SpecReturnValue(
+    return_values={
+        "token": SpecReturnValue(
             description="The token in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/profile/"
             "#personal-access-token-create__response-samples",
             type=FieldType.dict,
             sample=docs_parent.result_token_samples,
         )
-    ),
+    },
 )
 
 

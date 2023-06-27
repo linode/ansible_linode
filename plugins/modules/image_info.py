@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image as docs_parent
@@ -28,20 +27,20 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import Image
 
-spec = dict(
+spec = {
     # Disable the default values
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.string,
         description=["The ID of the image."],
         conflicts_with=["label"],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         description=["The label of the image."],
         conflicts_with=["id"],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode Image."],
@@ -49,14 +48,14 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        image=SpecReturnValue(
+    return_values={
+        "image": SpecReturnValue(
             description="The image in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/images/#image-view__responses",
             type=FieldType.dict,
             sample=docs_parent.result_image_samples,
         )
-    ),
+    },
 )
 
 

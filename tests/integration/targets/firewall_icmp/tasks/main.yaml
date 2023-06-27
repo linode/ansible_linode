@@ -7,7 +7,7 @@
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         type: g6-standard-1
-        image: linode/alpine3.13
+        image: linode/alpine3.17
         state: present
       register: create_instance
 

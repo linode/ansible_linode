@@ -4,7 +4,13 @@ line_length = 80
 
 [tool.black]
 line-length = 80
-target-version = ["py37", "py38", "py39", "py310", "py311"]
+target-version = [
+    "py37",
+    "py38",
+    "py39",
+    "py310",
+    "py311",
+]
 exclude = "plugins/module_utils/doc_fragments"
 
 [tool.autoflake]
@@ -15,3 +21,38 @@ ignore-pass-after-docstring = true
 in-place = true
 recursive = true
 remove-all-unused-imports = true
+
+[tool.pylint.main]
+disable = [
+    "raw-checker-failed",
+    "bad-inline-option",
+    "locally-disabled",
+    "file-ignored",
+    "suppressed-message",
+    "useless-suppression",
+    "deprecated-pragma",
+    "use-symbolic-message-instead",
+    "protected-access",
+    "broad-exception-caught",
+    "unused-argument",
+    "no-name-in-module",
+    "import-error",
+    "inconsistent-return-statements",
+    "assignment-from-no-return",
+    "too-many-arguments",
+    "too-few-public-methods",
+    "duplicate-code",
+    "too-many-lines",
+    "too-many-branches",
+    "anomalous-backslash-in-string",
+    "too-many-locals",
+    "consider-using-f-string",
+    "consider-using-dict-items",
+    "used-before-assignment",
+    "unused-variable",
+    "missing-timeout",
+    "use-sequence-for-iteration",
+    "broad-exception-raised",
+]
+py-version = "3.8"
+extension-pkg-whitelist = "math"

@@ -3,7 +3,6 @@
 
 """This module contains all of the functionality for Linode LKE node pools."""
 
-# pylint: disable=unused-import
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_node_pool as docs
@@ -29,8 +28,8 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import LKENodePool
 
-linode_lke_pool_autoscaler = dict(
-    enabled=SpecField(
+linode_lke_pool_autoscaler = {
+    "enabled": SpecField(
         type=FieldType.bool,
         editable=True,
         description=[
@@ -38,7 +37,7 @@ linode_lke_pool_autoscaler = dict(
             "NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.",
         ],
     ),
-    max=SpecField(
+    "max": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -46,7 +45,7 @@ linode_lke_pool_autoscaler = dict(
             "Defaults to the value provided by the count field."
         ],
     ),
-    min=SpecField(
+    "min": SpecField(
         type=FieldType.integer,
         editable=True,
         description=[
@@ -54,30 +53,30 @@ linode_lke_pool_autoscaler = dict(
             "Defaults to the Node Pool’s count."
         ],
     ),
-)
+}
 
-linode_lke_pool_disks = dict(
-    type=SpecField(
+linode_lke_pool_disks = {
+    "type": SpecField(
         type=FieldType.string,
         required=True,
         description=["This custom disk partition’s filesystem type."],
         choices=["raw", "ext4"],
     ),
-    size=SpecField(
+    "size": SpecField(
         type=FieldType.integer,
         required=True,
         description=["The size of this custom disk partition in MB."],
     ),
-)
+}
 
-MODULE_SPEC = dict(
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    cluster_id=SpecField(
+MODULE_SPEC = {
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "cluster_id": SpecField(
         type=FieldType.integer,
         required=True,
         description=["The ID of the LKE cluster that contains this node pool."],
     ),
-    autoscaler=SpecField(
+    "autoscaler": SpecField(
         type=FieldType.dict,
         editable=True,
         description=[
@@ -86,12 +85,12 @@ MODULE_SPEC = dict(
         ],
         suboptions=linode_lke_pool_autoscaler,
     ),
-    count=SpecField(
+    "count": SpecField(
         type=FieldType.integer,
         editable=True,
         description=["The number of nodes in the Node Pool."],
     ),
-    disks=SpecField(
+    "disks": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         description=[
@@ -102,7 +101,7 @@ MODULE_SPEC = dict(
         ],
         suboptions=linode_lke_pool_disks,
     ),
-    tags=SpecField(
+    "tags": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         editable=True,
@@ -113,20 +112,20 @@ MODULE_SPEC = dict(
             "`lke_node_pool` module to uniquely identify node pools.",
         ],
     ),
-    type=SpecField(
+    "type": SpecField(
         type=FieldType.string,
         description=[
             "The Linode Type for all of the nodes in the Node Pool.",
             "Required if `state` == `present`.",
         ],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
         choices=["present", "absent"],
         required=True,
     ),
-    skip_polling=SpecField(
+    "skip_polling": SpecField(
         type=FieldType.bool,
         description=[
             "If true, the module will not wait for all "
@@ -134,14 +133,14 @@ MODULE_SPEC = dict(
         ],
         default=False,
     ),
-    wait_timeout=SpecField(
+    "wait_timeout": SpecField(
         type=FieldType.integer,
         description=[
             "The period to wait for the node pool to be ready in seconds."
         ],
         default=600,
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage Linode LKE cluster node pools."],
@@ -149,15 +148,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=MODULE_SPEC,
     examples=docs.examples,
-    return_values=dict(
-        node_pool=SpecReturnValue(
+    return_values={
+        "node_pool": SpecReturnValue(
             description="The Node Pool in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
             "#node-pool-view__response-samples",
             type=FieldType.dict,
             sample=docs.result_node_pool,
         )
-    ),
+    },
 )
 
 
@@ -167,11 +166,11 @@ class LinodeLKENodePool(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results = dict(
-            changed=False,
-            actions=[],
-            node_pool=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "node_pool": None,
+        }
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
