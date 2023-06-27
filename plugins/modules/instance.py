@@ -369,7 +369,6 @@ linode_instance_spec = {
     ),
     "backups_enabled": SpecField(
         type=FieldType.bool,
-        default=False,
         description=["Enroll Instance in Linode Backup service."],
     ),
     "wait": SpecField(
@@ -848,7 +847,13 @@ class LinodeInstance(LinodeModuleBase):
             if not hasattr(self._instance, key):
                 continue
 
-            if key in {"configs", "disks", "boot_config_label", "reboot"}:
+            if key in (
+                "configs",
+                "disks",
+                "boot_config_label",
+                "reboot",
+                "backups_enabled",
+            ):
                 continue
 
             old_value = parse_linode_types(getattr(self._instance, key))
@@ -873,6 +878,18 @@ class LinodeInstance(LinodeModuleBase):
 
         if should_update:
             self._instance.save()
+
+        backups_enabled = params.get("backups_enabled")
+        if (
+            backups_enabled is not None
+            and self._instance.backups.enabled != backups_enabled
+        ):
+            if backups_enabled:
+                self._instance.enable_backups()
+                self.register_action("Linode instance backups enabled")
+            else:
+                self._instance.cancel_backups()
+                self.register_action("Linode instance backups cancelled")
 
         needs_private_ip = self.module.params.get("private_ip")
         additional_ipv4 = self.module.params.get("additional_ipv4")
