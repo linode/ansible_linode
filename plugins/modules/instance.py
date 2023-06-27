@@ -371,7 +371,7 @@ linode_instance_spec = {
         type=FieldType.bool,
         default=False,
         description=[
-            'Enroll new Instance in Linode Backup service.'
+            'Enroll Instance in Linode Backup service.'
         ],
     ),
     "wait": SpecField(
