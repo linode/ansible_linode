@@ -367,6 +367,11 @@ linode_instance_spec = {
             'May not be provided if "image" is given.',
         ],
     ),
+    "backups_enabled": SpecField(
+        type=FieldType.bool,
+        default=False,
+        description=["Enroll Instance in Linode Backup service."],
+    ),
     "wait": SpecField(
         type=FieldType.bool,
         default=True,
