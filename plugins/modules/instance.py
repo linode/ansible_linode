@@ -886,7 +886,7 @@ class LinodeInstance(LinodeModuleBase):
         should_poll = self.module.params.get("wait")
 
         # Wait for instance to not be busy
-        self.client.polling.wait_for_resource_free(
+        self.client.polling.wait_for_entity_free(
             "linode",
             self._instance.id,
             self._timeout_ctx.seconds_remaining,
@@ -933,7 +933,7 @@ class LinodeInstance(LinodeModuleBase):
         should_poll = self.module.params.get("wait")
 
         # Wait for instance to not be busy
-        self.client.polling.wait_for_resource_free(
+        self.client.polling.wait_for_entity_free(
             "linode",
             self._instance.id,
             self._timeout_ctx.seconds_remaining,
@@ -1001,7 +1001,7 @@ class LinodeInstance(LinodeModuleBase):
         configs = self.module.params.get("configs") or []
 
         if len(configs) > 0 or len(disks) > 0:
-            self.client.polling.wait_for_resource_free(
+            self.client.polling.wait_for_entity_free(
                 "linode",
                 self._instance.id,
                 self._timeout_ctx.seconds_remaining,
