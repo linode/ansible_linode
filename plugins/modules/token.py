@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.token as docs
@@ -24,28 +23,28 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import PersonalAccessToken
 
-SPEC = dict(
-    label=SpecField(
+SPEC = {
+    "label": SpecField(
         type=FieldType.string,
         required=True,
         description=["This token's unique label."],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         choices=["present", "absent"],
         required=True,
         description=["The state of this token."],
     ),
-    expiry=SpecField(
+    "expiry": SpecField(
         type=FieldType.string,
         default=None,
         description=["When this token should be valid until."],
     ),
-    scopes=SpecField(
+    "scopes": SpecField(
         type=FieldType.string,
         description=["The OAuth scopes to create the token with."],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=[
@@ -57,15 +56,15 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=SPEC,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        token=SpecReturnValue(
+    return_values={
+        "token": SpecReturnValue(
             description="The token in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/profile/"
             "#personal-access-token-create__responses",
             type=FieldType.dict,
             sample=docs.result_token_samples,
         )
-    ),
+    },
 )
 
 
@@ -75,11 +74,7 @@ class Module(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of = ["state", "label"]
-        self.results = dict(
-            changed=False,
-            actions=[],
-            token=None,
-        )
+        self.results = {"changed": False, "actions": [], "token": None}
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

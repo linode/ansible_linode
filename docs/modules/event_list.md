@@ -24,7 +24,7 @@ List and filter on Linode events.
 ```yaml
 - name: List all Linode Instance creation events for the current Linode Account
   linode.cloud.event_list:
-    filter:
+    filters:
       - name: action
         values: linode_create
 ```

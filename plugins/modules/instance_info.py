@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Dict, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs_parent
@@ -29,10 +28,10 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import Instance
 
-linode_instance_info_spec = dict(
+linode_instance_info_spec = {
     # We need to overwrite attributes to exclude them as requirements
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.integer,
         required=False,
         conflicts_with=["label"],
@@ -41,7 +40,7 @@ linode_instance_info_spec = dict(
             "Optional if `label` is defined.",
         ],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         required=False,
         conflicts_with=["id"],
@@ -50,7 +49,7 @@ linode_instance_info_spec = dict(
             "Optional if `id` is defined.",
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode Instance."],
@@ -58,34 +57,34 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_instance_info_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        instance=SpecReturnValue(
+    return_values={
+        "instance": SpecReturnValue(
             description="The instance description in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/linode-instances/#linode-view__responses",
             type=FieldType.dict,
             sample=docs_parent.result_instance_samples,
         ),
-        configs=SpecReturnValue(
+        "configs": SpecReturnValue(
             description="A list of configs tied to this Linode Instance.",
             docs_url="https://www.linode.com/docs/api/linode-instances/"
             "#configuration-profile-view__responses",
             type=FieldType.list,
             sample=docs_parent.result_configs_samples,
         ),
-        disks=SpecReturnValue(
+        "disks": SpecReturnValue(
             description="A list of disks tied to this Linode Instance.",
             docs_url="https://www.linode.com/docs/api/linode-instances/#disk-view__responses",
             type=FieldType.list,
             sample=docs_parent.result_disks_samples,
         ),
-        networking=SpecReturnValue(
+        "networking": SpecReturnValue(
             description="Networking information about this Linode Instance.",
             docs_url="https://www.linode.com/docs/api/linode-instances/"
             "#networking-information-list__responses",
             type=FieldType.dict,
             sample=docs_parent.result_networking_samples,
         ),
-    ),
+    },
 )
 
 linode_instance_valid_filters = ["id", "label"]
@@ -97,9 +96,12 @@ class LinodeInstanceInfo(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results: Dict[str, Any] = dict(
-            instance=None, configs=None, disks=None, networking=None
-        )
+        self.results: Dict[str, Any] = {
+            "instance": None,
+            "configs": None,
+            "disks": None,
+            "networking": None,
+        }
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

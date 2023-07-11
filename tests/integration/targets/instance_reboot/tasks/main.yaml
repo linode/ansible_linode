@@ -1,0 +1,55 @@
+- name: instance_reboot
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a booted Linode instance
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-southeast
+        type: g6-standard-1
+        image: linode/ubuntu20.04
+        root_pass: Fn$$oobar123
+        private_ip: true
+        rebooted: true
+        booted: true
+        state: present
+      register: create
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create.changed
+          - create.instance.status == 'running'
+          - create.instance.ipv4|length > 1
+
+    - name: Reboot the instance
+      linode.cloud.instance:
+        label: '{{ create.instance.label }}'
+        rebooted: true
+        state: present
+      register: reboot
+
+    - name: Assert instance online
+      assert:
+        that:
+          - reboot.changed
+          - reboot.instance.status == 'running'
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.instance.id == create.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

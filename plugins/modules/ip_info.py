@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip_info as docs
@@ -27,16 +26,16 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import IPAddress
 
-spec = dict(
+spec = {
     # Disable the default values
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    label=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    address=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "address": SpecField(
         type=FieldType.string,
         required=True,
         description=["The IP address to operate on."],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode IP."],
@@ -44,14 +43,14 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        ip=SpecReturnValue(
+    return_values={
+        "ip": SpecReturnValue(
             description="The IP in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/networking/#ip-address-view__responses",
             type=FieldType.dict,
             sample=docs.result_ip_samples,
         )
-    ),
+    },
 )
 
 

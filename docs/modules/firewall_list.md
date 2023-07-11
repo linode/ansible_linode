@@ -16,7 +16,7 @@ List and filter on Firewalls.
 ```yaml
 - name: Resolve all accessible firewall for the current Linode Account
   linode.cloud.firewall_list:
-    filter:
+    filters:
       - name: label
         values: myFirewallLabel
 ```

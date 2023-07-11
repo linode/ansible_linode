@@ -24,7 +24,7 @@ List and filter on Linode stackscripts.
 ```yaml
 - name: List all personal stackscripts for the current Linode Account
   linode.cloud.stackscript_list:
-    filter:
+    filters:
       - name: mine
         values: true
 ```

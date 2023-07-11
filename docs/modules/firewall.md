@@ -86,7 +86,7 @@ Manage Linode Firewalls.
 | `action` | <center>`str`</center> | <center>**Required**</center> | Controls whether traffic is accepted or dropped by this rule.  **(Choices: `ACCEPT`, `DROP`)** |
 | [`addresses` (sub-options)](#addresses) | <center>`dict`</center> | <center>Optional</center> | Allowed IPv4 or IPv6 addresses.   |
 | `description` | <center>`str`</center> | <center>Optional</center> | A description for this rule.   |
-| `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)   |
+| `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See https://www.linode.com/docs/api/networking/#firewall-create   |
 | `protocol` | <center>`str`</center> | <center>Optional</center> | The type of network traffic to allow.   |
 
 ### addresses
@@ -104,7 +104,7 @@ Manage Linode Firewalls.
 | `action` | <center>`str`</center> | <center>**Required**</center> | Controls whether traffic is accepted or dropped by this rule.  **(Choices: `ACCEPT`, `DROP`)** |
 | [`addresses` (sub-options)](#addresses) | <center>`dict`</center> | <center>Optional</center> | Allowed IPv4 or IPv6 addresses.   |
 | `description` | <center>`str`</center> | <center>Optional</center> | A description for this rule.   |
-| `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See U(https://www.linode.com/docs/api/networking/#firewall-create)   |
+| `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See https://www.linode.com/docs/api/networking/#firewall-create   |
 | `protocol` | <center>`str`</center> | <center>Optional</center> | The type of network traffic to allow.   |
 
 ## Return Values

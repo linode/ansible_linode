@@ -16,7 +16,7 @@ List and filter on Managed Database engine types.
 ```yaml
 - name: Resolve all Database engine types
   linode.cloud.database_engine_list:
-    filter:
+    filters:
       - name: engine
         values: mysql
 ```

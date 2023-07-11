@@ -158,7 +158,7 @@
         label: '{{ create.instance.label }}'
         region: us-east
         type: g6-standard-1
-        image: linode/alpine3.13
+        image: linode/alpine3.17
         booted: false
         disks:
           - label: test-disk
@@ -179,7 +179,7 @@
 
           - label: boot-disk
             size: 4096
-            image: linode/alpine3.13
+            image: linode/alpine3.17
 
         configs:
           - label: boot-config

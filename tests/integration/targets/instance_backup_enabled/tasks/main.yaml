@@ -1,0 +1,98 @@
+- name: instance_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode instance without set backup to be enabled
+      linode.cloud.instance:
+        label: 'ansible-test-not-set-backup-{{ r }}'
+        region: us-central
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        wait: false
+        state: present
+      register: create_no_set_backup
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_no_set_backup.changed
+          - create_no_set_backup.instance.backups.enabled == False
+
+    - name: Create a Linode instance with backups enabled
+      linode.cloud.instance:
+        label: 'ansible-test-backups-enabled-{{ r }}'
+        region: us-central
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        wait: false
+        state: present
+        backups_enabled: true
+      register: create_backups_enabled
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_backups_enabled.changed
+          - create_backups_enabled.instance.backups.enabled == True
+
+    - name: Cancel backups on backups enabled linode
+      linode.cloud.instance:
+        label: '{{ create_backups_enabled.instance.label }}'
+        region: us-central
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        wait: false
+        state: present
+        backups_enabled: False
+      register: update_backups_canceled
+    
+    - name: Assert instance updated
+      assert:
+        that:
+          - update_backups_canceled.changed
+          - update_backups_canceled.instance.backups.enabled == False
+    
+    - name: Cancel backups on backups enabled linode
+      linode.cloud.instance:
+        label: '{{ create_no_set_backup.instance.label }}'
+        region: us-central
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        wait: false
+        state: present
+        backups_enabled: True
+      register: update_backups_enabled
+    
+    - name: Assert instance updated
+      assert:
+        that:
+          - update_backups_enabled.changed
+          - update_backups_enabled.instance.backups.enabled == True
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create_no_set_backup.instance.label }}'
+            state: absent
+          register: deletion1
+
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create_backups_enabled.instance.label }}'
+            state: absent
+          register: deletion2
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - deletion1.changed
+              - deletion1.instance.id == create_no_set_backup.instance.id
+              - deletion2.changed
+              - deletion2.instance.id == create_backups_enabled.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'

@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 import copy
 from typing import Any, List, Optional, Set
 
@@ -28,27 +27,27 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 
-MODULE_SPEC = dict(
-    nodebalancer_id=SpecField(
+MODULE_SPEC = {
+    "nodebalancer_id": SpecField(
         type=FieldType.integer,
         required=True,
         description=["The ID of the NodeBalancer that contains this node."],
     ),
-    config_id=SpecField(
+    "config_id": SpecField(
         type=FieldType.integer,
         required=True,
         description=[
             "The ID of the NodeBalancer Config that contains this node."
         ],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         required=True,
         description=[
             "The label for this node. This is used to identify nodes within a config."
         ],
     ),
-    address=SpecField(
+    "address": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
@@ -56,7 +55,7 @@ MODULE_SPEC = dict(
             "This must be a private IP address."
         ],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         description=[
             "Whether the NodeBalancer node should be present or absent."
@@ -64,7 +63,7 @@ MODULE_SPEC = dict(
         choices=["present", "absent"],
         required=True,
     ),
-    mode=SpecField(
+    "mode": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
@@ -72,12 +71,12 @@ MODULE_SPEC = dict(
         ],
         choices=["accept", "reject", "drain", "backup"],
     ),
-    weight=SpecField(
+    "weight": SpecField(
         type=FieldType.integer,
         editable=True,
         description=["Nodes with a higher weight will receive more traffic."],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage Linode NodeBalancer Nodes."],
@@ -85,14 +84,14 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=MODULE_SPEC,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        node=SpecReturnValue(
+    return_values={
+        "node": SpecReturnValue(
             description="The NodeBalancer Node in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/nodebalancers/#node-view__responses",
             type=FieldType.dict,
             sample=docs.result_node_samples,
         )
-    ),
+    },
 )
 
 MUTABLE_FIELDS: Set[str] = {"address", "mode", "weight"}
@@ -104,11 +103,11 @@ class LinodeNodeBalancerNode(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results = dict(
-            changed=False,
-            actions=[],
-            node=None,
-        )
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "node": None,
+        }
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,

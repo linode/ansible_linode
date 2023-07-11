@@ -7,8 +7,8 @@ from typing import Any, Callable, Dict, Optional, Set
 from ansible_specdoc.objects import FieldType, SpecField
 from linode_api4 import ApiError
 
-SPEC_UPDATE_WINDOW = dict(
-    day_of_week=SpecField(
+SPEC_UPDATE_WINDOW = {
+    "day_of_week": SpecField(
         type=FieldType.integer,
         required=True,
         choices=list(range(1, 8)),
@@ -16,13 +16,13 @@ SPEC_UPDATE_WINDOW = dict(
             "The day to perform maintenance. 1=Monday, 2=Tuesday, etc."
         ],
     ),
-    duration=SpecField(
+    "duration": SpecField(
         type=FieldType.integer,
         required=True,
         choices=[1, 3],
         description=["The maximum maintenance window time in hours."],
     ),
-    frequency=SpecField(
+    "frequency": SpecField(
         type=FieldType.string,
         choices=["weekly", "monthly"],
         default="weekly",
@@ -30,12 +30,12 @@ SPEC_UPDATE_WINDOW = dict(
             "Whether maintenance occurs on a weekly or monthly basis."
         ],
     ),
-    hour_of_day=SpecField(
+    "hour_of_day": SpecField(
         type=FieldType.integer,
         required=True,
         description=["The hour to begin maintenance based in UTC time."],
     ),
-    week_of_month=SpecField(
+    "week_of_month": SpecField(
         type=FieldType.integer,
         description=[
             "The week of the month to perform monthly frequency updates.",
@@ -44,7 +44,7 @@ SPEC_UPDATE_WINDOW = dict(
             "Must be null for weekly frequency updates.",
         ],
     ),
-)
+}
 
 
 def validate_allow_list(allow_list: Set[str]) -> None:

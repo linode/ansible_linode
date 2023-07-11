@@ -24,7 +24,7 @@ List and filter on Linode images.
 ```yaml
 - name: Resolve all Alpine Linux images
   linode.cloud.image_list:
-    filter:
+    filters:
       - name: vendor
         values: Alpine
 ```

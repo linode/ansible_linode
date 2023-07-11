@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-# pylint: disable=unused-import
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume as docs_parent
@@ -28,10 +27,10 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import Volume
 
-linode_volume_info_spec = dict(
+linode_volume_info_spec = {
     # We need to overwrite attributes to exclude them as requirements
-    state=SpecField(type=FieldType.string, required=False, doc_hide=True),
-    id=SpecField(
+    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
+    "id": SpecField(
         type=FieldType.integer,
         required=False,
         conflicts_with=["label"],
@@ -40,7 +39,7 @@ linode_volume_info_spec = dict(
             "Optional if `label` is defined.",
         ],
     ),
-    label=SpecField(
+    "label": SpecField(
         type=FieldType.string,
         required=False,
         conflicts_with=["id"],
@@ -49,7 +48,7 @@ linode_volume_info_spec = dict(
             "Optional if `id` is defined.",
         ],
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Get info about a Linode Volume."],
@@ -57,14 +56,14 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_volume_info_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        volume=SpecReturnValue(
+    return_values={
+        "volume": SpecReturnValue(
             description="The volume in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/volumes/#volume-view__responses",
             type=FieldType.dict,
             sample=docs_parent.result_volume_samples,
-        )
-    ),
+        ),
+    },
 )
 
 linode_volume_valid_filters = ["id", "label"]
@@ -76,9 +75,9 @@ class LinodeVolumeInfo(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[str] = []
-        self.results = dict(
-            volume=None,
-        )
+        self.results = {
+            "volume": None,
+        }
 
         self._volume = None
 

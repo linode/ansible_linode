@@ -36,8 +36,8 @@ except ImportError:
     # handled in module_utils.linode_common
     pass
 
-linode_firewall_addresses_spec: dict = dict(
-    ipv4=SpecField(
+linode_firewall_addresses_spec: dict = {
+    "ipv4": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         description=[
@@ -45,7 +45,7 @@ linode_firewall_addresses_spec: dict = dict(
             "Must be in IP/mask format.",
         ],
     ),
-    ipv6=SpecField(
+    "ipv6": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         description=[
@@ -53,15 +53,15 @@ linode_firewall_addresses_spec: dict = dict(
             "Must be in IP/mask format.",
         ],
     ),
-)
+}
 
-linode_firewall_rule_spec: dict = dict(
-    label=SpecField(
+linode_firewall_rule_spec: dict = {
+    "label": SpecField(
         type=FieldType.string,
         required=True,
         description=["The label of this rule."],
     ),
-    action=SpecField(
+    "action": SpecField(
         type=FieldType.string,
         choices=["ACCEPT", "DROP"],
         required=True,
@@ -69,76 +69,77 @@ linode_firewall_rule_spec: dict = dict(
             "Controls whether traffic is accepted or dropped by this rule."
         ],
     ),
-    addresses=SpecField(
+    "addresses": SpecField(
         type=FieldType.dict,
         suboptions=linode_firewall_addresses_spec,
         description=["Allowed IPv4 or IPv6 addresses."],
     ),
-    description=SpecField(
+    "description": SpecField(
         type=FieldType.string, description=["A description for this rule."]
     ),
-    ports=SpecField(
+    "ports": SpecField(
         type=FieldType.string,
         description=[
             "A string representing the port or ports on which traffic will be allowed.",
-            "See U(https://www.linode.com/docs/api/networking/#firewall-create)",
+            "See https://www.linode.com/docs/api/networking/#firewall-create",
         ],
     ),
-    protocol=SpecField(
+    "protocol": SpecField(
         type=FieldType.string,
         description=["The type of network traffic to allow."],
     ),
-)
+}
 
-linode_firewall_rules_spec: dict = dict(
-    inbound=SpecField(
+
+linode_firewall_rules_spec: dict = {
+    "inbound": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=linode_firewall_rule_spec,
         description=["A list of rules for inbound traffic."],
     ),
-    inbound_policy=SpecField(
+    "inbound_policy": SpecField(
         type=FieldType.string,
         description=["The default behavior for inbound traffic."],
     ),
-    outbound=SpecField(
+    "outbound": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=linode_firewall_rule_spec,
         description=["A list of rules for outbound traffic."],
     ),
-    outbound_policy=SpecField(
+    "outbound_policy": SpecField(
         type=FieldType.string,
         description=["The default behavior for outbound traffic."],
     ),
-)
+}
 
-linode_firewall_device_spec: dict = dict(
-    id=SpecField(
+linode_firewall_device_spec: dict = {
+    "id": SpecField(
         type=FieldType.integer,
         required=True,
         description=["The unique ID of the device to attach to this Firewall."],
     ),
-    type=SpecField(
+    "type": SpecField(
         type=FieldType.string,
         default="linode",
         description=["The type of device to be attached to this Firewall."],
     ),
-)
+}
 
-linode_firewall_spec: dict = dict(
-    label=SpecField(
+linode_firewall_spec: dict = {
+    "label": SpecField(
         type=FieldType.string,
         description=["The unique label to give this Firewall."],
     ),
-    devices=SpecField(
+    "devices": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=linode_firewall_device_spec,
         editable=True,
         description=["The devices that are attached to this Firewall."],
     ),
-    rules=SpecField(
+    "rules": SpecField(
         type=FieldType.dict,
         suboptions=linode_firewall_rules_spec,
         editable=True,
@@ -146,18 +147,18 @@ linode_firewall_spec: dict = dict(
             "The inbound and outbound access rules to apply to this Firewall."
         ],
     ),
-    status=SpecField(
+    "status": SpecField(
         type=FieldType.string,
         editable=True,
         description=["The status of this Firewall."],
     ),
-    state=SpecField(
+    "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
         choices=["present", "absent", "update"],
         required=True,
     ),
-)
+}
 
 SPECDOC_META = SpecDocMeta(
     description=["Manage Linode Firewalls."],
@@ -165,20 +166,20 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=linode_firewall_spec,
     examples=docs.specdoc_examples,
-    return_values=dict(
-        firewall=SpecReturnValue(
+    return_values={
+        "firewall": SpecReturnValue(
             description="The Firewall description in JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/networking/#firewall-view",
             type=FieldType.dict,
             sample=docs.result_firewall_samples,
         ),
-        devices=SpecReturnValue(
+        "devices": SpecReturnValue(
             description="A list of Firewall devices JSON serialized form.",
             docs_url="https://www.linode.com/docs/api/networking/#firewall-device-view",
             type=FieldType.list,
             sample=docs.result_devices_samples,
         ),
-    ),
+    },
 )
 
 # Fields that can be updated on an existing Firewall
@@ -191,9 +192,12 @@ class LinodeFirewall(LinodeModuleBase):
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
 
-        self.results: dict = dict(
-            changed=False, actions=[], firewall=None, devices=None
-        )
+        self.results: dict = {
+            "changed": False,
+            "actions": [],
+            "firewall": None,
+            "devices": None,
+        }
 
         self._firewall: Optional[Firewall] = None
 
