@@ -17,6 +17,7 @@ def main():
         requirements = req_file.read()
 
         emb_file.write(
+            "\"Contains the contents of the project `requirements.txt` file\"\n\n"
             f"REQUIREMENTS = \"\"\"\n{requirements}\n\"\"\"\n"
         )
 
