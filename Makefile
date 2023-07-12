@@ -60,7 +60,10 @@ embed-deps:
 integration-test: create-integration-config embed-deps
 	ansible-test integration $(TEST_ARGS)
 
-test: integration-test
+unit-test: embed-deps
+	ansible-test units --target-python default
+
+test: integration-test unit-test
 
 testall: create-integration-config
 	./scripts/test_all.sh
