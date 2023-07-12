@@ -2,10 +2,13 @@
 
 from __future__ import absolute_import, division, print_function
 
-import traceback
 from typing import Any, Type
 
+import pkg_resources
 import polling
+from ansible_collections.linode.cloud.plugins.module_utils.linode_deps import (
+    REQUIREMENTS,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     format_api_error,
     format_generic_error,
@@ -21,11 +24,7 @@ try:
 except Exception:
     ANSIBLE_VERSION = "unknown"
 
-from ansible.module_utils.basic import (
-    AnsibleModule,
-    env_fallback,
-    missing_required_lib,
-)
+from ansible.module_utils.basic import AnsibleModule, env_fallback
 
 try:
     from linode_api4 import ApiError
@@ -44,8 +43,13 @@ try:
 
     HAS_LINODE = True
 except ImportError:
+    # This will be handled in the requirements logic below
     HAS_LINODE = False
-    HAS_LINODE_EXC = traceback.format_exc()
+
+REQUIREMENTS_INSTALL_COMMAND = (
+    "pip install --upgrade -r "
+    "https://raw.githubusercontent.com/linode/ansible_linode/main/requirements.txt"
+)
 
 COLLECTION_USER_AGENT = (
     "ansible_linode (https://github.com/linode/ansible_linode) "
@@ -156,18 +160,14 @@ class LinodeModuleBase:
 
         self.results: dict = self.results or {"changed": False, "actions": []}
 
+        self._validate_dependencies()
+
         # This field may or may not be present depending on the module
         timeout_param = self.module.params.get("wait_timeout", 120)
 
         self._timeout_ctx: TimeoutContext = TimeoutContext(
             timeout_seconds=timeout_param
         )
-
-        if not HAS_LINODE:
-            self.fail(
-                msg=missing_required_lib("linode_api4"),
-                exception=HAS_LINODE_EXC,
-            )
 
         if not skip_exec:
             try:
@@ -253,3 +253,24 @@ class LinodeModuleBase:
             )
 
         return self._client
+
+    def _validate_dependencies(self):
+        # Parse the embedded requirements file
+        parsed = pkg_resources.parse_requirements(REQUIREMENTS)
+
+        for req in parsed:
+            try:
+                installed_pkgs = pkg_resources.require(req.key)
+            except pkg_resources.DistributionNotFound:
+                self.fail(
+                    msg=f"Python package {req.key} is not installed. "
+                    f"To install the latest dependencies, run `{REQUIREMENTS_INSTALL_COMMAND}`"
+                )
+
+            installed_version = installed_pkgs[0].version
+            if installed_version not in req:
+                self.fail(
+                    msg=f"Python package {req.key} is out of date "
+                    f"(Got {req.key}=={installed_version}; expected {req}). "
+                    f"To install the latest dependencies, run `{REQUIREMENTS_INSTALL_COMMAND}`"
+                )

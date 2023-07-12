@@ -1,0 +1,44 @@
+name: Run Embedded Requirements Validation
+
+on: pull_request
+
+jobs:
+  run-req-validation:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .ansible/collections/ansible_collections/linode/cloud
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+        with:
+          path: .ansible/collections/ansible_collections/linode/cloud
+
+      - name: update packages
+        run: sudo apt-get update -y
+
+      - name: install packages
+        run: sudo apt-get install -y make
+
+      - name: setup python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: install dependencies
+        run: pip install -r requirements-dev.txt -r requirements.txt
+
+      - name: make temp directory
+        run: mkdir tmp
+
+      - name: copy over old deps
+        run: cp plugins/module_utils/linode_deps.py tmp/linode_deps.py
+
+      - name: generate and embed the dependency file
+        run: make embed-deps
+
+      - name: compare README
+        run: diff -r plugins/module_utils/linode_deps.py tmp/linode_deps.py
+
+      - name: clean up
+        run: rm -rf tmp

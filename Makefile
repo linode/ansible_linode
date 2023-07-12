@@ -9,7 +9,7 @@ INTEGRATION_CONFIG := ./tests/integration/integration_config.yml
 clean:
 	rm -f *.tar.gz && rm -rf galaxy.yml
 
-build: clean gendocs
+build: clean gendocs embed-deps
 	python scripts/render_galaxy.py $(COLLECTION_VERSION) && ansible-galaxy collection build
 
 publish: build
@@ -54,7 +54,10 @@ gendocs:
 	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
 	python scripts/render_readme.py $(COLLECTION_VERSION)
 
-integration-test: create-integration-config
+embed-deps:
+	python scripts/embed_deps.py
+
+integration-test: create-integration-config embed-deps
 	ansible-test integration $(TEST_ARGS)
 
 test: integration-test
