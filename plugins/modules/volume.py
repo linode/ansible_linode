@@ -16,9 +16,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import (
-    EventPoller,
-)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -262,8 +259,7 @@ class LinodeVolume(LinodeModuleBase):
 
         # Attach the volume to a Linode
         if linode_id is not None and self._volume.linode_id != linode_id:
-            attach_poller = EventPoller(
-                self.client,
+            attach_poller = self.client.polling.event_poller_create(
                 "volume",
                 "volume_attach",
                 entity_id=self._volume.id,
@@ -277,12 +273,11 @@ class LinodeVolume(LinodeModuleBase):
             )
 
             attach_poller.wait_for_next_event_finished(
-                self._timeout_ctx.seconds_remaining
+                timeout=self._timeout_ctx.seconds_remaining
             )
 
         if not attached:
-            detach_poller = EventPoller(
-                self.client,
+            detach_poller = self.client.polling.event_poller_create(
                 "volume",
                 "volume_detach",
                 entity_id=self._volume.id,
@@ -292,7 +287,7 @@ class LinodeVolume(LinodeModuleBase):
             self.register_action("Detached volume {0}".format(label))
 
             detach_poller.wait_for_next_event_finished(
-                self._timeout_ctx.seconds_remaining
+                timeout=self._timeout_ctx.seconds_remaining
             )
 
         # Force lazy-loading
