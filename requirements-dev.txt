@@ -8,8 +8,9 @@ Jinja2>=3.0.1
 black>=23.1.0
 isort>=5.12.0
 autoflake>=2.0.1
-pytest==7.4.0
-pytest-ansible==3.1.5
-pytest-forked==1.6.0
-pytest-mock==3.11.1
-pytest-xdist==3.3.1
+pytest>=7.4.0
+pytest-ansible>=3.1.5
+pytest-forked>=1.6.0
+pytest-mock>=3.11.1
+pytest-xdist>=3.3.1
+types-requests==2.31.0.1
