@@ -10,9 +10,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     format_api_error,
     format_generic_error,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_timeout import (
-    TimeoutContext,
-)
 
 try:
     from ansible.module_utils.ansible_release import (
@@ -41,6 +38,7 @@ try:
         StackScript,
         UnexpectedResponseError,
     )
+    from linode_api4.polling import TimeoutContext
 
     HAS_LINODE = True
 except ImportError:
