@@ -26,8 +26,8 @@ Requirements
 ------------
 The below requirements are needed on the host that executes this module.
 
-- python >= 3
-- linode_api4 >= 2.0.0
+- python \>= 3
+- linode\_api4 \>= 2.0.0
 
 
 
@@ -58,7 +58,7 @@ Parameters
 
 
   **strict (type=bool):**
-    \• If ``yes`` make invalid entries a fatal error, otherwise skip and continue.
+    \• If \ :literal:`yes`\  make invalid entries a fatal error, otherwise skip and continue.
 
     \• Since it is possible to use facts in the expressions they might not always be available and we ignore those errors by default.
 
@@ -94,13 +94,13 @@ Parameters
       **default_value (type=str):**
         \• The default value when the host variable's value is an empty string.
 
-        \• This option is mutually exclusive with ``trailing_separator``.
+        \• This option is mutually exclusive with \ :literal:`trailing\_separator`\ .
 
 
       **trailing_separator (type=bool, default=True):**
-        \• Set this option to *False* to omit the ``separator`` after the host variable when the value is an empty string.
+        \• Set this option to \ :emphasis:`False`\  to omit the \ :literal:`separator`\  after the host variable when the value is an empty string.
 
-        \• This option is mutually exclusive with ``default_value``.
+        \• This option is mutually exclusive with \ :literal:`default\_value`\ .
 
 
 
@@ -109,11 +109,11 @@ Parameters
 
 
   **leading_separator (type=boolean, default=True):**
-    \• Use in conjunction with keyed_groups.
+    \• Use in conjunction with keyed\_groups.
 
     \• By default, a keyed group that does not have a prefix or a separator provided will have a name that starts with an underscore.
 
-    \• This is because the default prefix is "" and the default separator is "_".
+    \• This is because the default prefix is "" and the default separator is "\_".
 
     \• Set this option to False to omit the leading underscore (or other separator) if no prefix is given.
 
