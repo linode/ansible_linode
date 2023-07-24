@@ -1,10 +1,8 @@
 "Contains the contents of the project `requirements.txt` file"
 
 REQUIREMENTS = """
-linode-api4>=5.5.1
+linode-api4>=5.7.0
 polling>=0.3.2
-types-requests==2.31.0.1
-ansible-specdoc>=0.0.13
-setuptools
+ansible-specdoc>=0.0.14
 
 """

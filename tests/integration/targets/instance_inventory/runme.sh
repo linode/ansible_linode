@@ -17,5 +17,9 @@ ANSIBLE_INVENTORY=filter.instance.yml ansible-playbook playbooks/test_inventory_
 ansible-playbook playbooks/create_inventory.yml --extra-vars "template=keyedgroups.instance.yml" "$@"
 ANSIBLE_INVENTORY=keyedgroups.instance.yml ansible-playbook playbooks/test_inventory_keyedgroups.yml "$@"
 
+# Test an inventory with a templated `api_token` field
+ansible-playbook playbooks/create_inventory.yml --extra-vars "template=templatetoken.instance.yml" "$@"
+ANSIBLE_INVENTORY=templatetoken.instance.yml ansible-playbook playbooks/test_inventory_templatetoken.yml "$@"
+
 # Clean up
 ansible-playbook playbooks/teardown.yml "$@"

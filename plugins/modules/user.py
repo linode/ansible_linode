@@ -395,6 +395,8 @@ class Module(LinodeModuleBase):
         # give/revoke grants declaratively
         put_body = self._merge_grants(raw_grants, param_grants)
 
+        # This request is made directly because we need to
+        # build the request body as JSON
         self.client.put(
             "/account/users/{0}/grants".format(user.id), data=put_body
         )

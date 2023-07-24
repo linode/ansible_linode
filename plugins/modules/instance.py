@@ -16,10 +16,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_event_poller import (
-    EventPoller,
-    wait_for_resource_free,
-)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     drop_empty_strings,
     filter_null_values,
@@ -653,14 +649,14 @@ class LinodeInstance(LinodeModuleBase):
     def _create_disk_register(self, **kwargs: Any) -> None:
         size = kwargs.pop("size")
 
-        create_poller = EventPoller(
-            self.client, "disks", "disk_create", entity_id=self._instance.id
+        create_poller = self.client.polling.event_poller_create(
+            "disks", "disk_create", entity_id=self._instance.id
         )
         self._instance.disk_create(size, **kwargs)
 
         # The disk must be ready before the next disk is created
         create_poller.wait_for_next_event_finished(
-            self._timeout_ctx.seconds_remaining
+            timeout=self._timeout_ctx.seconds_remaining
         )
 
         self.register_action("Created disk {0}".format(kwargs.get("label")))
@@ -778,14 +774,14 @@ class LinodeInstance(LinodeModuleBase):
         new_size = disk_params.pop("size")
 
         if disk.size != new_size:
-            resize_poller = EventPoller(
-                self.client, "disks", "disk_resize", entity_id=self._instance.id
+            resize_poller = self.client.polling.event_poller_create(
+                "disks", "disk_resize", entity_id=self._instance.id
             )
 
             disk.resize(new_size)
 
             resize_poller.wait_for_next_event_finished(
-                self._timeout_ctx.seconds_remaining
+                timeout=self._timeout_ctx.seconds_remaining
             )
 
             self.register_action(
@@ -912,8 +908,7 @@ class LinodeInstance(LinodeModuleBase):
         should_poll = self.module.params.get("wait")
 
         # Wait for instance to not be busy
-        wait_for_resource_free(
-            self.client,
+        self.client.polling.wait_for_entity_free(
             "linode",
             self._instance.id,
             self._timeout_ctx.seconds_remaining,
@@ -924,8 +919,7 @@ class LinodeInstance(LinodeModuleBase):
         event_poller = None
 
         if boot_status and self._instance.status != "running":
-            event_poller = EventPoller(
-                self.client,
+            event_poller = self.client.polling.event_poller_create(
                 "linode",
                 "linode_boot",
                 entity_id=self._instance.id,
@@ -937,8 +931,7 @@ class LinodeInstance(LinodeModuleBase):
             )
 
         if not boot_status and self._instance.status != "offline":
-            event_poller = EventPoller(
-                self.client,
+            event_poller = self.client.polling.event_poller_create(
                 "linode",
                 "linode_shutdown",
                 entity_id=self._instance.id,
@@ -952,7 +945,7 @@ class LinodeInstance(LinodeModuleBase):
         if should_poll and event_poller is not None:
             # Poll for the instance to be booted if necessary
             event_poller.wait_for_next_event_finished(
-                self._timeout_ctx.seconds_remaining
+                timeout=self._timeout_ctx.seconds_remaining
             )
 
     def _handle_instance_reboot(self) -> None:
@@ -962,8 +955,7 @@ class LinodeInstance(LinodeModuleBase):
         should_poll = self.module.params.get("wait")
 
         # Wait for instance to not be busy
-        wait_for_resource_free(
-            self.client,
+        self.client.polling.wait_for_entity_free(
             "linode",
             self._instance.id,
             self._timeout_ctx.seconds_remaining,
@@ -975,8 +967,8 @@ class LinodeInstance(LinodeModuleBase):
         if self._instance.status != "running":
             return
 
-        reboot_poller = EventPoller(
-            self.client, "linode", "linode_reboot", entity_id=self._instance.id
+        reboot_poller = self.client.polling.event_poller_create(
+            "linode", "linode_reboot", entity_id=self._instance.id
         )
 
         self._instance.reboot()
@@ -986,7 +978,7 @@ class LinodeInstance(LinodeModuleBase):
 
         if should_poll:
             reboot_poller.wait_for_next_event_finished(
-                self._timeout_ctx.seconds_remaining
+                timeout=self._timeout_ctx.seconds_remaining
             )
 
     def _handle_present(self) -> None:
@@ -999,7 +991,9 @@ class LinodeInstance(LinodeModuleBase):
         already_exists = self._instance is not None
 
         if not already_exists:
-            create_poller = EventPoller(self.client, "linode", "linode_create")
+            create_poller = self.client.polling.event_poller_create(
+                "linode", "linode_create"
+            )
 
             result = self._create_instance()
 
@@ -1012,7 +1006,7 @@ class LinodeInstance(LinodeModuleBase):
 
             if should_wait:
                 create_poller.wait_for_next_event_finished(
-                    self._timeout_ctx.seconds_remaining
+                    timeout=self._timeout_ctx.seconds_remaining
                 )
 
             if self.module.params.get("additional_ipv4") is not None:
@@ -1029,8 +1023,7 @@ class LinodeInstance(LinodeModuleBase):
         configs = self.module.params.get("configs") or []
 
         if len(configs) > 0 or len(disks) > 0:
-            wait_for_resource_free(
-                self.client,
+            self.client.polling.wait_for_entity_free(
                 "linode",
                 self._instance.id,
                 self._timeout_ctx.seconds_remaining,

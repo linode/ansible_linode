@@ -262,7 +262,7 @@ class LinodeLKECluster(LinodeModuleBase):
     def _create_cluster(self) -> Optional[LKECluster]:
         params = filter_null_values_recursive(self.module.params)
 
-        label = params.get("label")
+        label = params.pop("label")
 
         # We want HA to be a root-level attribute in ansible
         high_avail = params.pop("high_availability")
@@ -276,8 +276,15 @@ class LinodeLKECluster(LinodeModuleBase):
             self.register_action("Created LKE cluster {0}".format(label))
 
             # This is necessary to use fields not yet supported by linode_api4
-            result = self.client.post("/lke/clusters", data=params)
-            return LKECluster(self.client, result["id"])
+            result = self.client.lke.cluster_create(
+                params.pop("region"),
+                label,
+                params.pop("node_pools"),
+                params.pop("k8s_version"),
+                **params,
+            )
+
+            return result
         except Exception as exception:
             return self.fail(
                 msg="failed to create lke cluster: {0}".format(exception)
@@ -286,14 +293,13 @@ class LinodeLKECluster(LinodeModuleBase):
     def _cluster_put_updates(self, cluster: LKECluster) -> None:
         """Handles manual field updates for the current LKE cluster"""
 
-        args = {}
         should_update = False
 
         # version upgrade
         k8s_version = self.module.params.get("k8s_version")
 
         if cluster.k8s_version.id != k8s_version:
-            args["k8s_version"] = k8s_version
+            cluster.k8s_version = k8s_version
             should_update = True
 
             self.register_action(
@@ -304,19 +310,19 @@ class LinodeLKECluster(LinodeModuleBase):
 
         # HA upgrade
         high_avail = self.module.params.get("high_availability")
-        current_ha = cluster._raw_json["control_plane"]["high_availability"]
+        current_ha = cluster.control_plane.high_availability
 
         if current_ha != high_avail:
             if not high_avail:
-                self.fail("clusters cannot be downgraded from ha")
+                self.fail("Clusters cannot be downgraded from ha")
 
-            args["control_plane"] = {
+            cluster.control_plane = {
                 "high_availability": high_avail,
             }
             should_update = True
 
         if should_update:
-            self.client.put("/lke/clusters/{}".format(cluster.id), data=args)
+            cluster.save()
 
     def _update_cluster(self, cluster: LKECluster) -> None:
         """Handles all update functionality for the current LKE cluster"""
@@ -354,8 +360,7 @@ class LinodeLKECluster(LinodeModuleBase):
                 ):
                     if (
                         "autoscaler" in pool
-                        and current_pool._raw_json["autoscaler"]
-                        != pool["autoscaler"]
+                        and current_pool.autoscaler != pool["autoscaler"]
                     ):
                         self.register_action(
                             "Updated autoscaler for Node Pool {}".format(
@@ -363,14 +368,8 @@ class LinodeLKECluster(LinodeModuleBase):
                             )
                         )
 
-                        put_data = {"autoscaler": pool["autoscaler"]}
-
-                        self.client.put(
-                            "/lke/clusters/{0}/pools/{1}".format(
-                                cluster.id, current_pool.id
-                            ),
-                            data=put_data,
-                        )
+                        current_pool.autoscaler = pool.get("autoscaler")
+                        current_pool.save()
 
                     pools_handled[k] = True
                     should_keep[i] = True
@@ -388,7 +387,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
                 if existing_pool.type.id == pool["type"]:
                     # We found a match
-                    put_data = {}
+                    should_update = False
 
                     if existing_pool.count != pool["count"]:
                         self.register_action(
@@ -399,27 +398,23 @@ class LinodeLKECluster(LinodeModuleBase):
                             )
                         )
 
-                        put_data["count"] = pool["count"]
+                        existing_pool.count = pool["count"]
+                        should_update = True
 
                     if (
                         "autoscaler" in pool
-                        and existing_pool._raw_json["autoscaler"]
-                        != pool["autoscaler"]
+                        and existing_pool.autoscaler != pool["autoscaler"]
                     ):
                         self.register_action(
                             "Updated autoscaler for Node Pool {}".format(
                                 existing_pool.id
                             )
                         )
-                        put_data["autoscaler"] = pool["autoscaler"]
+                        existing_pool.autoscaler = pool["autoscaler"]
+                        should_update = True
 
-                    if len(put_data) > 0:
-                        self.client.put(
-                            "/lke/clusters/{0}/pools/{1}".format(
-                                cluster.id, existing_pool.id
-                            ),
-                            data=put_data,
-                        )
+                    if should_update:
+                        existing_pool.save()
 
                     should_keep[k] = True
 
@@ -433,8 +428,10 @@ class LinodeLKECluster(LinodeModuleBase):
                     )
                 )
 
-                self.client.post(
-                    "/lke/clusters/{0}/pools".format(cluster.id), data=pool
+                cluster.node_pool_create(
+                    pool["type"],
+                    pool["count"],
+                    autoscaler=pool.get("autoscaler"),
                 )
 
         for i, pool in enumerate(existing_pools):
@@ -469,9 +466,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
     def _populate_dashboard_url_no_poll(self, cluster: LKECluster) -> None:
         try:
-            self.results["dashboard_url"] = self.client.get(
-                "/lke/clusters/{}/dashboard".format(cluster.id)
-            )["url"]
+            self.results["dashboard_url"] = cluster.cluster_dashboard_url_view()
         except ApiError as error:
             if error.status != 503:
                 raise error
@@ -481,9 +476,9 @@ class LinodeLKECluster(LinodeModuleBase):
     def _populate_dashboard_url_poll(self, cluster: LKECluster) -> None:
         def condition() -> bool:
             try:
-                self.results["dashboard_url"] = self.client.get(
-                    "/lke/clusters/{}/dashboard".format(cluster.id)
-                )["url"]
+                self.results[
+                    "dashboard_url"
+                ] = cluster.cluster_dashboard_url_view()
             except ApiError as error:
                 if error.status != 503:
                     raise error
