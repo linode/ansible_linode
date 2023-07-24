@@ -36,6 +36,22 @@ except ImportError:
     # handled in module_utils.linode_common
     pass
 
+linode_instance_metadata_spec = {
+    "user_data": SpecField(
+        type=FieldType.string,
+        description=[
+            "The user-defined data to supply for the Linode through the Metadata service."
+        ],
+    ),
+    "user_data_encoded": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Whether the user_data field content is already encoded in Base64."
+        ],
+        default=False,
+    ),
+}
+
 linode_instance_disk_spec = {
     "authorized_keys": SpecField(
         type=FieldType.list,
@@ -363,6 +379,11 @@ linode_instance_spec = {
             'May not be provided if "image" is given.',
         ],
     ),
+    "metadata": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_metadata_spec,
+        description=["Fields relating to the Linode Metadata service."],
+    ),
     "backups_enabled": SpecField(
         type=FieldType.bool,
         description=["Enroll Instance in Linode Backup service."],
@@ -578,6 +599,13 @@ class LinodeInstance(LinodeModuleBase):
 
         ltype = params.pop("type")
         region = params.pop("region")
+        metadata = params.pop("metadata")
+
+        if metadata is not None:
+            params["metadata"] = self.client.linode.build_instance_metadata(
+                user_data=metadata.get("user_data"),
+                encode_user_data=not metadata.get("user_data_encoded"),
+            )
 
         result = {"instance": None, "root_pass": ""}
 

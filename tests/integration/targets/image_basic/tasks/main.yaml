@@ -17,6 +17,7 @@
         label: 'ansible-test-{{ r }}'
         disk_id: '{{ instance_create.disks.0.id }}'
         description: 'cool'
+        cloud_init: true
         state: present
       register: image_create
 
@@ -24,6 +25,7 @@
         that:
           - image_create.image.status == 'available'
           - image_create.image.description == 'cool'
+          - image_create.image.capabilities[0] == 'cloud-init'
 
     - name: Get info about the image by ID
       linode.cloud.image_info:
@@ -90,3 +92,5 @@
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
     LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'

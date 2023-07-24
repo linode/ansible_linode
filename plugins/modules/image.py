@@ -42,6 +42,10 @@ SPEC = {
         required=True,
         description=["The state of this Image."],
     ),
+    "cloud_init": SpecField(
+        type=FieldType.bool,
+        description=["Whether this image supports cloud-init."],
+    ),
     "description": SpecField(
         type=FieldType.string,
         editable=True,

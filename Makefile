@@ -4,6 +4,8 @@ DOCS_PATH ?= docs
 COLLECTION_VERSION ?=
 
 TEST_ARGS := -v
+TEST_API_URL := https://api.linode.com/
+TEST_API_VERSION := v4beta
 INTEGRATION_CONFIG := ./tests/integration/integration_config.yml
 
 clean:
@@ -72,3 +74,5 @@ else
 	exit 1;
 endif
 	@echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)
+	@echo "api_url: $(TEST_API_URL)" >> $(INTEGRATION_CONFIG)
+	@echo "api_version: $(TEST_API_VERSION)" >> $(INTEGRATION_CONFIG)
