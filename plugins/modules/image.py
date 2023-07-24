@@ -181,20 +181,13 @@ class Module(LinodeModuleBase):
 
         # Create an image upload
         try:
-            result = self.client.post(
-                "/images/upload",
-                data={
-                    "label": label,
-                    "description": description,
-                    "region": region,
-                },
+            image, upload_to = self.client.images.create_upload(
+                label, region, description=description
             )
         except Exception as exception:
             return self.fail(
                 msg="failed to create image upload: {0}".format(exception)
             )
-
-        upload_to = result["upload_to"]
 
         try:
             with open(source_file, "rb") as file:
@@ -210,7 +203,7 @@ class Module(LinodeModuleBase):
                 msg="failed to upload image: {0}".format(exception)
             )
 
-        image = Image(self.client, result["image"]["id"], json=result["image"])
+        image = Image(self.client, image.id, json=image._raw_json)
         return image
 
     def _create_image(self) -> Optional[Image]:

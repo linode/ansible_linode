@@ -209,13 +209,7 @@ class LinodeVolume(LinodeModuleBase):
             )
 
         # Perform the clone operation
-        vol = self.client.post(
-            "/volumes/{}/clone".format(source_id),
-            data={"label": params.get("label")},
-        )
-
-        cloned_volume = Volume(self.client, vol.get("id"))
-        cloned_volume._api_get()  # Force lazy-loading
+        cloned_volume = source_volume.clone(params.get("label"))
 
         return cloned_volume
 
