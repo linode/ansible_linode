@@ -256,7 +256,9 @@ def get_all_paginated(
         # Clamp the page size
         page_size = max(min(num_results, 100), 25)
 
-    while current_page <= num_pages and (num_results is None or len(result) < num_results):
+    while current_page <= num_pages and (
+        num_results is None or len(result) < num_results
+    ):
         response = client.get(
             endpoint + "?page={}&page_size={}".format(current_page, page_size),
             filters=filters,
