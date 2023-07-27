@@ -252,16 +252,11 @@ def get_all_paginated(
     page_size = 100
     num_pages = 1
 
-    # Return whether the number of results meets the
-    # user-specified result cap.
-    def results_met_cap():
-        return num_results is None or len(result) >= num_results
-
     if num_results is not None and num_results < page_size:
         # Clamp the page size
         page_size = max(min(num_results, 100), 25)
 
-    while current_page <= num_pages and not results_met_cap():
+    while current_page <= num_pages and (num_results is None or len(result) < num_results):
         response = client.get(
             endpoint + "?page={}&page_size={}".format(current_page, page_size),
             filters=filters,
@@ -272,7 +267,7 @@ def get_all_paginated(
 
         result.extend(response["data"])
 
-        if results_met_cap():
+        if num_results is not None and len(result) >= num_results:
             break
 
         current_page += 1
