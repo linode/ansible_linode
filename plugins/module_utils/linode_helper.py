@@ -1,6 +1,4 @@
 """This module contains helper functions for various Linode modules."""
-import math
-import sys
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
 
 import linode_api4
@@ -254,15 +252,16 @@ def get_all_paginated(
     page_size = 100
     num_pages = 1
 
-    # Don't cap the number of results if
-    # num_results is not defined.
-    num_results = sys.maxsize if num_results is None else num_results
+    # Return whether the number of results meets the
+    # user-specified result cap.
+    def results_met_cap():
+        return num_results is None or len(result) >= num_results
 
     if num_results is not None and num_results < page_size:
         # Clamp the page size
         page_size = max(min(num_results, 100), 25)
 
-    while current_page <= num_pages and len(result) < num_results:
+    while current_page <= num_pages and not results_met_cap():
         response = client.get(
             endpoint + "?page={}&page_size={}".format(current_page, page_size),
             filters=filters,
@@ -273,7 +272,7 @@ def get_all_paginated(
 
         result.extend(response["data"])
 
-        if len(result) >= num_results:
+        if results_met_cap():
             break
 
         current_page += 1
