@@ -266,6 +266,11 @@ def get_all_paginated(
         if "data" not in response or "page" not in response:
             raise Exception("Invalid list response")
 
+        # There are no pages for this request.
+        # Break early to avoid division by zero error.
+        if response["pages"] == 0:
+            break
+
         if num_pages == -1:
             if num_results is not None:
                 num_pages = math.floor(num_results / response["pages"])

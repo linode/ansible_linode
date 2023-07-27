@@ -26,6 +26,18 @@
           - filter.images | length == 1
           - filter.images[0].id == 'linode/alpine3.16'
 
+    - name: Resolve an empty list of images
+      linode.cloud.image_list:
+        filters:
+          - name: vendor
+            values: DefinitelyRealVendor
+      register: filter_empty
+
+    - assert:
+        that:
+          - filter_empty.images | length == 0
+
+
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
     LINODE_API_TOKEN: '{{ api_token }}'
