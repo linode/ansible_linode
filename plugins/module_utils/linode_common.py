@@ -2,6 +2,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import importlib.metadata
 from typing import Any, Type
 
 import pkg_resources
@@ -258,14 +259,13 @@ class LinodeModuleBase:
 
         for req in parsed:
             try:
-                installed_pkgs = pkg_resources.require(req.key)
-            except pkg_resources.DistributionNotFound:
+                installed_version = importlib.metadata.version(req.key)
+            except importlib.metadata.PackageNotFoundError:
                 self.fail(
                     msg=f"Python package {req.key} is not installed. "
                     f"To install the latest dependencies, run `{REQUIREMENTS_INSTALL_COMMAND}`"
                 )
 
-            installed_version = installed_pkgs[0].version
             if installed_version not in req:
                 self.fail(
                     msg=f"Python package {req.key} is out of date "

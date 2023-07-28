@@ -25,7 +25,7 @@ class TestModuleBase:
         with patch(
                 "ansible_collections.linode.cloud.plugins.module_utils.linode_common.REQUIREMENTS",
                 """test_dep>=5.5.5"""
-        ), patch("pkg_resources.require", lambda pkg: [SimpleNamespace(version="5.5.4")]):
+        ), patch("importlib.metadata.version", lambda pkg: "5.5.4"):
             test_module_base._validate_dependencies()
 
     def test_dep_missing(self, test_module_base):
@@ -40,12 +40,12 @@ class TestModuleBase:
         with patch(
                 "ansible_collections.linode.cloud.plugins.module_utils.linode_common.REQUIREMENTS",
                 """fake_dep>=5.5.5"""
-        ), patch("pkg_resources.require", lambda pkg: [SimpleNamespace(version="5.5.4")]):
+        ), patch("importlib.metadata.version", lambda pkg: "5.5.4"):
             test_module_base._validate_dependencies()
 
     def test_dep_valid(self, test_module_base):
         with patch(
                 "ansible_collections.linode.cloud.plugins.module_utils.linode_common.REQUIREMENTS",
                 """test_dep>=5.5.5"""
-        ), patch("pkg_resources.require", lambda pkg: [SimpleNamespace(version="5.5.5")]):
+        ), patch("importlib.metadata.version", lambda pkg: "5.5.5"):
             test_module_base._validate_dependencies()
