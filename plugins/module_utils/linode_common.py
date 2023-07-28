@@ -5,7 +5,6 @@ from __future__ import absolute_import, division, print_function
 import importlib.metadata
 from typing import Any, Type
 
-import packaging.requirements
 import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_deps import (
     REQUIREMENTS,
@@ -23,6 +22,13 @@ except Exception:
     ANSIBLE_VERSION = "unknown"
 
 from ansible.module_utils.basic import AnsibleModule, env_fallback
+
+try:
+    import packaging.requirements
+
+    HAS_PACKAGING = True
+except ImportError:
+    HAS_PACKAGING = False
 
 try:
     from linode_api4 import ApiError
@@ -254,6 +260,13 @@ class LinodeModuleBase:
         return self._client
 
     def _validate_dependencies(self):
+        # We need packaging to validate these dependencies
+        if not HAS_PACKAGING:
+            self.fail(
+                msg=f"This collection requires 'packaging' to be installed. "
+                f"To install the latest dependencies, run `{REQUIREMENTS_INSTALL_COMMAND}`"
+            )
+
         # Parse the embedded requirements file
         lines = REQUIREMENTS.splitlines()
 
