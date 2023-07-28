@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function
 import importlib.metadata
 from typing import Any, Type
 
-import pkg_resources
+import packaging.requirements
 import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_deps import (
     REQUIREMENTS,
@@ -255,20 +255,25 @@ class LinodeModuleBase:
 
     def _validate_dependencies(self):
         # Parse the embedded requirements file
-        parsed = pkg_resources.parse_requirements(REQUIREMENTS)
+        lines = REQUIREMENTS.splitlines()
 
-        for req in parsed:
+        for line in lines:
+            if line == "":
+                continue
+
+            req = packaging.requirements.Requirement(line)
+
             try:
-                installed_version = importlib.metadata.version(req.key)
+                installed_version = importlib.metadata.version(req.name)
             except importlib.metadata.PackageNotFoundError:
                 self.fail(
-                    msg=f"Python package {req.key} is not installed. "
+                    msg=f"Python package {req.name} is not installed. "
                     f"To install the latest dependencies, run `{REQUIREMENTS_INSTALL_COMMAND}`"
                 )
 
-            if installed_version not in req:
+            if not req.specifier.contains(installed_version):
                 self.fail(
-                    msg=f"Python package {req.key} is out of date "
-                    f"(Got {req.key}=={installed_version}; expected {req}). "
+                    msg=f"Python package {req.name} is out of date "
+                    f"(Got {req.name}=={installed_version}; expected {req}). "
                     f"To install the latest dependencies, run `{REQUIREMENTS_INSTALL_COMMAND}`"
                 )

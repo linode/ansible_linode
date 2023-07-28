@@ -14,8 +14,8 @@ def test_module_base():
 class TestModuleBase:
     def test_dep_out_of_date(self, test_module_base):
         def fail_handler(msg=None):
-            assert "Python package test-dep is out of date " \
-                   "(Got test-dep==5.5.4; expected test_dep>=5.5.5). " \
+            assert "Python package test_dep is out of date " \
+                   "(Got test_dep==5.5.4; expected test_dep>=5.5.5). " \
                    "To install the latest dependencies, run " \
                    "`pip install --upgrade -r " \
                    "https://raw.githubusercontent.com/linode/" \
@@ -30,8 +30,8 @@ class TestModuleBase:
 
     def test_dep_missing(self, test_module_base):
         def fail_handler(msg=None):
-            assert "Python package fake-dep is out of date " \
-                   "(Got fake-dep==5.5.4; expected fake_dep>=5.5.5). " \
+            assert "Python package fake_dep is out of date " \
+                   "(Got fake_dep==5.5.4; expected fake_dep>=5.5.5). " \
                    "To install the latest dependencies, run " \
                    "`pip install --upgrade -r https://raw.githubusercontent.com" \
                    "/linode/ansible_linode/main/requirements.txt`" in msg
