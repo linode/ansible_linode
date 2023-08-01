@@ -571,7 +571,7 @@ class LinodeInstance(LinodeModuleBase):
         return {id_key: device.id}
 
     @staticmethod
-    def _filter_remote_interface(interface: Dict[str, Any]):
+    def _filter_remote_interface(interface: Dict[str, Any]) -> Dict[str, Any]:
         """
         This method serves as a temporary workaround for a
         known API quirk that causes null IPAM addresses to be
