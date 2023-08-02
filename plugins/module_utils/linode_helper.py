@@ -1,5 +1,4 @@
 """This module contains helper functions for various Linode modules."""
-import math
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
 
 import linode_api4
@@ -251,13 +250,15 @@ def get_all_paginated(
     result = []
     current_page = 1
     page_size = 100
-    num_pages = -1
+    num_pages = 1
 
     if num_results is not None and num_results < page_size:
         # Clamp the page size
         page_size = max(min(num_results, 100), 25)
 
-    while current_page <= num_pages or num_pages == -1:
+    while current_page <= num_pages and (
+        num_results is None or len(result) < num_results
+    ):
         response = client.get(
             endpoint + "?page={}&page_size={}".format(current_page, page_size),
             filters=filters,
@@ -266,13 +267,11 @@ def get_all_paginated(
         if "data" not in response or "page" not in response:
             raise Exception("Invalid list response")
 
-        if num_pages == -1:
-            if num_results is not None:
-                num_pages = math.floor(num_results / response["pages"])
-            else:
-                num_pages = math.floor(response["results"] / response["pages"])
-
         result.extend(response["data"])
+
+        if num_results is not None and len(result) >= num_results:
+            break
+
         current_page += 1
 
     if num_results is not None:
