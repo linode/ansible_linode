@@ -1,0 +1,52 @@
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'The hash value of the commit.'
+        required: true
+      pull_request_number:
+        description: 'The number of the PR.'
+        required: false
+
+name: Run Unit test
+
+jobs:
+  integration-fork:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .ansible/collections/ansible_collections/linode/cloud
+
+    if: github.event_name == 'workflow_dispatch' && inputs.sha != ''
+    steps:
+      # Check out merge commit
+      - name: Checkout PR
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.sha }}
+          path: .ansible/collections/ansible_collections/linode/cloud
+
+      # Install deps
+      - name: update packages
+        run: sudo apt-get update -y
+
+      - name: install make
+        run: sudo apt-get install -y build-essential
+
+      - name: setup python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: install dependencies
+        run: pip3 install -r requirements-dev.txt -r requirements.txt
+
+      - name: install ansible dependencies
+        run: ansible-galaxy collection install amazon.aws:==6.0.1
+
+      - name: install collection
+        run: make install
+
+      - name: Run unit tests
+        run: |
+          make unittest
