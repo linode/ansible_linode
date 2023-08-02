@@ -1,8 +1,7 @@
 import unittest
 
 from linode_api4 import ApiError
-from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import validate_allow_list, validate_shared_db_input, call_protected_provisioning
-
+from plugins.module_utils.linode_database_shared import validate_allow_list, validate_shared_db_input, call_protected_provisioning
 
 class LinodeDatabaseSharedTest(unittest.TestCase):
 

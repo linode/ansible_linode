@@ -1,5 +1,5 @@
 import unittest
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+from plugins.module_utils.linode_helper import (
     dict_select_spec,
     filter_null_values,
     drop_empty_strings,

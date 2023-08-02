@@ -64,7 +64,7 @@ test: integration-test
 testall: create-integration-config
 	./scripts/test_all.sh
 
-testunit:
+unittest:
 	python -m pytest tests/unit/
 
 create-integration-config:
