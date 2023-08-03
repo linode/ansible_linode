@@ -66,9 +66,10 @@ class LinodeHelperTest(unittest.TestCase):
         params = {"field1": "value1", "field4": "value4"}
         with self.assertRaises(Exception) as context:
             validate_required(required_fields, params)
-        self.assertEqual(
-            str(context.exception), "missing fields: field3, field2"
-        )
+
+        exception_fields = str(context.exception)
+
+        self.assertTrue("field2" in exception_fields and "field3" in exception_fields)
 
     def test_validate_required_with_all_fields(self):
         required_fields = {"field1", "field2", "field3"}
