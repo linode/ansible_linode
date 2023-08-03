@@ -8,14 +8,9 @@ name: Run Unit test
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
-        with:
-          path: .ansible/collections/ansible_collections/linode/cloud
 
       - name: update packages
         run: sudo apt-get update -y
@@ -31,13 +26,6 @@ jobs:
       - name: install dependencies
         run: pip3 install -r requirements-dev.txt -r requirements.txt
 
-      - name: install ansible dependencies
-        run: ansible-galaxy collection install amazon.aws:==6.0.1
-
-      - name: install collection
-        run: make install
-
       - name: Run unit tests
-        working-directory: /home/runner/work/ansible_linode/ansible_linode  # Set working directory
         run: |
           make unittest
