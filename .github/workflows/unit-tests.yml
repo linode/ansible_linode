@@ -1,0 +1,31 @@
+on:
+  workflow_dispatch: null
+  push:
+  pull_request:
+
+name: Run Unit test
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: update packages
+        run: sudo apt-get update -y
+
+      - name: install make
+        run: sudo apt-get install -y build-essential
+
+      - name: setup python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: install dependencies
+        run: pip3 install -r requirements-dev.txt -r requirements.txt
+
+      - name: Run unit tests
+        run: |
+          make unittest
