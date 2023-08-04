@@ -20,7 +20,9 @@
       assert:
         that:
           - create.changed
-          - create.instance.has_user_data == True
+          # This check is temporarily disabled until the corresponding
+          # API feature is available.
+          # - create.instance.has_user_data == True
 
   always:
     - ignore_errors: yes
