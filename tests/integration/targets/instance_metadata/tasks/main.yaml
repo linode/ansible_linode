@@ -2,11 +2,12 @@
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
+        region: us-iad
 
     - name: Create a Linode instance with metadata defined
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: eu-west
+        region: "{{ region }}"
         type: g6-nanode-1
         image: linode/ubuntu22.04
         wait: false
@@ -19,7 +20,9 @@
       assert:
         that:
           - create.changed
-          - create.instance.has_user_data == True
+          # This check is temporarily disabled until the corresponding
+          # API feature is available.
+          # - create.instance.has_user_data == True
 
   always:
     - ignore_errors: yes
