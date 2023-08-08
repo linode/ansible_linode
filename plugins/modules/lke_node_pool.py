@@ -26,7 +26,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import LKENodePool
+from linode_api4 import LKECluster, LKENodePool
 
 linode_lke_pool_autoscaler = {
     "enabled": SpecField(
@@ -224,21 +224,14 @@ class LinodeLKENodePool(LinodeModuleBase):
             for key in ["api_token", "api_version"]:
                 params.pop(key)
 
-            pool = self.client.post(
-                "/lke/clusters/{0}/pools".format(cluster_id), data=params
+            pool = LKECluster(self.client, cluster_id).node_pool_create(
+                params.pop("type"), params.pop("count"), **params
             )
+            self.register_action("Created node pool {}".format(pool.id))
 
-            pool_obj = LKENodePool(
-                self.client, pool["id"], cluster_id, json=pool
-            )
-
-            pool_obj._api_get()
-
-            self.register_action("Created node pool {}".format(pool_obj.id))
-
-            return pool_obj
+            return pool
         except Exception as exception:
-            return self.fail(
+            self.fail(
                 msg="failed to create lke cluster node pool for cluster {0}: {1}".format(
                     self.module.params.get("cluster_id"), exception
                 )
@@ -246,7 +239,6 @@ class LinodeLKENodePool(LinodeModuleBase):
 
     def _update_pool(self, pool: LKENodePool) -> LKENodePool:
         params = filter_null_values(self.module.params)
-        put_data = {}
 
         cluster_id = params.pop("cluster_id")
         new_autoscaler = (
@@ -263,26 +255,24 @@ class LinodeLKENodePool(LinodeModuleBase):
                 )
             )
 
+        should_update = False
+
         if pool.count != new_count:
             self.register_action(
                 "Resized pool from {} -> {}".format(pool.count, new_count)
             )
 
-            put_data["count"] = new_count
+            pool.count = new_count
+            should_update = True
 
-        if (
-            new_autoscaler is not None
-            and pool._raw_json["autoscaler"] != new_autoscaler
-        ):
+        if new_autoscaler is not None and pool.autoscaler != new_autoscaler:
             self.register_action("Updated autoscaler for Node Pool")
-            put_data["autoscaler"] = new_autoscaler
+            pool.autoscaler = new_autoscaler
+            should_update = True
 
-        if len(put_data) > 0:
+        if should_update:
             try:
-                self.client.put(
-                    "/lke/clusters/{0}/pools/{1}".format(cluster_id, pool.id),
-                    data=put_data,
-                )
+                pool.save()
             except Exception as exception:
                 return self.fail(
                     msg="failed to update node pool for cluster {0}: {1}".format(

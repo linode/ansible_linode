@@ -119,6 +119,11 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             except KeyError:
                 pass
 
+        if self.templar.is_template(api_token):
+            api_token = self.templar.template(
+                variable=api_token, disable_lookups=False
+            )
+
         if api_token is None:
             raise AnsibleError(
                 (

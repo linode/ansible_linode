@@ -61,6 +61,16 @@ specdoc_examples = ['''
           sdb:
             disk_label: swap
         state: present''', '''
+- name: Create a Linode Instance with custom user data.
+  linode.cloud.instance:
+    label: 'my-metadata-instance'
+    region: us-southeast
+    type: g6-standard-1
+    image: linode/ubuntu22.04
+    root_pass: verysecurepassword!!!
+    metadata:
+        user_data: myuserdata
+    state: present''', '''
 - name: Delete a Linode instance.
   linode.cloud.instance:
     label: my-linode
@@ -84,6 +94,7 @@ result_instance_samples = ['''{
   },
   "created": "2018-01-01T00:01:01",
   "group": "Linode-Group",
+  "has_user_data": true,
   "hypervisor": "kvm",
   "id": 123,
   "image": "linode/debian10",

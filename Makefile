@@ -4,6 +4,8 @@ DOCS_PATH ?= docs
 COLLECTION_VERSION ?=
 
 TEST_ARGS := -v
+TEST_API_URL := https://api.linode.com/
+TEST_API_VERSION := v4beta
 INTEGRATION_CONFIG := ./tests/integration/integration_config.yml
 
 clean:
@@ -62,6 +64,9 @@ test: integration-test
 testall: create-integration-config
 	./scripts/test_all.sh
 
+unittest:
+	python -m pytest tests/unit/
+
 create-integration-config:
 ifneq ("${LINODE_TOKEN}", "")
 	@echo "api_token: ${LINODE_TOKEN}" > $(INTEGRATION_CONFIG);
@@ -72,3 +77,5 @@ else
 	exit 1;
 endif
 	@echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)
+	@echo "api_url: $(TEST_API_URL)" >> $(INTEGRATION_CONFIG)
+	@echo "api_version: $(TEST_API_VERSION)" >> $(INTEGRATION_CONFIG)

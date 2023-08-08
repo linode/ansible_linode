@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    LINODE_COMMON_ARGS,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -366,9 +367,12 @@ class Module(LinodeModuleBase):
         username = params.pop("username")
         email = params.pop("email")
 
-        for key in {"api_token", "api_version", "state", "grants", "ua_prefix"}:
-            if key in params:
-                params.pop(key)
+        params = {
+            k: v
+            for k, v in params.items()
+            if k
+            not in list(LINODE_COMMON_ARGS.keys()) + ["grants", "ua_prefix"]
+        }
 
         try:
             return self.client.account.user_create(email, username, **params)
@@ -395,6 +399,8 @@ class Module(LinodeModuleBase):
         # give/revoke grants declaratively
         put_body = self._merge_grants(raw_grants, param_grants)
 
+        # This request is made directly because we need to
+        # build the request body as JSON
         self.client.put(
             "/account/users/{0}/grants".format(user.id), data=put_body
         )

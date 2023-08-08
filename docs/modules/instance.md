@@ -78,6 +78,19 @@ Manage Linode Instances, Configs, and Disks.
 ```
 
 ```yaml
+- name: Create a Linode Instance with custom user data.
+  linode.cloud.instance:
+    label: 'my-metadata-instance'
+    region: us-southeast
+    type: g6-standard-1
+    image: linode/ubuntu22.04
+    root_pass: verysecurepassword!!!
+    metadata:
+        user_data: myuserdata
+    state: present
+```
+
+```yaml
 - name: Delete a Linode instance.
   linode.cloud.instance:
     label: my-linode
@@ -106,6 +119,7 @@ Manage Linode Instances, Configs, and Disks.
 | [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema).  **(Conflicts With: `disks`,`configs`)** |
 | `booted` | <center>`bool`</center> | <center>Optional</center> | Whether the new Instance should be booted. This will default to True if the Instance is deployed from an Image or Backup.   |
 | `backup_id` | <center>`int`</center> | <center>Optional</center> | The id of the Backup to restore to the new Instance. May not be provided if "image" is given.   |
+| [`metadata` (sub-options)](#metadata) | <center>`dict`</center> | <center>Optional</center> | Fields relating to the Linode Metadata service.   |
 | `backups_enabled` | <center>`bool`</center> | <center>Optional</center> | Enroll Instance in Linode Backup service.   |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status "running" before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `240`)** |
@@ -236,6 +250,13 @@ Manage Linode Instances, Configs, and Disks.
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
 
+### metadata
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `user_data` | <center>`str`</center> | <center>Optional</center> | The user-defined data to supply for the Linode through the Metadata service.   |
+| `user_data_encoded` | <center>`bool`</center> | <center>Optional</center> | Whether the user_data field content is already encoded in Base64.  **(Default: `False`)** |
+
 ### additional_ipv4
 
 | Field     | Type | Required | Description                                                                  |
@@ -266,6 +287,7 @@ Manage Linode Instances, Configs, and Disks.
           },
           "created": "2018-01-01T00:01:01",
           "group": "Linode-Group",
+          "has_user_data": true,
           "hypervisor": "kvm",
           "id": 123,
           "image": "linode/debian10",

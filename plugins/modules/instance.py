@@ -36,6 +36,22 @@ except ImportError:
     # handled in module_utils.linode_common
     pass
 
+linode_instance_metadata_spec = {
+    "user_data": SpecField(
+        type=FieldType.string,
+        description=[
+            "The user-defined data to supply for the Linode through the Metadata service."
+        ],
+    ),
+    "user_data_encoded": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Whether the user_data field content is already encoded in Base64."
+        ],
+        default=False,
+    ),
+}
+
 linode_instance_disk_spec = {
     "authorized_keys": SpecField(
         type=FieldType.list,
@@ -363,6 +379,11 @@ linode_instance_spec = {
             'May not be provided if "image" is given.',
         ],
     ),
+    "metadata": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_metadata_spec,
+        description=["Fields relating to the Linode Metadata service."],
+    ),
     "backups_enabled": SpecField(
         type=FieldType.bool,
         description=["Enroll Instance in Linode Backup service."],
@@ -549,6 +570,18 @@ class LinodeInstance(LinodeModuleBase):
 
         return {id_key: device.id}
 
+    @staticmethod
+    def _filter_remote_interface(interface: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        This method serves as a temporary workaround for a
+        known API quirk that causes null IPAM addresses to be
+        returned as 222.
+        """
+        if interface["ipam_address"] == "222":
+            del interface["ipam_address"]
+
+        return interface
+
     def _compare_param_to_device(
         self, device_param: Dict[str, Any], device: Union[Disk, Volume]
     ) -> bool:
@@ -578,6 +611,13 @@ class LinodeInstance(LinodeModuleBase):
 
         ltype = params.pop("type")
         region = params.pop("region")
+        metadata = params.pop("metadata")
+
+        if metadata is not None:
+            params["metadata"] = self.client.linode.build_instance_metadata(
+                user_data=metadata.get("user_data"),
+                encode_user_data=not metadata.get("user_data_encoded"),
+            )
 
         result = {"instance": None, "root_pass": ""}
 
@@ -674,7 +714,8 @@ class LinodeInstance(LinodeModuleBase):
 
         param_interfaces = [drop_empty_strings(v) for v in param_interfaces]
         remote_interfaces = [
-            drop_empty_strings(v._serialize()) for v in config.interfaces
+            drop_empty_strings(self._filter_remote_interface(v._serialize()))
+            for v in config.interfaces
         ]
 
         if remote_interfaces == param_interfaces:
@@ -704,7 +745,12 @@ class LinodeInstance(LinodeModuleBase):
             # Special handling for the ConfigInterface type
             if key == "interfaces":
                 old_value = filter_null_values_recursive(
-                    [drop_empty_strings(v._serialize()) for v in old_value]
+                    [
+                        drop_empty_strings(
+                            self._filter_remote_interface(v._serialize())
+                        )
+                        for v in old_value
+                    ]
                 )
                 new_value = filter_null_values_recursive(
                     [drop_empty_strings(v) for v in new_value]

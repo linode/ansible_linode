@@ -131,7 +131,9 @@ Once the Linode Ansible collection is installed, it can be referenced by its [Fu
 In order to use this collection, the `LINODE_API_TOKEN` environment variable must be set to a valid Linode API v4 token. 
 Alternatively, you can pass your Linode API v4 token into the `api_token` option for each Linode module you reference.
 
-The `LINODE_UA_PREFIX` or the `ua_prefix` module option can be used to specify a custom User-Agent prefix.
+The `LINODE_UA_PREFIX` environment variable or the `ua_prefix` module option can be used to specify a custom User-Agent prefix.
+
+The `LINODE_API_URL` environment variable pr the `api_url` module option can be used to specify a custom API base url.
 
 #### Example Playbook
 ```yaml

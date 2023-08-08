@@ -50,6 +50,8 @@ COLLECTION_USER_AGENT = (
     f"Ansible/{ANSIBLE_VERSION}"
 )
 
+
+#
 LINODE_COMMON_ARGS = {
     "api_token": {
         "type": "str",
@@ -61,6 +63,11 @@ LINODE_COMMON_ARGS = {
         "type": "str",
         "fallback": (env_fallback, ["LINODE_API_VERSION"]),
         "default": "v4",
+    },
+    "api_url": {
+        "type": "str",
+        "fallback": (env_fallback, ["LINODE_API_URL"]),
+        "default": "https://api.linode.com/",
     },
     "state": {
         "type": "str",
@@ -233,6 +240,7 @@ class LinodeModuleBase:
         if not self._client:
             api_token = self.module.params["api_token"]
             api_version = self.module.params["api_version"]
+            api_url = self.module.params["api_url"]
 
             user_agent = COLLECTION_USER_AGENT
 
@@ -243,7 +251,7 @@ class LinodeModuleBase:
 
             self._client = LinodeClient(
                 api_token,
-                base_url="https://api.linode.com/{0}".format(api_version),
+                base_url=f"{api_url}{api_version}",
                 user_agent=user_agent,
                 retry_rate_limit_interval=RETRY_INTERVAL_SECONDS,
                 retry_max=MAX_RETRIES,

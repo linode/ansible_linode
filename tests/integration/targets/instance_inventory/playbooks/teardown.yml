@@ -24,3 +24,4 @@
         - filter.instance.yml
         - nofilter.instance.yml
         - keyedgroups.instance.yml
+        - templatetoken.instance.yml
