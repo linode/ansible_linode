@@ -81,18 +81,10 @@ class IPShareModule(LinodeModuleBase):
             )
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for checking shared IPs."""
+        """Entrypoint for configuring shared IPs for a Linode."""
         linode_id = self.module.params.get("linode_id")
-        ips = self.module.params.get("ips")
-        
-        linode = Instance(self.client, linode_id)
 
-        linode_ips = linode.ips
-
-        for ip in ips:
-            if ip not in linode_ips.ipv4.shared  and ip not in linode_ips.ipv6.ranges:
-                self._share_ip_addresses()
-                break
+        self._share_ip_addresses()
 
         linode = Instance(self.client, linode_id)
 
