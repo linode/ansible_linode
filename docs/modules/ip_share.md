@@ -1,6 +1,6 @@
 # ip_share
 
-Manage Linode shared IPs.
+Manage the Linode shared IPs.
 
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -9,8 +9,8 @@ Manage Linode shared IPs.
 ## Examples
 
 ```yaml
-- name: Configure IPs to share with a Linode.
-  linode.cloud.ip_share::
+- name: Configure the Linode shared IPs.
+  linode.cloud.ip_share:
     linode_id: 12345
     ips: ["192.0.2.1", "2001:db8:3c4d:15::"]
 ```
@@ -20,8 +20,8 @@ Manage Linode shared IPs.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `linode_id` | <center>`int`</center> | <center>Required</center> | The ID of the primary Linode that the addresses will be shared with. |
-| `ips` | <center>`[]str`</center> | <center>Required</center> | A list of secondary Linode IPs to share with the primary Linode. |
+| `ips` | <center>`list`</center> | <center>**Required**</center> | A list of secondary Linode IPs to share with the primary Linode.   |
+| `linode_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the primary Linode that the addresses will be shared with.   |
 
 ## Return Values
 
@@ -31,11 +31,11 @@ Manage Linode shared IPs.
         ```json
         [
           {
-            "ips": [
-                "143.42.6.95"
-            ],
-            "linode_id": 48531373
+            "linode_id": 12345,
+            "ips": ["192.0.2.1", "2001:db8:3c4d:15::"],
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#ip-addresses-share) for a list of returned fields
+    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#ip-addresses-share__response-samples) for a list of returned fields
+
+

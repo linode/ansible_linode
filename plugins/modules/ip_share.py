@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, Optional, List
+from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip_share as ip_share_docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
@@ -28,12 +28,16 @@ ip_share_spec = {
     "ips": SpecField(
         type=FieldType.list,
         required=True,
-        description=["A list of secondary Linode IPs to share with the primary Linode."],
+        description=[
+            "A list of secondary Linode IPs to share with the primary Linode."
+        ],
     ),
     "linode_id": SpecField(
         type=FieldType.integer,
         required=True,
-        description=["The ID of the primary Linode that the addresses will be shared with."],
+        description=[
+            "The ID of the primary Linode that the addresses will be shared with."
+        ],
     ),
 }
 
@@ -43,15 +47,17 @@ SPECDOC_META = SpecDocMeta(
     author=global_authors,
     options=ip_share_spec,
     examples=ip_share_docs.specdoc_examples,
-    return_values=dict(
-        ip_share_stats=SpecReturnValue(
-            description="The IPs that share with the Linode.",
-            docs_url="https://www.linode.com/docs/api/networking/#ip-addresses-share__response-samples",
+    return_values={
+        "ip_share_stats": SpecReturnValue(
+            description="The Linode IP share info in JSON serialized form",
+            docs_url="https://www.linode.com/docs/api/networking/"
+            + "#ip-addresses-share__response-samples",
             type=FieldType.dict,
             sample=ip_share_docs.result_ip_share_stats_samples,
-        ),
-    )
+        )
+    },
 )
+
 
 class IPShareModule(LinodeModuleBase):
     """Module for configuring Linode shared IPs."""
@@ -70,8 +76,8 @@ class IPShareModule(LinodeModuleBase):
         """
         try:
             return self.client.networking.ip_addresses_share(
-                ips = self.module.params.get("ips"),
-                linode = self.module.params.get("linode_id"),
+                ips=self.module.params.get("ips"),
+                linode=self.module.params.get("linode_id"),
             )
         except Exception as exception:
             return self.fail(
@@ -89,7 +95,9 @@ class IPShareModule(LinodeModuleBase):
         linode = Instance(self.client, linode_id)
 
         self.results["linode_id"] = linode_id
-        self.results["ips"] = [s.address for s in linode.ips.ipv4.shared] + linode.ips.ipv6.ranges
+        self.results["ips"] = [
+            s.address for s in linode.ips.ipv4.shared
+        ] + linode.ips.ipv6.ranges
 
         return self.results
 
@@ -101,5 +109,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
