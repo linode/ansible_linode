@@ -45,6 +45,7 @@ SPEC = {
     "cloud_init": SpecField(
         type=FieldType.bool,
         description=["Whether this image supports cloud-init."],
+        default=False,
     ),
     "description": SpecField(
         type=FieldType.string,
@@ -162,10 +163,14 @@ class Module(LinodeModuleBase):
         disk_id = self.module.params.get("disk_id")
         label = self.module.params.get("label")
         description = self.module.params.get("description")
+        cloud_init = self.module.params.get("cloud_init")
 
         try:
-            return self.client.image_create(
-                disk_id, label=label, description=description
+            return self.client.images.create(
+                disk_id,
+                label=label,
+                description=description,
+                cloud_init=cloud_init,
             )
         except Exception as exception:
             return self.fail(
@@ -177,6 +182,7 @@ class Module(LinodeModuleBase):
         description = self.module.params.get("description")
         region = self.module.params.get("region")
         source_file = self.module.params.get("source_file")
+        cloud_init = self.module.params.get("cloud_init")
 
         if not os.path.exists(source_file):
             return self.fail(
@@ -186,7 +192,7 @@ class Module(LinodeModuleBase):
         # Create an image upload
         try:
             image, upload_to = self.client.images.create_upload(
-                label, region, description=description
+                label, region, description=description, cloud_init=cloud_init
             )
         except Exception as exception:
             return self.fail(

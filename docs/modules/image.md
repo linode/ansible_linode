@@ -40,7 +40,7 @@ Manage a Linode Image.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | This Image's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this Image.  **(Choices: `present`, `absent`)** |
-| `cloud_init` | <center>`bool`</center> | <center>Optional</center> | Whether this image supports cloud-init.   |
+| `cloud_init` | <center>`bool`</center> | <center>Optional</center> | Whether this image supports cloud-init.  **(Default: `False`)** |
 | `description` | <center>`str`</center> | <center>Optional</center> | A description for the Image.  **(Updatable)** |
 | `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to clone this image from.  **(Conflicts With: `source_file`)** |
 | `recreate` | <center>`bool`</center> | <center>Optional</center> | If true, the image with the given label will be deleted and recreated  **(Default: `False`)** |
