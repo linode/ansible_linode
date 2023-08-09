@@ -570,6 +570,18 @@ class LinodeInstance(LinodeModuleBase):
 
         return {id_key: device.id}
 
+    @staticmethod
+    def _filter_remote_interface(interface: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        This method serves as a temporary workaround for a
+        known API quirk that causes null IPAM addresses to be
+        returned as 222.
+        """
+        if interface["ipam_address"] == "222":
+            del interface["ipam_address"]
+
+        return interface
+
     def _compare_param_to_device(
         self, device_param: Dict[str, Any], device: Union[Disk, Volume]
     ) -> bool:
@@ -702,7 +714,8 @@ class LinodeInstance(LinodeModuleBase):
 
         param_interfaces = [drop_empty_strings(v) for v in param_interfaces]
         remote_interfaces = [
-            drop_empty_strings(v._serialize()) for v in config.interfaces
+            drop_empty_strings(self._filter_remote_interface(v._serialize()))
+            for v in config.interfaces
         ]
 
         if remote_interfaces == param_interfaces:
@@ -732,7 +745,12 @@ class LinodeInstance(LinodeModuleBase):
             # Special handling for the ConfigInterface type
             if key == "interfaces":
                 old_value = filter_null_values_recursive(
-                    [drop_empty_strings(v._serialize()) for v in old_value]
+                    [
+                        drop_empty_strings(
+                            self._filter_remote_interface(v._serialize())
+                        )
+                        for v in old_value
+                    ]
                 )
                 new_value = filter_null_values_recursive(
                     [drop_empty_strings(v) for v in new_value]

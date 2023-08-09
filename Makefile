@@ -64,6 +64,9 @@ test: integration-test
 testall: create-integration-config
 	./scripts/test_all.sh
 
+unittest:
+	python -m pytest tests/unit/
+
 create-integration-config:
 ifneq ("${LINODE_TOKEN}", "")
 	@echo "api_token: ${LINODE_TOKEN}" > $(INTEGRATION_CONFIG);
