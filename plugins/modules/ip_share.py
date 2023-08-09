@@ -21,12 +21,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-
-#from linode_api4 import ExplicitNullValue, IPAddress
-
 from linode_api4.objects import Instance
-
-#import epdb; epdb.serve()
 
 ip_share_spec = {
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
@@ -51,8 +46,7 @@ SPECDOC_META = SpecDocMeta(
     return_values=dict(
         ip_share_stats=SpecReturnValue(
             description="The IPs that share with the Linode.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/"
-            + "#nodebalancer-statistics-view__responses",
+            docs_url="https://www.linode.com/docs/api/networking/#ip-addresses-share__response-samples",
             type=FieldType.dict,
             sample=ip_share_docs.result_ip_share_stats_samples,
         ),
@@ -64,22 +58,16 @@ class IPShareModule(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
-        #self.required_one_of: List[str] = []
         self.results = {"ip_share": None}
         self._state = "present"
         super().__init__(
             module_arg_spec=self.module_arg_spec,
-            #required_one_of=self.required_one_of,
         )
 
     def _share_ip_addresses(self) -> None:
         """
         Configure shared IPs.
         """
-        # param = {
-        #     "ips": self.param.get("ips"),
-        #     "linode_id": self.param.get("linode_id"),
-        # }
         try:
             return self.client.networking.ip_addresses_share(
                 ips = self.module.params.get("ips"),
