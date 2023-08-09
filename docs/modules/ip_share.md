@@ -26,6 +26,7 @@ Manage the Linode shared IPs.
 ## Return Values
 
 - `ip_share_stats` - The Linode IP share info in JSON serialized form
+
     - Sample Response:
         ```json
         [
