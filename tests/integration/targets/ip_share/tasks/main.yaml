@@ -4,6 +4,7 @@
     - set_fact:
         r1: "{{ 1000000000 | random }}"
         r2: "{{ 1000000000 | random }}"
+
     - name: Create an instance to get IPs.
       linode.cloud.instance:
         label: 'ansible-test-{{ r1 }}'
@@ -13,6 +14,7 @@
         wait: false
         state: present
       register: instance_create
+
     - name: Create an instance to be shared with IPs.
       linode.cloud.instance:
         label: 'ansible-test-{{ r2 }}'
@@ -22,18 +24,35 @@
         wait: false
         state: present
       register: instance_create_shared
+
     - name: Configure a Linode shared IPs.
       linode.cloud.ip_share:
         api_version: v4beta
-        label: 'ansible-test-{{ r2 }}'
         ips: ['{{ instance_create.instance.ipv4[0]}}']
         linode_id: '{{ instance_create_shared.instance.id }}'
         state: present
-      register: configure
+      register: ip_shared
+
+    - name: Remove the shared IPs from a Linode.
+      linode.cloud.ip_share:
+        api_version: v4beta
+        state: absent
+        ips: []
+        linode_id: '{{ instance_create_shared.instance.id }}'
+      register: ip_unshared
+
     - name: Assert shared IPs configured.
       assert:
         that:
-          - configure.ips[0] == '{{ instance_create.instance.ipv4[0]}}'
+          - ip_shared.ips[0] == '{{ instance_create.instance.ipv4[0]}}'
+          - ip_unshared.ips == []
+          
+  always:
+    - ignore_errors: true
+      block:
+        - linode.cloud.instance:
+            label: '{{ instance_create.instance.label }}'
+            state: absent
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'

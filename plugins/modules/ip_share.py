@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip_share as ip_share_docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
@@ -24,6 +24,8 @@ from ansible_specdoc.objects import (
 from linode_api4.objects import Instance
 
 ip_share_spec = {
+    # Disable the default values
+    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "ips": SpecField(
         type=FieldType.list,
@@ -64,40 +66,86 @@ class IPShareModule(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
-        self.results = {"ip_share": None}
-        self._state = "present"
+        self.results = {
+            "changed": False,
+            "actions": [],
+            "linode_id": None,
+            "ips": None,
+        }
+
         super().__init__(
             module_arg_spec=self.module_arg_spec,
         )
 
-    def _share_ip_addresses(self) -> None:
+    def _share_ip_addresses(self, ips: List[str], linode_id: str) -> None:
         """
         Configure shared IPs.
         """
         try:
-            return self.client.networking.ip_addresses_share(
-                ips=self.module.params.get("ips"),
-                linode=self.module.params.get("linode_id"),
+            self.client.networking.ip_addresses_share(
+                ips=ips,
+                linode=linode_id,
             )
         except Exception as exception:
-            return self.fail(
+            self.fail(
                 msg="failed to configure shared ips for linode {0}: {1}".format(
-                    self.module.params.get("linode_id"), exception
+                    linode_id, exception
                 )
             )
 
-    def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for configuring shared IPs for a Linode."""
-        linode_id = self.module.params.get("linode_id")
+    # check if the IPs have been shared with the Linode instance
+    def _check_shared_ip_addresses(
+        self, ips: List[str], linode: Instance
+    ) -> bool:
+        linode_shared_ipv4 = [i.address for i in linode.ips.ipv4.shared]
+        linode_public_ipv6 = [i.range for i in linode.ips.ipv6.ranges]
 
-        self._share_ip_addresses()
+        for i in ips:
+            if i not in linode_shared_ipv4 and i not in linode_public_ipv6:
+                return False
+
+        return True
+
+    def _handle_present(self) -> None:
+        linode_id = self.module.params.get("linode_id")
+        ips = self.module.params.get("ips")
 
         linode = Instance(self.client, linode_id)
 
-        self.results["linode_id"] = linode_id
-        self.results["ips"] = [
-            s.address for s in linode.ips.ipv4.shared
-        ] + linode.ips.ipv6.ranges
+        if not self._check_shared_ip_addresses(ips, linode):
+            self._share_ip_addresses(ips, linode_id)
+            self.register_action("Shared IPs with Linode {0}".format(linode_id))
+
+            linode = Instance(self.client, linode_id)
+            self.results["linode_id"] = linode.id
+            self.results["ips"] = [
+                i.address for i in linode.ips.ipv4.shared
+            ] + [i.range for i in linode.ips.ipv6.ranges]
+
+    def _handle_absent(self) -> None:
+        linode_id = self.module.params.get("linode_id")
+
+        # Send an empty array to remove all shared IP addresses.
+        self._share_ip_addresses([], linode_id)
+        self.register_action(
+            "Removed shared ips from Linode {0}".format(linode_id)
+        )
+
+        linode = Instance(self.client, linode_id)
+        self.results["linode_id"] = linode.id
+        self.results["ips"] = [i.address for i in linode.ips.ipv4.shared] + [
+            i.range for i in linode.ips.ipv6.ranges
+        ]
+
+    def exec_module(self, **kwargs: Any) -> Optional[dict]:
+        """Entrypoint for configuring shared IPs for a Linode."""
+        state = kwargs.get("state")
+
+        if state == "absent":
+            self._handle_absent()
+            return self.results
+
+        self._handle_present()
 
         return self.results
 
