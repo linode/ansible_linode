@@ -98,10 +98,15 @@ class IPShareModule(LinodeModuleBase):
         self, ips: List[str], linode: Instance
     ) -> bool:
         linode_shared_ipv4 = [i.address for i in linode.ips.ipv4.shared]
-        linode_public_ipv6 = [i.range for i in linode.ips.ipv6.ranges]
+
+        # ensure that IPv6 ranges are only shared by checking if is_bgp is True
+        linode_shared_ipv6 = []
+        for ipv6 in [i.range for i in linode.ips.ipv6.ranges]:
+            if ipv6.is_bgp:
+                linode_shared_ipv6.append(ipv6)
 
         for i in ips:
-            if i not in linode_shared_ipv4 and i not in linode_public_ipv6:
+            if i not in linode_shared_ipv4 and i not in linode_shared_ipv6:
                 return False
 
         return True

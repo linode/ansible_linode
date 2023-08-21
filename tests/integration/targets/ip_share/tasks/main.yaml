@@ -33,6 +33,14 @@
         state: present
       register: ip_shared
 
+    - name: Configure a Linode with already shared IPs.
+      linode.cloud.ip_share:
+        api_version: v4beta
+        ips: ['{{ instance_create.instance.ipv4[0]}}']
+        linode_id: '{{ instance_create_shared.instance.id }}'
+        state: present
+      register: ip_already_shared
+
     - name: Remove the shared IPs from a Linode.
       linode.cloud.ip_share:
         api_version: v4beta
@@ -45,6 +53,7 @@
       assert:
         that:
           - ip_shared.ips[0] == '{{ instance_create.instance.ipv4[0]}}'
+          - ip_already_shared.changed == false
           - ip_unshared.ips == []
           
   always:
@@ -52,6 +61,9 @@
       block:
         - linode.cloud.instance:
             label: '{{ instance_create.instance.label }}'
+            state: absent
+        - linode.cloud.instance:
+            label: '{{ instance_create_shared.instance.label }}'
             state: absent
 
   environment:
