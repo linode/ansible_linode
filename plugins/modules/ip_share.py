@@ -100,7 +100,7 @@ class IPShareModule(LinodeModuleBase):
         current_ips = {i.address for i in linode.ips.ipv4.shared}
 
         # ensure that IPv6 ranges are only shared by checking if is_bgp is True
-        for ipv6 in [i for i in linode.ips.ipv6.ranges]:
+        for ipv6 in linode.ips.ipv6.ranges:
             # We need to make a manual GET request
             # because is_bgp is only available in the GET
             # response body.
