@@ -97,19 +97,19 @@ class IPShareModule(LinodeModuleBase):
     def _check_shared_ip_addresses(
         self, ips: List[str], linode: Instance
     ) -> bool:
-        linode_shared_ipv4 = [i.address for i in linode.ips.ipv4.shared]
+        current_ips = {i.address for i in linode.ips.ipv4.shared}
 
         # ensure that IPv6 ranges are only shared by checking if is_bgp is True
-        linode_shared_ipv6 = []
-        for ipv6 in [i.range for i in linode.ips.ipv6.ranges]:
+        for ipv6 in [i for i in linode.ips.ipv6.ranges]:
+            # We need to make a manual GET request
+            # because is_bgp is only available in the GET
+            # response body.
+            ipv6._api_get()
+
             if ipv6.is_bgp:
-                linode_shared_ipv6.append(ipv6)
+                current_ips.add(ipv6.range)
 
-        for i in ips:
-            if i not in linode_shared_ipv4 and i not in linode_shared_ipv6:
-                return False
-
-        return True
+        return set(ips) == current_ips
 
     def _handle_present(self) -> None:
         linode_id = self.module.params.get("linode_id")
