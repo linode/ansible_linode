@@ -65,7 +65,10 @@ class Module(LinodeModuleBase):
     """Module for assigning IPs to Linodes in a given Region"""
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
-        self.results = {"changed": False}
+        self.results = {
+            "changed": False,
+            "actions": [],
+        }
         super().__init__(module_arg_spec=self.module_arg_spec)
 
     def flatten_ips(self, ips):
@@ -90,17 +93,17 @@ class Module(LinodeModuleBase):
                     return self.results
 
             self.client.networking.ips_assign(region, *assignments)
+            self.register_action(f"IP assignments completed: {assignments}")
 
             for assignment in assignments:
                 linode = Instance(self.client, assignment["linode_id"])
                 linode._api_get()
                 if assignment["address"] not in self.flatten_ips(linode.ips):
                     self.fail(msg=f"IP assignments not changed: {assignments}")
+                    self.results["changed"] = False
                     return self.results
         except Exception as exc:
             self.fail(msg=f"failed to set IP assignments {assignments}: {exc}")
-
-        self.results["changed"] = True
 
         return self.results
 
