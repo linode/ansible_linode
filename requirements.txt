@@ -1,4 +1,4 @@
-linode-api4>=5.7.0
+linode-api4>=5.7.2
 polling>=0.3.2
 types-requests==2.31.0.2
 ansible-specdoc>=0.0.14
