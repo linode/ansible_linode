@@ -61,8 +61,10 @@ SPECDOC_META = SpecDocMeta(
     return_values={},
 )
 
+
 class Module(LinodeModuleBase):
     """Module for assigning IPs to Linodes in a given Region"""
+
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results = {
@@ -73,8 +75,10 @@ class Module(LinodeModuleBase):
 
     def flatten_ips(self, ips):
         """Flatten a linodes IPs to quickly check the assignment"""
-        addrs = [v.address for v in ips.ipv4.public
-                  + ips.ipv4.private + ips.ipv4.reserved]
+        addrs = [
+            v.address
+            for v in ips.ipv4.public + ips.ipv4.private + ips.ipv4.reserved
+        ]
         addrs += [v.range for v in ips.ipv6.ranges]
         return addrs
 
@@ -89,7 +93,9 @@ class Module(LinodeModuleBase):
                 linode = Instance(self.client, assignment["linode_id"])
                 linode._api_get()
                 if assignment["address"] in self.flatten_ips(linode.ips):
-                    self.fail(msg=f"IP: {assignment['address']} already assigned to instance: {assignment['linode_id']}")
+                    self.fail(
+                        msg=f"IP: {assignment['address']} already assigned to instance: {assignment['linode_id']}"
+                    )
                     return self.results
 
             self.client.networking.ips_assign(region, *assignments)
@@ -107,9 +113,11 @@ class Module(LinodeModuleBase):
 
         return self.results
 
+
 def main() -> None:
     """Constructs and calls the module"""
     Module()
+
 
 if __name__ == "__main__":
     main()
