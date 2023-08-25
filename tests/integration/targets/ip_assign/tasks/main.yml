@@ -2,6 +2,7 @@
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
+
     - name: Create a Linode Instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
@@ -44,6 +45,16 @@
         that:
           - updated_instance.networking.ipv4.public[0].address == create_instance_2.networking.ipv4.public[0].address
           - updated_instance_2.networking.ipv4.public[0].address == create_instance.networking.ipv4.public[0].address
+
+  always:
+    - ignore_errors: true
+      block:
+        - linode.cloud.instance:
+            label: '{{ create_instance.instance.label }}'
+            state: absent
+        - linode.cloud.instance:
+            label: '{{ create_instance_2.instance.label }}'
+            state: absent
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
