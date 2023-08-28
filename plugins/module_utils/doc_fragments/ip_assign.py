@@ -2,7 +2,6 @@
 specdoc_examples = ['''
 - name: Assign IP to Linode
   linode.cloud.ip_assign:
-  linode.cloud.ip_assign:
     region: us-east
     assignments:
      - address: 0.0.0.0
