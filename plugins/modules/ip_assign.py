@@ -93,21 +93,9 @@ class Module(LinodeModuleBase):
                 linode = Instance(self.client, assignment["linode_id"])
                 linode._api_get()
                 if assignment["address"] in self.flatten_ips(linode.ips):
-                    self.fail(
-                        msg=f"IP: {assignment['address']} already assigned to instance: {assignment['linode_id']}"
-                    )
                     return self.results
-
             self.client.networking.ips_assign(region, *assignments)
             self.register_action(f"IP assignments completed: {assignments}")
-
-            for assignment in assignments:
-                linode = Instance(self.client, assignment["linode_id"])
-                linode._api_get()
-                if assignment["address"] not in self.flatten_ips(linode.ips):
-                    self.fail(msg=f"IP assignments not changed: {assignments}")
-                    self.results["changed"] = False
-                    return self.results
         except Exception as exc:
             self.fail(msg=f"failed to set IP assignments {assignments}: {exc}")
 
