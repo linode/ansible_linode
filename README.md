@@ -43,6 +43,8 @@ Name | Description |
 [linode.cloud.token](./docs/modules/token.md)|Manage a Linode Token.|
 [linode.cloud.user](./docs/modules/user.md)|Manage a Linode User.|
 [linode.cloud.volume](./docs/modules/volume.md)|Manage a Linode Volume.|
+[linode.cloud.vpc](./docs/modules/vpc.md)|Create, read, and update a Linode VPC.|
+[linode.cloud.vpc_subnet](./docs/modules/vpc_subnet.md)|Create, read, and update a Linode VPC Subnet.|
 
 
 ### Info Modules
@@ -98,6 +100,7 @@ Name | Description |
 [linode.cloud.user_list](./docs/modules/user_list.md)|List Users.|
 [linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
 [linode.cloud.volume_list](./docs/modules/volume_list.md)|List and filter on Linode Volumes.|
+[linode.cloud.vpc_list](./docs/modules/vpc_list.md)|List and filter on VPCs in the Linode profile.|
 
 
 ### Inventory Plugins

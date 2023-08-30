@@ -46,6 +46,12 @@
       assert:
         that:
           - no_update_vpc.changed == False
+
+    - name: List VPCs
+      linode.cloud.vpc_list:
+        filters:
+          - name: label
+            values: '{{ no_update_vpc.vpc.label }}'
   always:
     - ignore_errors: yes
       block:
