@@ -305,3 +305,23 @@ def poll_condition(
         step=step,
         timeout=timeout,
     )
+
+
+def get_resource_safe(list_func: Callable[[], List[Any]]):
+    try:
+        return list_func()[0]
+    except IndexError:
+        return None
+    except Exception as exception:
+        raise Exception(f"failed to get resource: {exception}")
+
+
+def get_resource_safe_condition(
+    list_func: Callable[[], List[Any]], condition_func: Callable[[Any], bool]
+):
+    try:
+        return [v for v in list_func() if condition_func(v)][0]
+    except IndexError:
+        return None
+    except Exception as exception:
+        raise Exception(f"failed to get resource: {exception}")
