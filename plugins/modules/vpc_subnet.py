@@ -17,7 +17,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
-    get_resource_safe,
+    get_resource_safe_condition,
     handle_updates,
 )
 from ansible_specdoc.objects import (
@@ -26,9 +26,14 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import VPC
+from linode_api4 import VPC, VPCSubnet
 
 SPEC = {
+    "vpc_id": SpecField(
+        type=FieldType.integer,
+        required=True,
+        description=["The ID of the parent VPC for this subnet."],
+    ),
     "label": SpecField(
         type=FieldType.string,
         required=True,
@@ -40,27 +45,23 @@ SPEC = {
         required=True,
         description=["The state of this token."],
     ),
-    "description": SpecField(
+    "ipv4": SpecField(
         type=FieldType.string,
-        default=None,
-        description=["A description describing this VPC."],
-    ),
-    "region": SpecField(
-        type=FieldType.string,
-        description=["The region this VPC is located in."],
+        description=["The IPV4 range for this subnet in CIDR format."],
     ),
 }
 
+
 SPECDOC_META = SpecDocMeta(
     description=[
-        "Create, read, and update a Linode VPC.",
+        "Create, read, and update a Linode VPC Subnet.",
     ],
     requirements=global_requirements,
     author=global_authors,
     options=SPEC,
     examples=docs.specdoc_examples,
     return_values={
-        "vpc": SpecReturnValue(
+        "subnet": SpecReturnValue(
             description="The VPC in JSON serialized form.",
             docs_url="TODO",
             type=FieldType.dict,
@@ -69,8 +70,7 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-CREATE_FIELDS = {"label", "region", "description"}
-MUTABLE_FIELDS = {"description"}
+CREATE_FIELDS = {"label", "ipv4"}
 
 
 class Module(LinodeModuleBase):
@@ -82,51 +82,54 @@ class Module(LinodeModuleBase):
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
-            required_if=[("state", "present", ["region"])],
         )
 
-    def _create(self) -> Optional[VPC]:
+    def _create(self, vpc: VPC) -> Optional[VPCSubnet]:
         params = filter_null_values(
             {k: v for k, v in self.module.params.items() if k in CREATE_FIELDS}
         )
 
         try:
-            return self.client.vpcs.create(**params)
+            return vpc.subnet_create(**params)
         except Exception as exception:
             return self.fail(msg="failed to create VPC: {0}".format(exception))
 
-    def _update(self, vpc: VPC):
-        handle_updates(
-            vpc, self.module.params, MUTABLE_FIELDS, self.register_action
-        )
+    def _update(self, subnet: VPCSubnet):
+        # VPC Subnets cannot be updated
+        handle_updates(subnet, self.module.params, set(), self.register_action)
 
     def _handle_present(self) -> None:
         params = self.module.params
 
-        vpc = get_resource_safe(
-            lambda: self.client.vpcs(VPC.label == params.get("label"))
+        vpc = self._get_resource_by_id(VPC, self.module.params.get("vpc_id"))
+
+        subnet = get_resource_safe_condition(
+            lambda: vpc.subnets, lambda v: v.label == params.get("label")
         )
-        if vpc is None:
-            vpc = self._create()
+        if subnet is None:
+            subnet = self._create(vpc)
             self.register_action("Created VPC {0}".format(vpc))
 
-        self._update(vpc)
+        self._update(subnet)
 
         # Force lazy-loading
-        vpc._api_get()
+        subnet._api_get()
 
-        self.results["vpc"] = vpc._raw_json
+        self.results["subnet"] = subnet._raw_json
 
     def _handle_absent(self) -> None:
         params = self.module.params
         label = params.get("label")
 
-        vpc = get_resource_safe(lambda: self.client.vpcs(VPC.label == label))
+        vpc = self._get_resource_by_id(VPC, self.module.params.get("vpc_id"))
 
-        if vpc is not None:
-            self.results["vpc"] = vpc._raw_json
-            vpc.delete()
-            self.register_action(f"Deleted VPC {label}")
+        subnet = get_resource_safe_condition(
+            lambda: vpc.subnets, lambda v: v.label == params.get("label")
+        )
+        if subnet is not None:
+            self.results["subnet"] = subnet._raw_json
+            subnet.delete()
+            self.register_action(f"Deleted VPC Subnet {label}")
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for token module"""

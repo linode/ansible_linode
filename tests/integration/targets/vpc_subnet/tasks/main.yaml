@@ -19,36 +19,34 @@
           - create_vpc.vpc.region == 'us-east'
           - create_vpc.vpc.description == 'test description'
 
-    - name: Update the VPC
-      linode.cloud.vpc:
-        label: 'ansible-test-{{ r }}'
-        region: us-east
-        description: test description updated
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
         state: present
-      register: update_vpc
+      register: create_subnet
 
-    - name: Assert VPC updated
+    - name: Assert Subnet created
       assert:
         that:
-          - create_vpc.changed
-          - update_vpc.vpc.id == create_vpc.vpc.id
-          - update_vpc.vpc.description == 'test description updated'
+          - create_subnet.changed
+          - create_subnet.subnet.label == 'test-subnet'
+          - create_subnet.subnet.ipv4 == '10.0.0.0/24'
+          - create_subnet.subnet.created != None
+          - create_subnet.subnet.updated != None
+          - create_subnet.subnet.linodes | length == 0
 
-    - name: Don't update the VPC
-      linode.cloud.vpc:
-        label: 'ansible-test-{{ r }}'
-        region: us-east
-        description: test description updated
-        state: present
-      register: no_update_vpc
-
-    - name: Assert VPC not updated
-      assert:
-        that:
-          - no_update_vpc.changed == False
   always:
     - ignore_errors: yes
       block:
+        - name: Delete a subnet
+          linode.cloud.vpc_subnet:
+            vpc_id: '{{ create_vpc.vpc.id }}'
+            label: 'test-subnet'
+            state: absent
+          register: delete_subnet
+
         - name: Delete a VPC
           linode.cloud.vpc:
             label: '{{ create_vpc.vpc.label }}'
