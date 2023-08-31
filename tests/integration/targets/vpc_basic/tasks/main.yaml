@@ -52,6 +52,29 @@
         filters:
           - name: label
             values: '{{ no_update_vpc.vpc.label }}'
+      register: list_vpc
+
+    - name: Assert VPC is returned
+      assert:
+        that:
+          - list_vpc.vpcs[0].id == create_vpc.vpc.id
+
+    - name: Get information about the VPC by ID
+      linode.cloud.vpc_info:
+        id: '{{ create_vpc.vpc.id }}'
+      register: vpc_info_id
+
+    - name: Get information about the VPC by label
+      linode.cloud.vpc_info:
+        label: '{{ create_vpc.vpc.label }}'
+      register: vpc_info_label
+
+    - name: Assert results
+      assert:
+        that:
+          - vpc_info_id.vpc.id == create_vpc.vpc.id
+          - vpc_info_id.vpc.id == vpc_info_label.vpc.id
+
   always:
     - ignore_errors: yes
       block:
@@ -66,3 +89,4 @@
     LINODE_API_TOKEN: '{{ api_token }}'
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
+    REQUESTS_CA_BUNDLE: '...' # Temporary override for testing overrides

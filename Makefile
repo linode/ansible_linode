@@ -4,8 +4,8 @@ DOCS_PATH ?= docs
 COLLECTION_VERSION ?=
 
 TEST_ARGS := -v
-TEST_API_URL := https://api.linode.com/
-TEST_API_VERSION := v4beta
+TEST_API_URL ?= https://api.linode.com/
+TEST_API_VERSION ?= v4beta
 INTEGRATION_CONFIG := ./tests/integration/integration_config.yml
 
 clean:

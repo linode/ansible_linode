@@ -1,6 +1,6 @@
-# vpc
+# vpc_info
 
-Create, read, and update a Linode VPC.
+Get info about a Linode VPC.
 
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -9,19 +9,15 @@ Create, read, and update a Linode VPC.
 ## Examples
 
 ```yaml
-- name: Create a VPC 
-  linode.cloud.vpc:
+- name: Get info about a VPC by label
+  linode.cloud.vpc_info:
     label: my-vpc
-    region: us-east
-    description: A description of this VPC.
-    state: present
 ```
 
 ```yaml
-- name: Delete a VPC
-  linode.cloud.vpc:
-    label: my-vpc
-    state: absent
+- name: Get info about a VPC by ID
+  linode.cloud.vpc_info:
+    id: 12345
 ```
 
 
@@ -29,10 +25,8 @@ Create, read, and update a Linode VPC.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | <center>`str`</center> | <center>**Required**</center> | This VPC's unique label.   |
-| `state` | <center>`str`</center> | <center>**Required**</center> | The state of this token.  **(Choices: `present`, `absent`)** |
-| `description` | <center>`str`</center> | <center>Optional</center> | A description describing this VPC.   |
-| `region` | <center>`str`</center> | <center>Optional</center> | The region this VPC is located in.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC.  **(Conflicts With: `id`)** |
 
 ## Return Values
 

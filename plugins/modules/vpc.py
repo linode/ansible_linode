@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Any, Optional
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.token as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vpc as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
@@ -64,7 +64,7 @@ SPECDOC_META = SpecDocMeta(
             description="The VPC in JSON serialized form.",
             docs_url="TODO",
             type=FieldType.dict,
-            sample=docs.result_token_samples,
+            sample=docs.result_vpc_samples,
         )
     },
 )
@@ -95,7 +95,7 @@ class Module(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg="failed to create VPC: {0}".format(exception))
 
-    def _update(self, vpc: VPC):
+    def _update(self, vpc: VPC) -> None:
         handle_updates(
             vpc, self.module.params, MUTABLE_FIELDS, self.register_action
         )

@@ -37,6 +37,37 @@
           - create_subnet.subnet.updated != None
           - create_subnet.subnet.linodes | length == 0
 
+    - name: List Subnets
+      linode.cloud.vpc_subnet_list:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        filters:
+          - name: label
+            values: '{{ create_subnet.subnet.label }}'
+      register: list_subnets
+
+    - name: Assert Subnets
+      assert:
+        that:
+          - list_subnets.subnets[0].id == create_subnet.subnet.id
+
+    - name: Get information about the Subnet by ID
+      linode.cloud.vpc_subnet_info:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        id: '{{ create_subnet.subnet.id }}'
+      register: subnet_info_id
+
+    - name: Get information about the Subnet by label
+      linode.cloud.vpc_subnet_info:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: '{{ create_subnet.subnet.label }}'
+      register: subnet_info_label
+
+    - name: Assert results
+      assert:
+        that:
+          - subnet_info_label.subnet.id == create_subnet.subnet.id
+          - subnet_info_label.subnet.id == subnet_info_id.subnet.id
+
   always:
     - ignore_errors: yes
       block:
@@ -58,3 +89,4 @@
     LINODE_API_TOKEN: '{{ api_token }}'
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
+    REQUESTS_CA_BUNDLE: '...' # Temporary override for testing overrides

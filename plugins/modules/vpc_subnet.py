@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Any, Optional
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.token as docs
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vpc_subnet as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
@@ -65,7 +65,7 @@ SPECDOC_META = SpecDocMeta(
             description="The VPC in JSON serialized form.",
             docs_url="TODO",
             type=FieldType.dict,
-            sample=docs.result_token_samples,
+            sample=docs.result_subnet_samples,
         )
     },
 )
@@ -94,7 +94,7 @@ class Module(LinodeModuleBase):
         except Exception as exception:
             return self.fail(msg="failed to create VPC: {0}".format(exception))
 
-    def _update(self, subnet: VPCSubnet):
+    def _update(self, subnet: VPCSubnet) -> None:
         # VPC Subnets cannot be updated
         handle_updates(subnet, self.module.params, set(), self.register_action)
 

@@ -1,6 +1,6 @@
-# vpc_subnet
+# vpc_subnet_info
 
-Create, read, and update a Linode VPC Subnet.
+Get info about a Linode VPC Subnet.
 
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -9,20 +9,17 @@ Create, read, and update a Linode VPC Subnet.
 ## Examples
 
 ```yaml
-- name: Create a VPC Subnet
-  linode.cloud.vpc_subnet:
+- name: Get info about a VPC Subnet by label
+  linode.cloud.vpc_subnet_info:
     vpc_id: 12345
     label: my-subnet
-    ipv4: '10.0.0.0/24'
-    state: present
 ```
 
 ```yaml
-- name: Delete a VPC Subnet
-  linode.cloud.vpc_subnet:
+- name: Get info about a VPC Subnet by ID
+  linode.cloud.vpc_subnet_info:
     vpc_id: 12345
-    label: my-subnet
-    state: absent
+    id: 123
 ```
 
 
@@ -30,14 +27,13 @@ Create, read, and update a Linode VPC Subnet.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the parent VPC for this subnet.   |
-| `label` | <center>`str`</center> | <center>**Required**</center> | This VPC's unique label.   |
-| `state` | <center>`str`</center> | <center>**Required**</center> | The state of this token.  **(Choices: `present`, `absent`)** |
-| `ipv4` | <center>`str`</center> | <center>Optional</center> | The IPV4 range for this subnet in CIDR format.   |
+| `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the VPC.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC.  **(Conflicts With: `label`)** |
 
 ## Return Values
 
-- `subnet` - The VPC in JSON serialized form.
+- `subnet` - The VPC Subnet in JSON serialized form.
 
     - Sample Response:
         ```json
