@@ -40,3 +40,4 @@
     LINODE_API_TOKEN: '{{ api_token }}'
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
+    REQUESTS_CA_BUNDLE: '{{ ca_file }}'
