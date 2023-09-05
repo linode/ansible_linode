@@ -1,0 +1,95 @@
+  
+- name: ip_share
+  block:
+    - set_fact:
+        r1: "{{ 1000000000 | random }}"
+        r2: "{{ 1000000000 | random }}"
+
+    - name: Create an instance to get IPs.
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r1 }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/alpine3.16
+        wait: false
+        state: present
+      register: instance_create
+
+    - name: Create an instance to be shared with IPs.
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r2 }}'
+        region: us-east
+        type: g6-standard-1
+        image: linode/alpine3.16
+        wait: false
+        state: present
+      register: instance_create_shared
+
+    - name: Create an IPv6 range
+      linode.cloud.api_request:
+        method: POST
+        path: networking/ipv6/ranges
+        body_json: >
+          {
+            "linode_id": {{ instance_create.instance.id }},
+            "prefix_length": 64
+          }
+      register: create_ipv6
+
+    - set_fact:
+        ipv6_range: '{{ (create_ipv6.body.range | split("/"))[0] }}'
+
+    # IPv6 ranges must be shared with their assigned Linode before they can be shared to other Linodes
+    - name: Share the IPv6 range to the assigned Linode.
+      linode.cloud.ip_share:
+        api_version: v4beta
+        ips: ['{{ ipv6_range }}']
+        linode_id: '{{ instance_create.instance.id }}'
+        state: present
+      register: ipv6_shared
+
+    - name: Configure a Linode shared IPs.
+      linode.cloud.ip_share:
+        api_version: v4beta
+        ips: ['{{ instance_create.instance.ipv4[0]}}', '{{ ipv6_range }}']
+        linode_id: '{{ instance_create_shared.instance.id }}'
+        state: present
+      register: ip_shared
+
+    - name: Configure a Linode with already shared IPs.
+      linode.cloud.ip_share:
+        api_version: v4beta
+        ips: ['{{ instance_create.instance.ipv4[0]}}', '{{ ipv6_range }}']
+        linode_id: '{{ instance_create_shared.instance.id }}'
+        state: present
+      register: ip_already_shared
+
+    - name: Remove the shared IPs from a Linode.
+      linode.cloud.ip_share:
+        api_version: v4beta
+        state: absent
+        ips: []
+        linode_id: '{{ instance_create_shared.instance.id }}'
+      register: ip_unshared
+
+    - name: Assert shared IPs configured.
+      assert:
+        that:
+          - ip_shared.ips[0] == '{{ instance_create.instance.ipv4[0]}}'
+          - ip_already_shared.changed == false
+          - ip_unshared.ips == []
+          
+  always:
+    - ignore_errors: true
+      block:
+        - linode.cloud.instance:
+            label: '{{ instance_create.instance.label }}'
+            state: absent
+        - linode.cloud.instance:
+            label: '{{ instance_create_shared.instance.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_VERSION: '{{ api_version }}'
