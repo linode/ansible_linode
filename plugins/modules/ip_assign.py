@@ -91,7 +91,6 @@ class Module(LinodeModuleBase):
         try:
             for assignment in assignments:
                 linode = Instance(self.client, assignment["linode_id"])
-                linode._api_get()
                 if assignment["address"] in self.flatten_ips(linode.ips):
                     return self.results
             self.client.networking.ips_assign(region, *assignments)
