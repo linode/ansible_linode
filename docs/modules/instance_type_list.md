@@ -59,7 +59,7 @@ List and filter on Linode Instance Types.
                       "monthly": 20
                     },
                     {
-                      "id": "ap-northeast",
+                  	  "id": "ap-northeast",
                       "hourly": 0.02,
                       "monthly": 20
                     }
