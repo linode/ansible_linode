@@ -19,6 +19,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 )
 from ansible_specdoc.objects import FieldType, SpecDocMeta, SpecField
 from linode_api4 import Instance
+from linode_api4.objects.base import MappedObject
 
 linode_ip_assignments_spec: dict = {
     "address": SpecField(
@@ -53,7 +54,14 @@ spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Assign IPs to Linodes in a given Region."],
+    description=[
+        "Assign IPs to Linodes in a given Region.",
+        "The following restrictions apply:",
+        " - All Linodes involved must have at least"
+        " one public IPv4 address after assignment.",
+        " - Linodes may have no more than one assigned private IPv4 address.",
+        " - Linodes may have no more than one assigned IPv6 range.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=spec,
@@ -73,7 +81,7 @@ class Module(LinodeModuleBase):
         }
         super().__init__(module_arg_spec=self.module_arg_spec)
 
-    def flatten_ips(self, ips):
+    def flatten_ips(self, ips: MappedObject) -> list:
         """Flatten a linodes IPs to quickly check the assignment"""
         addrs = [
             v.address

@@ -2,6 +2,14 @@
 
 Assign IPs to Linodes in a given Region.
 
+The following restrictions apply:
+
+ - All Linodes involved must have at least one public IPv4 address after assignment.
+
+ - Linodes may have no more than one assigned private IPv4 address.
+
+ - Linodes may have no more than one assigned IPv6 range.
+
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -10,7 +18,6 @@ Assign IPs to Linodes in a given Region.
 
 ```yaml
 - name: Assign IP to Linode
-  linode.cloud.ip_assign:
   linode.cloud.ip_assign:
     region: us-east
     assignments:
