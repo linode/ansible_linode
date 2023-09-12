@@ -16,9 +16,33 @@ result_instance_type_samples = ['''[
           "price": {
             "hourly": 0.008,
             "monthly": 5
-          }
+          },
+          "region_prices": [
+            {
+              "id": "ap-west",
+              "hourly": 0.02,
+              "monthly": 20
+            },
+            {
+          	  "id": "ap-northeast",
+              "hourly": 0.02,
+              "monthly": 20
+            }
+          ]
         }
       },
+      "region_prices": [
+        {
+          "id": "ap-west",
+          "hourly": 0.02,
+          "monthly": 20
+        },
+        {
+          "id": "ap-northeast",
+          "hourly": 0.02,
+          "monthly": 20
+        }
+      ],
       "class": "standard",
       "disk": 81920,
       "gpus": 0,
