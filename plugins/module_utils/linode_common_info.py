@@ -34,7 +34,7 @@ class InfoModuleParam:
 class InfoModuleAttr:
     display_name: str
     type: FieldType
-    get: Callable[[LinodeClient, Dict[str, Any]], Dict[str, Any]]
+    get: Callable[[LinodeClient, Dict[str, Any]], Any]
 
 
 @dataclass
@@ -46,7 +46,7 @@ class InfoModuleResponse:
     docs_url: Optional[str] = None
     samples: Optional[List[str]] = None
     get: Optional[
-        Callable[[LinodeClient, Dict[str, Any]], Dict[str, Any]]
+        Callable[[LinodeClient, Dict[str, Any], Dict[str, Any]], Any]
     ] = None
 
 
@@ -74,7 +74,13 @@ class InfoModuleBase(LinodeModuleBase):
 
     def __init__(self) -> None:
         self.module_arg_spec = self.spec.ansible_spec
-        self.results: Dict[str, Any] = {self.response_field: None}
+        self.results: Dict[str, Any] = {
+            k: None
+            for k in [
+                v.field
+                for v in self.secondary_responses + [self.primary_response]
+            ]
+        }
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
@@ -99,9 +105,9 @@ class InfoModuleBase(LinodeModuleBase):
 
         self.results[self.primary_response.field] = primary_result
 
-        for k, v in self.secondary_responses.items():
+        for v in self.secondary_responses:
             secondary_result = v.get(self.client, primary_result, kwargs)
-            self.results[k] = secondary_result
+            self.results[v.field] = secondary_result
 
         return self.results
 
