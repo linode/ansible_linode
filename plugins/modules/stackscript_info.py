@@ -5,9 +5,12 @@
 
 from __future__ import absolute_import, division, print_function
 
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript as docs_parent
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript_info as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
     InfoModuleAttr,
     InfoModuleBase,
+    InfoModuleResponse,
 )
 from ansible_specdoc.objects import FieldType
 from linode_api4 import StackScript
@@ -16,9 +19,14 @@ from linode_api4 import StackScript
 class Module(InfoModuleBase):
     """Module for getting info about a Linode StackScript"""
 
-    display_name = "StackScript"
-    response_field = "stackscript"
-    response_sample = {}
+    examples = docs.specdoc_examples
+
+    primary_response = InfoModuleResponse(
+        field="stackscript",
+        field_type=FieldType.dict,
+        display_name="StackScript",
+        samples=docs_parent.result_stackscript_samples,
+    )
 
     attributes = {
         "id": InfoModuleAttr(

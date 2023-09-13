@@ -25,24 +25,6 @@ from linode_api4 import LinodeClient
 
 
 @dataclass
-class ListModuleParent:
-    """
-    Represents a single parent resource ID for a list module.
-    This is intended to be used for nested resources (e.g. Instance Config)
-    """
-
-    field: str
-    display_name: str
-    type: FieldType
-
-
-@dataclass
-class InfoModuleResponse:
-    spec: SpecReturnValue
-    do_request: Callable[[LinodeClient, Dict[str, Any]], Any]
-
-
-@dataclass
 class InfoModuleParam:
     display_name: str
     type: FieldType
@@ -55,18 +37,39 @@ class InfoModuleAttr:
     get: Callable[[LinodeClient, Dict[str, Any]], Dict[str, Any]]
 
 
+@dataclass
+class InfoModuleResponse:
+    field: str
+    field_type: FieldType
+    display_name: str
+
+    docs_url: Optional[str] = None
+    samples: Optional[List[str]] = None
+    get: Optional[
+        Callable[[LinodeClient, Dict[str, Any]], Dict[str, Any]]
+    ] = None
+
+
 class InfoModuleBase(LinodeModuleBase):
     """A common module for listing API resources given a set of filters."""
 
-    display_name: str
-    response_field: str
-    response_sample: Dict[str, Any]
+    # The primary response attribute for this module.
+    primary_response: InfoModuleResponse
+
+    # The secondary response attributes for this module.
+    # These are response fields that depend on information
+    # resolved in the primary response.
+    secondary_responses: List[InfoModuleResponse] = []
 
     # Params correspond to path IDs (e.g. linode/instances/{param1})
     # These are always required.
     params: Dict[str, InfoModuleParam] = {}
 
+    # Attributes are fields that can independently be used to resolve
+    # a resource. (i.e. label, ID).
     attributes: Dict[str, InfoModuleAttr] = {}
+
+    # Example usages of this module.
     examples: List[str] = []
 
     def __init__(self) -> None:
@@ -82,19 +85,23 @@ class InfoModuleBase(LinodeModuleBase):
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for list module"""
 
-        result = None
+        primary_result = None
 
         for k, v in self.attributes.items():
             if kwargs.get(k) is None:
                 continue
 
-            result = v.get(self.client, kwargs)
+            primary_result = v.get(self.client, kwargs)
             break
 
-        if result is None:
+        if primary_result is None:
             raise ValueError("Expected a result; got None")
 
-        self.results[self.response_field] = result
+        self.results[self.primary_response.field] = primary_result
+
+        for k, v in self.secondary_responses.items():
+            secondary_result = v.get(self.client, primary_result, kwargs)
+            self.results[k] = secondary_result
 
         return self.results
 
@@ -118,20 +125,32 @@ class InfoModuleBase(LinodeModuleBase):
             options[k] = SpecField(
                 type=param.type,
                 required=True,
-                description=f"The ID of the {cls.display_name} for this resource.",
+                description=f"The ID of the {cls.primary_response.display_name} for this resource.",
             )
 
         for k, attr in cls.attributes.items():
             options[k] = SpecField(
                 type=attr.type,
-                description=f"The {attr.display_name} of the {cls.display_name} to resolve.",
+                description=f"The {attr.display_name} of the {cls.primary_response.display_name} to resolve.",
             )
 
+        responses = {
+            v.field: SpecReturnValue(
+                description=f"The returned {v.display_name}.",
+                docs_url=v.docs_url,
+                type=v.field_type,
+                sample=v.samples,
+            )
+            for v in [cls.primary_response] + cls.secondary_responses
+        }
+
         return SpecDocMeta(
-            description=[f"Get info about a Linode {cls.display_name}."],
+            description=[
+                f"Get info about a Linode {cls.primary_response.display_name}."
+            ],
             requirements=global_requirements,
             author=global_authors,
             options=options,
             examples=cls.examples,
-            return_values={},
+            return_values=responses,
         )
