@@ -48,7 +48,7 @@ class Module(InfoModuleBase):
             field_type=FieldType.list,
             display_name="Disks",
             docs_url="https://www.linode.com/docs/api/linode-instances/#disk-view__responses",
-            samples=docs_parent.result_configs_samples,
+            samples=docs_parent.result_disks_samples,
             get=lambda client, instance, params: paginated_list_to_json(
                 Instance(client, instance.get("id")).disks
             ),
@@ -58,7 +58,7 @@ class Module(InfoModuleBase):
             field_type=FieldType.dict,
             display_name="Networking Configuration",
             docs_url="https://www.linode.com/docs/api/linode-instances/#networking-information-list__responses",
-            samples=docs_parent.result_configs_samples,
+            samples=docs_parent.result_networking_samples,
             get=lambda client, instance, params: client.get(
                 "/linode/instances/{0}/ips".format(instance.get("id"))
             ),
