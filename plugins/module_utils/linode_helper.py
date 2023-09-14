@@ -305,3 +305,18 @@ def poll_condition(
         step=step,
         timeout=timeout,
     )
+
+
+def safe_find(
+    func: Callable[[Tuple[Filter]], List[Any]], *filters: Filter
+) -> Any:
+    """
+    Wraps a resource list function with error handling.
+    If no entries are returned, this function returns None rather than
+    raising an error.
+    """
+    try:
+        list_results = func(*filters)
+        return None if len(list_results) < 1 else list_results[0]
+    except Exception as exception:
+        raise Exception(f"failed to get resource: {exception}") from exception

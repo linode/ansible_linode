@@ -118,10 +118,17 @@ class InfoModule(LinodeModuleBase):
 
         # Get the primary result using the attr get functions
         for attr in self.attributes:
-            if kwargs.get(attr.name) is None:
+            attr_value = kwargs.get(attr.name)
+            if attr_value is None:
                 continue
 
-            primary_result = attr.get(self.client, kwargs)
+            try:
+                primary_result = attr.get(self.client, kwargs)
+            except Exception as exception:
+                self.fail(
+                    msg=f"Failed to get {self.primary_result.display_name} "
+                    f"with {attr.display_name} {attr_value}: {exception}"
+                )
             break
 
         if primary_result is None:
@@ -131,7 +138,13 @@ class InfoModule(LinodeModuleBase):
 
         # Pass primary result into secondary result get functions
         for attr in self.secondary_results:
-            secondary_result = attr.get(self.client, primary_result, kwargs)
+            try:
+                secondary_result = attr.get(self.client, primary_result, kwargs)
+            except Exception as exception:
+                self.fail(
+                    msg=f"Failed to get {attr.display_name} for "
+                    f"{self.primary_result.display_name}: {exception}"
+                )
             self.results[attr.field_name] = secondary_result
 
         return self.results

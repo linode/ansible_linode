@@ -13,6 +13,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info im
     InfoModuleAttr,
     InfoModuleResult,
 )
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    safe_find,
+)
 from ansible_specdoc.objects import FieldType
 from linode_api4 import StackScript
 
@@ -37,9 +40,10 @@ module = InfoModule(
             name="label",
             display_name="label",
             type=FieldType.string,
-            get=lambda client, params: client.linode.stackscripts(
-                StackScript.label == params.get("label")
-            )[0]._raw_json,
+            get=lambda client, params: safe_find(
+                client.linode.stackscripts,
+                StackScript.label == params.get("label"),
+            )._raw_json,
         ),
     ],
 )

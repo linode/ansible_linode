@@ -14,6 +14,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info im
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     paginated_list_to_json,
+    safe_find,
 )
 from ansible_specdoc.objects import FieldType
 from linode_api4 import Instance
@@ -74,9 +75,9 @@ module = InfoModule(
             name="label",
             display_name="label",
             type=FieldType.string,
-            get=lambda client, params: client.linode.instances(
-                Instance.label == params.get("label")
-            )[0]._raw_json,
+            get=lambda client, params: safe_find(
+                client.linode.instances, Instance.label == params.get("label")
+            )._raw_json,
         ),
     ],
 )
