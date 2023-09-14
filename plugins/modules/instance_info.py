@@ -8,8 +8,8 @@ from __future__ import absolute_import, division, print_function
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance_info as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
-    InfoModuleAttr,
     InfoModule,
+    InfoModuleAttr,
     InfoModuleResult,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
