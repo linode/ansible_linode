@@ -26,20 +26,55 @@ from linode_api4 import LinodeClient
 
 @dataclass
 class InfoModuleParam:
+    """
+    Contains information about a required parameter that is necessary to resolve a resource.
+    e.g. A parent resource ID.
+
+    Attributes:
+        display_name (str): The formatted name of this param for documentation purposes.
+        type (FieldType): The type of this field.
+    """
+
+    name: str
     display_name: str
     type: FieldType
 
 
 @dataclass
 class InfoModuleAttr:
+    """
+    Contains information about an attribute that can be used to select a specific resource
+    by property.
+
+    Attributes:
+        display_name (str): The formatted name of this attribute for documentation purposes.
+        type (FieldType): The type of this field.
+        get (Callable): A function to retrieve a resource from this attribute.
+    """
+
+    name: str
     display_name: str
     type: FieldType
     get: Callable[[LinodeClient, Dict[str, Any]], Any]
 
 
 @dataclass
-class InfoModuleResponse:
-    field: str
+class InfoModuleResult:
+    """
+    Contains information about a result field returned from an info module.
+
+    Attributes:
+        field_name (str): The name of the field to be returned. (e.g. `returned_field`)
+        field_type (FieldType): The type of the field to be returned.
+        display_name (str): The formatted name of this field for use in documentation.
+        docs_url (Optional[str]): The URL of the related API documentation for this field.
+        samples (Optional[List[str]]): A list of sample results for this field.
+        get (Optional[Callable]): A function to call out to the API and return the data
+                                  for this field.
+                                  NOTE: This is only relevant for secondary results.
+    """
+
+    field_name: str
     field_type: FieldType
     display_name: str
 
@@ -54,20 +89,20 @@ class InfoModuleBase(LinodeModuleBase):
     """A common module for listing API resources given a set of filters."""
 
     # The primary response attribute for this module.
-    primary_response: InfoModuleResponse
+    primary_result: InfoModuleResult
 
     # The secondary response attributes for this module.
     # These are response fields that depend on information
     # resolved in the primary response.
-    secondary_responses: List[InfoModuleResponse] = []
+    secondary_results: List[InfoModuleResult] = []
 
     # Params correspond to path IDs (e.g. linode/instances/{param1})
     # These are always required.
-    params: Dict[str, InfoModuleParam] = {}
+    params: List[InfoModuleParam] = []
 
     # Attributes are fields that can independently be used to resolve
     # a resource. (i.e. label, ID).
-    attributes: Dict[str, InfoModuleAttr] = {}
+    attributes: List[InfoModuleAttr] = []
 
     # Example usages of this module.
     examples: List[str] = []
@@ -77,37 +112,41 @@ class InfoModuleBase(LinodeModuleBase):
         self.results: Dict[str, Any] = {
             k: None
             for k in [
-                v.field
-                for v in self.secondary_responses + [self.primary_response]
+                v.field_name
+                for v in self.secondary_results + [self.primary_result]
             ]
         }
 
+        attribute_names = [v.name for v in self.attributes]
+
         super().__init__(
             module_arg_spec=self.module_arg_spec,
-            required_one_of=[self.attributes.keys()],
-            mutually_exclusive=[self.attributes.keys()],
+            required_one_of=[attribute_names],
+            mutually_exclusive=[attribute_names],
         )
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for list module"""
+        """Entrypoint for info modules."""
 
         primary_result = None
 
-        for k, v in self.attributes.items():
-            if kwargs.get(k) is None:
+        # Get the primary result using the attr get functions
+        for attr in self.attributes:
+            if kwargs.get(attr.name) is None:
                 continue
 
-            primary_result = v.get(self.client, kwargs)
+            primary_result = attr.get(self.client, kwargs)
             break
 
         if primary_result is None:
             raise ValueError("Expected a result; got None")
 
-        self.results[self.primary_response.field] = primary_result
+        self.results[self.primary_result.field_name] = primary_result
 
-        for v in self.secondary_responses:
-            secondary_result = v.get(self.client, primary_result, kwargs)
-            self.results[v.field] = secondary_result
+        # Pass primary result into secondary result get functions
+        for attr in self.secondary_results:
+            secondary_result = attr.get(self.client, primary_result, kwargs)
+            self.results[attr.field_name] = secondary_result
 
         return self.results
 
@@ -127,32 +166,36 @@ class InfoModuleBase(LinodeModuleBase):
             ),
         }
 
-        for k, param in cls.params.items():
-            options[k] = SpecField(
+        # Add params to spec
+        for param in cls.params:
+            options[param.name] = SpecField(
                 type=param.type,
                 required=True,
-                description=f"The ID of the {cls.primary_response.display_name} for this resource.",
+                description=f"The ID of the {cls.primary_result.display_name} for this resource.",
             )
 
-        for k, attr in cls.attributes.items():
-            options[k] = SpecField(
+        # Add attrs to spec
+        for attr in cls.attributes:
+            options[attr.name] = SpecField(
                 type=attr.type,
-                description=f"The {attr.display_name} of the {cls.primary_response.display_name} to resolve.",
+                description=f"The {attr.display_name} of the "
+                f"{cls.primary_result.display_name} to resolve.",
             )
 
+        # Add responses to spec
         responses = {
-            v.field: SpecReturnValue(
+            v.field_name: SpecReturnValue(
                 description=f"The returned {v.display_name}.",
                 docs_url=v.docs_url,
                 type=v.field_type,
                 sample=v.samples,
             )
-            for v in [cls.primary_response] + cls.secondary_responses
+            for v in [cls.primary_result] + cls.secondary_results
         }
 
         return SpecDocMeta(
             description=[
-                f"Get info about a Linode {cls.primary_response.display_name}."
+                f"Get info about a Linode {cls.primary_result.display_name}."
             ],
             requirements=global_requirements,
             author=global_authors,
