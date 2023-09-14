@@ -1,0 +1,63 @@
+- name: ip_assign
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode Instance
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-southeast
+        type: g6-standard-1
+        image: linode/alpine3.17
+        state: present
+      register: create_instance
+
+    - name: Create another Linode Instance
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}-2'
+        region: us-southeast
+        type: g6-standard-1
+        image: linode/alpine3.17
+        state: present
+      register: create_instance_2
+
+    - name: Swap Both IPs
+      linode.cloud.ip_assign:
+        region: us-southeast
+        assignments:
+          - address: '{{ create_instance.networking.ipv4.public[0].address }}'
+            linode_id: '{{ create_instance_2.instance.id }}'
+          - address: '{{ create_instance_2.networking.ipv4.public[0].address }}'
+            linode_id: '{{ create_instance.instance.id }}'
+
+    - name: Get updated Instance1
+      linode.cloud.instance_info:
+        id: '{{ create_instance.instance.id }}'
+      register: updated_instance
+
+    - name: Get updated Instance2
+      linode.cloud.instance_info:
+        id: '{{create_instance_2.instance.id }}'
+      register: updated_instance_2
+
+    - name: Assert changes
+      assert:
+        that:
+          - updated_instance.networking.ipv4.public[0].address == create_instance_2.networking.ipv4.public[0].address
+          - updated_instance_2.networking.ipv4.public[0].address == create_instance.networking.ipv4.public[0].address
+
+  always:
+    - ignore_errors: true
+      block:
+        - linode.cloud.instance:
+            label: '{{ create_instance.instance.label }}'
+            state: absent
+        - linode.cloud.instance:
+            label: '{{ create_instance_2.instance.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
