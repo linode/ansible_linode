@@ -18,21 +18,16 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_specdoc.objects import FieldType
 from linode_api4 import Instance
 
-
-class Module(InfoModuleBase):
-    """Module for getting info about a Linode Instance"""
-
-    examples = docs.specdoc_examples
-
-    primary_result = InfoModuleResult(
+module = InfoModuleBase(
+    examples=docs.specdoc_examples,
+    primary_result=InfoModuleResult(
         display_name="Instance",
         field_name="instance",
         field_type=FieldType.dict,
         docs_url="https://www.linode.com/docs/api/linode-instances/#linode-view__responses",
         samples=docs_parent.result_instance_samples,
-    )
-
-    secondary_results = [
+    ),
+    secondary_results=[
         InfoModuleResult(
             field_name="configs",
             field_type=FieldType.list,
@@ -65,9 +60,8 @@ class Module(InfoModuleBase):
                 "/linode/instances/{0}/ips".format(instance.get("id"))
             ),
         ),
-    ]
-
-    attributes = [
+    ],
+    attributes=[
         InfoModuleAttr(
             name="id",
             display_name="ID",
@@ -84,10 +78,10 @@ class Module(InfoModuleBase):
                 Instance.label == params.get("label")
             )[0]._raw_json,
         ),
-    ]
+    ],
+)
 
-
-SPECDOC_META = Module.spec
+SPECDOC_META = module.spec
 
 if __name__ == "__main__":
-    Module()
+    module.run()

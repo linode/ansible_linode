@@ -88,26 +88,20 @@ class InfoModuleResult:
 class InfoModuleBase(LinodeModuleBase):
     """A common module for listing API resources given a set of filters."""
 
-    # The primary response attribute for this module.
-    primary_result: InfoModuleResult
+    def __init__(
+        self,
+        primary_result: InfoModuleResult,
+        secondary_results: List[InfoModuleResult] = None,
+        params: List[InfoModuleParam] = None,
+        attributes: List[InfoModuleAttr] = None,
+        examples: List[str] = None,
+    ) -> None:
+        self.primary_result = primary_result
+        self.secondary_results = secondary_results or []
+        self.params = params or []
+        self.attributes = attributes or []
+        self.examples = examples or []
 
-    # The secondary response attributes for this module.
-    # These are response fields that depend on information
-    # resolved in the primary response.
-    secondary_results: List[InfoModuleResult] = []
-
-    # Params correspond to path IDs (e.g. linode/instances/{param1})
-    # These are always required.
-    params: List[InfoModuleParam] = []
-
-    # Attributes are fields that can independently be used to resolve
-    # a resource. (i.e. label, ID).
-    attributes: List[InfoModuleAttr] = []
-
-    # Example usages of this module.
-    examples: List[str] = []
-
-    def __init__(self) -> None:
         self.module_arg_spec = self.spec.ansible_spec
         self.results: Dict[str, Any] = {
             k: None
@@ -116,14 +110,6 @@ class InfoModuleBase(LinodeModuleBase):
                 for v in self.secondary_results + [self.primary_result]
             ]
         }
-
-        attribute_names = [v.name for v in self.attributes]
-
-        super().__init__(
-            module_arg_spec=self.module_arg_spec,
-            required_one_of=[attribute_names],
-            mutually_exclusive=[attribute_names],
-        )
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for info modules."""
@@ -150,9 +136,8 @@ class InfoModuleBase(LinodeModuleBase):
 
         return self.results
 
-    @classmethod
     @property
-    def spec(cls):
+    def spec(self):
         """
         Returns the ansible-specdoc spec for this module.
         """
@@ -167,19 +152,19 @@ class InfoModuleBase(LinodeModuleBase):
         }
 
         # Add params to spec
-        for param in cls.params:
+        for param in self.params:
             options[param.name] = SpecField(
                 type=param.type,
                 required=True,
-                description=f"The ID of the {cls.primary_result.display_name} for this resource.",
+                description=f"The ID of the {self.primary_result.display_name} for this resource.",
             )
 
         # Add attrs to spec
-        for attr in cls.attributes:
+        for attr in self.attributes:
             options[attr.name] = SpecField(
                 type=attr.type,
                 description=f"The {attr.display_name} of the "
-                f"{cls.primary_result.display_name} to resolve.",
+                f"{self.primary_result.display_name} to resolve.",
             )
 
         # Add responses to spec
@@ -190,16 +175,28 @@ class InfoModuleBase(LinodeModuleBase):
                 type=v.field_type,
                 sample=v.samples,
             )
-            for v in [cls.primary_result] + cls.secondary_results
+            for v in [self.primary_result] + self.secondary_results
         }
 
         return SpecDocMeta(
             description=[
-                f"Get info about a Linode {cls.primary_result.display_name}."
+                f"Get info about a Linode {self.primary_result.display_name}."
             ],
             requirements=global_requirements,
             author=global_authors,
             options=options,
-            examples=cls.examples,
+            examples=self.examples,
             return_values=responses,
+        )
+
+    def run(self) -> None:
+        """
+        Initializes and runs the info module.
+        """
+        attribute_names = [v.name for v in self.attributes]
+
+        super().__init__(
+            module_arg_spec=self.module_arg_spec,
+            required_one_of=[attribute_names],
+            mutually_exclusive=[attribute_names],
         )

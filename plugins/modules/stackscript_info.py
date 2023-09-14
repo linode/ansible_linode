@@ -16,20 +16,15 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info im
 from ansible_specdoc.objects import FieldType
 from linode_api4 import StackScript
 
-
-class Module(InfoModuleBase):
-    """Module for getting info about a Linode StackScript"""
-
-    examples = docs.specdoc_examples
-
-    primary_result = InfoModuleResult(
+module = InfoModuleBase(
+    examples=docs.specdoc_examples,
+    primary_result=InfoModuleResult(
         field_name="stackscript",
         field_type=FieldType.dict,
         display_name="StackScript",
         samples=docs_parent.result_stackscript_samples,
-    )
-
-    attributes = [
+    ),
+    attributes=[
         InfoModuleAttr(
             name="id",
             display_name="ID",
@@ -46,10 +41,10 @@ class Module(InfoModuleBase):
                 StackScript.label == params.get("label")
             )[0]._raw_json,
         ),
-    ]
+    ],
+)
 
-
-SPECDOC_META = Module.spec
+SPECDOC_META = module.spec
 
 if __name__ == "__main__":
-    Module()
+    module.run()
