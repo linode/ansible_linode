@@ -85,7 +85,7 @@ class InfoModuleResult:
     ] = None
 
 
-class InfoModuleBase(LinodeModuleBase):
+class InfoModule(LinodeModuleBase):
     """A common module for listing API resources given a set of filters."""
 
     def __init__(

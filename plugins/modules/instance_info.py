@@ -9,7 +9,7 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.insta
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance_info as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
     InfoModuleAttr,
-    InfoModuleBase,
+    InfoModule,
     InfoModuleResult,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
@@ -18,7 +18,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_specdoc.objects import FieldType
 from linode_api4 import Instance
 
-module = InfoModuleBase(
+module = InfoModule(
     examples=docs.specdoc_examples,
     primary_result=InfoModuleResult(
         display_name="Instance",

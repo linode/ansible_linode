@@ -10,13 +10,13 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stack
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript_info as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
     InfoModuleAttr,
-    InfoModuleBase,
+    InfoModule,
     InfoModuleResult,
 )
 from ansible_specdoc.objects import FieldType
 from linode_api4 import StackScript
 
-module = InfoModuleBase(
+module = InfoModule(
     examples=docs.specdoc_examples,
     primary_result=InfoModuleResult(
         field_name="stackscript",
