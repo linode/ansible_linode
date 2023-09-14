@@ -5,3 +5,5 @@ tmp
 __pycache__/
 galaxy.yml
 venv
+collections
+.pytest_cache

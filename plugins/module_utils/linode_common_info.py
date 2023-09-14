@@ -156,7 +156,7 @@ class InfoModule(LinodeModuleBase):
             options[param.name] = SpecField(
                 type=param.type,
                 required=True,
-                description=f"The ID of the {self.primary_result.display_name} for this resource.",
+                description=f"The ID of the {param.display_name} for this resource.",
             )
 
         # Add attrs to spec
