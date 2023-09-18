@@ -239,6 +239,10 @@ linode_nodebalancer_spec = {
         type=FieldType.string,
         description=["The ID of the Region to create this NodeBalancer in."],
     ),
+    "firewall_id": SpecField(
+        type=FieldType.integer,
+        description=["The ID of the Firewall to assign this NodeBalancer to."],
+    ),
     "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
@@ -342,9 +346,10 @@ class LinodeNodeBalancer(LinodeModuleBase):
         params = self.module.params
         label = params.get("label")
         region = params.get("region")
+        firewall_id = params.get("firewall_id")
 
         try:
-            return self.client.nodebalancer_create(region, label=label)
+            return self.client.nodebalancer_create(region, label=label, firewall_id=firewall_id)
         except Exception as exception:
             return self.fail(
                 msg="failed to create nodebalancer: {0}".format(exception)
