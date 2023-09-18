@@ -24,7 +24,7 @@ jobs:
           python-version: '3.10'
 
       - name: install dependencies
-        run: pip3 install -r requirements-dev.txt -r requirements.txt
+        run: make deps
 
       - name: Run unit tests
         run: |

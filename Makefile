@@ -12,7 +12,7 @@ INTEGRATION_CONFIG := ./tests/integration/integration_config.yml
 clean:
 	rm -f *.tar.gz && rm -rf galaxy.yml
 
-build: clean gendocs
+build: deps clean gendocs
 	python scripts/render_galaxy.py $(COLLECTION_VERSION) && ansible-galaxy collection build
 
 publish: build
@@ -26,7 +26,7 @@ install: build
 	ansible-galaxy collection install *.tar.gz --force -p $(COLLECTIONS_PATH)
 
 deps:
-	pip install -r requirements.txt -r requirements-dev.txt
+	pip install --upgrade -r requirements.txt -r requirements-dev.txt
 
 lint:
 	pylint plugins
