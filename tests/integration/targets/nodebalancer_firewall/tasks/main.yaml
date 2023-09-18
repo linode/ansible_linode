@@ -1,0 +1,61 @@
+- name: nodebalancer_firewall
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Firewall
+      linode.cloud.firewall:
+        api_version: v4beta
+        label: 'ansible-test-fw-{{ r }}'
+        devices: []
+        rules:
+          inbound: []
+          inbound_policy: DROP
+          outbound: []
+          outbound_policy: DROP
+        state: present
+      register: firewall
+
+    - name: Create Nodebalancer
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-nb-{{ r }}'
+        region: us-east
+        firewall_id: '{{ firewall.firewall.id }}'
+        state: present
+      register: nodebalancer
+
+    - name: Assert empty NodeBalancer is created
+      assert:
+        that:
+          - nodebalancer.changed
+          - nodebalancer.configs|length == 0
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the empty NodeBalancer
+          linode.cloud.nodebalancer:
+            label: '{{ nodebalancer.node_balancer.label }}'
+            state: absent
+          register: delete_nodebalancer
+
+        - name: Delete a Linode Firewall
+          linode.cloud.firewall:
+            api_version: v4beta
+            label: '{{ firewall.firewall.label }}'
+            state: absent
+          register: delete_firewall
+
+        - name: Assert firewall and nodebalancer deleted
+          assert:
+            that:
+              - delete_nodebalancer.changed
+              - delete_nodebalancer.node_balancer.id == delete_nodebalancer.node_balancer.id
+              - delete_firewall.changed
+              - delete_firewall.firewall.id == delete_firewall.firewall.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
