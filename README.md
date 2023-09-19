@@ -85,7 +85,7 @@ Name | Description |
 [linode.cloud.domain_list](./docs/modules/domain_list.md)|List and filter on Domains.|
 [linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Linode events.|
 [linode.cloud.firewall_list](./docs/modules/firewall_list.md)|List and filter on Firewalls.|
-[linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Linode images.|
+[linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Images.|
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Linode Instances.|
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|List and filter on Linode Instance Types.|
 [linode.cloud.lke_version_list](./docs/modules/lke_version_list.md)|List Kubernetes versions available for deployment to a Kubernetes cluster.|
