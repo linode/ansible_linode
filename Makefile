@@ -65,7 +65,7 @@ testall: create-integration-config
 	./scripts/test_all.sh
 
 unittest:
-	python -m pytest tests/unit/
+	ansible-test units --target-python default
 
 create-integration-config:
 ifneq ("${LINODE_TOKEN}", "")

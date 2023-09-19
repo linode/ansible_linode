@@ -25,12 +25,12 @@ Get info about a Linode Instance.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The unique ID of the instance. Optional if `label` is defined.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The instance’s label. Optional if `id` is defined.  **(Conflicts With: `id`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Instance to resolve.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Instance to resolve.   |
 
 ## Return Values
 
-- `instance` - The instance description in JSON serialized form.
+- `instance` - The returned Instance.
 
     - Sample Response:
         ```json
@@ -82,7 +82,7 @@ Get info about a Linode Instance.
     - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#linode-view__responses) for a list of returned fields
 
 
-- `configs` - A list of configs tied to this Linode Instance.
+- `configs` - The returned Configs.
 
     - Sample Response:
         ```json
@@ -150,7 +150,7 @@ Get info about a Linode Instance.
     - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses) for a list of returned fields
 
 
-- `disks` - A list of disks tied to this Linode Instance.
+- `disks` - The returned Disks.
 
     - Sample Response:
         ```json
@@ -169,7 +169,7 @@ Get info about a Linode Instance.
     - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#disk-view__responses) for a list of returned fields
 
 
-- `networking` - Networking information about this Linode Instance.
+- `networking` - The returned Networking Configuration.
 
     - Sample Response:
         ```json
