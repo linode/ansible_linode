@@ -307,31 +307,23 @@ def poll_condition(
     )
 
 
-def get_resource_safe(list_func: Callable[[], List[Any]]) -> Any:
+def safe_find(
+    func: Callable[[Tuple[Filter]], List[Any]],
+    *filters: Any,
+    raise_not_found=False,
+) -> Any:
     """
     Wraps a resource list function with error handling.
     If no entries are returned, this function returns None rather than
     raising an error.
     """
     try:
-        list_results = list_func()
-        return None if len(list_results) < 1 else list_results[0]
-    except Exception as exception:
-        raise Exception(f"failed to get resource: {exception}") from exception
+        list_results = func(*filters)
+        return list_results[0]
+    except IndexError:
+        if raise_not_found:
+            raise ValueError("No matching resource found.") from IndexError
 
-
-def get_resource_safe_condition(
-    list_func: Callable[[], List[Any]], condition_func: Callable[[Any], bool]
-) -> Any:
-    """
-    Wraps a resource list function with error handling and checks the given
-    condition for each returned entry.
-    If no entries are returned, this function returns None rather than
-    raising an error.
-    """
-
-    try:
-        list_results = [v for v in list_func() if condition_func(v)]
-        return None if len(list_results) < 1 else list_results[0]
+        return None
     except Exception as exception:
         raise Exception(f"failed to get resource: {exception}") from exception

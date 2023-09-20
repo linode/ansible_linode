@@ -17,8 +17,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
-    get_resource_safe,
     handle_updates,
+    safe_find,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -103,12 +103,10 @@ class Module(LinodeModuleBase):
     def _handle_present(self) -> None:
         params = self.module.params
 
-        vpc = get_resource_safe(
-            lambda: self.client.vpcs(VPC.label == params.get("label"))
-        )
+        vpc = safe_find(self.client.vpcs, VPC.label == params.get("label"))
         if vpc is None:
             vpc = self._create()
-            self.register_action("Created VPC {0}".format(vpc))
+            self.register_action("Created VPC {0}".format(vpc.id))
 
         self._update(vpc)
 
@@ -121,7 +119,7 @@ class Module(LinodeModuleBase):
         params = self.module.params
         label = params.get("label")
 
-        vpc = get_resource_safe(lambda: self.client.vpcs(VPC.label == label))
+        vpc = safe_find(self.client.vpcs, VPC.label == label)
 
         if vpc is not None:
             self.results["vpc"] = vpc._raw_json

@@ -25,12 +25,12 @@ Get info about a Linode StackScript.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the StackScript.  **(Conflicts With: `id`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the StackScript to resolve.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to resolve.   |
 
 ## Return Values
 
-- `stackscript` - The StackScript in JSON serialized form.
+- `stackscript` - The returned StackScript.
 
     - Sample Response:
         ```json
@@ -64,6 +64,5 @@ Get info about a Linode StackScript.
           "username": "myuser"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/stackscripts/#stackscript-view__response-samples) for a list of returned fields
 
 

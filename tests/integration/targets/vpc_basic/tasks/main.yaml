@@ -75,6 +75,12 @@
           - vpc_info_id.vpc.id == create_vpc.vpc.id
           - vpc_info_id.vpc.id == vpc_info_label.vpc.id
 
+    - name: Attempt to get info about a non-existing VPC
+      linode.cloud.vpc_info:
+        label: 'fakevpc123'
+      register: fake_vpc
+      failed_when: "'No matching resource found.' not in fake_vpc.msg"
+
   always:
     - ignore_errors: yes
       block:

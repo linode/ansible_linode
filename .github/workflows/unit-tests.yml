@@ -8,9 +8,14 @@ name: Run Unit test
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
+        with:
+          path: .ansible/collections/ansible_collections/linode/cloud
 
       - name: update packages
         run: sudo apt-get update -y

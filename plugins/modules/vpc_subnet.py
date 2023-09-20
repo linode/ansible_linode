@@ -17,8 +17,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
-    get_resource_safe_condition,
     handle_updates,
+    safe_find,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -103,12 +103,12 @@ class Module(LinodeModuleBase):
 
         vpc = self._get_resource_by_id(VPC, self.module.params.get("vpc_id"))
 
-        subnet = get_resource_safe_condition(
-            lambda: vpc.subnets, lambda v: v.label == params.get("label")
+        subnet = safe_find(
+            lambda: [v for v in vpc.subnets if v.label == params.get("label")]
         )
         if subnet is None:
             subnet = self._create(vpc)
-            self.register_action("Created VPC {0}".format(vpc))
+            self.register_action("Created VPC Subnet {0}".format(subnet.id))
 
         self._update(subnet)
 
@@ -123,8 +123,8 @@ class Module(LinodeModuleBase):
 
         vpc = self._get_resource_by_id(VPC, self.module.params.get("vpc_id"))
 
-        subnet = get_resource_safe_condition(
-            lambda: vpc.subnets, lambda v: v.label == params.get("label")
+        subnet = safe_find(
+            lambda: [v for v in vpc.subnets if v.label == params.get("label")]
         )
         if subnet is not None:
             self.results["subnet"] = subnet._raw_json
