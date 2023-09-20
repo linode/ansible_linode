@@ -308,7 +308,9 @@ def poll_condition(
 
 
 def safe_find(
-    func: Callable[[Tuple[Filter]], List[Any]], *filters: Filter
+    func: Callable[[Tuple[Filter]], List[Any]],
+    *filters: Any,
+    raise_not_found=False,
 ) -> Any:
     """
     Wraps a resource list function with error handling.
@@ -317,6 +319,11 @@ def safe_find(
     """
     try:
         list_results = func(*filters)
-        return None if len(list_results) < 1 else list_results[0]
+        return list_results[0]
+    except IndexError:
+        if raise_not_found:
+            raise ValueError("No matching resource found.") from IndexError
+
+        return None
     except Exception as exception:
         raise Exception(f"failed to get resource: {exception}") from exception

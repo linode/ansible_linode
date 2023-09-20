@@ -26,7 +26,7 @@ jobs:
           python-version: '3.x'
 
       - name: install dependencies
-        run: pip install -r requirements-dev.txt -r requirements.txt
+        run: make deps
 
       - name: make temp directory
         run: mkdir tmp

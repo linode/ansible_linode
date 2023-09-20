@@ -43,6 +43,7 @@ module = InfoModule(
             get=lambda client, params: safe_find(
                 client.linode.stackscripts,
                 StackScript.label == params.get("label"),
+                raise_not_found=True,
             )._raw_json,
         ),
     ],

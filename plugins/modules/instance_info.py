@@ -76,7 +76,9 @@ module = InfoModule(
             display_name="label",
             type=FieldType.string,
             get=lambda client, params: safe_find(
-                client.linode.instances, Instance.label == params.get("label")
+                client.linode.instances,
+                Instance.label == params.get("label"),
+                raise_not_found=True,
             )._raw_json,
         ),
     ],

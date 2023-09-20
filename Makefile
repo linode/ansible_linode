@@ -4,14 +4,15 @@ DOCS_PATH ?= docs
 COLLECTION_VERSION ?=
 
 TEST_ARGS := -v
-TEST_API_URL := https://api.linode.com/
-TEST_API_VERSION := v4beta
+TEST_API_URL ?= https://api.linode.com/
+TEST_API_VERSION ?= v4beta
+TEST_CA_FILE ?=
 INTEGRATION_CONFIG := ./tests/integration/integration_config.yml
 
 clean:
 	rm -f *.tar.gz && rm -rf galaxy.yml
 
-build: clean gendocs
+build: deps clean gendocs
 	python scripts/render_galaxy.py $(COLLECTION_VERSION) && ansible-galaxy collection build
 
 publish: build
@@ -25,7 +26,7 @@ install: build
 	ansible-galaxy collection install *.tar.gz --force -p $(COLLECTIONS_PATH)
 
 deps:
-	pip install -r requirements.txt -r requirements-dev.txt
+	pip install --upgrade -r requirements.txt -r requirements-dev.txt
 
 lint:
 	pylint plugins
@@ -79,3 +80,4 @@ endif
 	@echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)
 	@echo "api_url: $(TEST_API_URL)" >> $(INTEGRATION_CONFIG)
 	@echo "api_version: $(TEST_API_VERSION)" >> $(INTEGRATION_CONFIG)
+	@echo "ca_file: $(TEST_CA_FILE)" >> $(INTEGRATION_CONFIG)

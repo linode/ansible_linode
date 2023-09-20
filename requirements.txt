@@ -1,4 +1,6 @@
-linode-api4>=5.7.2
+# TODO: Revert once VPC support is released in linode_api4
+# linode-api4>=5.7.2
+git+https://github.com/linode/linode_api4-python@proj/vpc
 polling>=0.3.2
 types-requests==2.31.0.2
 ansible-specdoc>=0.0.14

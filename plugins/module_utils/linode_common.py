@@ -25,7 +25,7 @@ from ansible.module_utils.basic import (
 )
 
 try:
-    from linode_api4 import ApiError
+    from linode_api4 import VPC, ApiError
     from linode_api4 import Base as LinodeAPIType
     from linode_api4 import (
         Image,
@@ -37,6 +37,7 @@ try:
         SSHKey,
         StackScript,
         UnexpectedResponseError,
+        VPCSubnet,
     )
     from linode_api4.polling import TimeoutContext
 
@@ -106,6 +107,8 @@ RESOURCE_NAMES = (
         SSHKey: "SSH key",
         StackScript: "stackscript",
         IPAddress: "IP address",
+        VPC: "VPC",
+        VPCSubnet: "VPC Subnet",
     }
     if HAS_LINODE
     else {}
@@ -218,10 +221,18 @@ class LinodeModuleBase:
         self.results["actions"].append(description)
 
     def _get_resource_by_id(
-        self, resource_type: Type[LinodeAPIType], resource_id: int
+        self,
+        resource_type: Type[LinodeAPIType],
+        resource_id: int,
+        parent_id: int = None,
     ):
         try:
-            resource = resource_type(self.client, resource_id)
+            if parent_id is not None:
+                resource = resource_type(
+                    self.client, resource_id, parent_id=parent_id
+                )
+            else:
+                resource = resource_type(self.client, resource_id)
             resource._api_get()
             return resource
         except Exception as exception:

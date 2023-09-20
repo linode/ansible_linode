@@ -1,0 +1,100 @@
+- name: vpc_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        description: test description
+        state: present
+      register: create_vpc
+
+    - name: Assert VPC created
+      assert:
+        that:
+          - create_vpc.changed
+          - create_vpc.vpc.label == 'ansible-test-{{ r }}'
+          - create_vpc.vpc.region == 'us-east'
+          - create_vpc.vpc.description == 'test description'
+
+    - name: Update the VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        description: test description updated
+        state: present
+      register: update_vpc
+
+    - name: Assert VPC updated
+      assert:
+        that:
+          - create_vpc.changed
+          - update_vpc.vpc.id == create_vpc.vpc.id
+          - update_vpc.vpc.description == 'test description updated'
+
+    - name: Don't update the VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        description: test description updated
+        state: present
+      register: no_update_vpc
+
+    - name: Assert VPC not updated
+      assert:
+        that:
+          - no_update_vpc.changed == False
+
+    - name: List VPCs
+      linode.cloud.vpc_list:
+        filters:
+          - name: label
+            values: '{{ no_update_vpc.vpc.label }}'
+      register: list_vpc
+
+    - name: Assert VPC is returned
+      assert:
+        that:
+          - list_vpc.vpcs[0].id == create_vpc.vpc.id
+
+    - name: Get information about the VPC by ID
+      linode.cloud.vpc_info:
+        id: '{{ create_vpc.vpc.id }}'
+      register: vpc_info_id
+
+    - name: Get information about the VPC by label
+      linode.cloud.vpc_info:
+        label: '{{ create_vpc.vpc.label }}'
+      register: vpc_info_label
+
+    - name: Assert results
+      assert:
+        that:
+          - vpc_info_id.vpc.id == create_vpc.vpc.id
+          - vpc_info_id.vpc.id == vpc_info_label.vpc.id
+
+    - name: Attempt to get info about a non-existing VPC
+      linode.cloud.vpc_info:
+        label: 'fakevpc123'
+      register: fake_vpc
+      failed_when: "'No matching resource found.' not in fake_vpc.msg"
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+
+    # Temporary testing override; remove before merge to dev
+    REQUESTS_CA_BUNDLE: '{{ ca_file }}'
