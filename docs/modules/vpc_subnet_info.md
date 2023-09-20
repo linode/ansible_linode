@@ -27,13 +27,13 @@ Get info about a Linode VPC Subnet.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the VPC.   |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC.  **(Conflicts With: `id`)** |
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC.  **(Conflicts With: `label`)** |
+| `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the VPC for this resource.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC Subnet to resolve.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC Subnet to resolve.   |
 
 ## Return Values
 
-- `subnet` - The VPC Subnet in JSON serialized form.
+- `subnet` - The returned VPC Subnet.
 
     - Sample Response:
         ```json
@@ -46,6 +46,5 @@ Get info about a Linode VPC Subnet.
             "updated": "2023-08-31T18:53:04"
         }
         ```
-    - See the [Linode API response documentation](TODO) for a list of returned fields
 
 

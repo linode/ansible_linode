@@ -29,7 +29,7 @@ List and filter on VPC Subnets.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The parent VPC for this VPC Subnet   |
+| `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The parent VPC for this VPC Subnet.   |
 | `order` | <center>`str`</center> | <center>Optional</center> | The order to list VPC Subnets in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
 | `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order VPC Subnets by.   |
 | [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting VPC Subnets.   |
@@ -39,7 +39,7 @@ List and filter on VPC Subnets.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on.   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here]().   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
@@ -59,6 +59,5 @@ List and filter on VPC Subnets.
             }
         ]
         ```
-    - See the [Linode API response documentation](TODO) for a list of returned fields
 
 

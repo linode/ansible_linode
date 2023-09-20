@@ -25,12 +25,12 @@ Get info about a Linode VPC.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC.  **(Conflicts With: `id`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC to resolve.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC to resolve.   |
 
 ## Return Values
 
-- `vpc` - The VPC in JSON serialized form.
+- `vpc` - The returned VPC.
 
     - Sample Response:
         ```json
@@ -44,6 +44,5 @@ Get info about a Linode VPC.
             "updated": "2023-08-31T18:35:03"
         }
         ```
-    - See the [Linode API response documentation](TODO) for a list of returned fields
 
 

@@ -35,7 +35,7 @@ List and filter on VPCs.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on.   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here]().   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
@@ -56,6 +56,5 @@ List and filter on VPCs.
             }
         ]
         ```
-    - See the [Linode API response documentation](TODO) for a list of returned fields
 
 
