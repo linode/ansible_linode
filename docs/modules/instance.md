@@ -232,9 +232,13 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `purpose` | <center>`str`</center> | <center>**Required**</center> | The type of interface.  **(Choices: `public`, `vlan`)** |
+| `purpose` | <center>`str`</center> | <center>**Required**</center> | The type of interface.  **(Choices: `public`, `vlan`, `vpc`)** |
+| `primary` | <center>`bool`</center> | <center>Optional</center> | Whether this is a primary interface  **(Default: `False`)** |
+| `subnet_id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC subnet to assign this interface to.   |
+| `ipv4` | <center>`dict`</center> | <center>Optional</center> | The IPv4 configuration for this interface. (VPC only)   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces.   |
 | `ipam_address` | <center>`str`</center> | <center>Optional</center> | This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.   |
+| `ip_ranges` | <center>`list`</center> | <center>Optional</center> | Packets to these CIDR ranges are routed to the VPC network interface. (VPC only)   |
 
 ### disks
 
