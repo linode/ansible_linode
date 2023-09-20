@@ -108,7 +108,7 @@ RESOURCE_NAMES = (
         StackScript: "stackscript",
         IPAddress: "IP address",
         VPC: "VPC",
-        VPCSubnet: "VPCSubnet",
+        VPCSubnet: "VPC Subnet",
     }
     if HAS_LINODE
     else {}
