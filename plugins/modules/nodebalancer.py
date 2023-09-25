@@ -28,7 +28,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode
+from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, Firewall
 
 linode_nodes_spec = {
     "label": SpecField(
@@ -347,13 +347,10 @@ class LinodeNodeBalancer(LinodeModuleBase):
         label = params.get("label")
         region = params.get("region")
         firewall_id = params.get("firewall_id")
-
         try:
             return self.client.nodebalancer_create(region, label=label, firewall_id=firewall_id)
         except Exception as exception:
-            return self.fail(
-                msg="failed to create nodebalancer: {0}".format(exception)
-            )
+            return self.fail(msg=f"failed to create nodebalancer: {exception}")
 
     def _create_config(
         self, node_balancer: NodeBalancer, config_params: dict
@@ -523,6 +520,14 @@ class LinodeNodeBalancer(LinodeModuleBase):
         if "configs" in params.keys():
             params.pop("configs")
 
+        if "firewall_id" in params.keys():
+            firewall_id = params.pop("firewall_id")
+            fw = Firewall(self.client, firewall_id)
+            if not fw:
+                self.fail(f"firewall: {firewall_id} doesn't exist")
+            if params.get('label') not in [x.id for x in fw.devices if x.entity is NodeBalancer]:
+                self.fail(f"firewall: {firewall_id} does not contain this nodebalancer")
+
         for key, new_value in params.items():
             if not hasattr(self._node_balancer, key):
                 continue
@@ -564,11 +569,12 @@ class LinodeNodeBalancer(LinodeModuleBase):
         if self._node_balancer is None:
             self._node_balancer = self._create_nodebalancer()
             self.register_action("Created NodeBalancer {}".format(nb_label))
+        else:
+            self._update_nodebalancer()
 
         if self._node_balancer is None:
             return self.fail("failed to create nodebalancer")
 
-        self._update_nodebalancer()
         self._node_balancer._api_get()
 
         self.results["node_balancer"] = self._node_balancer._raw_json
