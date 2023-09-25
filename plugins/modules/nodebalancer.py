@@ -28,7 +28,12 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode, Firewall
+from linode_api4 import (
+    Firewall,
+    NodeBalancer,
+    NodeBalancerConfig,
+    NodeBalancerNode,
+)
 
 linode_nodes_spec = {
     "label": SpecField(
@@ -348,7 +353,9 @@ class LinodeNodeBalancer(LinodeModuleBase):
         region = params.get("region")
         firewall_id = params.get("firewall_id")
         try:
-            return self.client.nodebalancer_create(region, label=label, firewall_id=firewall_id)
+            return self.client.nodebalancer_create(
+                region, label=label, firewall_id=firewall_id
+            )
         except Exception as exception:
             return self.fail(msg=f"failed to create nodebalancer: {exception}")
 
@@ -522,11 +529,13 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         if "firewall_id" in params.keys():
             firewall_id = params.pop("firewall_id")
-            fw = Firewall(self.client, firewall_id)
-            if not fw:
-                self.fail(f"firewall: {firewall_id} doesn't exist")
-            if params.get('label') not in [x.id for x in fw.devices if x.entity is NodeBalancer]:
-                self.fail(f"firewall: {firewall_id} does not contain this nodebalancer")
+            firewall = self.client.load(Firewall, firewall_id)
+            if not firewall or params.get("label") not in [
+                x.id for x in firewall.devices if x.entity is NodeBalancer
+            ]:
+                return self.fail(
+                    "Firewall attachments can only be updated via the firewall_device module."
+                )
 
         for key, new_value in params.items():
             if not hasattr(self._node_balancer, key):
