@@ -6,6 +6,7 @@
 from __future__ import absolute_import, division, print_function
 
 import copy
+import json
 from typing import Any, Dict, List, Optional, Union, cast
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
@@ -157,12 +158,40 @@ linode_instance_helpers_spec = {
     ),
 }
 
+linode_instance_interface_ipv4_spec = {
+    "vpc": SpecField(
+        type=FieldType.string,
+        default=None,
+        description=["The IP from the VPC subnet to use for this interface."],
+    ),
+    "nat_1_1": SpecField(
+        type=FieldType.string,
+        description=[
+            "The public IPv4 address assigned to the Linode "
+            "will be 1:1 with the VPC IPv4 address."
+        ],
+    ),
+}
+
 linode_instance_interface_spec = {
     "purpose": SpecField(
         type=FieldType.string,
         required=True,
         description=["The type of interface."],
-        choices=["public", "vlan"],
+        choices=["public", "vlan", "vpc"],
+    ),
+    "primary": SpecField(
+        type=FieldType.bool,
+        default=False,
+        description=["Whether this is a primary interface"],
+    ),
+    "subnet_id": SpecField(
+        type=FieldType.integer,
+        description=["The ID of the VPC subnet to assign this interface to."],
+    ),
+    "ipv4": SpecField(
+        type=FieldType.dict,
+        description=["The IPv4 configuration for this interface. (VPC only)"],
     ),
     "label": SpecField(
         type=FieldType.string,
@@ -177,6 +206,13 @@ linode_instance_interface_spec = {
         description=[
             "This Network Interface’s private IP address in Classless "
             "Inter-Domain Routing (CIDR) notation."
+        ],
+    ),
+    "ip_ranges": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "Packets to these CIDR ranges are routed to the VPC network interface. (VPC only)"
         ],
     ),
 }
@@ -570,18 +606,6 @@ class LinodeInstance(LinodeModuleBase):
 
         return {id_key: device.id}
 
-    @staticmethod
-    def _filter_remote_interface(interface: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        This method serves as a temporary workaround for a
-        known API quirk that causes null IPAM addresses to be
-        returned as 222.
-        """
-        if interface["ipam_address"] == "222":
-            del interface["ipam_address"]
-
-        return interface
-
     def _compare_param_to_device(
         self, device_param: Dict[str, Any], device: Union[Disk, Volume]
     ) -> bool:
@@ -601,6 +625,54 @@ class LinodeInstance(LinodeModuleBase):
         return filter_null_values(device_mapping) == filter_null_values(
             device_param
         )
+
+    @staticmethod
+    def _normalize_local_interface(
+        local_interface: Dict[str, Any], remote_interface: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Normalizes the given param interface to the remote interface
+        for direct comparison.
+        """
+        result = copy.deepcopy(local_interface)
+
+        # The IPv4 field will be implicitly populated if is not defined
+        if "ipv4" not in local_interface and "ipv4" in remote_interface:
+            result["ipv4"] = remote_interface.get("ipv4")
+
+        # Primary is only allowed for public and VPC purposes, so we
+        # should implicitly populate a default
+        if (
+            local_interface.get("purpose") in ("public", "vpc")
+            and "primary" not in local_interface
+        ):
+            result["primary"] = False
+
+        return result
+
+    @staticmethod
+    def _compare_interfaces(
+        local_interfaces: List[Dict[str, Any]],
+        remote_interfaces: List[Dict[str, Any]],
+    ) -> bool:
+        """
+        Returns whether the two interface lists match
+        """
+        # Lengths are different, return immediately
+        if len(local_interfaces) != len(remote_interfaces):
+            return False
+
+        for i, local_interface in enumerate(local_interfaces):
+            remote_interface = remote_interfaces[i]
+            if (
+                LinodeInstance._normalize_local_interface(
+                    local_interface, remote_interface
+                )
+                != remote_interfaces[i]
+            ):
+                return False
+
+        return True
 
     def _create_instance(self) -> dict:
         """Creates a Linode instance"""
@@ -712,16 +784,24 @@ class LinodeInstance(LinodeModuleBase):
         if config is None or param_interfaces is None:
             return
 
-        param_interfaces = [drop_empty_strings(v) for v in param_interfaces]
+        param_interfaces = [
+            drop_empty_strings(v, recursive=True) for v in param_interfaces
+        ]
+
         remote_interfaces = [
-            drop_empty_strings(self._filter_remote_interface(v._serialize()))
+            drop_empty_strings(v._serialize(), recursive=True)
             for v in config.interfaces
         ]
 
-        if remote_interfaces == param_interfaces:
+        if self._compare_interfaces(param_interfaces, remote_interfaces):
             return
 
+        # TODO: Remove when related bug is fixed
+        config.interfaces = []
+        config.save()
+
         config.interfaces = [ConfigInterface(**v) for v in param_interfaces]
+
         config.save()
 
         self.register_action(
@@ -746,15 +826,23 @@ class LinodeInstance(LinodeModuleBase):
             if key == "interfaces":
                 old_value = filter_null_values_recursive(
                     [
-                        drop_empty_strings(
-                            self._filter_remote_interface(v._serialize())
-                        )
+                        drop_empty_strings(v._serialize(), recursive=True)
                         for v in old_value
                     ]
                 )
                 new_value = filter_null_values_recursive(
-                    [drop_empty_strings(v) for v in new_value]
+                    [drop_empty_strings(v, recursive=True) for v in new_value]
                 )
+
+                if not self._compare_interfaces(new_value, old_value):
+                    should_update = True
+                    config.interfaces = new_value
+                    self.register_action(
+                        f"Updated Interfaces for Config {config.id}: "
+                        f"{json.dumps(old_value)} -> {json.dumps(new_value)}"
+                    )
+
+                continue
 
             # Special diffing due to handling in linode_api4-python
             if key == "devices":
@@ -788,6 +876,13 @@ class LinodeInstance(LinodeModuleBase):
                 )
 
         if should_update:
+            # TODO: Hack to work around know bug; remove before release
+            old_interfaces = config.interfaces
+            config.interfaces = []
+            config.save()
+
+            config.interfaces = old_interfaces
+
             config.save()
 
     def _update_configs(self) -> None:

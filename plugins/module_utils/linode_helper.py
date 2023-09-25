@@ -1,5 +1,5 @@
 """This module contains helper functions for various Linode modules."""
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, cast
 
 import linode_api4
 import polling
@@ -40,13 +40,24 @@ def filter_null_values(input_dict: dict) -> dict:
     }
 
 
-def drop_empty_strings(input_dict: dict) -> dict:
+def drop_empty_strings(value: Union[dict], recursive=False) -> any:
     """Returns a copy of the given dict with all keys containing null and empty values removed"""
-    return {
-        key: value
-        for key, value in input_dict.items()
-        if value is not None and value != ""
-    }
+
+    if isinstance(value, dict):
+        result = {}
+
+        for key, item in value.items():
+            if item is None or item == "":
+                continue
+
+            if recursive:
+                result[key] = drop_empty_strings(item, recursive=recursive)
+            else:
+                result[key] = item
+
+        return result
+
+    return value
 
 
 def paginated_list_to_json(target_list: list) -> list:
