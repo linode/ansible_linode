@@ -83,7 +83,7 @@ LINODE_COMMON_ARGS = {
     "ca_path": {
         "type": "str",
         "description": "A path to a custom certificate authority that allows for alternate API testing.",
-    }
+    },
 }
 
 LINODE_TAG_ARGS = {
@@ -261,7 +261,7 @@ class LinodeModuleBase:
                 retry_rate_limit_interval=RETRY_INTERVAL_SECONDS,
                 retry_max=MAX_RETRIES,
                 retry_statuses=RETRY_STATUSES,
-                ca_path=ca_path
+                ca_path=ca_path,
             )
 
         return self._client
