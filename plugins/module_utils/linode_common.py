@@ -82,7 +82,7 @@ LINODE_COMMON_ARGS = {
     },
     "ca_path": {
         "type": "str",
-        "description": "A path to a custom certificate authority that allows for alternate API testing.",
+        "description": "A path to a custom certificate authority for using alternate APIs.",
     },
 }
 
