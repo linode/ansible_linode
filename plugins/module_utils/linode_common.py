@@ -83,6 +83,7 @@ LINODE_COMMON_ARGS = {
     "ca_path": {
         "type": "str",
         "description": "A path to a custom certificate authority for using alternate APIs.",
+        "fallback": (env_fallback, ["LINODE_CA"]),
     },
 }
 
