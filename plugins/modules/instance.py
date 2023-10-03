@@ -855,7 +855,7 @@ class LinodeInstance(LinodeModuleBase):
         if len(related_devices) < 1:
             self.fail(
                 msg="firewall_id can not be updated after Linode creation. "
-                "If you would like to update Firewall attachments, refer to 'firewall' "
+                "To update Firewall attachments, refer to the 'firewall' "
                 "and 'firewall_device' modules."
             )
 

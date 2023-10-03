@@ -54,7 +54,7 @@
         wait: false
         state: present
       register: instance_update
-      failed_when: '"firewall_id can not be updated after Linode creation" in instance_update.msg'
+      failed_when: '"firewall_id can not be updated after Linode creation" not in instance_update.msg'
 
   always:
     - ignore_errors: yes
