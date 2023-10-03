@@ -32,7 +32,15 @@ from ansible_specdoc.objects import (
 )
 
 try:
-    from linode_api4 import Config, ConfigInterface, Disk, Instance, Volume
+    from linode_api4 import (
+        ApiError,
+        Config,
+        ConfigInterface,
+        Disk,
+        Firewall,
+        Instance,
+        Volume,
+    )
 except ImportError:
     # handled in module_utils.linode_common
     pass
@@ -339,6 +347,12 @@ linode_instance_spec = {
             "the StackScript used when creating the instance.",
             "Only valid when a stackscript_id is provided.",
             "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+        ],
+    ),
+    "firewall_id": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The ID of a Firewall this Linode to assign this Linode to."
         ],
     ),
     "state": SpecField(
@@ -693,7 +707,6 @@ class LinodeInstance(LinodeModuleBase):
 
         result = {"instance": None, "root_pass": ""}
 
-        # We want to retry on 408s
         response = self.client.linode.instance_create(ltype, region, **params)
 
         # Weird variable return type
@@ -809,6 +822,42 @@ class LinodeInstance(LinodeModuleBase):
                 self._instance.label, config.id
             )
         )
+
+    def _update_firewall(self) -> None:
+        """
+        Handles updates to the firewall_id field.
+        """
+        firewall_id = self.module.params.get("firewall_id")
+        # Nothing to do
+        if firewall_id is None:
+            return
+
+        # Resolve the expected firewall; fail if firewall doesn't exist
+        try:
+            firewall = self.client.load(Firewall, firewall_id)
+        except ApiError as err:
+            # Raise a readable error for missing Firewalls
+            if err.status == 404:
+                self.fail(
+                    msg=f"Could not find Linode Firewall with id {firewall_id}"
+                )
+
+            raise err
+
+        # Raise an error if the firewall_id assignment is not currently valid.
+        # This is necessary to avoid making a large number of requests to discover
+        # Firewalls and reconcile their devices.
+        related_devices = [
+            v
+            for v in firewall.devices
+            if v.entity.type == "linode" and v.entity.id == self._instance.id
+        ]
+        if len(related_devices) < 1:
+            self.fail(
+                msg="firewall_id can not be updated after Linode creation. "
+                "To update Firewall attachments, refer to the 'firewall' "
+                "and 'firewall_device' modules."
+            )
 
     def _update_config(
         self, config: Config, config_params: Dict[str, Any]
@@ -1043,6 +1092,9 @@ class LinodeInstance(LinodeModuleBase):
 
         # Update interfaces
         self._update_interfaces()
+
+        # Handle updating on the target Firewall ID
+        self._update_firewall()
 
     def _handle_instance_boot(self) -> None:
         boot_status = self.module.params.get("booted")
