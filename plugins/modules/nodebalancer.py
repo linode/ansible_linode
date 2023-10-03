@@ -28,7 +28,12 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode
+from linode_api4 import (
+    Firewall,
+    NodeBalancer,
+    NodeBalancerConfig,
+    NodeBalancerNode,
+)
 
 linode_nodes_spec = {
     "label": SpecField(
@@ -239,6 +244,10 @@ linode_nodebalancer_spec = {
         type=FieldType.string,
         description=["The ID of the Region to create this NodeBalancer in."],
     ),
+    "firewall_id": SpecField(
+        type=FieldType.integer,
+        description=["The ID of the Firewall to assign this NodeBalancer to."],
+    ),
     "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
@@ -342,13 +351,13 @@ class LinodeNodeBalancer(LinodeModuleBase):
         params = self.module.params
         label = params.get("label")
         region = params.get("region")
-
+        firewall_id = params.get("firewall_id")
         try:
-            return self.client.nodebalancer_create(region, label=label)
-        except Exception as exception:
-            return self.fail(
-                msg="failed to create nodebalancer: {0}".format(exception)
+            return self.client.nodebalancer_create(
+                region, label=label, firewall_id=firewall_id
             )
+        except Exception as exception:
+            return self.fail(msg=f"failed to create nodebalancer: {exception}")
 
     def _create_config(
         self, node_balancer: NodeBalancer, config_params: dict
@@ -518,6 +527,16 @@ class LinodeNodeBalancer(LinodeModuleBase):
         if "configs" in params.keys():
             params.pop("configs")
 
+        if "firewall_id" in params.keys():
+            firewall_id = params.pop("firewall_id")
+            firewall = self.client.load(Firewall, firewall_id)
+            if not firewall or params.get("label") not in [
+                x.id for x in firewall.devices if x.entity is NodeBalancer
+            ]:
+                return self.fail(
+                    "Firewall attachments can only be updated via the firewall_device module."
+                )
+
         for key, new_value in params.items():
             if not hasattr(self._node_balancer, key):
                 continue
@@ -559,11 +578,12 @@ class LinodeNodeBalancer(LinodeModuleBase):
         if self._node_balancer is None:
             self._node_balancer = self._create_nodebalancer()
             self.register_action("Created NodeBalancer {}".format(nb_label))
+        else:
+            self._update_nodebalancer()
 
         if self._node_balancer is None:
             return self.fail("failed to create nodebalancer")
 
-        self._update_nodebalancer()
         self._node_balancer._api_get()
 
         self.results["node_balancer"] = self._node_balancer._raw_json
