@@ -12,6 +12,13 @@
         state: present
       register: inst
 
+    - name: Create Nodebalancer
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-nb-{{ r }}'
+        region: us-east
+        state: present
+      register: nb
+
     - name: Create a Linode Firewall
       linode.cloud.firewall:
         api_version: v4beta
@@ -39,6 +46,20 @@
         that:
           - fw_device.changed
 
+    - name: Add Nodebalancer Device to Linode Firewall
+      linode.cloud.firewall_device:
+        api_version: v4beta
+        firewall_id: '{{ fw.firewall.id }}'
+        entity_id: '{{ nb.node_balancer.id }}'
+        entity_type: 'nodebalancer'
+        state: present
+      register: fw_device_nb
+
+    - name: Assert firewall device added
+      assert:
+        that:
+          - fw_device_nb.changed
+
     - name: Add Existing Device to Linode Firewall
       linode.cloud.firewall_device:
         api_version: v4beta
@@ -61,11 +82,17 @@
             entity_id: '{{ inst.instance.id }}'
             entity_type: 'linode'
             state: absent
-
+        - linode.cloud.firewall_device:
+            firewall_id: '{{ fw.firewall.id }}'
+            entity_id: '{{ nb.node_balancer.id }}'
+            entity_type: 'nodebalancer'
+            state: absent
+        - linode.cloud.nodebalancer:
+            label: '{{ nb.node_balancer.label }}'
+            state: absent
         - linode.cloud.instance:
             label: '{{ inst.instance.label }}'
             state: absent
-
         - linode.cloud.firewall:
             label: '{{ fw.firewall.label }}'
             state: absent

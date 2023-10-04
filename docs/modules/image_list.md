@@ -1,6 +1,6 @@
 # image_list
 
-List and filter on Linode images.
+List and filter on Images.
 
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -34,21 +34,21 @@ List and filter on Linode images.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | <center>`str`</center> | <center>Optional</center> | The order to list events in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
-| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order events by.   |
-| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting events.   |
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list Images in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
+| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Images by.   |
+| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Images.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of Images to return. If undefined, all results will be returned.   |
 
 ### filters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable attributes can be found here: https://www.linode.com/docs/api/images/#images-list__responses   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://www.linode.com/docs/api/images/#images-list__responses).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
 
-- `images` - The returned images.
+- `images` - The returned Images.
 
     - Sample Response:
         ```json
@@ -71,6 +71,6 @@ List and filter on Linode images.
            }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/images/#images-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://www.linode.com/docs/api/images/#images-list__responses) for a list of returned fields
 
 

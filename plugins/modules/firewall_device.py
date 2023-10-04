@@ -39,9 +39,9 @@ MODULE_SPEC = {
         type=FieldType.string,
         required=True,
         description=[
-            "The type of Linode Entity. Currently only supports linode."
+            "The type of Linode Entity. Currently only supports linode and nodebalancer."
         ],
-        choices=["linode"],
+        choices=["linode", "nodebalancer"],
     ),
     "label": SpecField(
         type=FieldType.string,

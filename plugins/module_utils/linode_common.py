@@ -80,6 +80,11 @@ LINODE_COMMON_ARGS = {
         "doc_hide": True,
         "fallback": (env_fallback, ["LINODE_UA_PREFIX"]),
     },
+    "ca_path": {
+        "type": "str",
+        "description": "A path to a custom certificate authority for using alternate APIs.",
+        "fallback": (env_fallback, ["LINODE_CA"]),
+    },
 }
 
 LINODE_TAG_ARGS = {
@@ -241,6 +246,7 @@ class LinodeModuleBase:
             api_token = self.module.params["api_token"]
             api_version = self.module.params["api_version"]
             api_url = self.module.params["api_url"]
+            ca_path = self.module.params["ca_path"]
 
             user_agent = COLLECTION_USER_AGENT
 
@@ -256,6 +262,7 @@ class LinodeModuleBase:
                 retry_rate_limit_interval=RETRY_INTERVAL_SECONDS,
                 retry_max=MAX_RETRIES,
                 retry_statuses=RETRY_STATUSES,
+                ca_path=ca_path,
             )
 
         return self._client
