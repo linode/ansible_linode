@@ -1,5 +1,3 @@
-import unittest
-
 import pytest
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import InfoModule, InfoModuleResult, \
