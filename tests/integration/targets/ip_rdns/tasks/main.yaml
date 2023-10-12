@@ -54,4 +54,4 @@
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file }}'
 
-    LINODA_CA: LINODE_CA
+
