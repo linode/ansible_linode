@@ -3,10 +3,11 @@ COLLECTIONS_PATH ?= ~/.ansible/collections
 DOCS_PATH ?= docs
 COLLECTION_VERSION ?=
 
-TEST_ARGS := -v
 TEST_API_URL ?= https://api.linode.com/
 TEST_API_VERSION ?= v4beta
-TEST_CA_FILE ?=
+TEST_API_CA ?=
+
+TEST_ARGS := -v
 INTEGRATION_CONFIG := ./tests/integration/integration_config.yml
 
 clean:
@@ -80,4 +81,4 @@ endif
 	@echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)
 	@echo "api_url: $(TEST_API_URL)" >> $(INTEGRATION_CONFIG)
 	@echo "api_version: $(TEST_API_VERSION)" >> $(INTEGRATION_CONFIG)
-	@echo "ca_file: $(TEST_CA_FILE)" >> $(INTEGRATION_CONFIG)
+	@echo "ca_file: $(TEST_API_CA)" >> $(INTEGRATION_CONFIG)
