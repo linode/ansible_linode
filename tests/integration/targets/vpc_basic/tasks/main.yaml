@@ -19,6 +19,15 @@
           - create_vpc.vpc.region == 'us-east'
           - create_vpc.vpc.description == 'test description'
 
+    - name: Create a VPC with invalid label
+      linode.cloud.vpc:
+          label: 'test-vpc!!'
+          region: us-east
+          description: test description
+          state: present
+      register: invalid_label
+      failed_when: "'Label must include only ASCII letters, numbers, and dashes' not in invalid_label.msg"
+
     - name: Update the VPC
       linode.cloud.vpc:
         label: 'ansible-test-{{ r }}'
@@ -33,6 +42,15 @@
           - create_vpc.changed
           - update_vpc.vpc.id == create_vpc.vpc.id
           - update_vpc.vpc.description == 'test description updated'
+
+    - name: Update the VPC with invalid label
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}!'
+        region: us-east
+        description: test description updated
+        state: present
+      register: modify_vpc
+      failed_when: "'Label must include only ASCII letters, numbers, and dashes' not in modify_vpc.msg"
 
     - name: Don't update the VPC
       linode.cloud.vpc:

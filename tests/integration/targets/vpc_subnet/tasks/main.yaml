@@ -37,6 +37,15 @@
           - create_subnet.subnet.updated != None
           - create_subnet.subnet.linodes | length == 0
 
+    - name: Create a subnet with invalid label
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'subnet-invalid!!'
+        ipv4: '10.0.0.0/24'
+        state: present
+      register: invalid_subnet
+      failed_when: "'Label must include only ASCII letters, numbers, and dashes' not in invalid_subnet.msg"
+
     - name: List Subnets
       linode.cloud.vpc_subnet_list:
         vpc_id: '{{ create_vpc.vpc.id }}'
