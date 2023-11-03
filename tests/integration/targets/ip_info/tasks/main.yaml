@@ -21,6 +21,7 @@
     - assert:
         that:
           - ip_info.ip.address == instance_create.instance.ipv4[0]
+          - ip_info.ip.vpc_nat_1_1
 
   always:
     - ignore_errors: true
