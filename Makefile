@@ -27,7 +27,7 @@ install: build
 	ansible-galaxy collection install *.tar.gz --force -p $(COLLECTIONS_PATH)
 
 deps:
-	pip install --upgrade -r requirements.txt -r requirements-dev.txt
+	pip install -r requirements.txt -r requirements-dev.txt --upgrade
 
 lint:
 	pylint plugins
