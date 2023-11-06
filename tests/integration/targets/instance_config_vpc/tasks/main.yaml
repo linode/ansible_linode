@@ -6,7 +6,7 @@
     - name: Create a VPC
       linode.cloud.vpc:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-mia
         description: test description
         state: present
       register: create_vpc
@@ -22,7 +22,7 @@
     - name: Create a Linode instance with interface
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-mia
         type: g6-standard-1
         disks:
           - label: test-disk
@@ -58,10 +58,23 @@
           - create_instance.configs[0].interfaces[0].ipv4.nat_1_1 == create_instance.instance.ipv4[0]
           - create_instance.configs[0].interfaces[0].ipv4.vpc == '10.0.0.3'
 
+    - name: Get ip_info about the instance's vpc ip
+      linode.cloud.ip_info:
+        address: '{{ create_instance.instance.ipv4[0] }}'
+      register: ip_info
+
+    - name: Assert ip_info matches vpc settings
+      assert:
+        that:
+          - ip_info.ip.address == create_instance.instance.ipv4[0]
+          - ip_info.ip.vpc_nat_1_1.address == '10.0.0.3'
+          - ip_info.ip.vpc_nat_1_1.vpc_id == create_vpc.vpc.id
+          - ip_info.ip.vpc_nat_1_1.subnet_id == create_subnet.subnet.id
+
     - name: Update the config interfaces
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-mia
         type: g6-standard-1
         disks:
           - label: test-disk
@@ -103,7 +116,7 @@
     - name: Don't change the config interfaces
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-mia
         type: g6-standard-1
         disks:
           - label: test-disk
@@ -158,4 +171,4 @@
     LINODE_API_TOKEN: '{{ api_token }}'
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
-    REQUESTS_CA_BUNDLE: '{{ ca_file }}'
+    REQUESTS_CA_BUNDLE: '{{ ca_file or "" }}'

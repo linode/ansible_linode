@@ -70,7 +70,9 @@ class Module(LinodeModuleBase):
 
     def _get_ip(self, address: str) -> IPAddress:
         try:
-            return self.client.load(IPAddress, address)
+            ip_addr = IPAddress(self.client, address)
+            ip_addr._api_get()
+            return ip_addr
         except Exception as exception:
             self.fail(
                 msg="failed to get IP address {0}: {1}".format(

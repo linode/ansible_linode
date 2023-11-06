@@ -6,7 +6,7 @@
     - name: Create a VPC
       linode.cloud.vpc:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-mia
         description: test description
         state: present
       register: create_vpc
@@ -16,13 +16,13 @@
         that:
           - create_vpc.changed
           - create_vpc.vpc.label == 'ansible-test-{{ r }}'
-          - create_vpc.vpc.region == 'us-east'
+          - create_vpc.vpc.region == 'us-mia'
           - create_vpc.vpc.description == 'test description'
 
     - name: Create a VPC with invalid label
       linode.cloud.vpc:
           label: 'test-vpc!!'
-          region: us-east
+          region: us-mia
           description: test description
           state: present
       register: invalid_label
@@ -31,7 +31,7 @@
     - name: Update the VPC
       linode.cloud.vpc:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-mia
         description: test description updated
         state: present
       register: update_vpc
@@ -46,7 +46,7 @@
     - name: Update the VPC with invalid label
       linode.cloud.vpc:
         label: 'ansible-test-{{ r }}!'
-        region: us-east
+        region: us-mia
         description: test description updated
         state: present
       register: modify_vpc
@@ -55,7 +55,7 @@
     - name: Don't update the VPC
       linode.cloud.vpc:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-mia
         description: test description updated
         state: present
       register: no_update_vpc
@@ -115,4 +115,4 @@
     LINODE_API_VERSION: '{{ api_version }}'
 
     # Temporary testing override; remove before merge to dev
-    REQUESTS_CA_BUNDLE: '{{ ca_file }}'
+    REQUESTS_CA_BUNDLE: '{{ ca_file or "" }}'
