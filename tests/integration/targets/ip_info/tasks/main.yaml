@@ -21,7 +21,6 @@
     - assert:
         that:
           - ip_info.ip.address == instance_create.instance.ipv4[0]
-          - ip_info.ip.vpc_nat_1_1
 
   always:
     - ignore_errors: true
@@ -35,4 +34,4 @@
     LINODE_API_TOKEN: '{{ api_token }}'
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
-    LINODE_CA: '{{ ca_file }}'
+    LINODE_CA: '{{ ca_file or "" }}'

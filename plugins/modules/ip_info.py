@@ -3,6 +3,7 @@
 
 """This module allows users to retrieve information about a Linode IP address."""
 
+
 from __future__ import absolute_import, division, print_function
 
 from typing import Any, Optional
@@ -69,16 +70,13 @@ class Module(LinodeModuleBase):
 
     def _get_ip(self, address: str) -> IPAddress:
         try:
-            ip_addr = IPAddress(self.client, address)
-
-            ip_addr._api_get()
-
-            return ip_addr
+            return self.client.load(IPAddress, address)
         except Exception as exception:
             self.fail(
                 msg="failed to get IP address {0}: {1}".format(
                     address, exception
-                )
+                ),
+                exception=exception,
             )
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
