@@ -6,7 +6,7 @@
     - name: Create a VPC
       linode.cloud.vpc:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-mia
         description: test description
         state: present
       register: create_vpc
@@ -16,7 +16,7 @@
         that:
           - create_vpc.changed
           - create_vpc.vpc.label == 'ansible-test-{{ r }}'
-          - create_vpc.vpc.region == 'us-east'
+          - create_vpc.vpc.region == 'us-mia'
           - create_vpc.vpc.description == 'test description'
 
     - name: Create a subnet
@@ -100,4 +100,4 @@
     LINODE_API_VERSION: '{{ api_version }}'
 
     # Temporary testing override; remove before merge to dev
-    REQUESTS_CA_BUNDLE: '{{ ca_file }}'
+    REQUESTS_CA_BUNDLE: '{{ ca_file or "" }}'
