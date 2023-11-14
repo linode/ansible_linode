@@ -44,6 +44,7 @@ specdoc_examples = ['''
     type: g6-standard-1
     booted: true
     boot_config_label: boot-config
+    state: present
     disks:
       - label: boot
         image: linode/ubuntu18.04
