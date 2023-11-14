@@ -42,7 +42,12 @@ Get info about a Linode VPC Subnet.
             "id": 271,
             "ipv4": "10.0.0.0/24",
             "label": "test-subnet",
-            "linodes": [],
+            "linodes": [
+                {
+                    "id": 1234567,
+                    "interfaces": [{"active": false, "id": 654321}],
+                }
+            ],
             "updated": "2023-08-31T18:53:04"
         }
         ```
