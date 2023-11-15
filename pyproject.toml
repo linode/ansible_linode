@@ -53,7 +53,6 @@ disable = [
     "missing-timeout",
     "use-sequence-for-iteration",
     "broad-exception-raised",
-    "fixme" # Temporary "TODO" ignore
 ]
 py-version = "3.8"
 extension-pkg-whitelist = "math"

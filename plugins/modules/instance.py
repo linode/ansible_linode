@@ -818,10 +818,6 @@ class LinodeInstance(LinodeModuleBase):
         if self._compare_interfaces(param_interfaces, remote_interfaces):
             return
 
-        # TODO: Remove when related bug is fixed
-        config.interfaces = []
-        config.save()
-
         config.interfaces = [ConfigInterface(**v) for v in param_interfaces]
 
         config.save()
@@ -934,13 +930,6 @@ class LinodeInstance(LinodeModuleBase):
                 )
 
         if should_update:
-            # TODO: Hack to work around know bug; remove before release
-            old_interfaces = config.interfaces
-            config.interfaces = []
-            config.save()
-
-            config.interfaces = old_interfaces
-
             config.save()
 
     def _update_configs(self) -> None:
