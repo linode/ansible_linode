@@ -100,4 +100,4 @@
     LINODE_API_VERSION: '{{ api_version }}'
 
     # Temporary testing override; remove before merge to dev
-    REQUESTS_CA_BUNDLE: '{{ ca_file or "" }}'
+    LINODE_CA: '{{ ca_file or "" }}'
