@@ -1,0 +1,147 @@
+- name: instance_interfaces
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        description: test description
+        state: present
+      register: create_vpc
+
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        state: present
+      register: create_subnet
+
+    - name: Create a Linode instance with interface
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        type: g6-nanode-1
+        image: linode/ubuntu22.04
+        interfaces:
+          - purpose: vpc
+            subnet_id: '{{ create_subnet.subnet.id }}'
+            primary: true
+            ipv4:
+              vpc: 10.0.0.3
+              nat_1_1: any
+            ip_ranges: ["10.0.0.5/32"]
+        wait: false
+        state: present
+      register: create_instance
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_instance.changed
+
+          - create_instance.configs[0].interfaces[0].purpose == 'vpc'
+          - create_instance.configs[0].interfaces[0].subnet_id == create_subnet.subnet.id
+          - create_instance.configs[0].interfaces[0].vpc_id == create_vpc.vpc.id
+          # - create_instance.configs[0].interfaces[0].ip_ranges[0] == '10.0.0.5/32'
+          - create_instance.configs[0].interfaces[0].ipv4.nat_1_1 == create_instance.instance.ipv4[0]
+          - create_instance.configs[0].interfaces[0].ipv4.vpc == '10.0.0.3'
+
+    - name: Update the instance interfaces
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        type: g6-nanode-1
+        image: linode/ubuntu22.04
+        interfaces:
+          - purpose: public
+            primary: true
+          - purpose: vpc
+            subnet_id: '{{ create_subnet.subnet.id }}'
+            ipv4:
+              vpc: 10.0.0.4
+            ip_ranges: ["10.0.0.7/32"]
+        wait: false
+        state: present
+      register: update_instance
+    
+    
+
+    - name: Assert instance updated
+      assert:
+        that:
+          - update_instance.changed
+
+          - update_instance.configs[0].interfaces[0].purpose == 'public'
+          - update_instance.configs[0].interfaces[0].primary
+
+          - update_instance.configs[0].interfaces[1].purpose == 'vpc'
+          - update_instance.configs[0].interfaces[1].subnet_id == create_subnet.subnet.id
+          - update_instance.configs[0].interfaces[1].vpc_id == create_vpc.vpc.id
+          - update_instance.configs[0].interfaces[1].ip_ranges[0] == '10.0.0.7/32'
+          - update_instance.configs[0].interfaces[1].ipv4.nat_1_1 == ""
+          - update_instance.configs[0].interfaces[1].ipv4.vpc == '10.0.0.4'
+    
+    - name: Get information about the Subnet by ID
+      linode.cloud.vpc_subnet_info:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        id: '{{ create_subnet.subnet.id }}'
+      register: subnet_info
+
+    - name: Assert subnet updated
+      assert:
+        that:
+          - subnet_info.subnet.linodes[0].id == update_instance.instance.id
+          - subnet_info.subnet.linodes[0].interfaces[0].id == update_instance.configs[0].interfaces[1].id
+
+    - name: Unchanged instance interface
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        type: g6-nanode-1
+        image: linode/ubuntu22.04
+        interfaces:
+          - purpose: public
+            primary: true
+          - purpose: vpc
+            subnet_id: '{{ create_subnet.subnet.id }}'
+            ipv4:
+              vpc: 10.0.0.4
+            ip_ranges: ["10.0.0.7/32"]
+        wait: false
+        state: present
+      register: unchanged_instance
+
+    - assert:
+        that:
+          - unchanged_instance.changed == False
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create_instance.instance.label }}'
+            state: absent
+          register: delete_instance
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_instance.changed
+              - delete_instance.instance.id == create_instance.instance.id
+
+        - name: Delete the VPC
+          linode.cloud.vpc:
+            label: 'ansible-test-{{ r }}'
+            state: absent
+          register: delete_vpc
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

@@ -7,3 +7,4 @@ galaxy.yml
 venv
 collections
 .pytest_cache
+.DS_Store

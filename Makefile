@@ -13,7 +13,7 @@ INTEGRATION_CONFIG := ./tests/integration/integration_config.yml
 clean:
 	rm -f *.tar.gz && rm -rf galaxy.yml
 
-build: clean gendocs
+build: deps clean gendocs
 	python scripts/render_galaxy.py $(COLLECTION_VERSION) && ansible-galaxy collection build
 
 publish: build
