@@ -91,4 +91,3 @@
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file or "" }}'
 
->>>>>>> 3ee3aabf6b1a20187f78b4f2371ab8902cc76b7e
