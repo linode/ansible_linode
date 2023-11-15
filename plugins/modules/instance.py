@@ -662,6 +662,15 @@ class LinodeInstance(LinodeModuleBase):
         ):
             result["primary"] = False
 
+        # The primary field will not be returned for VLAN interfaces,
+        # so we should drop it from the user-configured interface.
+        if local_interface.get("purpose") == "vlan" and "primary" in result:
+            primary = result.pop("primary")
+
+            # Extra validation step to make sure users aren't trying to
+            # set a VLAN as a primary interface.
+            if primary:
+                raise ValueError("VLAN interfaces cannot be primary interfaces")
         return result
 
     @staticmethod
