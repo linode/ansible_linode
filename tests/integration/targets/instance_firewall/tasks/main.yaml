@@ -1,0 +1,82 @@
+- name: instance_firewall
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode Firewall
+      linode.cloud.firewall:
+        api_version: v4beta
+        label: 'ansible-test-{{ r }}'
+        devices: []
+        rules:
+          inbound_policy: DROP
+          outbound_policy: DROP
+        state: present
+      register: firewall_create
+
+    - name: Create a Linode Firewall
+      linode.cloud.firewall:
+        api_version: v4beta
+        label: 'ansible-test-{{ r }}-2'
+        devices: []
+        rules:
+          inbound_policy: DROP
+          outbound_policy: DROP
+        state: present
+      register: firewall_2_create
+
+    - name: Create a Linode instance attached to the Firewall
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        type: g6-standard-1
+        firewall_id: '{{ firewall_create.firewall.id }}'
+        wait: false
+        state: present
+      register: instance_create
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+        id: '{{ firewall_create.firewall.id }}'
+      register: firewall_info
+
+    - name: Assert instance is assigned to the firewall
+      assert:
+        that:
+          - firewall_info.devices[0].entity.id == instance_create.instance.id
+
+    - name: Attempt to update the firewall_id for the instance
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        type: g6-standard-1
+        firewall_id: '{{ firewall_2_create.firewall.id }}'
+        wait: false
+        state: present
+      register: instance_update
+      failed_when: '"firewall_id can not be updated after Linode creation" not in instance_update.msg'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ instance_create.instance.label }}'
+            state: absent
+
+        - name: Delete a Linode firewall
+          linode.cloud.firewall:
+            label: '{{ firewall_create.firewall.label }}'
+            state: absent
+
+        - name: Delete a Linode firewall
+          linode.cloud.firewall:
+            label: '{{ firewall_2_create.firewall.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

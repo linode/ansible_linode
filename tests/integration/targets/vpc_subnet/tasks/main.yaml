@@ -1,0 +1,102 @@
+- name: vpc_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        description: test description
+        state: present
+      register: create_vpc
+
+    - name: Assert VPC created
+      assert:
+        that:
+          - create_vpc.changed
+          - create_vpc.vpc.label == 'ansible-test-{{ r }}'
+          - create_vpc.vpc.region == 'us-mia'
+          - create_vpc.vpc.description == 'test description'
+
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        state: present
+      register: create_subnet
+
+    - name: Assert Subnet created
+      assert:
+        that:
+          - create_subnet.changed
+          - create_subnet.subnet.label == 'test-subnet'
+          - create_subnet.subnet.ipv4 == '10.0.0.0/24'
+          - create_subnet.subnet.created != None
+          - create_subnet.subnet.updated != None
+          - create_subnet.subnet.linodes | length == 0
+
+    - name: Create a subnet with invalid label
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'subnet-invalid!!'
+        ipv4: '10.0.0.0/24'
+        state: present
+      register: invalid_subnet
+      failed_when: "'Label must include only ASCII letters, numbers, and dashes' not in invalid_subnet.msg"
+
+    - name: List Subnets
+      linode.cloud.vpc_subnet_list:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        filters:
+          - name: label
+            values: '{{ create_subnet.subnet.label }}'
+      register: list_subnets
+
+    - name: Assert Subnets
+      assert:
+        that:
+          - list_subnets.subnets[0].id == create_subnet.subnet.id
+
+    - name: Get information about the Subnet by ID
+      linode.cloud.vpc_subnet_info:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        id: '{{ create_subnet.subnet.id }}'
+      register: subnet_info_id
+
+    - name: Get information about the Subnet by label
+      linode.cloud.vpc_subnet_info:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: '{{ create_subnet.subnet.label }}'
+      register: subnet_info_label
+
+    - name: Assert results
+      assert:
+        that:
+          - subnet_info_label.subnet.id == create_subnet.subnet.id
+          - subnet_info_label.subnet.id == subnet_info_id.subnet.id
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a subnet
+          linode.cloud.vpc_subnet:
+            vpc_id: '{{ create_vpc.vpc.id }}'
+            label: 'test-subnet'
+            state: absent
+          register: delete_subnet
+
+        - name: Delete a VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+
+    LINODE_CA: '{{ ca_file or "" }}'

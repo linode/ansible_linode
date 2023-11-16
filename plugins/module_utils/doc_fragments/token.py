@@ -13,7 +13,7 @@ specdoc_examples = ['''
     state: present''', '''
 - name: Delete a token
   linode.cloud.token:
-    domain: my-token
+    label: my-token
     state: absent''']
 
 result_token_samples = ['''{

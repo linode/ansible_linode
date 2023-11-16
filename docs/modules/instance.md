@@ -58,6 +58,7 @@ Manage Linode Instances, Configs, and Disks.
     type: g6-standard-1
     booted: true
     boot_config_label: boot-config
+    state: present
     disks:
       - label: boot
         image: linode/ubuntu18.04
@@ -111,6 +112,7 @@ Manage Linode Instances, Configs, and Disks.
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If not specified, one will be generated. This generated password will be available in the task success JSON.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
+| `firewall_id` | <center>`int`</center> | <center>Optional</center> | The ID of a Firewall this Linode to assign this Linode to.   |
 | `private_ip` | <center>`bool`</center> | <center>Optional</center> | If true, the created Linode will have private networking enabled.   |
 | `group` | <center>`str`</center> | <center>Optional</center> | The group that the instance should be marked under. Please note, that group labelling is deprecated but still supported. The encouraged method for marking instances is to use tags.  **(Updatable)** |
 | `boot_config_label` | <center>`str`</center> | <center>Optional</center> | The label of the config to boot from.   |
@@ -232,9 +234,13 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `purpose` | <center>`str`</center> | <center>**Required**</center> | The type of interface.  **(Choices: `public`, `vlan`)** |
+| `purpose` | <center>`str`</center> | <center>**Required**</center> | The type of interface.  **(Choices: `public`, `vlan`, `vpc`)** |
+| `primary` | <center>`bool`</center> | <center>Optional</center> | Whether this is a primary interface  **(Default: `False`)** |
+| `subnet_id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC subnet to assign this interface to.   |
+| `ipv4` | <center>`dict`</center> | <center>Optional</center> | The IPv4 configuration for this interface. (VPC only)   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces.   |
 | `ipam_address` | <center>`str`</center> | <center>Optional</center> | This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.   |
+| `ip_ranges` | <center>`list`</center> | <center>Optional</center> | Packets to these CIDR ranges are routed to the VPC network interface. (VPC only)   |
 
 ### disks
 

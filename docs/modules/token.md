@@ -29,7 +29,7 @@ NOTE: The full Personal Access Token is only returned when a new token has been 
 ```yaml
 - name: Delete a token
   linode.cloud.token:
-    domain: my-token
+    label: my-token
     state: absent
 ```
 
