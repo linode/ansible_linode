@@ -46,7 +46,7 @@ jobs:
         run: |
           if [ "$RUN_LONG_TESTS" = "1" ]; then
             make testall
-          else;
+          else
             echo "Skipping long tests."
             make testall
         env:
