@@ -59,12 +59,20 @@ gendocs:
 	python scripts/render_readme.py $(COLLECTION_VERSION)
 
 integration-test: create-integration-config
+ifdef RUN_LONG_TESTS
 	ansible-test integration $(TEST_ARGS)
+else
+	ansible-test integration $(TEST_ARGS) --exclude-tag longtests
+endif
 
 test: integration-test
 
 testall: create-integration-config
+ifdef RUN_LONG_TESTS
 	./scripts/test_all.sh
+else
+	./scripts/test_all.sh --exclude longtests
+endif
 
 unittest:
 	ansible-test units --target-python default

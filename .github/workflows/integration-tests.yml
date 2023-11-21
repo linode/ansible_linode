@@ -46,9 +46,9 @@ jobs:
         run: |
           if [ "$RUN_LONG_TESTS" = "1" ]; then
             make testall
-          else
+          else;
             echo "Skipping long tests."
-          fi
+            make testall
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
-          RUN_LONG_TESTS: ${{ env.RUN_LONG_TESTS }}
+          RUN_LONG_TESTS: ${{ secrets.RUN_LONG_TESTS }}
