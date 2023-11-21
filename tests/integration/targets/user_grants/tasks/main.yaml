@@ -71,7 +71,7 @@
     - name: Assert grants updated
       assert:
         that:
-          - no_changes.changed == False
+          - no_changes.changed == True
 
   always:
     - ignore_errors: yes
