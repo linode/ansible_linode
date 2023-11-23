@@ -71,7 +71,7 @@
     - name: Assert grants updated
       assert:
         that:
-          - no_changes.changed == True
+          - no_changes.grants.global.add_linodes == update_grants.grants.global.add_linodes
 
   always:
     - ignore_errors: yes
