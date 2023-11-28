@@ -893,7 +893,7 @@ class LinodeInstance(LinodeModuleBase):
                 f"failed to wait for instance to reach status {status}: timeout period expired"
             )
 
-    def _update_type(self):
+    def _update_type(self) -> None:
         """
         Handles updates on the type field.
         """
@@ -936,7 +936,7 @@ class LinodeInstance(LinodeModuleBase):
         if previously_booted:
             self._wait_for_instance_status("running")
 
-    def _update_region(self):
+    def _update_region(self) -> None:
         """
         Handles updates on the region field.
         """
