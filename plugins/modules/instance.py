@@ -10,6 +10,7 @@ import json
 from typing import Any, Dict, List, Optional, Union, cast
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
+import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
@@ -23,6 +24,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     filter_null_values_recursive,
     paginated_list_to_json,
     parse_linode_types,
+    poll_condition,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -447,7 +449,7 @@ linode_instance_spec = {
     ),
     "wait_timeout": SpecField(
         type=FieldType.integer,
-        default=240,
+        default=1500,
         description=[
             "The amount of time, in seconds, to wait for an instance to "
             'have status "running".'
@@ -468,6 +470,21 @@ linode_instance_spec = {
             "previously in a running state.",
             "To ensure your Linode will always be rebooted, consider "
             "also setting the `booted` field.",
+        ],
+        default=False,
+    ),
+    "migration_type": SpecField(
+        type=FieldType.string,
+        description=[
+            "The type of migration to use for Region and Type migrations."
+        ],
+        choices=["cold", "warm"],
+        default="cold",
+    ),
+    "auto_disk_resize": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Whether implicitly created disks should be resized during a type change operation."
         ],
         default=False,
     ),
@@ -864,6 +881,96 @@ class LinodeInstance(LinodeModuleBase):
                 "and 'firewall_device' modules."
             )
 
+    def _wait_for_instance_status(self, status: str) -> None:
+        def poll_func() -> bool:
+            self._instance.invalidate()
+            return self._instance.status == status
+
+        try:
+            poll_condition(poll_func, 4, self._timeout_ctx.seconds_remaining)
+        except polling.TimeoutException:
+            self.fail(
+                f"failed to wait for instance to reach status {status}: timeout period expired"
+            )
+
+    def _update_type(self):
+        """
+        Handles updates on the type field.
+        """
+
+        new_type = self.module.params.get("type")
+        auto_disk_resize = self.module.params.get("auto_disk_resize")
+        migration_type = self.module.params.get("migration_type")
+
+        previously_booted = self._instance.status == "running"
+
+        if new_type is None or new_type == self._instance.type.id:
+            return
+
+        resize_poller = self.client.polling.event_poller_create(
+            "linode", "linode_resize", entity_id=self._instance.id
+        )
+
+        self.client.polling.wait_for_entity_free(
+            "linode",
+            self._instance.id,
+            timeout=self._timeout_ctx.seconds_remaining,
+        )
+
+        self._instance.resize(
+            new_type=new_type,
+            allow_auto_disk_resize=auto_disk_resize,
+            migration_type=migration_type,
+        )
+
+        self.register_action(
+            f"Resized instance from type {self._instance.type.id} to {new_type}"
+        )
+
+        resize_poller.wait_for_next_event_finished(
+            timeout=self._timeout_ctx.seconds_remaining
+        )
+
+        # The boot process for the instance is handled implicitly by the resize operation,
+        # so we wait for the instance to reach running status if necessary.
+        if previously_booted:
+            self._wait_for_instance_status("running")
+
+    def _update_region(self):
+        """
+        Handles updates on the region field.
+        """
+
+        new_region = self.module.params.get("region")
+        migration_type = self.module.params.get("migration_type")
+
+        if new_region is None or new_region == self._instance.region.id:
+            return
+
+        migration_poller = self.client.polling.event_poller_create(
+            "linode", "linode_migrate_datacenter", entity_id=self._instance.id
+        )
+
+        self.client.polling.wait_for_entity_free(
+            "linode",
+            self._instance.id,
+            timeout=self._timeout_ctx.seconds_remaining,
+        )
+
+        # TODO: Include type change in request if possible
+        self._instance.initiate_migration(
+            region=new_region,
+            migration_type=migration_type,
+        )
+
+        self.register_action(
+            f"Migrated Instance from {self._instance.region.id} to {new_region}"
+        )
+
+        migration_poller.wait_for_next_event_finished(
+            timeout=self._timeout_ctx.seconds_remaining
+        )
+
     def _update_config(
         self, config: Config, config_params: Dict[str, Any]
     ) -> None:
@@ -1037,6 +1144,8 @@ class LinodeInstance(LinodeModuleBase):
                 "boot_config_label",
                 "reboot",
                 "backups_enabled",
+                "type",
+                "region",
             ):
                 continue
 
@@ -1093,6 +1202,12 @@ class LinodeInstance(LinodeModuleBase):
 
         # Handle updating on the target Firewall ID
         self._update_firewall()
+
+        # Handle migrating the instance if necessary
+        self._update_region()
+
+        # Handle updating the instance type
+        self._update_type()
 
     def _handle_instance_boot(self) -> None:
         boot_status = self.module.params.get("booted")
