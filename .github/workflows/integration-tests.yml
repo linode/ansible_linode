@@ -48,7 +48,6 @@ jobs:
             make testall
           else
             echo "Skipping long tests."
-            make testall
           fi
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
