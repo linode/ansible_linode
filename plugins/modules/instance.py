@@ -10,6 +10,7 @@ import json
 from typing import Any, Dict, List, Optional, Union, cast
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
+import linode_api4
 import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
@@ -902,9 +903,16 @@ class LinodeInstance(LinodeModuleBase):
         auto_disk_resize = self.module.params.get("auto_disk_resize")
         migration_type = self.module.params.get("migration_type")
 
+        # Graceful handling for a potential edge case
+        # where the type is stored as a string rather than
+        # an instance of the Type class.
+        current_type = self._instance.type
+        if isinstance(current_type, linode_api4.Type):
+            current_type = current_type.id
+
         previously_booted = self._instance.status == "running"
 
-        if new_type is None or new_type == self._instance.type.id:
+        if new_type is None or new_type == current_type:
             return
 
         resize_poller = self.client.polling.event_poller_create(
@@ -944,7 +952,14 @@ class LinodeInstance(LinodeModuleBase):
         new_region = self.module.params.get("region")
         migration_type = self.module.params.get("migration_type")
 
-        if new_region is None or new_region == self._instance.region.id:
+        # Graceful handling for a potential edge case
+        # where the region is stored as a string rather than
+        # an instance of the Region class.
+        current_region = self._instance.region
+        if isinstance(current_region, linode_api4.Region):
+            current_region = current_region.id
+
+        if new_region is None or new_region == current_region:
             return
 
         migration_poller = self.client.polling.event_poller_create(
