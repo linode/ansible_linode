@@ -972,7 +972,8 @@ class LinodeInstance(LinodeModuleBase):
             timeout=self._timeout_ctx.seconds_remaining,
         )
 
-        # TODO: Include type change in request if possible
+        # TODO: Include type change in request if necessary
+        # so only one migration needs to be run.
         self._instance.initiate_migration(
             region=new_region,
             migration_type=migration_type,
