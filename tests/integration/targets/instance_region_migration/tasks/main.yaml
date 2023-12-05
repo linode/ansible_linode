@@ -1,0 +1,52 @@
+- name: instance_region_migrations
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        type: g6-nanode-1
+        image: linode/ubuntu23.10
+        state: present
+      register: create
+
+    - assert:
+        that:
+          - create.changed
+          - create.instance.region == "us-mia"
+
+    - linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-iad
+        type: g6-nanode-1
+        image: linode/ubuntu23.10
+        migration_type: warm
+        state: present
+      register: migrated
+
+    - assert:
+        that:
+          - migrated.changed
+          - migrated.instance.region == "us-iad"
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.instance:
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete
+
+        - assert:
+            that:
+              - delete.changed
+              - delete.instance.id == create.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+
