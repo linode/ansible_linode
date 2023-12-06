@@ -62,7 +62,7 @@ integration-test: create-integration-config
 ifdef RUN_LONG_TESTS
 	ansible-test integration $(TEST_ARGS)
 else
-	ansible-test integration $(TEST_ARGS) --exclude-tag longtests
+	ansible-test integration $(TEST_ARGS) --exclude ${EXCLUDE_TAG}
 endif
 
 test: integration-test
