@@ -17,7 +17,7 @@ from ansible_specdoc.objects import FieldType
 from linode_api4 import LinodeClient, Type
 
 
-def _get_by_id(client: LinodeClient, params: Dict[str, Any]):
+def _get_by_id(client: LinodeClient, params: Dict[str, Any]) -> None:
     """
     This function is intended to be passed into the ID get attribute.
 
