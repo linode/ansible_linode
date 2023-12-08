@@ -6,7 +6,7 @@
     - name: Create a Linode instance with interface
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}-i'
-        region: us-southeast
+        region: us-ord
         type: g6-standard-1
         image: linode/ubuntu20.04
         interfaces:
@@ -29,7 +29,7 @@
     - name: Update the instance interfaces
       linode.cloud.instance:
         label: '{{ create_interface.instance.label }}'
-        region: us-southeast
+        region: us-ord
         group: funny
         type: g6-standard-1
         image: linode/ubuntu20.04
@@ -52,7 +52,7 @@
     - name: Update the instance interfaces
       linode.cloud.instance:
         label: '{{ create_interface.instance.label }}'
-        region: us-southeast
+        region: us-ord
         group: funny
         type: g6-standard-1
         image: linode/ubuntu20.04

@@ -6,7 +6,7 @@
     - name: Create a volume
       linode.cloud.volume:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-ord
         size: 42
         state: present
       register: create
@@ -31,13 +31,13 @@
         order: desc
         filters:
           - name: region
-            values: us-east
+            values: us-ord
       register: filter
     
     - assert:
         that:
           - filter.volumes | length >= 1
-          - filter.volumes[0].region == 'us-east'
+          - filter.volumes[0].region == 'us-ord'
 
   always:
     - ignore_errors: yes

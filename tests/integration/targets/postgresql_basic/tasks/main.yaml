@@ -21,7 +21,7 @@
     - name: Create a database
       linode.cloud.database_postgresql:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-ord
         engine: '{{ engine_id }}'
         type: g6-standard-1
         allow_list:
@@ -35,7 +35,7 @@
           - db_create.database.allow_list[0] == '0.0.0.0/0'
           - db_create.database.engine == 'postgresql'
           - db_create.database.version == '{{ engine_version }}'
-          - db_create.database.region == 'us-east'
+          - db_create.database.region == 'us-ord'
           - db_create.database.type == 'g6-standard-1'
 
     - name: Get info about the database by ID
@@ -54,19 +54,19 @@
           - by_label.database.allow_list[0] == '0.0.0.0/0'
           - by_label.database.engine == 'postgresql'
           - by_label.database.version == '{{ engine_version }}'
-          - by_label.database.region == 'us-east'
+          - by_label.database.region == 'us-ord'
           - by_label.database.type == 'g6-standard-1'
           - by_id.database.allow_list | length == 1
           - by_id.database.allow_list[0] == '0.0.0.0/0'
           - by_id.database.engine == 'postgresql'
           - by_id.database.version == '{{ engine_version }}'
-          - by_id.database.region == 'us-east'
+          - by_id.database.region == 'us-ord'
           - by_id.database.type == 'g6-standard-1'
 
     - name: Update the database
       linode.cloud.database_postgresql:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-ord
         engine: '{{ engine_id }}'
         type: g6-standard-1
         allow_list:
@@ -82,7 +82,7 @@
     - name: Update the database
       linode.cloud.database_postgresql:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-ord
         engine: '{{ engine_id }}'
         type: g6-standard-1
         allow_list:

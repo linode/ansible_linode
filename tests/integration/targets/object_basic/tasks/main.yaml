@@ -3,27 +3,27 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - name: Get info about clusters in us-east
+    - name: Get info about clusters in us-ord
       linode.cloud.object_cluster_info:
-        region: us-east
+        region: us-ord
       register: info_by_region
 
     - name: Assert cluster information is valid
       assert:
         that:
-          - info_by_region.clusters[0].id == 'us-east-1'
-          - info_by_region.clusters[0].region == 'us-east'
+          - info_by_region.clusters[0].id == 'us-ord-1'
+          - info_by_region.clusters[0].region == 'us-ord'
 
-    - name: Get info about cluster id us-east-1
+    - name: Get info about cluster id us-ord-1
       linode.cloud.object_cluster_info:
-        id: us-east-1
+        id: us-ord-1
       register: info_by_id
 
     - name: Assert cluster information is valid
       assert:
         that:
-          - info_by_id.clusters[0].id == 'us-east-1'
-          - info_by_id.clusters[0].region == 'us-east'
+          - info_by_id.clusters[0].id == 'us-ord-1'
+          - info_by_id.clusters[0].region == 'us-ord'
 
     - name: Create a Linode key
       linode.cloud.object_keys:
@@ -55,10 +55,10 @@
       linode.cloud.object_keys:
         label: 'test-ansible-key-access-{{ r }}'
         access:
-          - cluster: us-east-1
+          - cluster: us-ord-1
             bucket_name: '{{ create_bucket.name }}'
             permissions: read_write
-          - cluster: us-east-1
+          - cluster: us-ord-1
             bucket_name: '{{ create_bucket.name }}'
             permissions: read_only
         state: present
@@ -69,10 +69,10 @@
         that:
           - create_access.changed
           - 'not "REDACTED" in create_access.key.secret_key'
-          - create_access.key.bucket_access[0].cluster == 'us-east-1'
+          - create_access.key.bucket_access[0].cluster == 'us-ord-1'
           - create_access.key.bucket_access[0].bucket_name == create_bucket.name
           - create_access.key.bucket_access[0].permissions == 'read_write'
-          - create_access.key.bucket_access[1].cluster == 'us-east-1'
+          - create_access.key.bucket_access[1].cluster == 'us-ord-1'
           - create_access.key.bucket_access[1].bucket_name == create_bucket.name
           - create_access.key.bucket_access[1].permissions == 'read_only'
 
