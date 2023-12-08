@@ -2,7 +2,7 @@
   block:
     - name: Get info about the current account availability
       linode.cloud.account_availability_info:
-        region: 'us-east'
+        region: us-east
       register: account_availability
 
     - assert:
