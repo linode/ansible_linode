@@ -71,6 +71,7 @@ Name | Description |
 [linode.cloud.ssh_key_info](./docs/modules/ssh_key_info.md)|Get info about the Linode SSH public key.|
 [linode.cloud.stackscript_info](./docs/modules/stackscript_info.md)|Get info about a Linode StackScript.|
 [linode.cloud.token_info](./docs/modules/token_info.md)|Get info about a Linode Personal Access Token.|
+[linode.cloud.type_info](./docs/modules/type_info.md)|Get info about a Linode Type.|
 [linode.cloud.user_info](./docs/modules/user_info.md)|Get info about a Linode User.|
 [linode.cloud.vlan_info](./docs/modules/vlan_info.md)|Get info about a Linode VLAN.|
 [linode.cloud.volume_info](./docs/modules/volume_info.md)|Get info about a Linode Volume.|
