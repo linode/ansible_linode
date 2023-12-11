@@ -1,6 +1,6 @@
 # account_availability_list
 
-List and filter on Account Availability.
+List and filter on Account Availabilitys.
 
 - [Examples](#examples)
 - [Parameters](#parameters)
