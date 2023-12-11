@@ -5,7 +5,9 @@
 
 from __future__ import absolute_import, division, print_function
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.account_availability_list as docs
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    account_availability_list as docs
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list import (
     ListModule,
 )

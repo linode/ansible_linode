@@ -1,6 +1,6 @@
 # account_availability_list
 
-List Account Availabilities. No filter can be sent to the API currently. Only count is definable.
+List and filter on Account Availability.
 
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -13,23 +13,26 @@ List Account Availabilities. No filter can be sent to the API currently. Only co
   linode.cloud.account_availability_list: {}
 ```
 
-```yaml
-- name: List 5 regions' availabilities to the Linode Account
-  linode.cloud.account_availability_list:
-    count: 5
-```
-
 
 ## Parameters
 
-| Field     | Type | Required | Description                                                                                 |
-|-----------|------|----------|---------------------------------------------------------------------------------------------|
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of Account Availabilities to return. If undefined, all results will be returned. |
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list Account Availabilitys in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
+| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Account Availabilitys by.   |
+| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Account Availabilitys.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of Account Availabilitys to return. If undefined, all results will be returned.   |
 
+### filters
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](TBD).   |
+| `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
 
-- `account_availabilities` - The returned Account Availabilities.
+- `account_availabilities` - The returned Account Availabilitys.
 
     - Sample Response:
         ```json
