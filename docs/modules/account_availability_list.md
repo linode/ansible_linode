@@ -1,6 +1,6 @@
 # account_availability_list
 
-List Account Availabilities. No filters can be sent to API currently. Only count is definable.
+List Account Availabilities. No filter can be sent to the API currently. Only count is definable.
 
 - [Examples](#examples)
 - [Parameters](#parameters)
