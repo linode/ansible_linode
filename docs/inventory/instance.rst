@@ -94,13 +94,13 @@ Parameters
       **default_value (type=str):**
         \• The default value when the host variable's value is an empty string.
 
-        \• This option is mutually exclusive with \ :literal:`trailing\_separator`\ .
+        \• This option is mutually exclusive with \ :literal:`keyed\_groups[].trailing\_separator`\ .
 
 
       **trailing_separator (type=bool, default=True):**
-        \• Set this option to \ :emphasis:`False`\  to omit the \ :literal:`separator`\  after the host variable when the value is an empty string.
+        \• Set this option to \ :literal:`False`\  to omit the \ :literal:`keyed\_groups[].separator`\  after the host variable when the value is an empty string.
 
-        \• This option is mutually exclusive with \ :literal:`default\_value`\ .
+        \• This option is mutually exclusive with \ :literal:`keyed\_groups[].default\_value`\ .
 
 
 
