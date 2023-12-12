@@ -1,0 +1,20 @@
+- name: type_info
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Get info about a type by ID
+      linode.cloud.type_info:
+        id: g6-standard-2
+      register: type_info
+
+    - assert:
+        that:
+          - type_info.type.class == "standard"
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
