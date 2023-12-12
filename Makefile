@@ -58,21 +58,15 @@ gendocs:
 	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
 	python scripts/render_readme.py $(COLLECTION_VERSION)
 
+# if want to add all the test add the tag --tags never at the end
+#	ansible-test integration $(TEST_ARGS) --tags never
 integration-test: create-integration-config
-ifdef RUN_LONG_TESTS
 	ansible-test integration $(TEST_ARGS)
-else
-	ansible-test integration $(TEST_ARGS) --exclude ${EXCLUDE_TAG}
-endif
 
 test: integration-test
 
 testall: create-integration-config
-ifdef RUN_LONG_TESTS
 	./scripts/test_all.sh
-else
-	./scripts/test_all.sh --exclude longtests
-endif
 
 unittest:
 	ansible-test units --target-python default
