@@ -54,7 +54,7 @@ Modules for retrieving information about existing Linode infrastructure.
 
 Name | Description |
 --- | ------------ |
-[linode.cloud.account_availability_info](./docs/modules/account_availability_info.md)| Get info about a Linode Account Availability.|
+[linode.cloud.account_availability_info](./docs/modules/account_availability_info.md)|Get info about a Linode Account Availability.|
 [linode.cloud.account_info](./docs/modules/account_info.md)|Get info about a Linode Account.|
 [linode.cloud.database_mysql_info](./docs/modules/database_mysql_info.md)|Get info about a Linode MySQL Managed Database.|
 [linode.cloud.database_postgresql_info](./docs/modules/database_postgresql_info.md)|Get info about a Linode PostgreSQL Managed Database.|
