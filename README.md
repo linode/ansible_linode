@@ -54,6 +54,7 @@ Modules for retrieving information about existing Linode infrastructure.
 
 Name | Description |
 --- | ------------ |
+[linode.cloud.account_availability_info](./docs/modules/account_availability_info.md)|Get info about a Linode Account Availability.|
 [linode.cloud.account_info](./docs/modules/account_info.md)|Get info about a Linode Account.|
 [linode.cloud.database_mysql_info](./docs/modules/database_mysql_info.md)|Get info about a Linode MySQL Managed Database.|
 [linode.cloud.database_postgresql_info](./docs/modules/database_postgresql_info.md)|Get info about a Linode PostgreSQL Managed Database.|
@@ -71,6 +72,7 @@ Name | Description |
 [linode.cloud.ssh_key_info](./docs/modules/ssh_key_info.md)|Get info about the Linode SSH public key.|
 [linode.cloud.stackscript_info](./docs/modules/stackscript_info.md)|Get info about a Linode StackScript.|
 [linode.cloud.token_info](./docs/modules/token_info.md)|Get info about a Linode Personal Access Token.|
+[linode.cloud.type_info](./docs/modules/type_info.md)|Get info about a Linode Type.|
 [linode.cloud.user_info](./docs/modules/user_info.md)|Get info about a Linode User.|
 [linode.cloud.vlan_info](./docs/modules/vlan_info.md)|Get info about a Linode VLAN.|
 [linode.cloud.volume_info](./docs/modules/volume_info.md)|Get info about a Linode Volume.|
@@ -84,6 +86,7 @@ Modules for retrieving and filtering on multiple Linode resources.
 
 Name | Description |
 --- | ------------ |
+[linode.cloud.account_availability_list](./docs/modules/account_availability_list.md)|List and filter on Account Availabilitys.|
 [linode.cloud.database_engine_list](./docs/modules/database_engine_list.md)|List and filter on Managed Database engine types.|
 [linode.cloud.database_list](./docs/modules/database_list.md)|List and filter on Linode Managed Databases.|
 [linode.cloud.domain_list](./docs/modules/domain_list.md)|List and filter on Domains.|
