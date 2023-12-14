@@ -58,6 +58,8 @@ gendocs:
 	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
 	python scripts/render_readme.py $(COLLECTION_VERSION)
 
+# if want to add all the test add the tag --tags never at the end
+#	ansible-test integration $(TEST_ARGS) --tags never
 integration-test: create-integration-config
 	ansible-test integration $(TEST_ARGS)
 

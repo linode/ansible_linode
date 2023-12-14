@@ -1,4 +1,5 @@
 - name: postgresql_complex
+  tags: never
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"

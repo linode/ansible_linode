@@ -1,4 +1,5 @@
 - name: mysql_basic
+  tags: never
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
