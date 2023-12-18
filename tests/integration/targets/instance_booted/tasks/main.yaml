@@ -6,7 +6,7 @@
     - name: Create a booted Linode instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-southeast
+        region: us-ord
         type: g6-standard-1
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
@@ -25,7 +25,7 @@
     - name: Power off the instance
       linode.cloud.instance:
         label: '{{create.instance.label}}'
-        region: us-southeast
+        region: us-ord
         type: g6-standard-1
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123

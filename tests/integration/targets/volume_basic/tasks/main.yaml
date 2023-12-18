@@ -6,7 +6,7 @@
     - name: Create Linode instance
       linode.cloud.instance:
         label: 'ansible-test-inst-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
@@ -21,7 +21,7 @@
     - name: Create a volume with an instance
       linode.cloud.volume:
         label: 'ansible-test-attached-{{ r }}'
-        region: us-east
+        region: us-ord
         size: 30
         linode_id: '{{ create_inst.instance.id }}'
         state: present
@@ -47,7 +47,7 @@
     - name: Create a volume without an instance
       linode.cloud.volume:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-ord
         size: 42
         state: present
       register: create_volume_noinst

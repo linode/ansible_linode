@@ -6,7 +6,7 @@
     - name: Create a Linode Instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-southeast
+        region: us-ord
         type: g6-standard-1
         image: linode/alpine3.17
         state: present
@@ -15,7 +15,7 @@
     - name: Create Nodebalancer
       linode.cloud.nodebalancer:
         label: 'ansible-test-nb-{{ r }}'
-        region: us-east
+        region: us-ord
         state: present
       register: nb
 

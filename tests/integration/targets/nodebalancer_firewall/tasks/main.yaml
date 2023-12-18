@@ -19,7 +19,7 @@
     - name: Create Nodebalancer
       linode.cloud.nodebalancer:
         label: 'ansible-test-nb-{{ r }}'
-        region: us-east
+        region: us-ord
         firewall_id: '{{ firewall.firewall.id }}'
         state: present
       register: nodebalancer
