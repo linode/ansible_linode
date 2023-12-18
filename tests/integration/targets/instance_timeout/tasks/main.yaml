@@ -6,7 +6,7 @@
     - name: Create a Linode instance with an immediate timeout
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         image: linode/ubuntu20.04
         wait: yes

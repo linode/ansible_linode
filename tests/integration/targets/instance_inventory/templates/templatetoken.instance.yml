@@ -5,4 +5,4 @@ types:
 tags:
   - ansible-inventory-node
 regions:
-  - us-east
+  - us-ord

@@ -7,7 +7,7 @@
     - name: Create node1
       linode.cloud.instance:
         label: 'ansible-test-node1-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
@@ -25,7 +25,7 @@
     - name: Create node2
       linode.cloud.instance:
         label: 'ansible-test-node2-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
@@ -62,7 +62,7 @@
     - name: Create a populated NodeBalancer
       linode.cloud.nodebalancer:
         label: 'ansible-nb-populated-{{ r }}'
-        region: us-east
+        region: us-ord
         state: present
         configs:
           - port: 80
@@ -92,7 +92,7 @@
       assert:
         that:
           - create_populated_nodebalancer.changed
-          - create_populated_nodebalancer.node_balancer.region == 'us-east'
+          - create_populated_nodebalancer.node_balancer.region == 'us-ord'
           - create_populated_nodebalancer.configs|length == 1
           - create_populated_nodebalancer.configs[0].port == 80
           - create_populated_nodebalancer.configs[0].protocol == 'http'
@@ -113,7 +113,7 @@
     - name: Update the NodeBalancer config
       linode.cloud.nodebalancer:
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
-        region: us-east
+        region: us-ord
         state: present
         configs:
           - port: 81 # Port changed
@@ -135,7 +135,7 @@
     - name: Attempt to update with no differences
       linode.cloud.nodebalancer:
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
-        region: us-east
+        region: us-ord
         state: present
         configs:
           - port: 81
@@ -155,7 +155,7 @@
     - name: Add node to NodeBalancer
       linode.cloud.nodebalancer:
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
-        region: us-east
+        region: us-ord
         state: present
         configs:
           - port: 81
@@ -178,7 +178,7 @@
     - name: Add node from different region to NodeBalancer
       linode.cloud.nodebalancer:
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
-        region: us-east
+        region: us-ord
         state: present
         configs:
           - port: 81
@@ -199,7 +199,7 @@
     - name: Add additional config and node to NodeBalancer
       linode.cloud.nodebalancer:
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
-        region: us-east
+        region: us-ord
         state: present
         configs:
           - port: 81
@@ -230,7 +230,7 @@
     - name: Remove a config from the NodeBalancer
       linode.cloud.nodebalancer:
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
-        region: us-east
+        region: us-ord
         state: present
         configs:
           - port: 80

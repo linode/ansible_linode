@@ -6,7 +6,7 @@
     - name: create empty nodebalancer
       linode.cloud.nodebalancer:
         label: 'ansible-test-empty-{{ r }}'
-        region: us-east
+        region: us-ord
         state: present
       register: create_empty_nodebalancer
 
@@ -19,7 +19,7 @@
     - name: update empty nodebalancer
       linode.cloud.nodebalancer:
         label: '{{ create_empty_nodebalancer.node_balancer.label }}'
-        region: us-east
+        region: us-ord
         client_conn_throttle: 6
         state: present
       register: update_empty_nodebalancer
@@ -39,7 +39,7 @@
     - name: Add NodeBalancer config
       linode.cloud.nodebalancer:
         label: '{{ create_empty_nodebalancer.node_balancer.label }}'
-        region: us-east
+        region: us-ord
         client_conn_throttle: 6
         state: present
         configs:
@@ -56,7 +56,7 @@
     - name: Update NodeBalancer config
       linode.cloud.nodebalancer:
         label: '{{ create_empty_nodebalancer.node_balancer.label }}'
-        region: us-east
+        region: us-ord
         client_conn_throttle: 6
         state: present
         configs:
@@ -76,7 +76,7 @@
     - name: Recreate NodeBalancer config
       linode.cloud.nodebalancer:
         label: '{{ create_empty_nodebalancer.node_balancer.label }}'
-        region: us-east
+        region: us-ord
         client_conn_throttle: 6
         state: present
         configs:
