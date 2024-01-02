@@ -26,3 +26,4 @@ build_ignore:
   - 'tests'
   - 'scripts'
   - 'venv'
+  - 'collections'
