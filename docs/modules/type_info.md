@@ -19,7 +19,7 @@ Get info about a Linode Type.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`str`</center> | <center>Optional</center> | The ID of the Type to resolve.   |
+| `id` | <center>`str`</center> | <center>**Required**</center> | The ID of the Type to resolve.   |
 
 ## Return Values
 
