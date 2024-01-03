@@ -42,11 +42,14 @@
         state: present
       register: nb_node
 
+    - set_fact:
+        inst_ipv4_address: "{{ inst.instance.ipv4[1] }}:80"
+
     - assert:
         that:
           - nb_node.changed
           - nb_node.node.label == 'cool'
-          - nb_node.node.address == '{{ inst.instance.ipv4[1] }}:80'
+          - nb_node.node.address == inst_ipv4_address
           - nb_node.node.mode == 'accept'
           - nb_node.node.weight == 10
 
@@ -66,7 +69,7 @@
         that:
           - nb_node_update.changed
           - nb_node_update.node.label == 'cool'
-          - nb_node_update.node.address == '{{ inst.instance.ipv4[1] }}:80'
+          - nb_node_update.node.address == inst_ipv4_address
           - nb_node_update.node.mode == 'reject'
           - nb_node_update.node.weight == 15
 
