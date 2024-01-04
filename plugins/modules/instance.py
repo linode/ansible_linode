@@ -476,10 +476,10 @@ linode_instance_spec = {
         element_type=FieldType.string,
         description=[
             "An array of tags applied to this object.",
-            "Tags are for organizational purposes only."
+            "Tags are for organizational purposes only.",
         ],
         editable=True,
-    )
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
