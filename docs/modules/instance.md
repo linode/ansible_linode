@@ -129,6 +129,7 @@ Manage Linode Instances, Configs, and Disks.
 | `rebooted` | <center>`bool`</center> | <center>Optional</center> | If true, the Linode Instance will be rebooted. NOTE: The instance will only be rebooted if it was previously in a running state. To ensure your Linode will always be rebooted, consider also setting the `booted` field.  **(Default: `False`)** |
 | `migration_type` | <center>`str`</center> | <center>Optional</center> | The type of migration to use for Region and Type migrations.  **(Choices: `cold`, `warm`; Default: `cold`)** |
 | `auto_disk_resize` | <center>`bool`</center> | <center>Optional</center> | Whether implicitly created disks should be resized during a type change operation.  **(Default: `False`)** |
+| `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object. Tags are for organizational purposes only.  **(Updatable)** |
 
 ### configs
 

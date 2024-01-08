@@ -176,6 +176,10 @@ class InfoModule(LinodeModuleBase):
         for attr in self.attributes:
             options[attr.name] = SpecField(
                 type=attr.type,
+                required=len(self.attributes) == 1,
+                conflicts_with=[
+                    v.name for v in self.attributes if v.name != attr.name
+                ],
                 description=f"The {attr.display_name} of the "
                 f"{self.primary_result.display_name} to resolve.",
             )
