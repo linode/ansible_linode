@@ -73,9 +73,12 @@
       register: ip_unshared
 
     - name: Assert shared IPs configured.
-      assert:
+      set_fact:
+        ip_shared_address: "{{ instance_create.instance.ipv4[0] }}"
+
+    - assert:
         that:
-          - ip_shared.ips[0] == '{{ instance_create.instance.ipv4[0]}}'
+          - ip_shared.ips[0] == ip_shared_address
           - ip_already_shared.changed == false
           - ip_unshared.ips == []
           
