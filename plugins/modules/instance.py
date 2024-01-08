@@ -488,6 +488,7 @@ linode_instance_spec = {
             "Whether implicitly created disks should be resized during a type change operation."
         ],
         default=False,
+    ),
     "tags": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
