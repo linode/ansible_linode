@@ -20,7 +20,7 @@ Get info about a Linode Account Availability.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `region` | <center>`str`</center> | <center>Optional</center> | The Region of the Account Availability to resolve.   |
+| `region` | <center>`str`</center> | <center>**Required**</center> | The Region of the Account Availability to resolve.   |
 
 ## Return Values
 

@@ -8,7 +8,7 @@
     - name: Create an instance to get IPs.
       linode.cloud.instance:
         label: 'ansible-test-{{ r1 }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         image: linode/alpine3.16
         wait: false
@@ -18,7 +18,7 @@
     - name: Create an instance to be shared with IPs.
       linode.cloud.instance:
         label: 'ansible-test-{{ r2 }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         image: linode/alpine3.16
         wait: false
@@ -73,9 +73,12 @@
       register: ip_unshared
 
     - name: Assert shared IPs configured.
-      assert:
+      set_fact:
+        ip_shared_address: "{{ instance_create.instance.ipv4[0] }}"
+
+    - assert:
         that:
-          - ip_shared.ips[0] == '{{ instance_create.instance.ipv4[0]}}'
+          - ip_shared.ips[0] == ip_shared_address
           - ip_already_shared.changed == false
           - ip_unshared.ips == []
           

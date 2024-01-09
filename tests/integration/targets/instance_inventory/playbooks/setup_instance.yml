@@ -11,7 +11,7 @@
         api_token: '{{ api_token }}'
         ua_prefix: '{{ ua_prefix }}'
         type: g6-nanode-1
-        region: us-east
+        region: us-ord
         tags:
           - ansible-inventory-node
         state: present

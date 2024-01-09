@@ -17,16 +17,13 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    create_filter_and,
-)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import ObjectStorageCluster
+from linode_api4 import ObjectStorageCluster, Region
 
 linode_object_cluster_info_spec = {
     # We need to overwrite attributes to exclude them as requirements
@@ -70,7 +67,7 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-linode_object_cluster_valid_filters = [
+FILTERABLE_FIELDS = [
     "id",
     "region",
     "domain",
@@ -91,26 +88,31 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
             required_one_of=self.required_one_of,
         )
 
-    def _get_matching_cluster(self) -> Optional[List[ObjectStorageCluster]]:
-        filter_items = {
-            k: v
-            for k, v in self.module.params.items()
-            if k in linode_object_cluster_valid_filters and v is not None
-        }
+    def _cluster_matches_filter(self, cluster: ObjectStorageCluster) -> bool:
+        for k in FILTERABLE_FIELDS:
+            user_input = self.module.params.get(k)
+            if user_input is None:
+                continue
 
-        filter_statement = create_filter_and(ObjectStorageCluster, filter_items)
+            cluster_value = getattr(cluster, k)
 
+            # This is necessary because regions are populated as
+            # Region objects by linode_api4.
+            if isinstance(cluster_value, Region):
+                cluster_value = cluster_value.id
+
+            if cluster_value != user_input:
+                return False
+
+        return True
+
+    def _get_matching_clusters(self) -> Optional[List[ObjectStorageCluster]]:
         try:
-            # Special case because ID is not filterable
-            if "id" in filter_items.keys():
-                result = ObjectStorageCluster(
-                    self.client, self.module.params.get("id")
-                )
-                result._api_get()  # Force lazy-loading
-
-                return [result]
-
-            return self.client.object_storage.clusters(filter_statement)
+            return [
+                v
+                for v in self.client.object_storage.clusters()
+                if self._cluster_matches_filter(v)
+            ]
         except IndexError:
             return None
         except Exception as exception:
@@ -119,7 +121,7 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Constructs and calls the Linode Object Storage Clusters module"""
 
-        clusters = self._get_matching_cluster()
+        clusters = self._get_matching_clusters()
 
         if clusters is None:
             return self.fail("failed to get clusters")

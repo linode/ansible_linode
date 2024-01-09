@@ -6,7 +6,7 @@
     - name: Create node
       linode.cloud.instance:
         label: 'ansible-test-node-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         image: linode/ubuntu20.04
         root_pass: Fn$$oobar123
@@ -25,7 +25,7 @@
     - name: Create a populated NodeBalancer
       linode.cloud.nodebalancer:
         label: 'ansible-nb-populated-{{ r }}'
-        region: us-east
+        region: us-ord
         state: present
         configs:
           - port: 80
@@ -54,7 +54,7 @@
       assert:
         that:
           - create_populated_nodebalancer.changed
-          - create_populated_nodebalancer.node_balancer.region == 'us-east'
+          - create_populated_nodebalancer.node_balancer.region == 'us-ord'
           - create_populated_nodebalancer.configs|length == 1
           - create_populated_nodebalancer.configs[0].port == 80
           - create_populated_nodebalancer.configs[0].protocol == 'http'
