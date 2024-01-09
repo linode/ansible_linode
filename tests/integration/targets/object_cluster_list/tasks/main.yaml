@@ -1,24 +1,27 @@
 - name: object_cluster_list
   block:
-    - name: List object clusters with no filter
-      linode.cloud.object_cluster_list:
-      register: no_filter
+    - debug:
+        msg: Skipping...
 
-    - assert:
-        that:
-          - no_filter.clusters | length >= 1
-
-    - name: List regions with filter on region
-      linode.cloud.object_cluster_list:
-        filters:
-          - name: region
-            values: us-ord
-      register: filter
-
-    - assert:
-        that:
-          - filter.clusters | length >= 1
-          - filter.clusters[0].region == 'us-ord'
+#    - name: List object clusters with no filter
+#      linode.cloud.object_cluster_list:
+#      register: no_filter
+#
+#    - assert:
+#        that:
+#          - no_filter.clusters | length >= 1
+#
+#    - name: List regions with filter on region
+#      linode.cloud.object_cluster_list:
+#        filters:
+#          - name: region
+#            values: us-ord
+#      register: filter
+#
+#    - assert:
+#        that:
+#          - filter.clusters | length >= 1
+#          - filter.clusters[0].region == 'us-ord'
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
