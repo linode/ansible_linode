@@ -124,9 +124,11 @@ Manage Linode Instances, Configs, and Disks.
 | [`metadata` (sub-options)](#metadata) | <center>`dict`</center> | <center>Optional</center> | Fields relating to the Linode Metadata service.   |
 | `backups_enabled` | <center>`bool`</center> | <center>Optional</center> | Enroll Instance in Linode Backup service.   |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status "running" before returning.  **(Default: `True`)** |
-| `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `240`)** |
+| `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `1500`)** |
 | [`additional_ipv4` (sub-options)](#additional_ipv4) | <center>`list`</center> | <center>Optional</center> | Additional ipv4 addresses to allocate.   |
 | `rebooted` | <center>`bool`</center> | <center>Optional</center> | If true, the Linode Instance will be rebooted. NOTE: The instance will only be rebooted if it was previously in a running state. To ensure your Linode will always be rebooted, consider also setting the `booted` field.  **(Default: `False`)** |
+| `migration_type` | <center>`str`</center> | <center>Optional</center> | The type of migration to use for Region and Type migrations.  **(Choices: `cold`, `warm`; Default: `cold`)** |
+| `auto_disk_resize` | <center>`bool`</center> | <center>Optional</center> | Whether implicitly created disks should be resized during a type change operation.  **(Default: `False`)** |
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object. Tags are for organizational purposes only.  **(Updatable)** |
 
 ### configs
