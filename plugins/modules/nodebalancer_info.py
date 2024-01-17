@@ -80,7 +80,7 @@ SPECDOC_META = SpecDocMeta(
             sample=docs_parent.result_nodes_samples,
         ),
         "firewalls": SpecReturnValue(
-            description="A list of firewalls the NodeBalancer is attached to.",
+            description="A list IDs for firewalls attached to this NodeBalancer.",
             docs_url="https://www.linode.com/docs/api/nodebalancers/#firewalls-list",
             type=FieldType.list,
             elements=FieldType.integer,
