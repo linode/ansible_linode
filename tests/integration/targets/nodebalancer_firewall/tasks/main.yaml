@@ -29,6 +29,19 @@
         that:
           - nodebalancer.changed
           - nodebalancer.configs|length == 0
+          - nodebalancer.firewalls|length == 1
+          - nodebalancer.firewalls[0] == firewall.firewall.id
+
+    - name: Get info about the NodeBalancer
+      linode.cloud.nodebalancer_info:
+        id: '{{ nodebalancer.node_balancer.id }}'
+      register: nodebalancer_info
+
+    - name: Ensure the attached firewalls are returned
+      assert:
+        that:
+          - nodebalancer_info.firewalls|length == 1
+          - nodebalancer_info.firewalls[0] == firewall.firewall.id
 
   always:
     - ignore_errors: yes

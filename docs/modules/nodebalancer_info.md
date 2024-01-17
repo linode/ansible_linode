@@ -113,3 +113,15 @@ Get info about a Linode NodeBalancer.
     - See the [Linode API response documentation](https://www.linode.com/docs/api/nodebalancers/#node-view) for a list of returned fields
 
 
+- `firewalls` - A list of firewalls the NodeBalancer is attached to.
+
+    - Sample Response:
+        ```json
+        [
+          1234,
+          5678
+        ]
+        ```
+    - See the [Linode API response documentation](https://www.linode.com/docs/api/nodebalancers/#firewalls-list) for a list of returned fields
+
+

@@ -289,6 +289,13 @@ SPECDOC_META = SpecDocMeta(
             type=FieldType.list,
             sample=docs.result_nodes_samples,
         ),
+        "firewalls": SpecReturnValue(
+            description="A list of firewalls the NodeBalancer is attached to.",
+            docs_url="https://www.linode.com/docs/api/nodebalancers/#firewalls-list",
+            type=FieldType.list,
+            elements=FieldType.integer,
+            sample=docs.result_firewalls_samples,
+        ),
     },
 )
 
@@ -307,6 +314,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
             "node_balancer": None,
             "configs": [],
             "nodes": [],
+            "firewalls": [],
         }
 
         self._node_balancer: Optional[NodeBalancer] = None
@@ -616,6 +624,13 @@ class LinodeNodeBalancer(LinodeModuleBase):
             for node in config.nodes:
                 node._api_get()
                 cast(list, self.results["nodes"]).append(node._raw_json)
+
+        # NOTE: Only the Firewall IDs are used here to reduce the
+        # number of API requests made by this module and to simplify
+        # the module result.
+        self.results["firewalls"] = [
+            v.id for v in self._node_balancer.firewalls()
+        ]
 
         return self.results
 

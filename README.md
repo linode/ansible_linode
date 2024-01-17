@@ -133,8 +133,10 @@ The Python module dependencies are not installed by `ansible-galaxy`.  They can
 be manually installed using pip:
 
 ```shell
-pip install -r https://raw.githubusercontent.com/linode/ansible_linode/main/requirements.txt
+pip install --upgrade -r https://raw.githubusercontent.com/linode/ansible_linode/main/requirements.txt
 ```
+
+> :warning: **NOTE:** Python dependencies should always be reinstalled when upgrading collection versions
 
 ## Usage
 Once the Linode Ansible collection is installed, it can be referenced by its [Fully Qualified Collection Namespace (FQCN)](https://github.com/ansible-collections/overview#terminology): `linode.cloud.module_name`.
