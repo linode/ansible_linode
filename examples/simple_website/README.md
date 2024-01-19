@@ -13,6 +13,7 @@ While in the `simple_website` directory, run the following:
 
 ```bash
 export LINODE_TOKEN=mytoken
+export ANSIBLE_HOST_KEY_CHECKING=False
 ansible-playbook deploy.yml
 ```
 
