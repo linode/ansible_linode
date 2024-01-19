@@ -18,7 +18,7 @@
         order: desc
         filters:
           - name: label
-            values: Alpine 3.16
+            values: Alpine 3.19
       register: filter
 
     - assert:
