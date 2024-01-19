@@ -4,7 +4,7 @@ specdoc_examples = ['''
 - name: Create a basic StackScript
   linode.cloud.stackscript:
     label: my-stackscript
-    images: ['linode/ubuntu20.04']
+    images: ['linode/ubuntu22.04']
     description: Install a system package
     script: |
         #!/bin/bash
@@ -23,8 +23,8 @@ result_stackscript_samples = ['''{
   "description": "This StackScript installs and configures MySQL",
   "id": 10079,
   "images": [
-    "linode/debian9",
-    "linode/debian8"
+    "linode/debian11",
+    "linode/debian10"
   ],
   "is_public": true,
   "label": "a-stackscript",

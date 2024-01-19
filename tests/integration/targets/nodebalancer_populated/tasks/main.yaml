@@ -9,7 +9,7 @@
         label: 'ansible-test-node1-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         root_pass: Fn$$oobar123
         private_ip: true
         state: present
@@ -27,7 +27,7 @@
         label: 'ansible-test-node2-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         root_pass: Fn$$oobar123
         private_ip: true
         state: present
@@ -45,7 +45,7 @@
         label: 'ansible-test-node3-{{ r }}'
         region: us-central
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         root_pass: Fn$$oobar123
         private_ip: true
         state: present

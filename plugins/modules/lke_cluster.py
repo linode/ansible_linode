@@ -30,7 +30,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import ApiError, LKECluster
+from linode_api4 import ApiError, KubeVersion, LKECluster
 
 linode_lke_cluster_autoscaler = {
     "enabled": SpecField(
@@ -293,22 +293,26 @@ class LinodeLKECluster(LinodeModuleBase):
     def _cluster_put_updates(self, cluster: LKECluster) -> None:
         """Handles manual field updates for the current LKE cluster"""
 
-        should_update = False
-
         # version upgrade
-        k8s_version = self.module.params.get("k8s_version")
+        new_k8s_version = self.module.params.get("k8s_version")
+        old_k8s_version = (
+            cluster.k8s_version.id
+            if isinstance(cluster.k8s_version, KubeVersion)
+            else cluster.k8s_version
+        )
 
-        if cluster.k8s_version.id != k8s_version:
-            cluster.k8s_version = k8s_version
-            should_update = True
+        if old_k8s_version != new_k8s_version:
+            cluster.k8s_version = new_k8s_version
+            cluster.save()
 
             self.register_action(
                 "Upgraded cluster {} -> {}".format(
-                    cluster.k8s_version.id, k8s_version
+                    old_k8s_version, new_k8s_version
                 )
             )
 
-        # HA upgrade
+        # NOTE: Upgrades to HA need to be made separately from
+        # K8s version upgrades, hence the additional .save() call.
         high_avail = self.module.params.get("high_availability")
         current_ha = cluster.control_plane.high_availability
 
@@ -319,9 +323,7 @@ class LinodeLKECluster(LinodeModuleBase):
             cluster.control_plane = {
                 "high_availability": high_avail,
             }
-            should_update = True
 
-        if should_update:
             cluster.save()
 
     def _update_cluster(self, cluster: LKECluster) -> None:

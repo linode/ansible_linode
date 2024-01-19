@@ -10,7 +10,7 @@
         label: 'ansible-test-{{ r1 }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/alpine3.16
+        image: linode/alpine3.19
         wait: false
         state: present
       register: instance_create
@@ -20,7 +20,7 @@
         label: 'ansible-test-{{ r2 }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/alpine3.16
+        image: linode/alpine3.19
         wait: false
         state: present
       register: instance_create_shared
