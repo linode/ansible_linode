@@ -81,3 +81,8 @@ result_nodes_samples = ['''[
     "weight": 50
   }
 ]''']
+
+result_firewalls_samples = ['''[
+  1234,
+  5678
+]''']
