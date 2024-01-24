@@ -28,7 +28,7 @@
     - name: Create a Linode instance attached to the Firewall
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         firewall_id: '{{ firewall_create.firewall.id }}'
         wait: false
@@ -48,7 +48,7 @@
     - name: Attempt to update the firewall_id for the instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         firewall_id: '{{ firewall_2_create.firewall.id }}'
         wait: false

@@ -6,7 +6,7 @@
     - name: create empty nodebalancer
       linode.cloud.nodebalancer:
         label: 'ansible-test-empty-{{ r }}'
-        region: us-east
+        region: us-ord
         state: present
       register: create
 
@@ -30,13 +30,13 @@
         order: desc
         filters:
           - name: region
-            values: us-east
+            values: us-ord
       register: filter
 
     - assert:
         that:
           - filter.nodebalancers | length >= 1
-          - filter.nodebalancers[0].region == 'us-east'
+          - filter.nodebalancers[0].region == 'us-ord'
 
   always:
     - ignore_errors: yes

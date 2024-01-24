@@ -6,7 +6,7 @@
     - name: Create an instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-central
+        region: us-ord
         type: g6-standard-1
         image: linode/ubuntu22.04
         wait: no

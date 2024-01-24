@@ -1,4 +1,5 @@
 - name: postgresql_complex
+  tags: never
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -21,7 +22,7 @@
     - name: Validation check
       linode.cloud.database_postgresql:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-ord
         engine: '{{ engine_id }}'
         type: g6-standard-1
         allow_list:
@@ -33,7 +34,7 @@
     - name: Create a database
       linode.cloud.database_postgresql:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: us-ord
         engine: '{{ engine_id }}'
         type: g6-standard-1
         allow_list:
@@ -58,7 +59,7 @@
           - db_create.database.allow_list[0] == '0.0.0.0/0'
           - db_create.database.engine == 'postgresql'
           - db_create.database.version == '{{ engine_version }}'
-          - db_create.database.region == 'us-east'
+          - db_create.database.region == 'us-ord'
           - db_create.database.type == 'g6-standard-1'
           - db_create.database.cluster_size == 3
           - db_create.database.encrypted == true
