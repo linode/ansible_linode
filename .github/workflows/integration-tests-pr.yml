@@ -4,7 +4,7 @@ on:
     inputs:
       tests:
         description: 'The tests to run.'
-        required: true
+        required: false
       sha:
         description: 'The hash value of the commit.'
         required: true
