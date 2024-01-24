@@ -1,0 +1,77 @@
+- name: instance_type_change
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        type: g6-nanode-1
+        image: linode/ubuntu23.10
+        state: present
+      register: create
+
+    - assert:
+        that:
+          - create.changed
+          - create.instance.type == "g6-nanode-1"
+
+    - linode.cloud.type_list:
+        filters:
+          - name: label
+            values: Linode 2GB
+      register: type_info
+
+    - name: Resize the instance with resizing disks
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        type: g6-standard-1
+        image: linode/ubuntu23.10
+        auto_disk_resize: true
+        state: present
+      register: resize_disks
+
+    - assert:
+        that:
+          - resize_disks.changed
+          - resize_disks.instance.type == "g6-standard-1"
+          - resize_disks.disks[0].size == type_info.types[0].disk - 512
+
+    - name: Run a warm resize without resizing disks
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        type: g6-standard-2
+        image: linode/ubuntu23.10
+        migration_type: warm
+        state: present
+      register: resize_disks
+
+    - assert:
+        that:
+          - resize_disks.changed
+          - resize_disks.instance.type == "g6-standard-2"
+          - resize_disks.disks[0].size == type_info.types[0].disk - 512
+
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.instance:
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete
+
+        - assert:
+            that:
+              - delete.changed
+              - delete.instance.id == create.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

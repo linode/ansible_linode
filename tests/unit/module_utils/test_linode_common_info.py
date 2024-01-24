@@ -9,7 +9,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import gl
 
 class TestLinodeInfoModule:
 
-    @pytest.fixture
+    @pytest.fixture(scope="function")
     def mock_module(self):
         return InfoModule(
             primary_result=InfoModuleResult(
@@ -66,7 +66,7 @@ class TestLinodeInfoModule:
 
         attr_field = spec.options.get("attr")
         assert attr_field.type == FieldType.string
-        assert not attr_field.required
+        assert attr_field.required
         assert attr_field.description == "The Attr of the Foo to resolve."
 
         foo_result = spec.return_values.get("foo")
@@ -81,3 +81,29 @@ class TestLinodeInfoModule:
         assert bar_result.type == FieldType.dict
         assert bar_result.sample == mock_module.secondary_results[0].samples
 
+    def test_generate_spec_multi_attr(self, mock_module):
+        """
+        Ensures that multiple attributes are treated as conflicting.
+        """
+        mock_module.attributes.append(
+            InfoModuleAttr(
+                name="attr_2",
+                display_name="Attr 2",
+                type=FieldType.string,
+                get=lambda *args: ["cool"]
+            )
+        )
+
+        spec = mock_module.spec
+
+        attr_field = spec.options.get("attr")
+        assert attr_field.type == FieldType.string
+        assert not attr_field.required
+        assert attr_field.conflicts_with == ["attr_2"]
+        assert attr_field.description == "The Attr of the Foo to resolve."
+
+        attr2_field = spec.options.get("attr_2")
+        assert attr2_field.type == FieldType.string
+        assert not attr2_field.required
+        assert attr2_field.conflicts_with == ["attr"]
+        assert attr2_field.description == "The Attr 2 of the Foo to resolve."

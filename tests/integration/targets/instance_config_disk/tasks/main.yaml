@@ -6,7 +6,7 @@
     - name: Create a Linode instance with explicit disks and config
       linode.cloud.instance:
         label: 'ansible-test-dc-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         booted: false
         disks:
@@ -55,7 +55,7 @@
     - name: Keep the config unchanged
       linode.cloud.instance:
         label: 'ansible-test-dc-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         booted: false
         disks:
@@ -88,7 +88,7 @@
     - name: Update the config
       linode.cloud.instance:
         label: 'ansible-test-dc-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         booted: false
         disks:
@@ -123,7 +123,7 @@
     - name: Delete the config and resize the disk
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         booted: false
         disks:
@@ -142,7 +142,7 @@
     - name: Try to update the disk
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         booted: false
         disks:
@@ -156,7 +156,7 @@
     - name: Try to use conflicting params
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         image: linode/alpine3.17
         booted: false
@@ -170,7 +170,7 @@
     - name: Boot the instance with a new config and disk
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         booted: true
         disks:

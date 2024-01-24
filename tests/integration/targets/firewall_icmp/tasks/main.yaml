@@ -5,7 +5,7 @@
     - name: Create a Linode Instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-southeast
+        region: us-ord
         type: g6-standard-1
         image: linode/alpine3.17
         state: present

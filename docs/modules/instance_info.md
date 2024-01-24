@@ -25,8 +25,8 @@ Get info about a Linode Instance.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Instance to resolve.   |
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Instance to resolve.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Instance to resolve.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Instance to resolve.  **(Conflicts With: `label`)** |
 
 ## Return Values
 

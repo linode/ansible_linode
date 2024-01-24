@@ -6,7 +6,7 @@
     - name: Create a Linode instance without a root password
       linode.cloud.instance:
         label: 'ansible-test-nopass-{{ r }}'
-        region: us-east
+        region: us-ord
         type: g6-standard-1
         image: linode/ubuntu20.04
         private_ip: true
@@ -35,13 +35,13 @@
         order: desc
         filters:
           - name: region
-            values: us-east
+            values: us-ord
       register: filter
 
     - assert:
         that:
           - filter.instances | length >= 1
-          - filter.instances[0].region == 'us-east'
+          - filter.instances[0].region == 'us-ord'
 
   always:
     - ignore_errors: yes
