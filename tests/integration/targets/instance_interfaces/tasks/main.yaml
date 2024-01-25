@@ -8,7 +8,7 @@
         label: 'ansible-test-{{ r }}-i'
         region: us-ord
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         interfaces:
           - purpose: vlan
             label: really-cool-vlan
@@ -32,7 +32,7 @@
         region: us-ord
         group: funny
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         private_ip: true
         interfaces:
           - purpose: vlan
@@ -55,7 +55,7 @@
         region: us-ord
         group: funny
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         private_ip: true
         interfaces:
           - purpose: vlan

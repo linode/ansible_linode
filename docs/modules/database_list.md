@@ -72,7 +72,7 @@ List and filter on Linode Managed Databases.
                  "hour_of_day": 0,
                  "week_of_month": null
               },
-              "version": "8.0.26"
+              "version": "8.0.30"
            }
         ]
         ```

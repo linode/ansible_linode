@@ -7,7 +7,7 @@
         label: 'ansible-test-{{ r }}'
         region: us-mia
         type: g6-nanode-1
-        image: linode/ubuntu23.10
+        image: linode/ubuntu22.04
         state: present
       register: create
 
@@ -27,7 +27,7 @@
         label: 'ansible-test-{{ r }}'
         region: us-mia
         type: g6-standard-1
-        image: linode/ubuntu23.10
+        image: linode/ubuntu22.04
         auto_disk_resize: true
         state: present
       register: resize_disks
@@ -43,7 +43,7 @@
         label: 'ansible-test-{{ r }}'
         region: us-mia
         type: g6-standard-2
-        image: linode/ubuntu23.10
+        image: linode/ubuntu22.04
         migration_type: warm
         state: present
       register: resize_disks

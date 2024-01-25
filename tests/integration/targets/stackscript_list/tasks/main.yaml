@@ -6,7 +6,7 @@
     - name: Create a basic stackscript
       linode.cloud.stackscript:
         label: 'ansible-test-{{ r }}'
-        images: ['linode/alpine3.15']
+        images: ['linode/alpine3.19']
         script: |
           #!/bin/bash
           # <UDF name="package" label="System Package to Install" example="nginx" default="">

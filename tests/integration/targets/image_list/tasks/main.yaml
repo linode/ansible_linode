@@ -18,13 +18,13 @@
         order: desc
         filters:
           - name: label
-            values: Alpine 3.16
+            values: Alpine 3.19
       register: filter
 
     - assert:
         that:
           - filter.images | length == 1
-          - filter.images[0].id == 'linode/alpine3.16'
+          - filter.images[0].id == 'linode/alpine3.19'
 
     - name: Resolve an empty list of images
       linode.cloud.image_list:

@@ -69,7 +69,7 @@ List and filter on Linode events.
               "rate":null,
               "read":true,
               "secondary_entity":{
-                 "id":"linode/debian9",
+                 "id":"linode/debian11",
                  "label":"linode1234",
                  "type":"linode",
                  "url":"/v4/linode/instances/1234"

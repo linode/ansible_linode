@@ -8,6 +8,8 @@
   pip:
     name: docker-py
     state: present
+  environment:
+    PIP_BREAK_SYSTEM_PACKAGES: 1
 
 - name: Start and enable docker
   sysvinit:

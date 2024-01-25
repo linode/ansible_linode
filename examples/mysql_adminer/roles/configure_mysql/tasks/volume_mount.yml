@@ -1,5 +1,10 @@
 ---
 
+- name: Wait for the volume to be available
+  wait_for:
+    path: "{{ var_vol_mountpoint }}"
+    state: present
+
 - name: Create a ext4 filesystem on the attached volume
   filesystem:
     fstype: ext4

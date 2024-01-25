@@ -8,7 +8,7 @@
         label: 'ansible-test-inst-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         root_pass: Fn$$oobar123
         state: present
       register: create_inst

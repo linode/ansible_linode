@@ -55,7 +55,7 @@ Get info about a Linode Instance.
           "has_user_data": true,
           "hypervisor": "kvm",
           "id": 123,
-          "image": "linode/debian10",
+          "image": "linode/debian11",
           "ipv4": [
             "203.0.113.1",
             "192.0.2.1"

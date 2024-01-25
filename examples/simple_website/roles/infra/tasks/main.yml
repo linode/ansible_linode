@@ -8,7 +8,7 @@
     label: "{{resource_prefix}}-{{item}}"
     type: g6-nanode-1
     region: us-east
-    image: linode/alpine3.14
+    image: linode/alpine3.19
     private_ip: true
     booted: true
     authorized_keys:
