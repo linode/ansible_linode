@@ -5,16 +5,22 @@
 
     - name: Resolve the latest K8s version
       linode.cloud.lke_version_list: {}
-      register: lke_versions
+      register: get_lke_versions
 
     - set_fact:
-        kube_version: '{{ lke_versions.lke_versions[0].id }}'
+        lke_versions: '{{ get_lke_versions.lke_versions|sort(attribute="id") }}'
+
+    - set_fact:
+        old_kube_version: '{{ lke_versions[0].id }}'
+
+        # Sometimes only one LKE version is available for provisioning
+        kube_version: '{{ lke_versions[1].id if lke_versions|length > 1 else lke_versions[0].id }}'
 
     - name: Create a Linode LKE cluster
       linode.cloud.lke_cluster:
         label: 'ansible-test-{{ r }}'
         region: us-southeast
-        k8s_version: '{{ kube_version }}'
+        k8s_version: '{{ old_kube_version }}'
         node_pools:
           - type: g6-standard-1
             count: 3
@@ -30,7 +36,7 @@
 
     - assert:
         that:
-          - create_cluster.cluster.k8s_version == kube_version
+          - create_cluster.cluster.k8s_version == old_kube_version
           - create_cluster.cluster.region == 'us-southeast'
           - create_cluster.node_pools[0].type == 'g6-standard-1'
           - create_cluster.node_pools[0].count == 3
@@ -42,7 +48,7 @@
       linode.cloud.lke_cluster:
         label: '{{ create_cluster.cluster.label }}'
         region: us-southeast
-        k8s_version: '{{ kube_version }}'
+        k8s_version: '{{ old_kube_version }}'
         skip_polling: true
         node_pools:
           - type: g6-standard-1
@@ -56,7 +62,7 @@
 
     - assert:
         that:
-          - update_pools.cluster.k8s_version == kube_version
+          - update_pools.cluster.k8s_version == old_kube_version
           - update_pools.cluster.region == 'us-southeast'
 
           - update_pools.node_pools | length == 3

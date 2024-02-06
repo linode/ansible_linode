@@ -41,8 +41,8 @@ Get info about a Linode StackScript.
           "description": "This StackScript installs and configures MySQL",
           "id": 10079,
           "images": [
-            "linode/debian9",
-            "linode/debian8"
+            "linode/debian11",
+            "linode/debian10"
           ],
           "is_public": true,
           "label": "a-stackscript",

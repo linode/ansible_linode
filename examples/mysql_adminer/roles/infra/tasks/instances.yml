@@ -3,7 +3,7 @@
     label: "{{resource_prefix}}-mysql"
     type: g6-standard-2
     region: "{{ region }}"
-    image: linode/alpine3.14
+    image: linode/alpine3.19
     private_ip: true
     authorized_keys:
       - "{{ key_pair.public_key }}"
@@ -23,7 +23,7 @@
     label: "{{resource_prefix}}-adminer"
     type: g6-nanode-1
     region: "{{ region }}"
-    image: linode/alpine3.14
+    image: linode/alpine3.19
     private_ip: true
     authorized_keys:
       - "{{ key_pair.public_key }}"

@@ -14,6 +14,7 @@ While in the `obj_static_site` directory, run the following:
 
 ```bash
 export LINODE_TOKEN=mytoken
+export ANSIBLE_HOST_KEY_CHECKING=False
 ansible-playbook deploy.yml
 ```
 

@@ -40,7 +40,7 @@ Get info about a Linode LKE cluster.
           },
           "created": "2019-09-12T21:25:30Z",
           "id": 1234,
-          "k8s_version": "1.23",
+          "k8s_version": "1.28",
           "label": "lkecluster12345",
           "region": "us-central",
           "tags": [

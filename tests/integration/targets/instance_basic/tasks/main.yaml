@@ -8,7 +8,7 @@
         label: 'ansible-test-nopass-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         private_ip: true
         wait: false
         state: present
@@ -26,7 +26,7 @@
         label: 'ansible-test-additional-ips-nopass-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         private_ip: true
         wait: false
         state: present
@@ -47,7 +47,7 @@
         region: us-ord
         group: funny
         type: g6-standard-2
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         private_ip: true
         state: present
       register: invalid_update
@@ -59,7 +59,7 @@
         label: '{{ create_additional_ips.instance.label }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         private_ip: true
         wait: false
         state: present
@@ -75,7 +75,7 @@
         label: '{{ create_additional_ips.instance.label }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         private_ip: true
         wait: false
         state: present
@@ -89,7 +89,7 @@
         region: us-ord
         group: funny
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         private_ip: true
         state: present
       register: update
