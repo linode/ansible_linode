@@ -1,4 +1,5 @@
 """This module contains helper functions for various Linode modules."""
+
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, cast
 
 import linode_api4
