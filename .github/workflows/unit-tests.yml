@@ -7,6 +7,9 @@ name: Run Unit test
 
 jobs:
   run-tests:
+
+    # TODO:
+    # Upgrade back to ubuntu-latest when the permission issue fixed
     runs-on: ubuntu-20.04
     defaults:
       run:
