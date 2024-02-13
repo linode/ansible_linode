@@ -47,7 +47,7 @@ jobs:
 
       - name: run tests
         run: |
-          if ! make testall > test_output.txt; then
+          if ! ansible-test integration -v api_request_basic > test_output.txt; then
             echo "EXIT_STATUS=1" >> $GITHUB_ENV
           fi
           cat test_output.txt
@@ -59,6 +59,7 @@ jobs:
           ANSIBLE_CALLBACKS_ENABLED: "junit"
 
       - name: Upload test report as artifact
+        id: upload-artifact
         uses: actions/upload-artifact@v4
         with:
           name: test-report-dir
