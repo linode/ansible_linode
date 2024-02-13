@@ -49,7 +49,7 @@ jobs:
 
       - name: run tests
         run: |
-          if ! ansible-test integration -v api_request_basic > test_output.txt; then
+          if ! make testall > test_output.txt; then
             echo "EXIT_STATUS=1" >> $GITHUB_ENV
           fi
           cat test_output.txt
@@ -62,8 +62,6 @@ jobs:
 
       - name: Merge all test xmls in output directory
         run: |
-          pwd
-          ls
           python tod_scripts/merge_ansible_results.py
 
       - name: Add additional information to XML report
