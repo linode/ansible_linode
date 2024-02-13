@@ -51,6 +51,9 @@ jobs:
             echo "EXIT_STATUS=1" >> $GITHUB_ENV
           fi
           cat test_output.txt
+          pwd
+          ls -a tests/output/junit/
+          cat tests/output/junit/*.xml
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
           ANSIBLE_CALLBACKS_ENABLED: "junit"
@@ -60,10 +63,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-report-dir
-          run: |
-            pwd
-            ls -a tests/output/junit/
-            cat tests/output/junit/*.xml
           path: tests/output/
 
       - name: Test Execution Status Handler
@@ -74,7 +73,6 @@ jobs:
           else
             echo "Tests passed!"
           fi
-        continue-on-error: true
 
   process-upload-report:
     runs-on: ubuntu-latest
