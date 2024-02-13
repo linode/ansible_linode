@@ -10,6 +10,8 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    env:
+      EXIT_STATUS: 0
     defaults:
       run:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
@@ -43,7 +45,74 @@ jobs:
         run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
 
       - name: run tests
-        run: make testall
+        run: |
+          if ! make testall > test_output.txt; then
+            echo "EXIT_STATUS=1" >> $GITHUB_ENV
+          fi
+          cat test_output.txt
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
+          ANSIBLE_CALLBACKS_ENABLED: "junit"
 
+      - name: Upload test report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report-dir
+          path: tests/output
+
+      - name: Test Execution Status Handler
+        run: |
+          if [[ "$EXIT_STATUS" != 0 ]]; then
+            echo "Test execution contains failure(s), check Run Integration tests step above"
+            exit $EXIT_STATUS 
+          else
+            echo "Tests passed!"
+          fi
+
+  process-upload-report:
+    runs-on: ubuntu-latest
+    needs:
+      - run-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      - name: Download test report
+        uses: actions/download-artifact@v4
+        with:
+          name: test-report-dir
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: pip3 install requests wheel boto3
+
+      - name: Set release version env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+      - name: Merge all test xmls in output directory
+        run: |
+          python tod_scripts/merge_ansible_results.py
+
+      - name: Add additional information to XML report
+        run: |
+          filename=$(ls | grep -E '^[0-9]{12}_ansible_merged\.xml$') 
+          python tod_scripts/add_to_xml_test_report.py \
+          --branch_name "${{ env.RELEASE_VERSION }}" \
+          --gha_run_id "$GITHUB_RUN_ID" \
+          --gha_run_number "$GITHUB_RUN_NUMBER" \
+          --xmlfile "${filename}"
+
+      - name: Upload test results to the bucket
+        run: |
+          filename=$(ls | grep -E '^[0-9]{12}_ansible_merged\.xml$')
+          python3 tod_scripts/test_report_upload_script.py "${filename}"
+        env:
+          LINODE_CLI_OBJ_ACCESS_KEY: ${{ secrets.LINODE_CLI_OBJ_ACCESS_KEY }}
+          LINODE_CLI_OBJ_SECRET_KEY: ${{ secrets.LINODE_CLI_OBJ_SECRET_KEY }}
