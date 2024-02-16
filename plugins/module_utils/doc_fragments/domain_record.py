@@ -9,9 +9,16 @@ specdoc_examples = ['''
     target: '127.0.0.1'
     state: present''', '''
 - name: Delete a domain record
-  linode.cloud.domain:
+  linode.cloud.domain_record:
     domain: my-domain.com
     name: my-subdomain
+    type: 'A'
+    target: '127.0.0.1'
+    state: absent''', '''
+- name: Delete the record by record_id
+  linode.cloud.domain_record:            
+    domain: my-domain.com
+    record_id: 5678
     state: absent''']
 
 result_record_samples = ['''{
