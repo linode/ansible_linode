@@ -10,7 +10,6 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && (github.event.ref == 'refs/heads/main' || github.event.ref == 'refs/heads/dev')
     env:
       EXIT_STATUS: 0
     defaults:
