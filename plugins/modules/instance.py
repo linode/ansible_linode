@@ -810,6 +810,13 @@ class LinodeInstance(LinodeModuleBase):
     def _create_disk_register(self, **kwargs: Any) -> None:
         size = kwargs.pop("size")
 
+        # Workaround for race condition on implicit events
+        # See: TPT-2738
+        self.client.polling.wait_for_entity_free(
+            entity_type="disks",
+            entity_id=self._instance.id,
+        )
+
         create_poller = self.client.polling.event_poller_create(
             "disks", "disk_create", entity_id=self._instance.id
         )
