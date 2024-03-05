@@ -1,0 +1,77 @@
+- name: instance_config_disk_private
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+        file_content: 'H4sIAAAAAAAAA6vML1UozsgvzUlRKC1OVShJLSpKTMsvyuUCAMhLS4gZAAAA='
+
+    - name: Create temporary image file
+      tempfile:
+        state: file
+        suffix: .img.gz
+      register: source_file
+
+    - copy:
+        dest: '{{ source_file.path }}'
+        content: '{{ file_content | b64decode }}'
+
+    - name: Create a private image from the image file
+      linode.cloud.image:
+        label: 'ansible-test-{{ r }}'
+        source_file: '{{ source_file.path }}'
+        state: present
+      register: image_create
+
+    - assert:
+        that:
+          - image_create.image.status == 'available'
+
+    - name: Provision an instance consuming the new image
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        type: g6-nanode-1
+        region: us-mia
+        boot_config_label: boot-config
+        disks:
+          - label: boot
+            filesystem: raw
+            image: '{{ image_create.image.id }}'
+            size: 5000
+          - label: swap
+            filesystem: swap
+            size: 4000
+        configs:
+          - label: 'boot-config'
+            root_device: '/dev/sda'
+            run_level: 'default'
+            kernel: 'linode/direct-disk'
+            devices:
+              sda:
+                disk_label: boot
+              sdb:
+                disk_label: swap
+        state: present
+      register: instance_create
+
+    - assert:
+        that:
+          - instance_create.changed
+          - instance_create.disks | length == 2
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.instance:
+            label: '{{ instance_create.instance.label }}'
+            state: absent
+
+        - linode.cloud.image:
+            label: '{{ image_create.image.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+
