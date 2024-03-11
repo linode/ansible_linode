@@ -41,9 +41,22 @@
           - create_additional_ips.instance.ipv4|length == 3
           - create_additional_ips.networking.ipv4.public[0].address != None
 
-    - name: Update the instance region and type (recreate disallowed)
+    - name: Update the instance region and type
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
+        region: us-ord
+        group: funny
+        type: g6-standard-2
+        image: linode/ubuntu22.04
+        private_ip: true
+        state: present
+      register: invalid_update
+      failed_when:
+        - invalid_update.changed == false
+
+    - name: Update label with invalid string
+      linode.cloud.instance:
+        label: '!!Invalid!!'
         region: us-ord
         group: funny
         type: g6-standard-2
