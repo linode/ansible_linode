@@ -13,6 +13,7 @@ Get info about a Linode VLAN.
 ```yaml
 - name: Get info about a VLAN by label
   linode.cloud.vlan_info:
+    api_version: v4beta
     label: example-vlan
 ```
 
