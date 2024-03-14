@@ -2,7 +2,7 @@
 
 Get info about a Linode VLAN.
 
-> :warning: **This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
 
 - [Examples](#examples)
 - [Parameters](#parameters)
