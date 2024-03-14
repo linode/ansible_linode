@@ -12,7 +12,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
-    beta_disclaimer,
+    BETA_DISCLAIMER,
     global_authors,
     global_requirements,
 )
@@ -203,7 +203,7 @@ class InfoModule(LinodeModuleBase):
         ]
 
         if self.requires_beta:
-            description.append(beta_disclaimer)
+            description.append(BETA_DISCLAIMER)
 
         return SpecDocMeta(
             description=description,
