@@ -12,6 +12,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
+    beta_disclaimer,
     global_authors,
     global_requirements,
 )
@@ -76,7 +77,10 @@ spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["List and filter on Linode VLANs."],
+    description=[
+        "List and filter on Linode VLANs.",
+        beta_disclaimer,
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=spec,

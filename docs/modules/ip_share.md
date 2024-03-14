@@ -1,8 +1,8 @@
 # ip_share
 
-> :warning: **This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
-
 Manage the Linode shared IPs.
+
+> :warning: **This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
 
 - [Examples](#examples)
 - [Parameters](#parameters)

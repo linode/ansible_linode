@@ -203,7 +203,7 @@ class InfoModule(LinodeModuleBase):
         ]
 
         if self.requires_beta:
-            description.insert(0, beta_disclaimer)
+            description.append(beta_disclaimer)
 
         return SpecDocMeta(
             description=description,

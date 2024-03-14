@@ -159,7 +159,7 @@ class ListModule(
         description = [f"List and filter on {self.result_display_name}s."]
 
         if self.requires_beta:
-            description.insert(0, beta_disclaimer)
+            description.append(beta_disclaimer)
 
         return SpecDocMeta(
             description=description,

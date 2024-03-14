@@ -46,8 +46,8 @@ ip_share_spec = {
 
 SPECDOC_META = SpecDocMeta(
     description=[
-        beta_disclaimer,
         "Manage the Linode shared IPs.",
+        beta_disclaimer,
     ],
     requirements=global_requirements,
     author=global_authors,

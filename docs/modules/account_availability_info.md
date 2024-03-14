@@ -1,8 +1,8 @@
 # account_availability_info
 
-> :warning: **This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
-
 Get info about a Linode Account Availability.
+
+> :warning: **This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
 
 - [Examples](#examples)
 - [Parameters](#parameters)
