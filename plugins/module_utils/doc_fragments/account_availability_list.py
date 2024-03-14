@@ -2,7 +2,8 @@
 
 specdoc_examples = ['''
 - name: List all of the region resource availabilities to the account
-  linode.cloud.account_availability_list: {}''']
+  linode.cloud.account_availability_list:
+    api_version: v4beta''']
 
 result_account_availabilities_samples = ['''[
     {

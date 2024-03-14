@@ -12,6 +12,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
+    beta_disclaimer,
     global_authors,
     global_requirements,
 )
@@ -44,7 +45,10 @@ ip_share_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage the Linode shared IPs."],
+    description=[
+        beta_disclaimer,
+        "Manage the Linode shared IPs.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=ip_share_spec,

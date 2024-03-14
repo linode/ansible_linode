@@ -1,5 +1,7 @@
 # ip_share
 
+> :warning: **This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+
 Manage the Linode shared IPs.
 
 - [Examples](#examples)
@@ -11,6 +13,7 @@ Manage the Linode shared IPs.
 ```yaml
 - name: Configure the Linode shared IPs.
   linode.cloud.ip_share:
+    api_version: v4beta
     linode_id: 12345
     ips: ["192.0.2.1", "2001:db8:3c4d:15::"]
 ```

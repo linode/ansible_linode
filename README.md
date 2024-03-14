@@ -32,7 +32,7 @@ Name | Description |
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
 [linode.cloud.ip_assign](./docs/modules/ip_assign.md)|Assign IPs to Linodes in a given Region.|
 [linode.cloud.ip_rdns](./docs/modules/ip_rdns.md)|Manage a Linode IP address's rDNS.|
-[linode.cloud.ip_share](./docs/modules/ip_share.md)|Manage the Linode shared IPs.|
+[linode.cloud.ip_share](./docs/modules/ip_share.md)|> :warning: **This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**|
 [linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|Manage Linode LKE clusters.|
 [linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|Manage Linode LKE cluster node pools.|
 [linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|Manage a Linode NodeBalancer.|
@@ -54,7 +54,7 @@ Modules for retrieving information about existing Linode infrastructure.
 
 Name | Description |
 --- | ------------ |
-[linode.cloud.account_availability_info](./docs/modules/account_availability_info.md)|Get info about a Linode Account Availability.|
+[linode.cloud.account_availability_info](./docs/modules/account_availability_info.md)|> :warning: **This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**|
 [linode.cloud.account_info](./docs/modules/account_info.md)|Get info about a Linode Account.|
 [linode.cloud.database_mysql_info](./docs/modules/database_mysql_info.md)|Get info about a Linode MySQL Managed Database.|
 [linode.cloud.database_postgresql_info](./docs/modules/database_postgresql_info.md)|Get info about a Linode PostgreSQL Managed Database.|
@@ -86,7 +86,7 @@ Modules for retrieving and filtering on multiple Linode resources.
 
 Name | Description |
 --- | ------------ |
-[linode.cloud.account_availability_list](./docs/modules/account_availability_list.md)|List and filter on Account Availabilitys.|
+[linode.cloud.account_availability_list](./docs/modules/account_availability_list.md)|> :warning: **This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**|
 [linode.cloud.database_engine_list](./docs/modules/database_engine_list.md)|List and filter on Managed Database engine types.|
 [linode.cloud.database_list](./docs/modules/database_list.md)|List and filter on Linode Managed Databases.|
 [linode.cloud.domain_list](./docs/modules/domain_list.md)|List and filter on Domains.|
