@@ -76,7 +76,10 @@ SPEC = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage a Linode StackScript."],
+    description=[
+        "Manage a Linode StackScript.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=SPEC,

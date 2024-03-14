@@ -52,7 +52,10 @@ linode_object_cluster_info_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Get info about a Linode Object Storage Cluster."],
+    description=[
+        "Get info about a Linode Object Storage Cluster.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_object_cluster_info_spec,

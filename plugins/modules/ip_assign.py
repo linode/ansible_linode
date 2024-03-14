@@ -56,6 +56,7 @@ spec = {
 SPECDOC_META = SpecDocMeta(
     description=[
         "Assign IPs to Linodes in a given Region.",
+        "LINODE_API_TOKEN environment variable is required.",
         "The following restrictions apply:",
         " - All Linodes involved must have at least"
         " one public IPv4 address after assignment.",

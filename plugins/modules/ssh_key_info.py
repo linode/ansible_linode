@@ -42,7 +42,10 @@ linode_ssh_key_info_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Get info about the Linode SSH public key."],
+    description=[
+        "Get info about the Linode SSH public key.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_ssh_key_info_spec,

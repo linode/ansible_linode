@@ -80,7 +80,10 @@ spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["List and filter on Linode Managed Databases."],
+    description=[
+        "List and filter on Linode Managed Databases.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=spec,

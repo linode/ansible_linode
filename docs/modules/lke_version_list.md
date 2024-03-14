@@ -2,6 +2,8 @@
 
 List Kubernetes versions available for deployment to a Kubernetes cluster.
 
+LINODE_API_TOKEN environment variable is required.
+
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)

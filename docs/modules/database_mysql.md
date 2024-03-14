@@ -2,6 +2,8 @@
 
 Manage a Linode MySQL database.
 
+LINODE_API_TOKEN environment variable is required.
+
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)

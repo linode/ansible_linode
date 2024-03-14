@@ -161,7 +161,10 @@ linode_firewall_spec: dict = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage Linode Firewalls."],
+    description=[
+        "Manage Linode Firewalls.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_firewall_spec,

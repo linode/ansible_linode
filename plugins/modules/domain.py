@@ -132,7 +132,10 @@ linode_domain_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage Linode Domains."],
+    description=[
+        "Manage Linode Domains.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_domain_spec,

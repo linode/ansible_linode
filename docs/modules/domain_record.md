@@ -2,6 +2,8 @@
 
 Manage Linode Domain Records.
 
+LINODE_API_TOKEN environment variable is required.
+
 NOTE: Domain records are identified by their name, target, and type.
 
 - [Examples](#examples)

@@ -55,6 +55,7 @@ SPEC = {
 SPECDOC_META = SpecDocMeta(
     description=[
         "Create, read, and update a Linode VPC Subnet.",
+        "LINODE_API_TOKEN environment variable is required.",
     ],
     requirements=global_requirements,
     author=global_authors,

@@ -45,7 +45,8 @@ spec = {
 
 SPECDOC_META = SpecDocMeta(
     description=[
-        "List Kubernetes versions available for deployment to a Kubernetes cluster."
+        "List Kubernetes versions available for deployment to a Kubernetes cluster.",
+        "LINODE_API_TOKEN environment variable is required.",
     ],
     requirements=global_requirements,
     author=global_authors,

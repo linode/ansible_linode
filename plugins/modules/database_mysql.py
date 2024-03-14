@@ -133,7 +133,10 @@ SPEC = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage a Linode MySQL database."],
+    description=[
+        "Manage a Linode MySQL database.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=SPEC,

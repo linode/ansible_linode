@@ -197,7 +197,8 @@ class InfoModule(LinodeModuleBase):
 
         return SpecDocMeta(
             description=[
-                f"Get info about a Linode {self.primary_result.display_name}."
+                f"Get info about a Linode {self.primary_result.display_name}.",
+                "LINODE_API_TOKEN environment variable is required.",
             ],
             requirements=global_requirements,
             author=global_authors,

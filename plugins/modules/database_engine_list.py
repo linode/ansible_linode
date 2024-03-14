@@ -81,7 +81,10 @@ spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["List and filter on Managed Database engine types."],
+    description=[
+        "List and filter on Managed Database engine types.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=spec,

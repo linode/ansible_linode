@@ -101,7 +101,10 @@ linode_volume_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage a Linode Volume."],
+    description=[
+        "Manage a Linode Volume.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_volume_spec,

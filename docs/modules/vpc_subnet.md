@@ -2,6 +2,8 @@
 
 Create, read, and update a Linode VPC Subnet.
 
+LINODE_API_TOKEN environment variable is required.
+
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)

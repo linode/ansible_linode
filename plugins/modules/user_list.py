@@ -44,7 +44,10 @@ spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["List Users."],
+    description=[
+        "List Users.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=spec,

@@ -79,7 +79,10 @@ MODULE_SPEC = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage Linode NodeBalancer Nodes."],
+    description=[
+        "Manage Linode NodeBalancer Nodes.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=MODULE_SPEC,

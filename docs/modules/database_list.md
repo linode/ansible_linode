@@ -2,6 +2,8 @@
 
 List and filter on Linode Managed Databases.
 
+LINODE_API_TOKEN environment variable is required.
+
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)

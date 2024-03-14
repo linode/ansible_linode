@@ -46,7 +46,10 @@ ssh_key_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage a Linode SSH key."],
+    description=[
+        "Manage a Linode SSH key.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=ssh_key_spec,

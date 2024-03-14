@@ -2,6 +2,8 @@
 
 Manage a Linode Token.
 
+LINODE_API_TOKEN environment variable is required.
+
 NOTE: The full Personal Access Token is only returned when a new token has been created.
 
 - [Examples](#examples)

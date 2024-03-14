@@ -44,7 +44,10 @@ ip_share_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage the Linode shared IPs."],
+    description=[
+        "Manage the Linode shared IPs.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=ip_share_spec,

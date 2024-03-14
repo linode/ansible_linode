@@ -32,7 +32,10 @@ linode_vlan_info_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Get info about a Linode VLAN."],
+    description=[
+        "Get info about a Linode VLAN.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_vlan_info_spec,

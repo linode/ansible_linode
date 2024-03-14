@@ -153,7 +153,10 @@ linode_lke_cluster_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage Linode LKE clusters."],
+    description=[
+        "Manage Linode LKE clusters.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_lke_cluster_spec,

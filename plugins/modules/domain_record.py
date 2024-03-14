@@ -131,6 +131,7 @@ linode_domain_record_spec = {
 SPECDOC_META = SpecDocMeta(
     description=[
         "Manage Linode Domain Records.",
+        "LINODE_API_TOKEN environment variable is required.",
         "NOTE: Domain records are identified by their name, target, and type.",
     ],
     requirements=global_requirements,

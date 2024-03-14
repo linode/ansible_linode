@@ -501,7 +501,10 @@ linode_instance_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manage Linode Instances, Configs, and Disks."],
+    description=[
+        "Manage Linode Instances, Configs, and Disks.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_instance_spec,

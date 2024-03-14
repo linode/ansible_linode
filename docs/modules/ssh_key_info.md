@@ -2,6 +2,8 @@
 
 Get info about the Linode SSH public key.
 
+LINODE_API_TOKEN environment variable is required.
+
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)

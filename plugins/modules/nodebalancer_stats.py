@@ -44,7 +44,10 @@ linode_nodebalancer_stats_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["View a Linode NodeBalancers Stats."],
+    description=[
+        "View a Linode NodeBalancers Stats.",
+        "LINODE_API_TOKEN environment variable is required.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_nodebalancer_stats_spec,
