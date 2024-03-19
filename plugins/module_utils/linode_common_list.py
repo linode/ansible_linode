@@ -12,6 +12,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
+    BETA_DISCLAIMER,
     global_authors,
     global_requirements,
 )
@@ -53,6 +54,7 @@ class ListModule(
         params: List[ListModuleParam] = None,
         examples: List[str] = None,
         result_samples: List[str] = None,
+        requires_beta: bool = False,
     ) -> None:
         self.result_display_name = result_display_name
         self.result_field_name = result_field_name
@@ -62,6 +64,7 @@ class ListModule(
         self.params = params or []
         self.examples = examples or []
         self.result_samples = result_samples or []
+        self.requires_beta = requires_beta
 
         self.module_arg_spec = self.spec.ansible_spec
         self.results: Dict[str, Any] = {self.result_field_name: []}
@@ -153,8 +156,13 @@ class ListModule(
                 required=True,
             )
 
+        description = [f"List and filter on {self.result_display_name}s."]
+
+        if self.requires_beta:
+            description.append(BETA_DISCLAIMER)
+
         return SpecDocMeta(
-            description=[f"List and filter on {self.result_display_name}s."],
+            description=description,
             requirements=global_requirements,
             author=global_authors,
             options=options,
