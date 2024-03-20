@@ -3,6 +3,7 @@
 specdoc_examples = ['''
 - name: Get info about a VLAN by label
   linode.cloud.vlan_info:
+    api_version: v4beta
     label: example-vlan''']
 
 result_vlan_samples = ['''{

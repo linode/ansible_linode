@@ -2,6 +2,8 @@
 
 List and filter on Account Availabilitys.
 
+**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -10,7 +12,8 @@ List and filter on Account Availabilitys.
 
 ```yaml
 - name: List all of the region resource availabilities to the account
-  linode.cloud.account_availability_list: {}
+  linode.cloud.account_availability_list:
+    api_version: v4beta
 ```
 
 

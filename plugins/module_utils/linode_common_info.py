@@ -12,6 +12,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
+    BETA_DISCLAIMER,
     global_authors,
     global_requirements,
 )
@@ -95,12 +96,14 @@ class InfoModule(LinodeModuleBase):
         params: List[InfoModuleParam] = None,
         attributes: List[InfoModuleAttr] = None,
         examples: List[str] = None,
+        requires_beta: bool = False,
     ) -> None:
         self.primary_result = primary_result
         self.secondary_results = secondary_results or []
         self.params = params or []
         self.attributes = attributes or []
         self.examples = examples or []
+        self.requires_beta = requires_beta
 
         self.module_arg_spec = self.spec.ansible_spec
         self.results: Dict[str, Any] = {
@@ -203,10 +206,15 @@ class InfoModule(LinodeModuleBase):
             for v in [self.primary_result] + self.secondary_results
         }
 
+        description = [
+            f"Get info about a Linode {self.primary_result.display_name}."
+        ]
+
+        if self.requires_beta:
+            description.append(BETA_DISCLAIMER)
+
         return SpecDocMeta(
-            description=[
-                f"Get info about a Linode {self.primary_result.display_name}."
-            ],
+            description=description,
             requirements=global_requirements,
             author=global_authors,
             options=options,
