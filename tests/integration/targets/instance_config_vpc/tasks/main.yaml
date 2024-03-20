@@ -19,6 +19,10 @@
         state: present
       register: create_subnet
 
+    - name: Assert subnet information
+      debug:
+        msg: "{{ create_subnet.subnet.id }}"
+
     - name: Create a Linode instance with interface
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
@@ -110,7 +114,7 @@
           - update_instance.configs[0].interfaces[1].subnet_id == create_subnet.subnet.id
           - update_instance.configs[0].interfaces[1].vpc_id == create_vpc.vpc.id
           - update_instance.configs[0].interfaces[1].ip_ranges[0] == '10.0.0.7/32'
-          - update_instance.configs[0].interfaces[1].ipv4.nat_1_1 == ""
+          - update_instance.configs[0].interfaces[1].ipv4.nat_1_1 == None
           - update_instance.configs[0].interfaces[1].ipv4.vpc == '10.0.0.4'
 
     - name: Don't change the config interfaces

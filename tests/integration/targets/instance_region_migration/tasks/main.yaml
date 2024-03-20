@@ -21,7 +21,7 @@
         region: us-iad
         type: g6-nanode-1
         image: linode/ubuntu22.04
-        migration_type: warm
+        migration_type: cold
         state: present
       register: migrated
 
