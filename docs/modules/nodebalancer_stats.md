@@ -2,8 +2,6 @@
 
 View a Linode NodeBalancers Stats.
 
-LINODE_API_TOKEN environment variable is required.
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -24,6 +22,7 @@ LINODE_API_TOKEN environment variable is required.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `id` | <center>`int`</center> | <center>Optional</center> | The id of the nodebalancer for which the statistics apply to.  **(Conflicts With: `label`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the nodebalancer for which the statistics apply to.  **(Conflicts With: `id`)** |
 

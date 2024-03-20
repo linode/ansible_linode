@@ -70,6 +70,14 @@ linode_lke_pool_disks = {
 }
 
 MODULE_SPEC = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "cluster_id": SpecField(
         type=FieldType.integer,
@@ -143,10 +151,7 @@ MODULE_SPEC = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Manage Linode LKE cluster node pools.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Manage Linode LKE cluster node pools."],
     requirements=global_requirements,
     author=global_authors,
     options=MODULE_SPEC,

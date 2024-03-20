@@ -29,6 +29,14 @@ from ansible_specdoc.objects import (
 from linode_api4 import Domain
 
 linode_domain_info_spec = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     # We need to overwrite attributes to exclude them as requirements
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
@@ -53,10 +61,7 @@ linode_domain_info_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Get info about a Linode Domain.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Get info about a Linode Domain."],
     requirements=global_requirements,
     author=global_authors,
     options=linode_domain_info_spec,

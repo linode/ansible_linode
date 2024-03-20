@@ -2,8 +2,6 @@
 
 Assign IPs to Linodes in a given Region.
 
-LINODE_API_TOKEN environment variable is required.
-
 The following restrictions apply:
 
  - All Linodes involved must have at least one public IPv4 address after assignment.
@@ -34,6 +32,7 @@ The following restrictions apply:
 |-----------|------|----------|------------------------------------------------------------------------------|
 | [`assignments` (sub-options)](#assignments) | <center>`list`</center> | <center>**Required**</center> | List of assignments to make.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>**Required**</center> | The Region to operate in.   |
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 
 ### assignments
 

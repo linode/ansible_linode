@@ -25,6 +25,14 @@ from ansible_specdoc.objects import (
 from linode_api4 import Volume
 
 linode_volume_spec = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     "label": SpecField(
         type=FieldType.string,
         description=[
@@ -101,10 +109,7 @@ linode_volume_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Manage a Linode Volume.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Manage a Linode Volume."],
     requirements=global_requirements,
     author=global_authors,
     options=linode_volume_spec,

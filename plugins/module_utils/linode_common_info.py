@@ -156,6 +156,14 @@ class InfoModule(LinodeModuleBase):
         """
 
         options = {
+            "api_token": SpecField(
+                type=FieldType.string,
+                required=False,
+                description="The Linode account personal access token. "
+                "It is necessary to run the module. "
+                "It can be exposed by the "
+                "environment variable `LINODE_API_TOKEN` instead.",
+            ),
             "state": SpecField(
                 type=FieldType.string, required=False, doc_hide=True
             ),
@@ -197,8 +205,7 @@ class InfoModule(LinodeModuleBase):
 
         return SpecDocMeta(
             description=[
-                f"Get info about a Linode {self.primary_result.display_name}.",
-                "LINODE_API_TOKEN environment variable is required.",
+                f"Get info about a Linode {self.primary_result.display_name}."
             ],
             requirements=global_requirements,
             author=global_authors,

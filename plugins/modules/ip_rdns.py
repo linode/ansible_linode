@@ -25,6 +25,14 @@ from ansible_specdoc.objects import (
 from linode_api4 import ExplicitNullValue, IPAddress
 
 ip_rdns_spec = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     # Disable the default values
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "state": SpecField(
@@ -45,10 +53,7 @@ ip_rdns_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Manage a Linode IP address's rDNS.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Manage a Linode IP address's rDNS."],
     requirements=global_requirements,
     author=global_authors,
     options=ip_rdns_spec,

@@ -37,6 +37,14 @@ from ansible_specdoc.objects import (
 from linode_api4 import PostgreSQLDatabase
 
 spec = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     # Disable the default values
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "id": SpecField(
@@ -52,10 +60,7 @@ spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Get info about a Linode PostgreSQL Managed Database.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Get info about a Linode PostgreSQL Managed Database."],
     requirements=global_requirements,
     author=global_authors,
     options=spec,

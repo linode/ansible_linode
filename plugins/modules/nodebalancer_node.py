@@ -28,6 +28,14 @@ from ansible_specdoc.objects import (
 )
 
 MODULE_SPEC = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     "nodebalancer_id": SpecField(
         type=FieldType.integer,
         required=True,
@@ -79,10 +87,7 @@ MODULE_SPEC = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Manage Linode NodeBalancer Nodes.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Manage Linode NodeBalancer Nodes."],
     requirements=global_requirements,
     author=global_authors,
     options=MODULE_SPEC,

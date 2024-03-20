@@ -25,6 +25,14 @@ from ansible_specdoc.objects import (
 )
 
 spec = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     # Disable the default values
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
@@ -45,8 +53,7 @@ spec = {
 
 SPECDOC_META = SpecDocMeta(
     description=[
-        "List Kubernetes versions available for deployment to a Kubernetes cluster.",
-        "LINODE_API_TOKEN environment variable is required.",
+        "List Kubernetes versions available for deployment to a Kubernetes cluster."
     ],
     requirements=global_requirements,
     author=global_authors,

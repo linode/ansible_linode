@@ -227,6 +227,14 @@ linode_configs_spec = {
 }
 
 linode_nodebalancer_spec = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     "label": SpecField(
         type=FieldType.string,
         description=["The unique label to give this NodeBalancer."],
@@ -265,10 +273,7 @@ linode_nodebalancer_spec = {
 
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Manage a Linode NodeBalancer.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Manage a Linode NodeBalancer."],
     requirements=global_requirements,
     author=global_authors,
     options=linode_nodebalancer_spec,

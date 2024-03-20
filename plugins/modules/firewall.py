@@ -128,6 +128,14 @@ linode_firewall_device_spec: dict = {
 }
 
 linode_firewall_spec: dict = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     "label": SpecField(
         type=FieldType.string,
         description=["The unique label to give this Firewall."],
@@ -161,10 +169,7 @@ linode_firewall_spec: dict = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Manage Linode Firewalls.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Manage Linode Firewalls."],
     requirements=global_requirements,
     author=global_authors,
     options=linode_firewall_spec,

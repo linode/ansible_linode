@@ -29,6 +29,14 @@ from ansible_specdoc.objects import (
 from linode_api4 import VPC
 
 SPEC = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     "label": SpecField(
         type=FieldType.string,
         required=True,
@@ -52,10 +60,7 @@ SPEC = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Create, read, and update a Linode VPC.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Create, read, and update a Linode VPC."],
     requirements=global_requirements,
     author=global_authors,
     options=SPEC,

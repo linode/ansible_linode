@@ -50,6 +50,14 @@ spec_filter = {
 }
 
 spec = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     # Disable the default values
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
@@ -81,10 +89,7 @@ spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "List and filter on Managed Database engine types.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["List and filter on Managed Database engine types."],
     requirements=global_requirements,
     author=global_authors,
     options=spec,

@@ -165,6 +165,14 @@ SPEC_GRANTS = {
 }
 
 SPEC = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     # We don't use label for this module
     "label": SpecField(
         type=FieldType.string,
@@ -208,10 +216,7 @@ SPEC = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Manage a Linode User.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Manage a Linode User."],
     requirements=global_requirements,
     author=global_authors,
     options=SPEC,

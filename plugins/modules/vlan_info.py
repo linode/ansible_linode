@@ -24,6 +24,14 @@ from ansible_specdoc.objects import (
 from linode_api4 import VLAN
 
 linode_vlan_info_spec = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     # We need to overwrite attributes to exclude them as requirements
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "label": SpecField(
@@ -32,10 +40,7 @@ linode_vlan_info_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Get info about a Linode VLAN.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Get info about a Linode VLAN."],
     requirements=global_requirements,
     author=global_authors,
     options=linode_vlan_info_spec,

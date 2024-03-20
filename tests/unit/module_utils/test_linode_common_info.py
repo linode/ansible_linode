@@ -54,8 +54,7 @@ class TestLinodeInfoModule:
         spec = mock_module.spec
 
         assert spec.description == [
-            "Get info about a Linode Foo.",
-            "LINODE_API_TOKEN environment variable is required."
+            "Get info about a Linode Foo."
         ]
         assert spec.requirements == global_requirements
         assert spec.author == global_authors

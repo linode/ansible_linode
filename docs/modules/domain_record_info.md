@@ -2,8 +2,6 @@
 
 Get info about a Linode Domain Record.
 
-LINODE_API_TOKEN environment variable is required.
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -31,6 +29,7 @@ LINODE_API_TOKEN environment variable is required.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `domain_id` | <center>`int`</center> | <center>Optional</center> | The ID of the parent Domain. Optional if `domain` is defined.  **(Conflicts With: `domain`)** |
 | `domain` | <center>`str`</center> | <center>Optional</center> | The name of the parent Domain. Optional if `domain_id` is defined.  **(Conflicts With: `domain_id`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The unique id of the subdomain. Optional if `name` is defined.  **(Conflicts With: `name`)** |

@@ -47,6 +47,14 @@ linode_access_spec = {
 }
 
 linode_object_keys_spec = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     "label": SpecField(
         type=FieldType.string,
         description=["The unique label to give this key."],
@@ -66,10 +74,7 @@ linode_object_keys_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=[
-        "Manage Linode Object Storage Keys.",
-        "LINODE_API_TOKEN environment variable is required.",
-    ],
+    description=["Manage Linode Object Storage Keys."],
     requirements=global_requirements,
     author=global_authors,
     options=linode_object_keys_spec,

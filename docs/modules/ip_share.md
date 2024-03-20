@@ -2,8 +2,6 @@
 
 Manage the Linode shared IPs.
 
-LINODE_API_TOKEN environment variable is required.
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -24,6 +22,7 @@ LINODE_API_TOKEN environment variable is required.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `ips` | <center>`list`</center> | <center>**Required**</center> | A list of secondary Linode IPs to share with the primary Linode.   |
 | `linode_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the primary Linode that the addresses will be shared with.   |
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 
 ## Return Values
 

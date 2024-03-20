@@ -2,8 +2,6 @@
 
 Manage Linode Object Storage Keys.
 
-LINODE_API_TOKEN environment variable is required.
-
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
@@ -41,6 +39,7 @@ LINODE_API_TOKEN environment variable is required.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The unique label to give this key.   |
 | [`access` (sub-options)](#access) | <center>`list`</center> | <center>Optional</center> | A list of access permissions to give the key.   |
 

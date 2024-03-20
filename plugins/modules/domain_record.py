@@ -27,6 +27,14 @@ from ansible_specdoc.objects import (
 from linode_api4 import Domain, DomainRecord
 
 linode_domain_record_spec = {
+    "api_token": SpecField(
+        type=FieldType.string,
+        required=False,
+        description="The Linode account personal access token. "
+        "It is necessary to run the module. "
+        "It can be exposed by the "
+        "environment variable `LINODE_API_TOKEN` instead.",
+    ),
     # Unused for domain record objects
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "domain_id": SpecField(
@@ -131,7 +139,6 @@ linode_domain_record_spec = {
 SPECDOC_META = SpecDocMeta(
     description=[
         "Manage Linode Domain Records.",
-        "LINODE_API_TOKEN environment variable is required.",
         "NOTE: Domain records are identified by their name, target, and type.",
     ],
     requirements=global_requirements,
