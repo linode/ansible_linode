@@ -9,8 +9,8 @@ from typing import Any, Dict, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    LINODE_COMMON_ARGS,
     API_TOKEN_SPEC,
+    LINODE_COMMON_ARGS,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
