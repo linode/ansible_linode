@@ -43,7 +43,6 @@ Manage Linode Firewall Devices.
 | `entity_id` | <center>`int`</center> | <center>**Required**</center> | The ID for this Firewall Device. This will be the ID of the Linode Entity.   |
 | `entity_type` | <center>`str`</center> | <center>**Required**</center> | The type of Linode Entity. Currently only supports linode and nodebalancer.  **(Choices: `linode`, `nodebalancer`)** |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 
 ## Return Values
 

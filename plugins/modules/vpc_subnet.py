@@ -9,7 +9,6 @@ from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vpc_subnet as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -30,7 +29,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import VPC, VPCSubnet
 
 SPEC = {
-    "api_token": API_TOKEN_SPEC,
     "vpc_id": SpecField(
         type=FieldType.integer,
         required=True,
@@ -55,7 +53,9 @@ SPEC = {
 
 
 SPECDOC_META = SpecDocMeta(
-    description=["Create, read, and update a Linode VPC Subnet."],
+    description=[
+        "Create, read, and update a Linode VPC Subnet.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=SPEC,

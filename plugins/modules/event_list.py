@@ -9,7 +9,6 @@ from typing import Any, Dict, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.event_list as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -49,7 +48,6 @@ spec_filter = {
 }
 
 spec = {
-    "api_token": API_TOKEN_SPEC,
     # Disable the default values
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),

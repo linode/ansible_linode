@@ -25,7 +25,6 @@ Get info about a Linode NodeBalancer.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of this NodeBalancer. Optional if `label` is defined.  **(Conflicts With: `label`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of this NodeBalancer. Optional if `id` is defined.  **(Conflicts With: `id`)** |
 

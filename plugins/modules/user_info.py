@@ -9,7 +9,6 @@ from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user_info as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -25,7 +24,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import User
 
 spec = {
-    "api_token": API_TOKEN_SPEC,
     # Disable the default values
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),

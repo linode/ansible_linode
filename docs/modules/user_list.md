@@ -18,7 +18,6 @@ List Users.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `order` | <center>`str`</center> | <center>Optional</center> | The order to list users in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
 | `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
 

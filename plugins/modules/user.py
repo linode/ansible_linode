@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LINODE_COMMON_ARGS,
     LinodeModuleBase,
 )
@@ -166,7 +165,6 @@ SPEC_GRANTS = {
 }
 
 SPEC = {
-    "api_token": API_TOKEN_SPEC,
     # We don't use label for this module
     "label": SpecField(
         type=FieldType.string,

@@ -25,7 +25,6 @@ Get info about the Linode SSH public key.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the SSH key.  **(Conflicts With: `label`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the SSH key.  **(Conflicts With: `id`)** |
 

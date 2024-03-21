@@ -32,7 +32,6 @@ The following restrictions apply:
 |-----------|------|----------|------------------------------------------------------------------------------|
 | [`assignments` (sub-options)](#assignments) | <center>`list`</center> | <center>**Required**</center> | List of assignments to make.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>**Required**</center> | The Region to operate in.   |
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 
 ### assignments
 

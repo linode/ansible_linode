@@ -11,7 +11,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import 
     object_cluster_info as docs,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -27,7 +26,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import ObjectStorageCluster, Region
 
 linode_object_cluster_info_spec = {
-    "api_token": API_TOKEN_SPEC,
     # We need to overwrite attributes to exclude them as requirements
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),

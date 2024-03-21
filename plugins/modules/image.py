@@ -12,7 +12,6 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image
 import polling
 import requests
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -32,7 +31,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import Image
 
 SPEC = {
-    "api_token": API_TOKEN_SPEC,
     "label": SpecField(
         type=FieldType.string,
         required=True,

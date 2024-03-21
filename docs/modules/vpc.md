@@ -31,7 +31,6 @@ Create, read, and update a Linode VPC.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | This VPC's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this token.  **(Choices: `present`, `absent`)** |
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `description` | <center>`str`</center> | <center>Optional</center> | A description describing this VPC.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The region this VPC is located in.   |
 

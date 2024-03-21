@@ -33,7 +33,6 @@ Create, read, and update a Linode VPC Subnet.
 | `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the parent VPC for this subnet.   |
 | `label` | <center>`str`</center> | <center>**Required**</center> | This VPC's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this token.  **(Choices: `present`, `absent`)** |
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `ipv4` | <center>`str`</center> | <center>Optional</center> | The IPV4 range for this subnet in CIDR format.   |
 
 ## Return Values

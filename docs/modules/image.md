@@ -40,7 +40,6 @@ Manage a Linode Image.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | This Image's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this Image.  **(Choices: `present`, `absent`)** |
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `cloud_init` | <center>`bool`</center> | <center>Optional</center> | Whether this image supports cloud-init.  **(Default: `False`)** |
 | `description` | <center>`str`</center> | <center>Optional</center> | A description for the Image.  **(Updatable)** |
 | `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to clone this image from.  **(Conflicts With: `source_file`)** |
