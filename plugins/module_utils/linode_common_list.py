@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -109,7 +108,6 @@ class ListModule(
         }
 
         options = {
-            "api_token": API_TOKEN_SPEC,
             # Disable the default values
             "state": SpecField(
                 type=FieldType.string, required=False, doc_hide=True

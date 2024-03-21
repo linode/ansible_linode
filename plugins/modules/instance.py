@@ -13,7 +13,6 @@ import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.insta
 import linode_api4
 import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -301,7 +300,6 @@ spec_additional_ipv4 = {
 }
 
 linode_instance_spec = {
-    "api_token": API_TOKEN_SPEC,
     "label": SpecField(
         type=FieldType.string,
         description=["The unique label to give this instance."],

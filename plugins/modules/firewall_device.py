@@ -9,7 +9,6 @@ from typing import Any, List, Optional
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall_device as docs
 import linode_api4
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -24,7 +23,6 @@ from ansible_specdoc.objects import (
 )
 
 MODULE_SPEC = {
-    "api_token": API_TOKEN_SPEC,
     "firewall_id": SpecField(
         type=FieldType.integer,
         required=True,

@@ -8,7 +8,6 @@ from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip_assign as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -36,7 +35,6 @@ linode_ip_assignments_spec: dict = {
 }
 
 spec = {
-    "api_token": API_TOKEN_SPEC,
     # Disable the default values
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),

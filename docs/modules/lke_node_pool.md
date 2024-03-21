@@ -49,7 +49,6 @@ Manage Linode LKE cluster node pools.
 | `cluster_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the LKE cluster that contains this node pool.   |
 | `tags` | <center>`list`</center> | <center>**Required**</center> | An array of tags applied to this object. Tags must be unique as they are used by the `lke_node_pool` module to uniquely identify node pools.  **(Updatable)** |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | [`autoscaler` (sub-options)](#autoscaler) | <center>`dict`</center> | <center>Optional</center> | When enabled, the number of nodes autoscales within the defined minimum and maximum values.  **(Updatable)** |
 | `count` | <center>`int`</center> | <center>Optional</center> | The number of nodes in the Node Pool.  **(Updatable)** |
 | [`disks` (sub-options)](#disks) | <center>`list`</center> | <center>Optional</center> | This Node Pool’s custom disk layout. Each item in this array will create a new disk partition for each node in this Node Pool.   |

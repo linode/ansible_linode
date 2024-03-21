@@ -25,7 +25,6 @@ Get info about a Linode PostgreSQL Managed Database.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `id` | <center>`str`</center> | <center>Optional</center> | The ID of the PostgreSQL Database.  **(Conflicts With: `label`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the PostgreSQL Database.  **(Conflicts With: `id`)** |
 

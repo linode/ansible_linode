@@ -9,7 +9,6 @@ from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ssh_key_info as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -28,7 +27,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import SSHKey
 
 linode_ssh_key_info_spec = {
-    "api_token": API_TOKEN_SPEC,
     # Disable the default values
     "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "id": SpecField(

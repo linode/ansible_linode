@@ -44,7 +44,6 @@ NOTE: Domain records are identified by their name, target, and type.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `domain_id` | <center>`int`</center> | <center>Optional</center> | The ID of the parent Domain.   |
 | `domain` | <center>`str`</center> | <center>Optional</center> | The name of the parent Domain.   |
 | `record_id` | <center>`int`</center> | <center>Optional</center> | The id of the record to modify.  **(Conflicts With: `name`)** |

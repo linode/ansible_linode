@@ -12,7 +12,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import 
     database_postgresql as docs,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import (
@@ -40,7 +39,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import ApiError, PostgreSQLDatabase
 
 SPEC = {
-    "api_token": API_TOKEN_SPEC,
     "label": SpecField(
         type=FieldType.string,
         required=True,

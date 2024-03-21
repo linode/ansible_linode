@@ -25,7 +25,6 @@ Get info about a Linode Instance.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the Instance to resolve.  **(Conflicts With: `id`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Instance to resolve.  **(Conflicts With: `label`)** |
 

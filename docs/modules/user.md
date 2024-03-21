@@ -46,7 +46,6 @@ Manage a Linode User.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `username` | <center>`str`</center> | <center>**Required**</center> | The username of this user.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this user.  **(Choices: `present`, `absent`)** |
-| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `restricted` | <center>`bool`</center> | <center>Optional</center> | If true, the User must be granted access to perform actions or access entities on this Account.  **(Default: `True`; Updatable)** |
 | `email` | <center>`str`</center> | <center>Optional</center> | The email address for the User. Linode sends emails to this address for account management communications. May be used for other communications as configured.   |
 | [`grants` (sub-options)](#grants) | <center>`dict`</center> | <center>Optional</center> | Update the grants a user has.  **(Updatable)** |
