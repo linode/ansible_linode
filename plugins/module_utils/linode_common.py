@@ -23,6 +23,7 @@ from ansible.module_utils.basic import (
     env_fallback,
     missing_required_lib,
 )
+from ansible_specdoc.objects import FieldType, SpecField
 
 try:
     from linode_api4 import VPC, ApiError
@@ -122,6 +123,15 @@ RESOURCE_NAMES = (
 MAX_RETRIES = 5
 RETRY_INTERVAL_SECONDS = float(4)
 RETRY_STATUSES = {408, 429, 502}
+
+API_TOKEN_SPEC = SpecField(
+    type=FieldType.string,
+    required=False,
+    description="The Linode account personal access token. "
+    "It is necessary to run the module. "
+    "It can be exposed by the "
+    "environment variable `LINODE_API_TOKEN` instead.",
+)
 
 
 class LinodeModuleBase:

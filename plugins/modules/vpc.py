@@ -9,6 +9,7 @@ from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vpc as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -29,14 +30,7 @@ from ansible_specdoc.objects import (
 from linode_api4 import VPC
 
 SPEC = {
-    "api_token": SpecField(
-        type=FieldType.string,
-        required=False,
-        description="The Linode account personal access token. "
-        "It is necessary to run the module. "
-        "It can be exposed by the "
-        "environment variable `LINODE_API_TOKEN` instead.",
-    ),
+    "api_token": API_TOKEN_SPEC,
     "label": SpecField(
         type=FieldType.string,
         required=True,

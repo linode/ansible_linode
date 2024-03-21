@@ -11,6 +11,7 @@ from typing import Any, List, Optional, Set
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster as docs
 import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -96,14 +97,7 @@ linode_lke_cluster_node_pool_spec = {
 }
 
 linode_lke_cluster_spec = {
-    "api_token": SpecField(
-        type=FieldType.string,
-        required=False,
-        description="The Linode account personal access token. "
-        "It is necessary to run the module. "
-        "It can be exposed by the "
-        "environment variable `LINODE_API_TOKEN` instead.",
-    ),
+    "api_token": API_TOKEN_SPEC,
     "label": SpecField(
         type=FieldType.string,
         required=True,

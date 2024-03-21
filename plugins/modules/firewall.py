@@ -11,6 +11,7 @@ from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -128,14 +129,7 @@ linode_firewall_device_spec: dict = {
 }
 
 linode_firewall_spec: dict = {
-    "api_token": SpecField(
-        type=FieldType.string,
-        required=False,
-        description="The Linode account personal access token. "
-        "It is necessary to run the module. "
-        "It can be exposed by the "
-        "environment variable `LINODE_API_TOKEN` instead.",
-    ),
+    "api_token": API_TOKEN_SPEC,
     "label": SpecField(
         type=FieldType.string,
         description=["The unique label to give this Firewall."],

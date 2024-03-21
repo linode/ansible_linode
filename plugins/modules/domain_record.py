@@ -9,6 +9,7 @@ from typing import Any, List, Optional, Set
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain_record as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -27,14 +28,7 @@ from ansible_specdoc.objects import (
 from linode_api4 import Domain, DomainRecord
 
 linode_domain_record_spec = {
-    "api_token": SpecField(
-        type=FieldType.string,
-        required=False,
-        description="The Linode account personal access token. "
-        "It is necessary to run the module. "
-        "It can be exposed by the "
-        "environment variable `LINODE_API_TOKEN` instead.",
-    ),
+    "api_token": API_TOKEN_SPEC,
     # Unused for domain record objects
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "domain_id": SpecField(

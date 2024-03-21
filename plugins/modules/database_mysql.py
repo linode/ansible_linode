@@ -10,6 +10,7 @@ from typing import Any, Optional, Set
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql as docs
 import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import (
@@ -38,14 +39,7 @@ from linode_api4 import ApiError
 from linode_api4.objects import MySQLDatabase
 
 SPEC = {
-    "api_token": SpecField(
-        type=FieldType.string,
-        required=False,
-        description="The Linode account personal access token. "
-        "It is necessary to run the module. "
-        "It can be exposed by the "
-        "environment variable `LINODE_API_TOKEN` instead.",
-    ),
+    "api_token": API_TOKEN_SPEC,
     "label": SpecField(
         type=FieldType.string,
         required=True,
