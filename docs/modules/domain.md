@@ -30,6 +30,7 @@ Manage Linode Domains.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `domain` | <center>`str`</center> | <center>**Required**</center> | The domain this Domain represents.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `axfr_ips` | <center>`list`</center> | <center>Optional</center> | The list of IPs that may perform a zone transfer for this Domain.  **(Updatable)** |
 | `description` | <center>`str`</center> | <center>Optional</center> | The list of IPs that may perform a zone transfer for this Domain.  **(Updatable)** |
 | `expire_sec` | <center>`int`</center> | <center>Optional</center> | The amount of time in seconds that may pass before this Domain is no longer authoritative.  **(Updatable)** |

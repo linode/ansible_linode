@@ -14,6 +14,12 @@ Get info about a Linode Profile.
 ```
 
 
+## Parameters
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
+
 ## Return Values
 
 - `profile` - The profile info in JSON serialized form.

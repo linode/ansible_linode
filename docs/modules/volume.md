@@ -63,6 +63,7 @@ Manage a Linode Volume.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The Volume’s label, which is also used in the filesystem_path of the resulting volume.   |
 | `config_id` | <center>`int`</center> | <center>Optional</center> | When creating a Volume attached to a Linode, the ID of the Linode Config to include the new Volume in.   |
 | `linode_id` | <center>`int`</center> | <center>Optional</center> | The Linode this volume should be attached to upon creation. If not given, the volume will be created without an attachment.  **(Updatable)** |

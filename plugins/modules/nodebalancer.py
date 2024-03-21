@@ -11,6 +11,7 @@ from typing import Any, List, Optional, Set, Tuple, cast
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer as docs
 import linode_api4
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
@@ -227,6 +228,7 @@ linode_configs_spec = {
 }
 
 linode_nodebalancer_spec = {
+    "api_token": API_TOKEN_SPEC,
     "label": SpecField(
         type=FieldType.string,
         description=["The unique label to give this NodeBalancer."],

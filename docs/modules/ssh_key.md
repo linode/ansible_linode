@@ -29,6 +29,7 @@ Manage a Linode SSH key.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | This SSH key's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this SSH key.  **(Choices: `present`, `absent`)** |
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `ssh_key` | <center>`str`</center> | <center>Optional</center> | The SSH public key value.  **(Updatable)** |
 
 ## Return Values

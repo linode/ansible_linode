@@ -39,6 +39,7 @@ Manage a Linode NodeBalancer.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | The unique label to give this NodeBalancer.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `client_conn_throttle` | <center>`int`</center> | <center>Optional</center> | Throttle connections per second. Set to 0 (zero) to disable throttling.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>Optional</center> | The ID of the Region to create this NodeBalancer in.   |
 | `firewall_id` | <center>`int`</center> | <center>Optional</center> | The ID of the Firewall to assign this NodeBalancer to.   |

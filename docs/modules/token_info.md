@@ -25,6 +25,7 @@ Get info about a Linode Personal Access Token.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the token.  **(Conflicts With: `label`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the token.  **(Conflicts With: `id`)** |
 

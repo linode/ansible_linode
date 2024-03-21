@@ -34,6 +34,7 @@ List and filter on Linode stackscripts.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `order` | <center>`str`</center> | <center>Optional</center> | The order to list events in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
 | `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order events by.   |
 | [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting events.   |

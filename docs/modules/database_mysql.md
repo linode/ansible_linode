@@ -50,6 +50,7 @@ Manage a Linode MySQL database.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | This database's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this database.  **(Choices: `present`, `absent`)** |
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `allow_list` | <center>`list`</center> | <center>Optional</center> | A list of IP addresses that can access the Managed Database. Each item must be a range in CIDR format.  **(Updatable)** |
 | `cluster_size` | <center>`int`</center> | <center>Optional</center> | The number of Linode Instance nodes deployed to the Managed Database.  **(Choices: `1`, `3`; Default: `1`)** |
 | `encrypted` | <center>`bool`</center> | <center>Optional</center> | Whether the Managed Databases is encrypted.   |

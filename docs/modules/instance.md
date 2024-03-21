@@ -104,6 +104,7 @@ Manage Linode Instances, Configs, and Disks.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| `api_token` | <center>`str`</center> | <center>Optional</center> | The Linode account personal access token. It is necessary to run the module. It can be exposed by the environment variable `LINODE_API_TOKEN` instead.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The unique label to give this instance.   |
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type of the Linode you are creating.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The location to deploy the instance in. See the [Linode API documentation](https://api.linode.com/v4/regions).   |
