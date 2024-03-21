@@ -12,7 +12,6 @@ from typing import Any, Optional, Tuple
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.api_request as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    API_TOKEN_SPEC,
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
