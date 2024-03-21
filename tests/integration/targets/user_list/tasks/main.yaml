@@ -15,6 +15,7 @@
         that:
           - create.user.email != None
           - create.user.restricted == True
+          - create.user.user_type is not none
 
     - name: List users with no filter
       linode.cloud.user_list:

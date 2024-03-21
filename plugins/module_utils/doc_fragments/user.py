@@ -27,6 +27,7 @@ specdoc_examples = ['''
 result_user_samples = ['''{
   "email": "example_user@linode.com",
   "restricted": true,
+  "user_type": "default",
   "ssh_keys": [
     "home-pc",
     "laptop"
