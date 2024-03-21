@@ -19,7 +19,7 @@ Get info about a Linode Child Account.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `euuid` | <center>`int`</center> | <center>**Required**</center> | The EUUID of the Child Account to resolve.   |
+| `euuid` | <center>`str`</center> | <center>**Required**</center> | The EUUID of the Child Account to resolve.   |
 
 ## Return Values
 
