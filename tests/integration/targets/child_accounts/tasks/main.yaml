@@ -1,0 +1,31 @@
+- name: child_accounts
+  tags:
+    - never
+    - parent_child
+  block:
+    - name: List all children under the current account
+      linode.cloud.child_account_list: {}
+      register: children
+
+    - assert:
+        that:
+          - children.child_accounts | length > 0
+          - children.child_accounts[0].email is not none
+          - children.child_accounts[0].euuid is not none
+
+    - name: Get information about a specific Child Account
+      linode.cloud.child_account_info:
+        euuid: '{{ children.child_accounts[0].euuid }}'
+      register: child
+
+    - assert:
+        that:
+          - child.child_account.email == children.child_accounts[0].email
+          - child.child_account.euuid == children.child_accounts[0].euuid
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

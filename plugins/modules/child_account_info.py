@@ -26,7 +26,7 @@ module = InfoModule(
         InfoModuleAttr(
             display_name="EUUID",
             name="euuid",
-            type=FieldType.integer,
+            type=FieldType.string,
             get=lambda client, params: client.load(
                 ChildAccount,
                 params.get("euuid"),
