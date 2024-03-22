@@ -250,13 +250,23 @@ class LinodeModuleBase:
                 "with id {resource_id}: {exception}"
             )
 
+    @staticmethod
+    def normalize_api_url(api_url: str):
+        if not api_url.startswith("http"):
+            api_url = f"https://{api_url}"
+
+        if not api_url.endswith("/"):
+            api_url = f"{api_url}/"
+
+        return api_url
+
     @property
     def client(self) -> LinodeClient:
         """Creates a 'client' property that is used to access the Linode API."""
         if not self._client:
             api_token = self.module.params["api_token"]
             api_version = self.module.params["api_version"]
-            api_url = self.module.params["api_url"]
+            api_url = self.normalize_api_url(self.module.params["api_url"])
             ca_path = self.module.params["ca_path"]
 
             user_agent = COLLECTION_USER_AGENT
