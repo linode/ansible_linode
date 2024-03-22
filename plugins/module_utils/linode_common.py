@@ -161,6 +161,11 @@ class LinodeModuleBase:
         if supports_tags:
             arg_spec.update(LINODE_TAG_ARGS)
 
+        # pop the api_token from module_arg_spec to
+        # prevent it overriding the value from LINODE_COMMON_ARGS
+        if "api_token" in module_arg_spec.keys():
+            module_arg_spec.pop("api_token")
+
         arg_spec.update(module_arg_spec)
 
         self._client = None
