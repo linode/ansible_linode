@@ -252,6 +252,7 @@ class LinodeModuleBase:
 
     @staticmethod
     def normalize_api_url(api_url: str):
+        """Add the protocol and the ending slash to an API URL if they are missing"""
         if not api_url.startswith("http"):
             api_url = f"https://{api_url}"
 
