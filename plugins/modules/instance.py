@@ -811,7 +811,7 @@ class LinodeInstance(LinodeModuleBase):
     def _create_disk_register(self, **params: Any) -> None:
         size = params.pop("size")
 
-        if params.get("stackscript_id", None) is not None:
+        if params.get("stackscript_id") is not None:
             params["stackscript"] = StackScript(
                 self.client, params.pop("stackscript_id")
             )
