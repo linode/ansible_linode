@@ -816,6 +816,11 @@ class LinodeInstance(LinodeModuleBase):
                 self.client, params.pop("stackscript_id")
             )
 
+        # Workaround for an edge case where a StackScript has no UDFs
+        # and the API rejects an empty list for stackscript_data
+        if len(params.get("stackscript_data") or {}) < 1:
+            params.pop("stackscript_data")
+
         # Workaround for race condition on implicit events
         # See: TPT-2738
         self.client.polling.wait_for_entity_free(
