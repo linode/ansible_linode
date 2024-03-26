@@ -42,6 +42,7 @@ try:
         Disk,
         Firewall,
         Instance,
+        StackScript,
         Volume,
     )
 except ImportError:
@@ -807,8 +808,13 @@ class LinodeInstance(LinodeModuleBase):
         self.register_action("Deleted config {0}".format(config.label))
         config.delete()
 
-    def _create_disk_register(self, **kwargs: Any) -> None:
-        size = kwargs.pop("size")
+    def _create_disk_register(self, **params: Any) -> None:
+        size = params.pop("size")
+
+        if params.get("stackscript_id", None) is not None:
+            params["stackscript"] = StackScript(
+                self.client, params.pop("stackscript_id")
+            )
 
         # Workaround for race condition on implicit events
         # See: TPT-2738
@@ -820,14 +826,14 @@ class LinodeInstance(LinodeModuleBase):
         create_poller = self.client.polling.event_poller_create(
             "disks", "disk_create", entity_id=self._instance.id
         )
-        self._instance.disk_create(size, **kwargs)
+        self._instance.disk_create(size, **params)
 
         # The disk must be ready before the next disk is created
         create_poller.wait_for_next_event_finished(
             timeout=self._timeout_ctx.seconds_remaining
         )
 
-        self.register_action("Created disk {0}".format(kwargs.get("label")))
+        self.register_action("Created disk {0}".format(params.get("label")))
 
     def _delete_disk_register(self, disk: Disk) -> None:
         self.register_action("Deleted disk {0}".format(disk.label))
