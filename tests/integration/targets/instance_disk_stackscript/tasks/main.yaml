@@ -1,0 +1,75 @@
+- name: instance_disk_stackscript
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode StackScript
+      linode.cloud.stackscript:
+        label: "ansible-test-{{ r }}"
+        images:
+          - "linode/alpine3.19"
+        script: |
+          #!/bin/ash
+          echo "cool stackscript"
+        state: present
+      register: stackscript_create
+
+    - name: Create a Linode instance with an explicit disk & stackscript
+      linode.cloud.instance:
+        label: "ansible-test-{{ r }}"
+        region: us-mia
+        type: g6-nanode-1
+        booted: false
+        disks:
+          - label: test-disk
+            size: 1024
+            image: linode/alpine3.19
+            stackscript_id: "{{ stackscript_create.stackscript.id }}"
+        state: present
+      register: instance_create
+
+    - assert:
+        that:
+          - instance_create.changed
+          - instance_create.disks[0].label == "test-disk"
+          - instance_create.disks[0].size == 1024
+          - instance_create.disks[0].filesystem == "ext4"
+
+    - name: Get info about the StackScript
+      linode.cloud.stackscript_info:
+        label: "{{ stackscript_create.stackscript.label }}"
+      register: stackscript_info
+
+    - name: Ensure the StackScript was successfully deployed to the Linode
+      assert:
+        that:
+          - stackscript_info.stackscript.deployments_active == 1
+
+
+  always:
+    - ignore_errors: yes
+      block:
+        - linode.cloud.instance:
+            label: "{{ instance_create.instance.label }}"
+            state: absent
+          register: instance_delete
+
+        - assert:
+            that:
+              - instance_delete.changed
+
+        - linode.cloud.stackscript:
+            label: "{{ stackscript_create.stackscript.label }}"
+            state: absent
+          register: stackscript_delete
+
+        - assert:
+            that:
+              - stackscript_delete.changed
+
+  environment:
+    LINODE_UA_PREFIX: "{{ ua_prefix }}"
+    LINODE_API_TOKEN: "{{ api_token }}"
+    LINODE_API_URL: "{{ api_url }}"
+    LINODE_API_VERSION: "{{ api_version }}"
+    LINODE_CA: '{{ ca_file or "" }}'
