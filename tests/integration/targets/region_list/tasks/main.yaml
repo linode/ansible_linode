@@ -13,12 +13,24 @@
         filters:
           - name: country
             values: us
-      register: filter
+      register: filter_us
 
     - assert:
         that:
-          - filter.regions | length >= 0
-          - filter.regions[0].country == 'us'
+          - filter_us.regions | length >= 0
+          - filter_us.regions[0].country == 'us'
+    
+    - name: List regions with filter on site type
+      linode.cloud.region_list:
+        filters:
+          - name: site_type
+            values: core
+      register: filter_core_site
+
+    - assert:
+        that:
+          - filter_core_site.regions | length >= 0
+          - filter_core_site.regions[0].site_type == 'core'
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'

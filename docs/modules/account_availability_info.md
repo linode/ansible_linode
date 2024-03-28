@@ -18,7 +18,7 @@ Get info about a Linode Account Availability.
 
 ```yaml
 - name: Get info about the current Linode account availability
-  linode.cloud.account_info: 
+  linode.cloud.account_availability_info: 
     api_version: v4beta
     region: us-east
 
