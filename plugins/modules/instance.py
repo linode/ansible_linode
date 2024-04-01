@@ -811,14 +811,14 @@ class LinodeInstance(LinodeModuleBase):
     def _create_disk_register(self, **params: Any) -> None:
         size = params.pop("size")
 
-        if params.get("stackscript_id") is not None:
-            params["stackscript"] = StackScript(
-                self.client, params.pop("stackscript_id")
-            )
+        stackscript_id = params.pop("stackscript_id", None)
+        if stackscript_id is not None:
+            params["stackscript"] = StackScript(self.client, stackscript_id)
 
         # StackScript data is expected to be specified as kwargs
-        if params.get("stackscript_data") is not None:
-            params.update(params.pop("stackscript_data"))
+        stackscript_data = params.pop("stackscript_data", None)
+        if stackscript_data is not None and isinstance(stackscript_data, dict):
+            params.update(stackscript_data)
 
         # Workaround for race condition on implicit events
         # See: TPT-2738

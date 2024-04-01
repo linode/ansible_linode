@@ -11,7 +11,7 @@
         script: |
           #!/bin/ash
           # <UDF name="package" label="System Package to Install" example="nginx">
-          apt-get -q update && apt-get -q -y install $PACKAGE
+          apk add $PACKAGE
         state: present
       register: stackscript_create
 
