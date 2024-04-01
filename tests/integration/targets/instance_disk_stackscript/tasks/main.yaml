@@ -10,7 +10,8 @@
           - "linode/alpine3.19"
         script: |
           #!/bin/ash
-          echo "cool stackscript"
+          # <UDF name="package" label="System Package to Install" example="nginx">
+          apk add $PACKAGE
         state: present
       register: stackscript_create
 
@@ -25,6 +26,8 @@
             size: 1024
             image: linode/alpine3.19
             stackscript_id: "{{ stackscript_create.stackscript.id }}"
+            stackscript_data:
+              package: cowsay
         state: present
       register: instance_create
 
