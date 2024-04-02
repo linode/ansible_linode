@@ -134,7 +134,8 @@
   always:
     - ignore_errors: true
       block:
-        - linode.cloud.database_mysql:
+        - name: Delete mysql db
+          linode.cloud.database_mysql:
             label: '{{ db_create.database.label }}'
             state: absent
 

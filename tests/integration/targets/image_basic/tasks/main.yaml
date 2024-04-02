@@ -86,11 +86,13 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.image:
+        - name:  Delete image
+          linode.cloud.image:
             label: '{{ image_create.image.label }}'
             state: absent
 
-        - linode.cloud.instance:
+        - name: Delete instance
+          linode.cloud.instance:
             label: '{{ instance_create.instance.label }}'
             state: absent
 

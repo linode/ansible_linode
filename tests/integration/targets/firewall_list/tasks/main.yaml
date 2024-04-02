@@ -39,7 +39,8 @@
             values: ansible-test-{{ r }}
       register: filter
 
-    - assert:
+    - name: Assert firewall_list with filter on label
+      assert:
         that:
           - filter.firewalls | length >= 1
           - filter.firewalls[0].label == 'ansible-test-{{ r }}'

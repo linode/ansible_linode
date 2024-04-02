@@ -65,7 +65,7 @@
               - instance_delete.changed
 
         - name: Delete stackscript
-        - linode.cloud.stackscript:
+          linode.cloud.stackscript:
             label: "{{ stackscript_create.stackscript.label }}"
             state: absent
           register: stackscript_delete

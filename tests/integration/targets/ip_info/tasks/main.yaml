@@ -26,7 +26,8 @@
   always:
     - ignore_errors: true
       block:
-        - linode.cloud.instance:
+        - name: Delete instance
+          linode.cloud.instance:
             label: '{{ instance_create.instance.label }}'
             state: absent
 

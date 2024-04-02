@@ -63,12 +63,13 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.instance:
+        - name: Delete instance
+          linode.cloud.instance:
             label: '{{ create.instance.label }}'
             state: absent
           register: delete
 
-        - name: Asser instance is deleted
+        - name: Assert instance is deleted
           assert:
             that:
               - delete.changed

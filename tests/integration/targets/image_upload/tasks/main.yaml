@@ -32,7 +32,8 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.image:
+        - name: Delete image
+          linode.cloud.image:
             label: '{{ image_create.image.label }}'
             state: absent
 
