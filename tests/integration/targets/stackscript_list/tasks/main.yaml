@@ -22,7 +22,8 @@
             values: '{{ create_stackscript.stackscript.label }}'
       register: stack_list
 
-    - assert:
+    - name: Assert stackscript_list with filter on Label
+      assert:
         that:
           - stack_list.stackscripts | length == 1
           - stack_list.stackscripts[0].id != None
@@ -33,6 +34,7 @@
   always:
     - ignore_errors: yes
       block:
+        - name: Delete stackscript
         - linode.cloud.stackscript:
             label: '{{ create_stackscript.stackscript.label }}'
             state: absent

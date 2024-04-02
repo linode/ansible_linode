@@ -1,11 +1,12 @@
 - name: account_availability_info
   block:
-    - name: Get info about the current account availability
+    - name: GET account_availability_info request
       linode.cloud.account_availability_info:
         region: us-east
       register: account_availability
 
-    - assert:
+    - name: Assert GET account_availability_info response
+      assert:
         that:
           - account_availability.account_availability.region == "us-east"
 

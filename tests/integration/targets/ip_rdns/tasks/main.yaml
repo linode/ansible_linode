@@ -34,7 +34,8 @@
         address: '{{ instance_create.instance.ipv4[0] }}'
       register: ip_rdns_removed
 
-    - assert:
+    - name: Assert reverse DNS of IP is removed
+      assert:
         that:
           - ip_info.ip.address == instance_create.instance.ipv4[0]
           - ip_rdns_modified.ip.rdns == new_rdns

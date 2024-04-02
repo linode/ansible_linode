@@ -31,7 +31,8 @@
         state: present
       register: instance_create
 
-    - assert:
+    - name: Assert instance is created with explicit disk and stackscript
+      assert:
         that:
           - instance_create.changed
           - instance_create.disks[0].label == "test-disk"
@@ -52,21 +53,25 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.instance:
+        - name: Delete instance
+          linode.cloud.instance:
             label: "{{ instance_create.instance.label }}"
             state: absent
           register: instance_delete
 
-        - assert:
+        - name: Assert instance is deleted
+          assert:
             that:
               - instance_delete.changed
 
+        - name: Delete stackscript
         - linode.cloud.stackscript:
             label: "{{ stackscript_create.stackscript.label }}"
             state: absent
           register: stackscript_delete
 
-        - assert:
+        - name: Assert stackscript is deleted
+          assert:
             that:
               - stackscript_delete.changed
 

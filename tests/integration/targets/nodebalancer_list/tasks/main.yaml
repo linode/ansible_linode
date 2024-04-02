@@ -20,7 +20,8 @@
       linode.cloud.nodebalancer_list:
       register: no_filter
 
-    - assert:
+    - name: Assert nodebalancer_list with no filter
+      assert:
         that:
           - no_filter.nodebalancers | length >= 1
 
@@ -33,7 +34,8 @@
             values: us-ord
       register: filter
 
-    - assert:
+    - name: Assert nodebalancer_list with filter on region
+      assert:
         that:
           - filter.nodebalancers | length >= 1
           - filter.nodebalancers[0].region == 'us-ord'

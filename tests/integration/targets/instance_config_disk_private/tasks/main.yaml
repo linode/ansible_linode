@@ -10,7 +10,8 @@
         suffix: .img.gz
       register: source_file
 
-    - copy:
+    - name: Copy temporary image file to destination path
+      copy:
         dest: '{{ source_file.path }}'
         content: '{{ file_content | b64decode }}'
 
@@ -21,7 +22,8 @@
         state: present
       register: image_create
 
-    - assert:
+    - name: Assert private image is file is created from temporary image file
+      assert:
         that:
           - image_create.image.status == 'available'
 
@@ -52,7 +54,8 @@
         state: present
       register: instance_create
 
-    - assert:
+    - name: Assert instance is provisioned consuming the image
+      assert:
         that:
           - instance_create.changed
           - instance_create.disks | length == 2

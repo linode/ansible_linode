@@ -22,7 +22,8 @@
         state: present
       register: create_cluster
 
-    - assert:
+    - name: Assert minimal LKE cluster is created
+      assert:
         that:
           - create_cluster.cluster.k8s_version == kube_version
           - create_cluster.cluster.region == 'us-southeast'
@@ -39,7 +40,8 @@
         state: present
       register: new_pool
 
-    - assert:
+    - name: Assert node pool is added to cluster
+      assert:
         that:
           - new_pool.node_pool.count == 2
           - new_pool.node_pool.type == 'g6-standard-1'
@@ -72,7 +74,8 @@
         state: present
       register: update_pool
 
-    - assert:
+    - name: Assert node pool is updated
+      assert:
         that:
           - update_pool.node_pool.count == 1
           - update_pool.node_pool.type == 'g6-standard-1'

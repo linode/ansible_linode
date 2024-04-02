@@ -21,29 +21,32 @@
         state: present
       register: image_create
 
-    - assert:
+    - name: Assert image is created
+      assert:
         that:
           - image_create.image.status == 'available'
           - image_create.image.description == 'cool'
           - image_create.image.capabilities[0] == 'cloud-init'
 
-    - name: Get info about the image by ID
+    - name: Get image_info by ID
       linode.cloud.image_info:
         id: '{{ image_create.image.id }}'
       register: info_id
 
-    - assert:
+    - name: Assert image_info by ID
+      assert:
         that:
           - info_id.image.status == 'available'
           - info_id.image.description == 'cool'
           - info_id.image.id == image_create.image.id
 
-    - name: Get info about the image by label
+    - name: Get image_info by label
       linode.cloud.image_info:
         label: '{{ image_create.image.label }}'
       register: info_label
 
-    - assert:
+    - name: Assert image_info by label
+      assert:
         that:
           - info_label.image.status == 'available'
           - info_label.image.description == 'cool'
@@ -57,7 +60,8 @@
         state: present
       register: image_update
 
-    - assert:
+    - name: Assert image is updated
+      assert:
         that:
           - image_update.image.status == 'available'
           - image_update.image.description == 'cool2'
@@ -72,7 +76,8 @@
         state: present
       register: image_recreate
 
-    - assert:
+    - name: Assert image is overwritten
+      assert:
         that:
           - image_recreate.changed
           - image_recreate.image.id != image_create.image.id

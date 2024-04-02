@@ -4,7 +4,8 @@
       linode.cloud.region_list:
       register: no_filter
 
-    - assert:
+    - name: Assert region_list with no filter
+      assert:
         that:
           - no_filter.regions | length >= 0
 
@@ -15,7 +16,8 @@
             values: us
       register: filter_us
 
-    - assert:
+    - name: Assert region_list with filter on country
+      assert:
         that:
           - filter_us.regions | length >= 0
           - filter_us.regions[0].country == 'us'
@@ -27,7 +29,8 @@
             values: core
       register: filter_core_site
 
-    - assert:
+    - name:  Assert region_list with filter on site type
+      assert:
         that:
           - filter_core_site.regions | length >= 0
           - filter_core_site.regions[0].site_type == 'core'

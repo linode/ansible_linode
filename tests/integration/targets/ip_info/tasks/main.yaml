@@ -13,12 +13,13 @@
         state: present
       register: instance_create
 
-    - name: Get info about the instance's primary IP
+    - name: Get ip_info about the instance's primary IP
       linode.cloud.ip_info:
         address: '{{ instance_create.instance.ipv4[0] }}'
       register: ip_info
 
-    - assert:
+    - name: Assert ip_info about instance's primary IP
+      assert:
         that:
           - ip_info.ip.address == instance_create.instance.ipv4[0]
 

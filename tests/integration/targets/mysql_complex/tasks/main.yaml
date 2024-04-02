@@ -11,7 +11,8 @@
             values: mysql
       register: available_engines
 
-    - assert:
+    - name: Assert available mysql engines list
+      assert:
         that:
           - available_engines.database_engines | length >= 1
 
@@ -52,7 +53,8 @@
         state: present
       register: db_create
 
-    - assert:
+    - name: Assert database is created
+      assert:
         that:
           - db_create.database.allow_list | length == 1
           - db_create.database.allow_list[0] == '0.0.0.0/0'
@@ -76,7 +78,8 @@
   always:
     - ignore_errors: true
       block:
-        - linode.cloud.database_mysql:
+        - name: Delete mysql database
+          linode.cloud.database_mysql:
             label: '{{ db_create.database.label }}'
             state: absent
 

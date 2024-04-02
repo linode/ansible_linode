@@ -2,7 +2,7 @@
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
-    - name: Create a Linode Instance
+    - name: Create a Linode instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
         region: us-ord
@@ -11,7 +11,7 @@
         state: present
       register: create_instance
 
-    - name: Create another Linode Instance
+    - name: Create another instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}-2'
         region: us-ord
@@ -20,7 +20,7 @@
         state: present
       register: create_instance_2
 
-    - name: Create a Linode Firewall
+    - name: Create Linode firewall
       linode.cloud.firewall:
         api_version: v4beta
         label: 'ansible-test-{{ r }}'
@@ -33,12 +33,12 @@
         state: present
       register: create
 
-    - name: Assert firewall created
+    - name: Assert firewall is created
       assert:
         that:
           - create.changed
 
-    - name: Update a Linode Firewall
+    - name: Update Linode firewall
       linode.cloud.firewall:
         api_version: v4beta
         label: '{{ create.firewall.label }}'
@@ -52,7 +52,7 @@
         state: present
       register: update
 
-    - name: Assert firewall updated
+    - name: Assert firewall is updated
       assert:
         that:
           - update.changed
@@ -74,7 +74,7 @@
         state: present
       register: update_devices
 
-    - name: Assert firewall devices updated
+    - name: Assert firewall devices are updated
       assert:
         that:
           - update_devices.changed
@@ -98,7 +98,7 @@
         state: present
       register: update_devices
 
-    - name: Assert firewall devices updated
+    - name: Assert firewall devices are updated
       assert:
         that:
           - update_devices.changed
@@ -122,7 +122,7 @@
         state: present
       register: update_devices_unchanged
 
-    - name: Assert firewall devices unchanged
+    - name: Assert firewall devices are unchanged
       assert:
         that:
           - update_devices_unchanged.changed == false
@@ -156,7 +156,7 @@
         state: present
       register: updaterules
 
-    - name: Assert firewall rules updated
+    - name: Assert firewall rules are updated
       assert:
         that:
           - updaterules.changed
@@ -206,7 +206,7 @@
         state: present
       register: updaterules_unchanged
 
-    - name: Assert firewall rules updated
+    - name: Assert firewall rules are updated
       assert:
         that:
           - updaterules_unchanged.changed == false
@@ -248,7 +248,7 @@
             state: absent
           register: delete
 
-        - name: Assert Firewall delete succeeded
+        - name: Assert Firewall is deleted
           assert:
             that:
               - delete.changed
@@ -260,7 +260,7 @@
             state: absent
           register: delete_instance
 
-        - name: Assert instance delete succeeded
+        - name: Assert instance is deleted
           assert:
             that:
               - delete_instance.changed
@@ -272,7 +272,7 @@
             state: absent
           register: delete_instance_2
 
-        - name: Assert instance delete succeeded
+        - name: Assert instance is deleted
           assert:
             that:
               - delete_instance_2.changed

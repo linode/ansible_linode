@@ -20,6 +20,7 @@
       assert:
         that:
           - create.changed
+
     - name: Set Linode Firewall with just IPv4
       linode.cloud.firewall:
         state: present

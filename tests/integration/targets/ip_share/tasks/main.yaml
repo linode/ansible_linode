@@ -72,11 +72,11 @@
         linode_id: '{{ instance_create_shared.instance.id }}'
       register: ip_unshared
 
-    - name: Assert shared IPs configured.
-      set_fact:
+    - set_fact:
         ip_shared_address: "{{ instance_create.instance.ipv4[0] }}"
 
-    - assert:
+    - name: Assert shared IPs configured.
+      assert:
         that:
           - ip_shared.ips[0] == ip_shared_address
           - ip_already_shared.changed == false

@@ -3,7 +3,7 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - name: Create a domain
+    - name: Create domain
       linode.cloud.domain:
         domain: 'ansible-test-domain-{{ r }}.com'
         soa_email: 'realemail@example.com'
@@ -17,7 +17,7 @@
           - domain_create.domain.status == 'active'
           - domain_create.domain.type == 'master'
 
-    - name: Create a domain record
+    - name: Create domain_record
       linode.cloud.domain_record:
         domain: '{{ domain_create.domain.domain }}'
         name: 'sub'
@@ -28,6 +28,7 @@
         state: present
       register: record_create
 
+    - name: Assert domain_record is created
     - assert:
         that:
           - record_create.record.name == 'sub'
@@ -36,7 +37,7 @@
           - record_create.record.ttl_sec == 3600
           - record_create.record.weight == 55
 
-    - name: Update the domain record
+    - name: Update domain_record
       linode.cloud.domain_record:
         domain: '{{ domain_create.domain.domain }}'
         record_id: '{{ record_create.record.id }}'
@@ -45,7 +46,8 @@
         state: present
       register: record_update
 
-    - assert:
+    - name: Assert domain_record is updated
+      assert:
         that:
           - record_update.record.id == record_create.record.id
           - record_update.record.name == 'sub'
@@ -54,13 +56,14 @@
           - record_update.record.ttl_sec == 14400
           - record_update.record.weight == 62
 
-    - name: Get info about the record
+    - name: Get domain_record_info
       linode.cloud.domain_record_info:
         domain: '{{ domain_create.domain.domain }}'
         name: '{{ record_create.record.name }}'
       register: record_info
 
-    - assert:
+    - name: Assert get domain_record_info
+      assert:
         that:
           - record_info.record[0].name == 'sub'
           - record_info.record[0].type == 'A'
@@ -68,13 +71,14 @@
           - record_info.record[0].ttl_sec == 14400
           - record_info.record[0].weight == 62
 
-    - name: Get info about the record by id
+    - name: Get domain_record_info by id
       linode.cloud.domain_record_info:
         domain: '{{ domain_create.domain.domain }}'
         id: '{{ record_create.record.id }}'
       register: record_info_id
 
-    - assert:
+    - name: Assert get domain_record_info by id
+      assert:
         that:
           - record_info_id.record[0].name == 'sub'
           - record_info_id.record[0].type == 'A'
@@ -82,7 +86,7 @@
           - record_info_id.record[0].ttl_sec == 14400
           - record_info_id.record[0].weight == 62
 
-    - name: Create a domain record by domain id
+    - name: Create domain_record with domain id
       linode.cloud.domain_record:
         domain_id: '{{ domain_create.domain.id }}'
         name: 'cool'
@@ -93,7 +97,8 @@
         state: present
       register: record2_create
 
-    - assert:
+    - name: Assert domain_record is created with domain id
+      assert:
         that:
           - record2_create.record.name == 'cool'
           - record2_create.record.type == 'TXT'
@@ -101,7 +106,7 @@
           - record2_create.record.ttl_sec == 7200
           - record2_create.record.weight == 32
 
-    - name: Create a duplicate record with a different target
+    - name: Create duplicate domain_record with different target
       linode.cloud.domain_record:
         domain: '{{ domain_create.domain.domain }}'
         name: 'sub'
@@ -112,7 +117,8 @@
         state: present
       register: record_dupe_create
 
-    - assert:
+    - name: Assert duplicate domain_record is created with different target
+      assert:
         that:
           - record_dupe_create.record.name == 'sub'
           - record_dupe_create.record.type == 'A'
@@ -120,7 +126,7 @@
           - record_dupe_create.record.ttl_sec == 3600
           - record_dupe_create.record.weight == 55
 
-    - name: Update the record by id
+    - name: Update domain_record by id
       linode.cloud.domain_record:
         domain: '{{ domain_create.domain.domain }}'
         record_id: '{{ record_dupe_create.record.id }}'
@@ -129,7 +135,8 @@
         state: present
       register: record_dupe_update
 
-    - assert:
+    - name: Assert domain_record is updated by id
+      assert:
         that:
           - record_dupe_update.changed == true
           - record_dupe_update.record.name == 'sub'
@@ -138,16 +145,17 @@
           - record_dupe_update.record.ttl_sec == 300
           - record_dupe_update.record.weight == 55
 
-    - name: Get all domain records
+    - name: Get domain_info
       linode.cloud.domain_info:
         domain: '{{ domain_create.domain.domain }}'
       register: domain_info
 
-    - assert:
+    - name: Assert domain_info response
+      assert:
         that:
           - domain_info.records|length == 3
 
-    - name: Create a record containing FQDN
+    - name: Create domain_record containing FQDN
       linode.cloud.domain_record:
         domain: '{{ domain_create.domain.domain }}'
         name: 'fqdn.{{ domain_create.domain.domain }}'
@@ -156,12 +164,13 @@
         state: present
       register: record_fqdn_create
 
-    - assert:
+    - name: Assert domain_record is created containing FQDN
+      assert:
         that:
           - record_fqdn_create.record.name == 'fqdn'
           - record_fqdn_create.changed
 
-    - name: Create a record containing FQDN
+    - name: Create second domain_record containing FQDN
       linode.cloud.domain_record:
         domain: '{{ domain_create.domain.domain }}'
         name: 'fqdn.{{ domain_create.domain.domain }}'
@@ -170,12 +179,13 @@
         state: present
       register: record_fqdn_nochange
 
-    - assert:
+    - name: Assert second domain_record is created containing FQDN
+      assert:
         that:
           - record_fqdn_nochange.record.name == 'fqdn'
           - record_fqdn_nochange.changed == False
 
-    - name: Delete a record containing FQDN
+    - name: Delete domain_record containing FQDN
       linode.cloud.domain_record:
         domain: '{{ domain_create.domain.domain }}'
         name: 'fqdn.{{ domain_create.domain.domain }}'
@@ -184,7 +194,8 @@
         state: absent
       register: record_fqdn_delete
 
-    - assert:
+    - name: Assert domain_record containing FQDN is deleted
+      assert:
         that:
           - record_fqdn_delete.record.name == 'fqdn'
           - record_fqdn_delete.changed
@@ -192,19 +203,20 @@
   always:
     - ignore_errors: yes
       block:
-        - name: Delete the record
+        - name: Delete domain_record
           linode.cloud.domain_record:            
             domain: '{{ domain_create.domain.domain }}'
             record_id: '{{ record_create.record.id }}'
             state: absent
           register: record_delete
 
-        - assert:
+        - name: Assert domain_record is deleted
+          assert:
             that:
               - record_delete.changed
               - record_delete.record.id == record_create.record.id
 
-        - name: Delete the second record
+        - name: Delete second domain_record
           linode.cloud.domain_record:            
             domain: '{{ domain_create.domain.domain }}'
             name: '{{ record2_create.record.name }}'
@@ -213,30 +225,33 @@
             state: absent
           register: record2_delete
 
-        - assert:
+        - name: Assert second domain_record is deleted
+          assert:
             that:
               - record2_delete.changed
               - record2_delete.record.id == record2_create.record.id
 
-        - name: Delete the duplicated record
+        - name: Delete duplicated domain_record
           linode.cloud.domain_record:            
             domain: '{{ domain_create.domain.domain }}'
             record_id: '{{ record_dupe_create.record.id }}'
             state: absent
           register: record_dupe_delete
 
-        - assert:
+        - name: Assert duplicated domain_record is deleted
+          assert:
             that:
               - record_dupe_delete.changed
               - record_dupe_delete.record.id == record_dupe_delete.record.id
 
-        - name: Delete the domain
+        - name: Delete domain
           linode.cloud.domain:            
             domain: '{{ domain_create.domain.domain }}'
             state: absent
           register: domain_delete
 
-        - assert:
+        - name: Assert domain is deleted
+          assert:
             that:
               - domain_delete.changed
               - domain_delete.domain.id == domain_create.domain.id
