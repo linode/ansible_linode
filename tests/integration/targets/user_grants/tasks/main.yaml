@@ -76,11 +76,13 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.user:
+        - name: Delete user
+          linode.cloud.user:
             username: '{{ create_user.user.username }}'
             state: absent
 
-        - linode.cloud.domain:
+        - name: Delete domain
+          linode.cloud.domain:
             domain: '{{ create_domain.domain.domain }}'
             state: absent
 

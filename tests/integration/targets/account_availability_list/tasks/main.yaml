@@ -1,10 +1,12 @@
 - name: account_availability_list
   block:
-    - linode.cloud.account_availability_list:
+    - name: GET account_availability_list request w no filter
+      linode.cloud.account_availability_list:
         count: 5
       register: no_filter
 
-    - assert:
+    - name: Assert GET account_availability_list response w no filter
+      assert:
         that:
           - no_filter.account_availabilities | length == 5
 

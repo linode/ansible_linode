@@ -13,17 +13,18 @@
         state: present
       register: create_stackscript
 
-    - name: List the events for the current Linode Account
+    - name: List event_list for current Linode Account
       linode.cloud.event_list:
         count: 5
       register: no_filter
 
-    - assert:
+    - name: Assert event_list length for current Account
+      assert:
         that:
           # We can't ensure that the testing account will have 5 events
           - no_filter.events | length <= 5
 
-    - name: Resolve the StackScript event
+    - name: Get StackScript event in event_list
       linode.cloud.event_list:
         count: 1
         order_by: created
@@ -33,7 +34,8 @@
             values: stackscript_create
       register: filter
 
-    - assert:
+    - name: Assert StackScript event in event_list
+      assert:
         that:
           - filter.events | length == 1
           - filter.events[0].entity.id == create_stackscript.stackscript.id

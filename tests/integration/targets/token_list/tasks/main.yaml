@@ -23,7 +23,8 @@
       linode.cloud.token_list:
       register: no_filter
 
-    - assert:
+    - name: Assert token_list with no filter
+      assert:
         that:
           - no_filter.tokens | length >= 1
 
@@ -36,7 +37,8 @@
             values: ansible-test-{{ r }}
       register: filter
 
-    - assert:
+    - name: Assert token_list with filter on label
+      assert:
         that:
           - filter.tokens | length >= 1
           - filter.tokens[0].label == 'ansible-test-{{ r }}'

@@ -5,7 +5,8 @@
   tasks:
     - meta: refresh_inventory
 
-    - assert:
+    - name: Assert inventory
+      assert:
         that:
           - '"ansible-test-inventory" in hostvars'
           - hostvars | length == 1

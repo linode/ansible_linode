@@ -10,7 +10,8 @@
         suffix: .img.gz
       register: source_file
 
-    - copy:
+    - name: Copy temp file to destination
+      copy:
         dest: '{{ source_file.path }}'
         content: '{{ file_content | b64decode }}'
 
@@ -22,7 +23,8 @@
         state: present
       register: image_create
 
-    - assert:
+    - name: Assert image is created from image file
+      assert:
         that:
           - image_create.image.size == 1
           - image_create.image.status == 'available'
@@ -30,7 +32,8 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.image:
+        - name: Delete image
+          linode.cloud.image:
             label: '{{ image_create.image.label }}'
             state: absent
 

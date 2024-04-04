@@ -14,7 +14,8 @@
         state: present
       register: create_stackscript
 
-    - assert:
+    - name: Assert stackscript is created
+      assert:
         that:
           - create_stackscript.stackscript.id != None
           - create_stackscript.stackscript.rev_note == ''
@@ -31,7 +32,8 @@
         label: '{{ create_stackscript.stackscript.label }}'
       register: by_label
 
-    - assert:
+    - name: Assert stackscript_info by label
+      assert:
         that:
           - by_id.stackscript.id != None
           - by_id.stackscript.rev_note == ''
@@ -45,7 +47,8 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.stackscript:
+        - name: Delete stackscript
+          linode.cloud.stackscript:
             label: '{{ create_stackscript.stackscript.label }}'
             state: absent
 

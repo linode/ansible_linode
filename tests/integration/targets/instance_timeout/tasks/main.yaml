@@ -18,7 +18,8 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.instance:
+        - name: Instance state is absent
+          linode.cloud.instance:
             label: 'ansible-test-{{ r }}'
             state: absent
 

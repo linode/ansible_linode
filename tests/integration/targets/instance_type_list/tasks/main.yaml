@@ -1,10 +1,11 @@
 - name: instance_type_list
   block:
-    - name: List instance types with no filter
+    - name: List instance_type_list with no filter
       linode.cloud.instance_type_list:
       register: no_filter
 
-    - assert:
+    - name: Assert instance_type_list with no filter
+      assert:
         that:
           - no_filter.instance_types | length >= 1
 
@@ -15,7 +16,8 @@
             values: nanode
       register: filter
 
-    - assert:
+    - name: Assert instance_type_list with filter on class
+      assert:
         that:
           - filter.instance_types | length >= 1
           - filter.instance_types[0].class == 'nanode'
