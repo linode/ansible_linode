@@ -1,0 +1,77 @@
+- name: nodebalancer_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a NodeBalancer with tags
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        tags:
+          - test1
+          - test2
+          - test3
+        state: present
+      register: create_nodebalancer
+
+    - name: Assert NodeBalancer is created
+      assert:
+        that:
+          - create_nodebalancer.changed
+          - create_nodebalancer.node_balancer.tags|length == 3
+
+    - name: Reorder the NodeBalancer's tags
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        tags:
+          - test3
+          - test1
+          - test2
+        state: present
+      register: reorder_nodebalancer_tags
+
+    - name: Assert NodeBalancer is not updated
+      assert:
+        that:
+          - not reorder_nodebalancer_tags.changed
+
+    - name: Update the NodeBalancer's tags
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        tags:
+          - test1
+          - test4
+          - test5
+          - test6
+        state: present
+      register: update_nodebalancer_tags
+
+    - name: Assert NodeBalancer is updated
+      assert:
+        that:
+          - update_nodebalancer_tags.changed
+          - update_nodebalancer_tags.node_balancer.tags | length == 4
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the  NodeBalancer
+          linode.cloud.nodebalancer:
+            label: '{{ create_nodebalancer.node_balancer.label }}'
+            state: absent
+          register: delete_nodebalancer
+
+        - name: Assert NodeBalancer delete
+          assert:
+            that:
+              - delete_nodebalancer.changed
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+
