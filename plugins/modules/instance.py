@@ -1176,7 +1176,7 @@ class LinodeInstance(LinodeModuleBase):
 
         params = filter_null_values(self.module.params)
 
-        params = {
+        update_params = {
             k: v
             for k, v in params.items()
             if k
@@ -1192,7 +1192,7 @@ class LinodeInstance(LinodeModuleBase):
         }
 
         handle_updates(
-            self._instance, params, MUTABLE_FIELDS, self.register_action
+            self._instance, update_params, MUTABLE_FIELDS, self.register_action
         )
 
         backups_enabled = params.get("backups_enabled")
