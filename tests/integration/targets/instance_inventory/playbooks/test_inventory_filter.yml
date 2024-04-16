@@ -10,3 +10,6 @@
         that:
           - '"ansible-test-inventory" in hostvars'
           - hostvars | length == 1
+          - '"networking_info" in hostvars["ansible-test-inventory"]'
+          - '"ipv4" in hostvars["ansible-test-inventory"]["networking_info"]'
+          - '"ipv6" in hostvars["ansible-test-inventory"]["networking_info"]'
