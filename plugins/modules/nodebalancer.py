@@ -9,7 +9,6 @@ import copy
 from typing import Any, List, Optional, Set, Tuple, cast
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer as docs
-import linode_api4
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
@@ -20,6 +19,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     dict_select_matching,
     filter_null_values,
+    handle_updates,
     paginated_list_to_json,
 )
 from ansible_specdoc.objects import (
@@ -248,6 +248,12 @@ linode_nodebalancer_spec = {
         type=FieldType.integer,
         description=["The ID of the Firewall to assign this NodeBalancer to."],
     ),
+    "tags": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        editable=True,
+        description=["Tags to assign to this NodeBalancer."],
+    ),
     "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
@@ -299,7 +305,7 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-linode_nodebalancer_mutable: Set[str] = {"client_conn_throttle", "tags"}
+MUTABLE_FIELDS: Set[str] = {"client_conn_throttle", "tags"}
 
 
 class LinodeNodeBalancer(LinodeModuleBase):
@@ -356,13 +362,15 @@ class LinodeNodeBalancer(LinodeModuleBase):
     def _create_nodebalancer(self) -> Optional[NodeBalancer]:
         """Creates a NodeBalancer with the given kwargs"""
 
-        params = self.module.params
-        label = params.get("label")
-        region = params.get("region")
-        firewall_id = params.get("firewall_id")
+        params = {
+            k: v
+            for k, v in self.module.params.items()
+            if k in {"client_conn_throttle", "label", "firewall_id", "tags"}
+        }
+
         try:
             return self.client.nodebalancer_create(
-                region, label=label, firewall_id=firewall_id
+                self.module.params.get("region"), **params
             )
         except Exception as exception:
             return self.fail(msg=f"failed to create nodebalancer: {exception}")
@@ -526,8 +534,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
         )
 
     def _update_nodebalancer(self) -> None:
-        """Update instance handles all update functionality for the current nodebalancer"""
-        should_update = False
+        """Handles updating the current NodeBalancer"""
 
         params = filter_null_values(self.module.params)
 
@@ -545,35 +552,9 @@ class LinodeNodeBalancer(LinodeModuleBase):
                     "Firewall attachments can only be updated via the firewall_device module."
                 )
 
-        for key, new_value in params.items():
-            if not hasattr(self._node_balancer, key):
-                continue
-
-            old_value = getattr(self._node_balancer, key)
-
-            if isinstance(old_value, linode_api4.objects.linode.Region):
-                old_value = old_value.id
-
-            if new_value != old_value:
-                if key in linode_nodebalancer_mutable:
-                    setattr(self._node_balancer, key, new_value)
-                    self.register_action(
-                        'Updated nodebalancer {0}: "{1}" -> "{2}"'.format(
-                            key, old_value, new_value
-                        )
-                    )
-
-                    should_update = True
-                    continue
-
-                self.fail(
-                    "failed to update nodebalancer {0}: {1} is a non-updatable field".format(
-                        self._node_balancer.label, key
-                    )
-                )
-
-        if should_update:
-            self._node_balancer.save()
+        handle_updates(
+            self._node_balancer, params, MUTABLE_FIELDS, self.register_action
+        )
 
     def _handle_nodebalancer(self) -> None:
         """Updates the NodeBalancer defined in kwargs"""

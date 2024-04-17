@@ -116,6 +116,9 @@ def handle_updates(
 
     obj._api_get()
 
+    # We need the type to access property metadata
+    property_metadata = type(obj).properties
+
     # Update mutable values
     params = filter_null_values(params)
 
@@ -128,7 +131,15 @@ def handle_updates(
 
         old_value = parse_linode_types(getattr(obj, key))
 
-        if new_value != old_value:
+        has_diff = new_value != old_value
+
+        # We should convert properties to sets
+        # if they are annotated as unordered in the
+        # Python SDK.
+        if property_metadata.get(key).unordered:
+            has_diff = set(old_value) != set(new_value)
+
+        if has_diff:
             if key in mutable_fields:
                 put_request[key] = new_value
                 result.add(key)
