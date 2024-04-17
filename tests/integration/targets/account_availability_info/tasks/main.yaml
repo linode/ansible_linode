@@ -9,6 +9,7 @@
       assert:
         that:
           - account_availability.account_availability.region == "us-east"
+          # There are only the four services (Linodes, NodeBalancers, Block Storage, Kubernetes) gated for the account availability.
           - account_availability.account_availability.available | length + account_availability.account_availability.unavailable | length == 4
 
   environment:
