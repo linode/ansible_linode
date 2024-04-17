@@ -40,6 +40,7 @@ Get info about a Linode Account Availability.
         
         {
           "region": "us-east",
+          "available": ["NodeBalancers", "Block Storage", "Kubernetes"],
           "unavailable": ["Linode"]
         }
         
