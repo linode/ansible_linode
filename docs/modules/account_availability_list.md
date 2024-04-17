@@ -48,10 +48,12 @@ List and filter on Account Availabilitys.
         [
             {
               "region": "ap-west",
+              "available": ["NodeBalancers", "Block Storage", "Kubernetes"],
               "unavailable": ["Linode"]
             },
             {
               "region": "ca-central",
+              "available": ["NodeBalancers", "Kubernetes"],
               "unavailable": ["Linode", "Block Storage"]
             }
         ]

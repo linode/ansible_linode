@@ -3,6 +3,7 @@
 result_account_availability_samples = ['''
 {
   "region": "us-east",
+  "available": ["NodeBalancers", "Block Storage", "Kubernetes"],
   "unavailable": ["Linode"]
 }
 ''']
