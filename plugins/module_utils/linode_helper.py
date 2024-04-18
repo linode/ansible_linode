@@ -136,7 +136,10 @@ def handle_updates(
         # We should convert properties to sets
         # if they are annotated as unordered in the
         # Python SDK.
-        if property_metadata.get(key).unordered:
+        if (
+            property_metadata is not None
+            and property_metadata.get(key).unordered
+        ):
             has_diff = set(old_value) != set(new_value)
 
         if has_diff:
