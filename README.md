@@ -87,6 +87,7 @@ Modules for retrieving and filtering on multiple Linode resources.
 Name | Description |
 --- | ------------ |
 [linode.cloud.account_availability_list](./docs/modules/account_availability_list.md)|List and filter on Account Availabilities.|
+[linode.cloud.all_vpcs_ip_list](./docs/modules/all_vpcs_ip_list.md)|List and filter on all VPC IP Addresses.|
 [linode.cloud.database_engine_list](./docs/modules/database_engine_list.md)|List and filter on Managed Database engine types.|
 [linode.cloud.database_list](./docs/modules/database_list.md)|List and filter on Linode Managed Databases.|
 [linode.cloud.domain_list](./docs/modules/domain_list.md)|List and filter on Domains.|
@@ -106,6 +107,7 @@ Name | Description |
 [linode.cloud.user_list](./docs/modules/user_list.md)|List Users.|
 [linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
 [linode.cloud.volume_list](./docs/modules/volume_list.md)|List and filter on Linode Volumes.|
+[linode.cloud.vpc_ip_list](./docs/modules/vpc_ip_list.md)|List and filter on VPC IP Addresses.|
 [linode.cloud.vpc_list](./docs/modules/vpc_list.md)|List and filter on VPCs.|
 [linode.cloud.vpc_subnet_list](./docs/modules/vpc_subnet_list.md)|List and filter on VPC Subnets.|
 
