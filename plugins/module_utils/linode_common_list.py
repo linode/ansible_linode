@@ -118,7 +118,7 @@ class ListModule(
             "order": SpecField(
                 type=FieldType.string,
                 description=[
-                    f"The order to list {self.result_display_name}s in."
+                    f"The order to list {self.result_display_name} in."
                 ],
                 default="asc",
                 choices=["desc", "asc"],
@@ -126,7 +126,7 @@ class ListModule(
             "order_by": SpecField(
                 type=FieldType.string,
                 description=[
-                    f"The attribute to order {self.result_display_name}s by."
+                    f"The attribute to order {self.result_display_name} by."
                 ],
             ),
             "filters": SpecField(
@@ -134,13 +134,13 @@ class ListModule(
                 element_type=FieldType.dict,
                 suboptions=spec_filter,
                 description=[
-                    f"A list of filters to apply to the resulting {self.result_display_name}s."
+                    f"A list of filters to apply to the resulting {self.result_display_name}."
                 ],
             ),
             "count": SpecField(
                 type=FieldType.integer,
                 description=[
-                    f"The number of {self.result_display_name}s to return.",
+                    f"The number of {self.result_display_name} to return.",
                     "If undefined, all results will be returned.",
                 ],
             ),
@@ -151,12 +151,12 @@ class ListModule(
             options[param.name] = SpecField(
                 type=param.type,
                 description=[
-                    f"The parent {param.display_name} for this {self.result_display_name}."
+                    f"The parent {param.display_name} for the {self.result_display_name}."
                 ],
                 required=True,
             )
 
-        description = [f"List and filter on {self.result_display_name}s."]
+        description = [f"List and filter on {self.result_display_name}."]
 
         if self.requires_beta:
             description.append(BETA_DISCLAIMER)
@@ -169,7 +169,7 @@ class ListModule(
             examples=self.examples,
             return_values={
                 self.result_field_name: SpecReturnValue(
-                    description=f"The returned {self.result_display_name}s.",
+                    description=f"The returned {self.result_display_name}.",
                     docs_url=self.result_docs_url,
                     type=FieldType.list,
                     elements=FieldType.dict,
