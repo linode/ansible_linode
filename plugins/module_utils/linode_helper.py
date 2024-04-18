@@ -138,7 +138,7 @@ def handle_updates(
         # Python SDK.
         if (
             property_metadata is not None
-            and key in property_metadata
+            and property_metadata.get(key) is not None
             and property_metadata.get(key).unordered
         ):
             has_diff = set(old_value) != set(new_value)
