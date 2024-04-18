@@ -1050,7 +1050,7 @@ class LinodeInstance(LinodeModuleBase):
 
             # Special diffing due to handling in linode_api4-python
             if key == "devices":
-                for device_key, device in old_value.items():
+                for device_key, device in vars(config.devices).items():
                     if not self._compare_param_to_device(
                         new_value[device_key], device
                     ):
