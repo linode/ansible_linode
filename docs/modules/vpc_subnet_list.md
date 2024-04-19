@@ -35,7 +35,7 @@ List and filter on VPC Subnets.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The parent VPC for this VPC Subnet.   |
+| `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The parent VPC for the VPC Subnets.   |
 | `order` | <center>`str`</center> | <center>Optional</center> | The order to list VPC Subnets in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
 | `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order VPC Subnets by.   |
 | [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting VPC Subnets.   |

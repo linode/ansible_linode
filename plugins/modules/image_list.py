@@ -11,7 +11,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list im
 )
 
 module = ListModule(
-    result_display_name="Image",
+    result_display_name="Images",
     result_field_name="images",
     endpoint_template="/images",
     result_docs_url="https://www.linode.com/docs/api/images/#images-list__responses",
