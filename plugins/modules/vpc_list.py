@@ -11,7 +11,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list im
 )
 
 module = ListModule(
-    result_display_name="VPC",
+    result_display_name="VPCs",
     result_field_name="vpcs",
     endpoint_template="/vpcs",
     result_docs_url="",

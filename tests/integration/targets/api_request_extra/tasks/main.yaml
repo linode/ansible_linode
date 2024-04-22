@@ -5,11 +5,11 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - name: List all available Linode regions
+    - name: GET region_list request
       linode.cloud.region_list:
       register: regions
     
-    - name: Create a volume by the api_request module
+    - name: POST volume request
       linode.cloud.api_request:
         path: "/volumes"
         method: POST
@@ -29,7 +29,7 @@
   always:
     - ignore_errors: true
       block:
-        - name: Delete the volume
+        - name: DELETE volume request
           linode.cloud.volume:
             label: '{{ response.body.label }}'
             state: absent
@@ -38,7 +38,7 @@
           retries: 5
           delay: 10
 
-        - name: Assert the volume was deleted
+        - name: Assert volume deleted
           assert:
             that:
               - delete_volume.changed

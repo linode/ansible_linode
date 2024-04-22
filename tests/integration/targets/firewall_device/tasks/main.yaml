@@ -77,23 +77,28 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.firewall_device:
+        - name: Delete firewall device in linode
+          linode.cloud.firewall_device:
             firewall_id: '{{ fw.firewall.id }}'
             entity_id: '{{ inst.instance.id }}'
             entity_type: 'linode'
             state: absent
-        - linode.cloud.firewall_device:
+        - name: Delete firewall device in nodebalancer
+          linode.cloud.firewall_device:
             firewall_id: '{{ fw.firewall.id }}'
             entity_id: '{{ nb.node_balancer.id }}'
             entity_type: 'nodebalancer'
             state: absent
-        - linode.cloud.nodebalancer:
+        - name: Delete nodebalancer
+          linode.cloud.nodebalancer:
             label: '{{ nb.node_balancer.label }}'
             state: absent
-        - linode.cloud.instance:
+        - name: Delete instance
+          linode.cloud.instance:
             label: '{{ inst.instance.label }}'
             state: absent
-        - linode.cloud.firewall:
+        - name: Delete Firewall
+          linode.cloud.firewall:
             label: '{{ fw.firewall.label }}'
             state: absent
 

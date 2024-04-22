@@ -113,7 +113,8 @@
         state: present
       register: unchanged_instance
 
-    - assert:
+    - name: Assert instance interface is unchanged
+      assert:
         that:
           - unchanged_instance.changed == False
 

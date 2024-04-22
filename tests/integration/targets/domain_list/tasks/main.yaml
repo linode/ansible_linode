@@ -3,7 +3,7 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - name: Create a domain
+    - name: Create domain
       linode.cloud.domain:
         description: 'really cool domain'
         domain: 'ansible-test-domain-{{ r }}.com'
@@ -19,7 +19,7 @@
         state: present
       register: create
 
-    - name: Assert domain created
+    - name: Assert domain is created
       assert:
         that:
           - create.domain.description == 'really cool domain'
@@ -32,15 +32,16 @@
           - create.domain.ttl_sec == 14400
           - create.domain.type == 'master'
 
-    - name: List domains with no filter
+    - name: List domain_list with no filter
       linode.cloud.domain_list:
       register: no_filter
 
-    - assert:
+    - name: Assert domain_list with no filter
+      assert:
         that:
           - no_filter.domains | length >= 1
 
-    - name: List domains with filter on domain
+    - name: List domain_list with filter on domain
       linode.cloud.domain_list:
         order_by: created
         order: desc
@@ -49,20 +50,21 @@
             values: ansible-test-domain-{{ r }}.com
       register: filter
 
-    - assert:
+    - name: Assert domain_list with filter on domain
+      assert:
         that:
           - filter.domains | length >= 1
           - filter.domains[0].domain == 'ansible-test-domain-{{ r }}.com'
   always:
     - ignore_errors: yes
       block:
-        - name: Delete the domain
+        - name: Delete domain
           linode.cloud.domain:
             domain: '{{ create.domain.domain }}'
             state: absent
           register: delete
 
-        - name: Assert domain delete succeeded
+        - name: Assert domain is deleted
           assert:
             that:
               - delete.changed

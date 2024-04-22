@@ -8,7 +8,8 @@
         id: g6-standard-2
       register: type_info
 
-    - assert:
+    - name: Assert type_info by ID
+      assert:
         that:
           - type_info.type.class == "standard"
 

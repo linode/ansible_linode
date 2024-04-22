@@ -13,7 +13,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list im
 from ansible_specdoc.objects import FieldType
 
 module = ListModule(
-    result_display_name="VPC Subnet",
+    result_display_name="VPC Subnets",
     result_field_name="subnets",
     endpoint_template="/vpcs/{vpc_id}/subnets",
     result_docs_url="",

@@ -34,7 +34,8 @@
         state: present
       register: create_cluster
 
-    - assert:
+    - name: Assert LKE cluster is created
+      assert:
         that:
           - create_cluster.cluster.k8s_version == old_kube_version
           - create_cluster.cluster.region == 'us-southeast'
@@ -60,7 +61,8 @@
         state: present
       register: update_pools
 
-    - assert:
+    - name: Assert cluster's node pools are updated
+      assert:
         that:
           - update_pools.cluster.k8s_version == old_kube_version
           - update_pools.cluster.region == 'us-southeast'
@@ -93,7 +95,8 @@
         state: present
       register: upgrade
 
-    - assert:
+    - name: Assert cluster is updated
+      assert:
         that:
           - upgrade.cluster.k8s_version == kube_version
           - upgrade.cluster.control_plane.high_availability == True
@@ -108,14 +111,15 @@
           - upgrade.node_pools[0].autoscaler.min == 1
           - upgrade.node_pools[0].autoscaler.max == 3
 
-    - name: Get info about the cluster by id
+    - name: Get lke_cluster_info about the cluster by id
       linode.cloud.lke_cluster_info:
         id: '{{ upgrade.cluster.id }}'
         
         
       register: info_by_id
 
-    - assert:
+    - name: Assert lke_cluster_info about cluster by id
+      assert:
         that:
           - info_by_id.cluster.k8s_version == kube_version
           - info_by_id.cluster.region == 'us-southeast'
@@ -126,12 +130,13 @@
           - info_by_id.node_pools[0].count == 1
           - info_by_id.node_pools[0].id == create_cluster.node_pools[0].id
 
-    - name: Get info about the cluster by label
+    - name: Get lke_cluster_info about the cluster by label
       linode.cloud.lke_cluster_info:
         label: '{{ upgrade.cluster.label }}'
       register: info_by_label
 
-    - assert:
+    - name: Assert lke_cluster_info about cluster by label
+      assert:
         that:
           - info_by_label.cluster.k8s_version == kube_version
           - info_by_label.cluster.region == 'us-southeast'

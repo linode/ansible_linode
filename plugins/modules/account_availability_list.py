@@ -13,7 +13,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list im
 )
 
 module = ListModule(
-    result_display_name="Account Availability",
+    result_display_name="Account Availabilities",
     result_field_name="account_availabilities",
     endpoint_template="/account/availability",
     result_docs_url="TBD",

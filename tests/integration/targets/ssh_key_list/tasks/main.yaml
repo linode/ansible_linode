@@ -4,7 +4,8 @@
         r: "{{ 1000000000 | random }}"
         ssh_pub_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCloBr83q7v2/kipfpChnN1cPr+DA++JN3RdLBid3tFjy5UmAelpRmKO9Uhija7ElC9/x187t13smc35NGaDOG+s+zrSMlSfygqA6pf8njEPDRBhvyp12Fjwb8i+ILFXiU1GYaVprbQwpgdApwqieoCZ4pathc/HdPvznX/Aqgyiq+5+dSRa5GUftAPWrt3ScFXttlfihU+0wIanyxoxnrtPcqNshs39dRg8UP2zrB5aK+9nPurO/6qSWDqVnIVlparlqXxZdwKl+Gfiq93pGicrPgVEy49Tbl75Y8Nxj7zDsJsQuO0UlRk9IUoe1asAy5DXqQ6foOb6vR9rld6owqRHCG/tjYDpuw1uYCYj5xm+DDfkNRowWJktIgnajzaYqZ3ytWzg31m8a7X2Wol8foxlFrUqqqesJ05I28A3JvLIU5s4vSzi1hK4cWKSi15UFdxX1f1a+pRsRgY446k+i3uWcFZVybzp5tDRdjUMRO6XQrbjrxFnKurRY0+S1NeRF0="
 
-    - linode.cloud.api_request:
+    - name: Uplooad ssh pub key
+      linode.cloud.api_request:
         api_token: '{{ api_token }}'
         ua_prefix: '{{ ua_prefix }}'
 
@@ -14,8 +15,9 @@
           ssh_key: "{{ ssh_pub_key }}"
           label: "test-key-1-{{ r }}"
       register: create_ssh_key1
-    
-    - linode.cloud.api_request:
+
+    - name: Uplooad ssh pub key 2
+      linode.cloud.api_request:
         api_token: '{{ api_token }}'
         ua_prefix: '{{ ua_prefix }}'
 
@@ -58,7 +60,8 @@
         count: 1
       register: key_list_random
 
-    - assert:
+    - name: Assert ssh_key_list for current account
+      assert:
         that:
           - key_list_1.ssh_keys | length == 1
           - key_list_12.ssh_keys | length == 2
@@ -67,12 +70,14 @@
   always:
     - ignore_errors: true
       block:
-        - linode.cloud.api_request:
+        - name: Delete SSH key 1
+          linode.cloud.api_request:
             api_token: '{{ api_token }}'
             ua_prefix: '{{ ua_prefix }}'
             path: "profile/sshkeys/{{ create_ssh_key1.body.id }}"
             method: DELETE
-        - linode.cloud.api_request:
+        - name: Delete SSH key 2
+          linode.cloud.api_request:
             api_token: '{{ api_token }}'
             ua_prefix: '{{ ua_prefix }}'
             path: "profile/sshkeys/{{ create_ssh_key2.body.id }}"
