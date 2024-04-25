@@ -1,9 +1,9 @@
-"""Documentation fragments for the all_vpcs_ip_list module"""
+"""Documentation fragments for the vpcs_ip_list module"""
 
 specdoc_examples = [
     """
 - name: List all IPs of all VPCs in the account.
-  linode.cloud.all_vpcs_ip_list: {}""",
+  linode.cloud.vpcs_ip_list: {}""",
 ]
 
 result_vpc_samples = ["""

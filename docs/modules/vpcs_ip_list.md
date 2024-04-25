@@ -1,4 +1,4 @@
-# all_vpcs_ip_list
+# vpcs_ip_list
 
 List and filter on all VPC IP Addresses.
 
@@ -16,7 +16,7 @@ List and filter on all VPC IP Addresses.
 
 ```yaml
 - name: List all IPs of all VPCs in the account.
-  linode.cloud.all_vpcs_ip_list: {}
+  linode.cloud.vpcs_ip_list: {}
 ```
 
 

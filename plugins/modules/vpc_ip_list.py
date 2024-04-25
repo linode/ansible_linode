@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module contains all of the functionality for listing Linode VPCs."""
+"""This module contains all of the functionality for listing IP addresses of a VPC."""
 
 from __future__ import absolute_import, division, print_function
 
