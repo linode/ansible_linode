@@ -106,8 +106,10 @@ Name | Description |
 [linode.cloud.user_list](./docs/modules/user_list.md)|List Users.|
 [linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
 [linode.cloud.volume_list](./docs/modules/volume_list.md)|List and filter on Linode Volumes.|
+[linode.cloud.vpc_ip_list](./docs/modules/vpc_ip_list.md)|List and filter on VPC IP Addresses.|
 [linode.cloud.vpc_list](./docs/modules/vpc_list.md)|List and filter on VPCs.|
 [linode.cloud.vpc_subnet_list](./docs/modules/vpc_subnet_list.md)|List and filter on VPC Subnets.|
+[linode.cloud.vpcs_ip_list](./docs/modules/vpcs_ip_list.md)|List and filter on all VPC IP Addresses.|
 
 
 ### Inventory Plugins
