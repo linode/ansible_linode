@@ -1,0 +1,51 @@
+- name: placement_group_basic
+  block:
+    - set_fact:
+          r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode placement group
+      linode.cloud.placement_group:
+        label: 'ansible-test-{{ r }}'
+        region: us-east
+        affinity_type: anti_affinity:local
+        state: present
+      register: pg_created
+
+    - name: Assert placement group is created
+      assert:
+        that:
+          - pg_created.placement_group.region == 'us-east'
+          - pg_created.placement_group.affinity_type == 'anti_affinity:local'
+          - pg_created.placement_group.is_strict == false
+
+    - name: Update a Linode placement group label
+      linode.cloud.placement_group:
+        label: '{{ pg_created.placement_group.label }}-updated'
+        region: us-east
+        affinity_type: anti_affinity:local
+        state: present
+      register: pg_updated
+
+    - name: Assert placement group is updated
+      assert:
+        that:
+          - pg_updated.changed
+
+    - name: Delete a placement group
+      linode.cloud.placement_group:
+        label: '{{ pg_created.placement_group.label }}'
+        state: absent
+      register: pg_deleted
+
+    - name: Assert placement group is deleted
+      assert:
+        that:
+          - pg_deleted.changed
+          - pg_deleted.placement_group.id == pg_created.placement_group.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
