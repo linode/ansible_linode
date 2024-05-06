@@ -40,13 +40,13 @@ jobs:
       - name: install ansible dependencies
         run: ansible-galaxy collection install amazon.aws:==6.0.1
 
-      - name: install collection
+      - name: Install Collection
         run: make install
 
-      - name: replace existing keys
+      - name: Replace Existing Keys
         run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
 
-      - name: run tests
+      - name: Run Integration Tests
         run: |
           make TEST_ARGS="-v api_request_basic" test
         env:
@@ -57,6 +57,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
+          name: xml-test-reports
           if-no-files-found: ignore
           path: '.ansible/collections/ansible_collections/linode/cloud/tests/output/junit'
           retention-days: 1
@@ -82,11 +83,22 @@ jobs:
       - name: Install Python dependencies
         run: pip3 install requests wheel boto3
 
+      # Create directory if it doesn't exist
+      - name: Create output directory
+        run: mkdir -p tests/output/junit
+
       - name: Download test report
         uses: actions/download-artifact@v4
+        with:
+          name: xml-test-reports  # Specify the artifact name from the 'run-tests' job
+          path: tests/output/junit
+          continue-on-error: true  # Continue even if artifact download fails
 
       - name: Merge all test xmls in output directory
         run: |
+          pwd
+          ls -R tests/output/junit
+          ls -l
           python tod_scripts/merge_ansible_results.py
 
       - name: Add additional information to XML report
