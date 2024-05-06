@@ -2,6 +2,8 @@
 
 Manage a Linode Placement Group.
 
+**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
