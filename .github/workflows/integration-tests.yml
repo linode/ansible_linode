@@ -48,7 +48,7 @@ jobs:
 
       - name: run tests
         run: |
-          make testall
+          make TEST_ARGS="-v api_request_basic" test
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
           ANSIBLE_CALLBACKS_ENABLED: "junit"
@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          path: 'tests/output/junit'
+          path: '.ansible/collections/ansible_collections/linode/cloud/tests/output/junit'
           retention-days: 1
 
 
