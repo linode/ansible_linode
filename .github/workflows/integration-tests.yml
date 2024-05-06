@@ -30,9 +30,9 @@ jobs:
         run: sudo apt-get install -y build-essential
 
       - name: setup python 3
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.x'
 
       - name: install dependencies
         run: make deps
@@ -48,16 +48,42 @@ jobs:
 
       - name: run tests
         run: |
-          if ! make testall > test_output.txt; then
-            echo "EXIT_STATUS=1" >> $GITHUB_ENV
-          fi
-          cat test_output.txt
+          make testall
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
           ANSIBLE_CALLBACKS_ENABLED: "junit"
 
-      - name: Set release version env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Upload Test Report as Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          path: 'tests/output/junit'
+          retention-days: 1
+
+
+  process-upload-report:
+    runs-on: ubuntu-latest
+    needs: [run-tests]
+    if: always() # Run even if previous job fails
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: pip3 install requests wheel boto3
+
+      - name: Download test report
+        uses: actions/download-artifact@v4
 
       - name: Merge all test xmls in output directory
         run: |
@@ -67,7 +93,7 @@ jobs:
         run: |
           filename=$(ls | grep -E '^[0-9]{12}_ansible_merged\.xml$') 
           python tod_scripts/add_to_xml_test_report.py \
-          --branch_name "${{ env.RELEASE_VERSION }}" \
+          --branch_name "${GITHUB_REF#refs/*/}" \
           --gha_run_id "$GITHUB_RUN_ID" \
           --gha_run_number "$GITHUB_RUN_NUMBER" \
           --xmlfile "${filename}"
@@ -79,13 +105,3 @@ jobs:
         env:
           LINODE_CLI_OBJ_ACCESS_KEY: ${{ secrets.LINODE_CLI_OBJ_ACCESS_KEY }}
           LINODE_CLI_OBJ_SECRET_KEY: ${{ secrets.LINODE_CLI_OBJ_SECRET_KEY }}
-
-      - name: Test Execution Status Handler
-        run: |
-          if [[ "$EXIT_STATUS" != 0 ]]; then
-            echo "Test execution contains failure(s), check Run Integration tests step above"
-            exit $EXIT_STATUS 
-          else
-            echo "Tests passed!"
-          fi
-
