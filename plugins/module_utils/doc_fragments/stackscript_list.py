@@ -22,8 +22,8 @@ result_stackscripts_samples = ['''[
         "description": "This StackScript installs and configures MySQL\\n",
         "id": 10079,
         "images": [
-            "linode/debian9",
-            "linode/debian8"
+            "linode/debian11",
+            "linode/debian10"
         ],
         "is_public": true,
         "label": "a-stackscript",

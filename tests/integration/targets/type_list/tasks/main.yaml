@@ -11,7 +11,8 @@
             values: Nanode 1GB
       register: filter
 
-    - assert:
+    - name: Assert type_list by Linode type
+      assert:
         that:
           - filter.types | length == 1
           - filter.types[0].label == 'Nanode 1GB'

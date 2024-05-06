@@ -2,9 +2,15 @@
 
 Manage Linode Instances, Configs, and Disks.
 
+- [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
+
+## Minimum Required Fields
+| Field       | Type  | Required     | Description                                                                                                                                                                                                              |
+|-------------|-------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_token` | `str` | **Required** | The Linode account personal access token. It is necessary to run the module. <br/>It can be exposed by the environment variable `LINODE_API_TOKEN` instead. <br/>See details in [Usage](https://github.com/linode/ansible_linode?tab=readme-ov-file#usage). |
 
 ## Examples
 
@@ -14,7 +20,7 @@ Manage Linode Instances, Configs, and Disks.
     label: my-linode
     type: g6-nanode-1
     region: us-east
-    image: linode/ubuntu20.04
+    image: linode/ubuntu22.04
     root_pass: verysecurepassword!!!
     private_ip: false
     authorized_keys:
@@ -34,7 +40,7 @@ Manage Linode Instances, Configs, and Disks.
     label: my-linode
     type: g6-nanode-1
     region: us-east
-    image: linode/ubuntu20.04
+    image: linode/ubuntu22.04
     root_pass: verysecurepassword!!!
     private_ip: false
     authorized_keys:
@@ -61,7 +67,7 @@ Manage Linode Instances, Configs, and Disks.
     state: present
     disks:
       - label: boot
-        image: linode/ubuntu18.04
+        image: linode/ubuntu22.04
         size: 3000
         root_pass: ans1ble-test!
       - label: swap
@@ -299,7 +305,7 @@ Manage Linode Instances, Configs, and Disks.
           "has_user_data": true,
           "hypervisor": "kvm",
           "id": 123,
-          "image": "linode/debian10",
+          "image": "linode/debian11",
           "ipv4": [
             "203.0.113.1",
             "192.0.2.1"

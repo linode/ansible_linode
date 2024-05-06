@@ -8,7 +8,7 @@
         label: 'ansible-test-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/alpine3.16
+        image: linode/alpine3.19
         wait: no
         state: present
       register: instance_create
@@ -24,12 +24,13 @@
         body_json: '{{ ipv6_body | to_json }}'
       register: range_create
 
-    - name: Get info about the IPv6 range
+    - name: Get ipv6_range_info about the IPv6 range
       linode.cloud.ipv6_range_info:
         range: '{{ range_create.body.range }}'
       register: range_info
 
-    - assert:
+    - name: Assert ipv6_range_info about IPv6 range
+      assert:
         that:
           - range_info.range.is_bgp == False
           - range_info.range.linodes[0] == instance_create.instance.id
@@ -40,11 +41,13 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.api_request:            
+        - name: Delete IPv6 range
+          linode.cloud.api_request:
             path: 'networking/ipv6/ranges/{{ range_create.body.range.split("/")[0] }}'
             method: DELETE
 
-        - linode.cloud.instance:            
+        - name: Assert IPv6 range is deleted
+          linode.cloud.instance:
             label: '{{ instance_create.instance.label }}'
             state: absent
 

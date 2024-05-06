@@ -44,6 +44,7 @@ disable = [
     "duplicate-code",
     "too-many-lines",
     "too-many-branches",
+    "too-many-instance-attributes",
     "anomalous-backslash-in-string",
     "too-many-locals",
     "consider-using-f-string",

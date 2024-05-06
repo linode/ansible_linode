@@ -91,7 +91,7 @@ The `LINODE_API_URL` environment variable pr the `api_url` module option can be 
         label: my-linode
         type: g6-nanode-1
         region: us-east
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         root_pass: verysecurepassword!!!
         state: present
 ```

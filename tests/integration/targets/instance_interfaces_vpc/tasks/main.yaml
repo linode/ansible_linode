@@ -49,6 +49,7 @@
           - create_instance.configs[0].interfaces[0].ipv4.nat_1_1 == create_instance.instance.ipv4[0]
           - create_instance.configs[0].interfaces[0].ipv4.vpc == '10.0.0.3'
 
+
     - name: Update the instance interfaces
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
@@ -66,8 +67,6 @@
         wait: false
         state: present
       register: update_instance
-    
-    
 
     - name: Assert instance updated
       assert:
@@ -81,9 +80,9 @@
           - update_instance.configs[0].interfaces[1].subnet_id == create_subnet.subnet.id
           - update_instance.configs[0].interfaces[1].vpc_id == create_vpc.vpc.id
           - update_instance.configs[0].interfaces[1].ip_ranges[0] == '10.0.0.7/32'
-          - update_instance.configs[0].interfaces[1].ipv4.nat_1_1 == ""
+          - update_instance.configs[0].interfaces[1].ipv4.nat_1_1 == None
           - update_instance.configs[0].interfaces[1].ipv4.vpc == '10.0.0.4'
-    
+
     - name: Get information about the Subnet by ID
       linode.cloud.vpc_subnet_info:
         vpc_id: '{{ create_vpc.vpc.id }}'
@@ -114,7 +113,8 @@
         state: present
       register: unchanged_instance
 
-    - assert:
+    - name: Assert instance interface is unchanged
+      assert:
         that:
           - unchanged_instance.changed == False
 

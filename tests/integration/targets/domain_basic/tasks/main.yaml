@@ -3,7 +3,7 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - name: Create a domain
+    - name: Create domain
       linode.cloud.domain:
         description: 'really cool domain'
         domain: 'ansible-test-domain-{{ r }}.com'
@@ -19,7 +19,8 @@
         state: present
       register: create
 
-    - assert:
+    - name: Assert domain is created
+      assert:
         that:
           - create.domain.description == 'really cool domain'
           - create.domain.expire_sec == 300
@@ -31,7 +32,7 @@
           - create.domain.ttl_sec == 14400
           - create.domain.type == 'master'
 
-    - name: Update a domain
+    - name: Update domain label
       linode.cloud.domain:
         description: 'really cool'
         domain: '{{ create.domain.domain }}'
@@ -47,7 +48,8 @@
         state: present
       register: update
 
-    - assert:
+    - name: Assert domain is updated
+      assert:
         that:
           - update.domain.description == 'really cool'
           - update.domain.expire_sec == 14400
@@ -59,12 +61,13 @@
           - update.domain.ttl_sec == 604800
           - update.domain.type == 'slave'
 
-    - name: Get domain info
+    - name: Get domain_info
       linode.cloud.domain_info:
         domain: '{{ create.domain.domain }}'
       register: info
 
-    - assert:
+    - name: Assert domain_info response
+      assert:
         that:
           - info.domain.description == 'really cool'
           - info.domain.expire_sec == 14400
@@ -79,13 +82,13 @@
   always:
     - ignore_errors: yes
       block:
-        - name: Delete the domain
+        - name: Delete domain
           linode.cloud.domain:
             domain: '{{ create.domain.domain }}'
             state: absent
           register: delete
 
-        - name: Assert domain delete succeeded
+        - name: Assert domain is deleted
           assert:
             that:
               - delete.changed

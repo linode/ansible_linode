@@ -26,7 +26,8 @@
         id: '{{ create_token.token.id }}'
       register: by_id
 
-    - assert:
+    - name: Assert token_info by ID
+      assert:
         that:
           - by_label.token.label == create_token.token.label
           - by_id.token.label == create_token.token.label

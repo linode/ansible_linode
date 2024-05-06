@@ -5,7 +5,7 @@ examples = ['''
   linode.cloud.lke_cluster:
     label: 'my-cluster'
     region: us-southeast
-    k8s_version: 1.23
+    k8s_version: 1.28
     node_pools:
       - type: g6-standard-1
         count: 3
@@ -16,7 +16,7 @@ examples = ['''
   linode.cloud.lke_cluster:
     label: 'my-cluster'
     region: us-southeast
-    k8s_version: 1.23
+    k8s_version: 1.28
     node_pools:
       - type: g6-standard-1
         count: 2
@@ -36,7 +36,7 @@ result_cluster = ['''{
   },
   "created": "2019-09-12T21:25:30Z",
   "id": 1234,
-  "k8s_version": "1.23",
+  "k8s_version": "1.28",
   "label": "lkecluster12345",
   "region": "us-central",
   "tags": [

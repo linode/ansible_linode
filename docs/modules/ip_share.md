@@ -2,15 +2,24 @@
 
 Manage the Linode shared IPs.
 
+**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+
+- [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
+
+## Minimum Required Fields
+| Field       | Type  | Required     | Description                                                                                                                                                                                                              |
+|-------------|-------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_token` | `str` | **Required** | The Linode account personal access token. It is necessary to run the module. <br/>It can be exposed by the environment variable `LINODE_API_TOKEN` instead. <br/>See details in [Usage](https://github.com/linode/ansible_linode?tab=readme-ov-file#usage). |
 
 ## Examples
 
 ```yaml
 - name: Configure the Linode shared IPs.
   linode.cloud.ip_share:
+    api_version: v4beta
     linode_id: 12345
     ips: ["192.0.2.1", "2001:db8:3c4d:15::"]
 ```

@@ -2,20 +2,30 @@
 
 List and filter on Linode VLANs.
 
+**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+
+- [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
+
+## Minimum Required Fields
+| Field       | Type  | Required     | Description                                                                                                                                                                                                              |
+|-------------|-------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_token` | `str` | **Required** | The Linode account personal access token. It is necessary to run the module. <br/>It can be exposed by the environment variable `LINODE_API_TOKEN` instead. <br/>See details in [Usage](https://github.com/linode/ansible_linode?tab=readme-ov-file#usage). |
 
 ## Examples
 
 ```yaml
 - name: List all of the VLANs for the current Linode Account
-  linode.cloud.vlan_list: {}
+  linode.cloud.vlan_list:
+    api_version: v4beta
 ```
 
 ```yaml
 - name: List all VLANs in the us-southeast region
   linode.cloud.vlan_list:
+    api_version: v4beta
     filters:
       - name: region
         values: us-southeast

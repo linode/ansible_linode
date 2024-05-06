@@ -3,20 +3,23 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - linode.cloud.instance:
+    - name: Create Linode instance
+      linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
         region: us-mia
         type: g6-nanode-1
-        image: linode/ubuntu23.10
+        image: linode/ubuntu22.04
         state: present
       register: create
 
-    - assert:
+    - name: Assert instance is created
+      assert:
         that:
           - create.changed
           - create.instance.type == "g6-nanode-1"
 
-    - linode.cloud.type_list:
+    - name: List type_list with filter on label
+      linode.cloud.type_list:
         filters:
           - name: label
             values: Linode 2GB
@@ -27,28 +30,30 @@
         label: 'ansible-test-{{ r }}'
         region: us-mia
         type: g6-standard-1
-        image: linode/ubuntu23.10
+        image: linode/ubuntu22.04
         auto_disk_resize: true
         state: present
       register: resize_disks
 
-    - assert:
+    - name: Assert instance is resized with resizing disks
+      assert:
         that:
           - resize_disks.changed
           - resize_disks.instance.type == "g6-standard-1"
-          - resize_disks.disks[0].size == type_info.types[0].disk - 512
+          - resize_disks.instance.specs.disk == type_info.types[0].disk
 
     - name: Run a warm resize without resizing disks
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
         region: us-mia
         type: g6-standard-2
-        image: linode/ubuntu23.10
+        image: linode/ubuntu22.04
         migration_type: warm
         state: present
       register: resize_disks
 
-    - assert:
+    - name: Assert warm resize without resizing disks
+      assert:
         that:
           - resize_disks.changed
           - resize_disks.instance.type == "g6-standard-2"
@@ -58,12 +63,14 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.instance:
+        - name: Delete instance
+          linode.cloud.instance:
             label: '{{ create.instance.label }}'
             state: absent
           register: delete
 
-        - assert:
+        - name: Assert instance is deleted
+          assert:
             that:
               - delete.changed
               - delete.instance.id == create.instance.id

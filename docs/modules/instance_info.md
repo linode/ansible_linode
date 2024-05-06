@@ -2,9 +2,15 @@
 
 Get info about a Linode Instance.
 
+- [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
+
+## Minimum Required Fields
+| Field       | Type  | Required     | Description                                                                                                                                                                                                              |
+|-------------|-------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_token` | `str` | **Required** | The Linode account personal access token. It is necessary to run the module. <br/>It can be exposed by the environment variable `LINODE_API_TOKEN` instead. <br/>See details in [Usage](https://github.com/linode/ansible_linode?tab=readme-ov-file#usage). |
 
 ## Examples
 
@@ -55,7 +61,7 @@ Get info about a Linode Instance.
           "has_user_data": true,
           "hypervisor": "kvm",
           "id": 123,
-          "image": "linode/debian10",
+          "image": "linode/debian11",
           "ipv4": [
             "203.0.113.1",
             "192.0.2.1"

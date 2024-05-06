@@ -1,21 +1,23 @@
 - name: database_engine_list
   block:
-    - name: List database engines with no filter
+    - name: List database_engine_list with no filter
       linode.cloud.database_engine_list:
       register: no_filter
 
-    - assert:
+    - name: Assert database_engine_list with no filter
+      assert:
         that:
           - no_filter.database_engines | length >= 1
 
-    - name: List database engines with filter on engine
+    - name: List database_engine_list with filter on engine
       linode.cloud.database_engine_list:
         filters:
           - name: engine
             values: mysql
       register: filter
 
-    - assert:
+    - name: Assert List database_engine_list with filter on engine
+      assert:
         that:
           - filter.database_engines | length >= 1
           - filter.database_engines[0].engine == 'mysql'

@@ -19,7 +19,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 )
 from linode_api4.objects import Instance
 
-DOCUMENTATION = r"""
+DOCUMENTATION = """
     name: instance
     author:
       - Luke Murphy (@decentral1se)
@@ -59,7 +59,7 @@ DOCUMENTATION = r"""
           type: list
 """
 
-EXAMPLES = r"""
+EXAMPLES = """
 # Minimal example. `LINODE_API_TOKEN` is exposed in environment.
 plugin: linode.cloud.instance
 
@@ -209,7 +209,10 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
     def _add_hostvars_for_instances(self) -> None:
         """Add hostvars for instances in the dynamic inventory."""
         for instance in self.instances:
-            hostvars = instance._raw_json
+            hostvars = {}
+            hostvars.update(instance._raw_json)
+            hostvars["networking_info"] = instance.ips.dict
+
             for hostvar_key in hostvars:
                 self.inventory.set_variable(
                     instance.label, hostvar_key, hostvars[hostvar_key]

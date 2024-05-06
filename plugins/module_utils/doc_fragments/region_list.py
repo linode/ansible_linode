@@ -10,20 +10,28 @@ specdoc_examples = ['''
         values: us-east''']
 
 result_regions_samples = ['''[
-   {
+    {
       "capabilities": [
         "Linodes",
+        "Backups",
         "NodeBalancers",
         "Block Storage",
-        "Object Storage"
+        "Object Storage",
+        "Kubernetes",
+        "Cloud Firewall",
+        "Vlans",
+        "VPCs",
+        "Metadata",
+        "Premium Plans"
       ],
       "country": "us",
-      "id": "us-east",
-      "label": "Newark, NJ, USA",
+      "id": "us-mia",
+      "label": "Miami, FL",
       "resolvers": {
-        "ipv4": "192.0.2.0,192.0.2.1",
-        "ipv6": "2001:0db8::,2001:0db8::1"
+        "ipv4": "172.233.160.34, 172.233.160.27",
+        "ipv6": "2a01:7e04::f03c:93ff:fead:d31f, 2a01:7e04::f03c:93ff:fead:d37f"
       },
+      "site_type": "core",
       "status": "ok"
     }
 ]''']

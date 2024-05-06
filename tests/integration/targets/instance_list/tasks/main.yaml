@@ -8,7 +8,7 @@
         label: 'ansible-test-nopass-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/ubuntu20.04
+        image: linode/ubuntu22.04
         private_ip: true
         wait: false
         state: present
@@ -21,11 +21,12 @@
           - create.instance.ipv4|length > 1
           - create.networking.ipv4.public[0].address != None
 
-    - name: List instances with no filter
+    - name: List instance_list with no filter
       linode.cloud.instance_list:
       register: no_filter
 
-    - assert:
+    - name: Assert instance_list with no filter
+      assert:
         that:
           - no_filter.instances | length >= 1
 
@@ -38,7 +39,8 @@
             values: us-ord
       register: filter
 
-    - assert:
+    - name: Assert instance_list with filter on region
+      assert:
         that:
           - filter.instances | length >= 1
           - filter.instances[0].region == 'us-ord'

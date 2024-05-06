@@ -2,9 +2,15 @@
 
 Get info about a Linode StackScript.
 
+- [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
+
+## Minimum Required Fields
+| Field       | Type  | Required     | Description                                                                                                                                                                                                              |
+|-------------|-------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_token` | `str` | **Required** | The Linode account personal access token. It is necessary to run the module. <br/>It can be exposed by the environment variable `LINODE_API_TOKEN` instead. <br/>See details in [Usage](https://github.com/linode/ansible_linode?tab=readme-ov-file#usage). |
 
 ## Examples
 
@@ -41,8 +47,8 @@ Get info about a Linode StackScript.
           "description": "This StackScript installs and configures MySQL",
           "id": 10079,
           "images": [
-            "linode/debian9",
-            "linode/debian8"
+            "linode/debian11",
+            "linode/debian10"
           ],
           "is_public": true,
           "label": "a-stackscript",

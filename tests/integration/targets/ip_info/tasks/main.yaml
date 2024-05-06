@@ -8,24 +8,26 @@
         label: 'ansible-test-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/alpine3.16
+        image: linode/alpine3.19
         wait: no
         state: present
       register: instance_create
 
-    - name: Get info about the instance's primary IP
+    - name: Get ip_info about the instance's primary IP
       linode.cloud.ip_info:
         address: '{{ instance_create.instance.ipv4[0] }}'
       register: ip_info
 
-    - assert:
+    - name: Assert ip_info about instance's primary IP
+      assert:
         that:
           - ip_info.ip.address == instance_create.instance.ipv4[0]
 
   always:
     - ignore_errors: true
       block:
-        - linode.cloud.instance:
+        - name: Delete instance
+          linode.cloud.instance:
             label: '{{ instance_create.instance.label }}'
             state: absent
 

@@ -14,7 +14,7 @@ clean:
 	rm -f *.tar.gz && rm -rf galaxy.yml
 
 build: deps clean gendocs
-	python scripts/render_galaxy.py $(COLLECTION_VERSION) && ansible-galaxy collection build
+	python3 scripts/render_galaxy.py $(COLLECTION_VERSION) && ansible-galaxy collection build
 
 publish: build
 	@if test "$(GALAXY_TOKEN)" = ""; then \
@@ -56,7 +56,7 @@ gendocs:
 
 	DOCS_PATH=$(DOCS_PATH) ./scripts/specdoc_generate.sh
 	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
-	python scripts/render_readme.py $(COLLECTION_VERSION)
+	python3 scripts/render_readme.py $(COLLECTION_VERSION)
 
 # if want to add all the test add the tag --tags never at the end
 #	ansible-test integration $(TEST_ARGS) --tags never

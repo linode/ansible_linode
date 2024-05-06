@@ -4,9 +4,15 @@ Manage Linode Domain Records.
 
 NOTE: Domain records are identified by their name, target, and type.
 
+- [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
+
+## Minimum Required Fields
+| Field       | Type  | Required     | Description                                                                                                                                                                                                              |
+|-------------|-------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_token` | `str` | **Required** | The Linode account personal access token. It is necessary to run the module. <br/>It can be exposed by the environment variable `LINODE_API_TOKEN` instead. <br/>See details in [Usage](https://github.com/linode/ansible_linode?tab=readme-ov-file#usage). |
 
 ## Examples
 
@@ -22,9 +28,19 @@ NOTE: Domain records are identified by their name, target, and type.
 
 ```yaml
 - name: Delete a domain record
-  linode.cloud.domain:
+  linode.cloud.domain_record:
     domain: my-domain.com
     name: my-subdomain
+    type: 'A'
+    target: '127.0.0.1'
+    state: absent
+```
+
+```yaml
+- name: Delete the record by record_id
+  linode.cloud.domain_record:            
+    domain: my-domain.com
+    record_id: 5678
     state: absent
 ```
 

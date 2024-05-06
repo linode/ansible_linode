@@ -13,7 +13,7 @@
     - name: Create a basic stackscript
       linode.cloud.stackscript:
         label: 'ansible-test-{{ r }}'
-        images: ['linode/alpine3.15']
+        images: ['linode/alpine3.19']
         script: |
           #!/bin/bash
           # <UDF name="package" label="System Package to Install" example="nginx" default="">
@@ -21,7 +21,8 @@
         state: present
       register: create_stackscript
 
-    - assert:
+    - name: Assert basic stackscript is created
+      assert:
         that:
           - create_stackscript.stackscript.id != None
           - create_stackscript.stackscript.rev_note == ''
@@ -31,7 +32,7 @@
     - name: Update a basic stackscript
       linode.cloud.stackscript:
         label: 'ansible-test-{{ r }}'
-        images: ['linode/alpine3.14']
+        images: ['linode/alpine3.19']
         script: |
           #!/bin/bash
           # <UDF name="package2" label="System Package to Install" example="nginx" default="">
@@ -41,7 +42,8 @@
         state: present
       register: update_stackscript
 
-    - assert:
+    - name: Assert stackscript is updated
+      assert:
         that:
           - update_stackscript.stackscript.id != None
           - update_stackscript.stackscript.rev_note == 'cool'
@@ -51,7 +53,8 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.stackscript:
+        - name: Delete stackscript
+          linode.cloud.stackscript:
             label: '{{ create_stackscript.stackscript.label }}'
             state: absent
 

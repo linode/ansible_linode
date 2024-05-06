@@ -21,7 +21,8 @@
       linode.cloud.volume_list:
       register: no_filter
 
-    - assert:
+    - name: Assert volume_list with no filter
+      assert:
         that:
           - no_filter.volumes | length >= 1
 
@@ -33,8 +34,9 @@
           - name: region
             values: us-ord
       register: filter
-    
-    - assert:
+
+    - name: Assert volume_list with filter on region
+      assert:
         that:
           - filter.volumes | length >= 1
           - filter.volumes[0].region == 'us-ord'

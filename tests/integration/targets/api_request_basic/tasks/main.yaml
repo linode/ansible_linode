@@ -1,20 +1,23 @@
-- name: api_request_baisc
+- name: api_request_basic
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - linode.cloud.api_request:
+    - name: GET api_request request
+      linode.cloud.api_request:
         # Arbitrary authorized endpoint
         path: lke/versions
         method: GET
       register: response_get
 
-    - assert:
+    - name: Assert GET api_request response
+      assert:
         that:
           - response_get.status == 200
           - response_get.changed == False
 
-    - linode.cloud.api_request:
+    - name: POST api_request request
+      linode.cloud.api_request:
         path: domains
         method: POST
         body:
@@ -23,25 +26,29 @@
           soa_email: ansible@example.com
       register: response_post
 
-    - assert:
+    - name: Assert POST api_request response
+      assert:
         that:
           - response_post.status == 200
           - response_post.changed == True
 
-    - linode.cloud.api_request:
+    - name: PUT api_request request
+      linode.cloud.api_request:
         path: 'domains/{{ response_post.body.id }}'
         method: PUT
         body:
           description: cool
       register: response_put
 
-    - assert:
+    - name: Assert PUT api_request response
+      assert:
         that:
           - response_put.status == 200
           - response_put.changed == True
           - response_put.body.description == 'cool'
 
-    - linode.cloud.api_request:
+    - name: PUT api_request request (negative case)
+      linode.cloud.api_request:
         path: 'reallycoolfakepath'
         method: PUT
       register: response_failed
@@ -49,12 +56,14 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.api_request:
+        - name: DELETE api_request request
+          linode.cloud.api_request:
             path: 'domains/{{ response_post.body.id }}'
             method: DELETE
           register: response_delete
 
-        - assert:
+        - name: Assert DELETE api_request response
+          assert:
             that:
               - response_delete.status == 200
               - response_delete.changed == True

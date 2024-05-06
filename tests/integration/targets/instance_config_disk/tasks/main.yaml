@@ -32,7 +32,8 @@
         state: present
       register: create
 
-    - assert:
+    - name: Assert instance is created with explicit disks and config
+      assert:
         that:
           - create.changed
           - create.disks[0].label == 'test-disk'
@@ -81,7 +82,8 @@
         state: present
       register: unchanged
 
-    - assert:
+    - name: Assert config is unchanged
+      assert:
         that:
           - unchanged.changed == False
 
@@ -110,7 +112,8 @@
         state: present
       register: update_config
 
-    - assert:
+    - name: Assert config is updated
+      assert:
         that:
           - update_config.changed
           - update_config.disks[0].label == 'test-disk'
@@ -132,7 +135,8 @@
         state: present
       register: resize
 
-    - assert:
+    - name: Assert config is deleted and disk is resized
+      assert:
         that:
           - resize.changed
           - resize.configs|length == 0
@@ -158,7 +162,7 @@
         label: '{{ create.instance.label }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/alpine3.17
+        image: linode/alpine3.19
         booted: false
         disks:
           - label: test-disk
@@ -179,7 +183,7 @@
 
           - label: boot-disk
             size: 4096
-            image: linode/alpine3.17
+            image: linode/alpine3.19
 
         configs:
           - label: boot-config
@@ -192,7 +196,8 @@
         state: present
       register: boot
 
-    - assert:
+    - name: Assert instance is booted with new config and disk
+      assert:
         that:
           - boot.changed
           - boot.instance.status == 'running'

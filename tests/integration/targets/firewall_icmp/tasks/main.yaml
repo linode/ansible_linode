@@ -2,12 +2,13 @@
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
+
     - name: Create a Linode Instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/alpine3.17
+        image: linode/alpine3.19
         state: present
       register: create_instance
 
@@ -54,7 +55,8 @@
         state: present
       register: unchanged
 
-    - assert:
+    - name: Assert firewall is unchanged
+      assert:
         that:
           - unchanged.changed == False
 
@@ -68,7 +70,7 @@
             state: absent
           register: delete
 
-        - name: Assert Firewall delete succeeded
+        - name: Assert Firewall is deleted
           assert:
             that:
               - delete.changed
@@ -80,7 +82,7 @@
             state: absent
           register: delete_instance
 
-        - name: Assert instance delete succeeded
+        - name: Assert instance is deleted
           assert:
             that:
               - delete_instance.changed

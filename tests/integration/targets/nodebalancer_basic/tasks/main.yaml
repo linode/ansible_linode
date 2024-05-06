@@ -48,7 +48,8 @@
             algorithm: roundrobin
       register: create_config
 
-    - assert:
+    - name: Assert nb config is added
+      assert:
         that:
           - create_config.configs|length == 1
           - create_config.configs[0].port == 80
@@ -66,7 +67,8 @@
             check_timeout: 1
       register: update_config
 
-    - assert:
+    - name: Assert nb config is updated
+      assert:
         that:
           - update_config.configs|length == 1
           - update_config.configs[0].check_timeout == 1
@@ -87,7 +89,8 @@
             recreate: true
       register: recreate_config
 
-    - assert:
+    - name: Assert nb config is recreated
+      assert:
         that:
           - recreate_config.changed
           - update_config.configs|length == 1

@@ -3,29 +3,33 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - linode.cloud.instance:
+    - name: Create instance
+      linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
         region: us-mia
         type: g6-nanode-1
-        image: linode/ubuntu23.10
+        image: linode/ubuntu22.04
         state: present
       register: create
 
-    - assert:
+    - name: Assert instance is created
+      assert:
         that:
           - create.changed
           - create.instance.region == "us-mia"
 
-    - linode.cloud.instance:
+    - name: Migrate instance (cold)
+      linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
         region: us-iad
         type: g6-nanode-1
-        image: linode/ubuntu23.10
-        migration_type: warm
+        image: linode/ubuntu22.04
+        migration_type: cold
         state: present
       register: migrated
 
-    - assert:
+    - name: Assert instance migrated (cold)
+      assert:
         that:
           - migrated.changed
           - migrated.instance.region == "us-iad"
@@ -33,12 +37,14 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.instance:
+        - name: Delete instance
+          linode.cloud.instance:
             label: '{{ create.instance.label }}'
             state: absent
           register: delete
 
-        - assert:
+        - name: Assert instance is deleted
+          assert:
             that:
               - delete.changed
               - delete.instance.id == create.instance.id
