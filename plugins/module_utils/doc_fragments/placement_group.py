@@ -8,17 +8,21 @@ specdoc_examples = ['''
     affinity_type: anti_affinity:local
     is_strict: True
     state: present''', '''
-- name: Update a placement group label
+- name: Update a Linode placement group label
   linode.cloud.placement_group:
+    # id is required to update the label
+    id: 123
     label: my-pg-updated
-    region: us-east
-    affinity_type: anti_affinity:local
-    is_strict: True
     state: present''', '''
-- name: Delete a placement group
+- name: Delete a placement group by label
   linode.cloud.placement_group:
     label: my-pg
-    state: absent''']
+    state: absent''', '''
+- name: Delete a placement group by id
+  linode.cloud.placement_group:
+    id: 123
+    state: absent    
+''']
 
 result_placement_group_samples = ['''{
   "id": 123,

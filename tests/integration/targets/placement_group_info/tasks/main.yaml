@@ -12,7 +12,7 @@
         state: present
       register: pg_created
 
-    - name: Get a Linode placement group
+    - name: Get a Linode placement group info
       linode.cloud.placement_group_info:
         id: '{{ pg_created.placement_group.id }}'
       register: pg
@@ -25,9 +25,9 @@
           - pg_created.placement_group.affinity_type == pg.placement_group.affinity_type
           - pg_created.placement_group.is_strict == pg.placement_group.is_strict
 
-    - name: Delete a placement group
+    - name: Delete a placement group by id
       linode.cloud.placement_group:
-        label: '{{ pg_created.placement_group.label }}'
+        id: '{{ pg_created.placement_group.id }}'
         state: absent
 
   environment:

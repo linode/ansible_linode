@@ -27,20 +27,27 @@ Manage a Linode Placement Group.
 ```
 
 ```yaml
-- name: Update a placement group label
+- name: Update a Linode placement group label
   linode.cloud.placement_group:
+    # id is required to update the label
+    id: 123
     label: my-pg-updated
-    region: us-east
-    affinity_type: anti_affinity:local
-    is_strict: True
     state: present
 ```
 
 ```yaml
-- name: Delete a placement group
+- name: Delete a placement group by label
   linode.cloud.placement_group:
     label: my-pg
     state: absent
+```
+
+```yaml
+- name: Delete a placement group by id
+  linode.cloud.placement_group:
+    id: 123
+    state: absent    
+
 ```
 
 
@@ -48,7 +55,8 @@ Manage a Linode Placement Group.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | <center>`str`</center> | <center>**Required**</center> | The label of the Placement Group. This field can only contain ASCII letters, digits and dashes.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The unique ID of the placement group.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Placement Group. This field can only contain ASCII letters, digits and dashes.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The region that the placement group is in.   |
 | `affinity_type` | <center>`str`</center> | <center>Optional</center> | The affinity policy for Linodes in a placement group.   |
 | `is_strict` | <center>`bool`</center> | <center>Optional</center> | Whether Linodes must be able to become compliant during assignment.  **(Default: `False`)** |

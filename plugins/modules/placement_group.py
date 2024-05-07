@@ -30,9 +30,12 @@ from ansible_specdoc.objects import (
 from linode_api4 import PlacementGroup
 
 placement_group_spec = {
+    "id": SpecField(
+        type=FieldType.integer,
+        description="The unique ID of the placement group.",
+    ),
     "label": SpecField(
         type=FieldType.string,
-        required=True,
         description=[
             "The label of the Placement Group. "
             "This field can only contain ASCII letters, digits and dashes."
@@ -89,12 +92,25 @@ class Module(LinodeModuleBase):
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
-            required_one_of=[("state", "label")],
+            required_one_of=[("id", "label")],
         )
 
-    def _get_placement_group_by_label(
-        self, label: str
-    ) -> Optional[PlacementGroup]:
+    def _get_placement_group(self) -> Optional[PlacementGroup]:
+        params = self.module.params
+
+        pg_id: int = params.get("id")
+        label: str = params.get("label")
+
+        if params.get("id"):
+            try:
+                return self.client.load(PlacementGroup, pg_id)
+            except Exception as exception:
+                return self.fail(
+                    msg="failed to get placement group {0}: {1}".format(
+                        pg_id, exception
+                    )
+                )
+
         try:
             return self.client.placement.groups(PlacementGroup.label == label)[
                 0
@@ -121,18 +137,16 @@ class Module(LinodeModuleBase):
             )
 
     def _update_placement_group(self, pg: PlacementGroup) -> None:
-        pg._api_get()
+        # Only update the mutable field `label` when id is provided as identifier.
+        if self.module.params.get("id"):
+            pg._api_get()
 
-        params = filter_null_values(self.module.params)
+            params = filter_null_values(self.module.params)
 
-        handle_updates(pg, params, MUTABLE_FIELDS, self.register_action)
+            handle_updates(pg, params, MUTABLE_FIELDS, self.register_action)
 
     def _handle_present(self) -> None:
-        params = self.module.params
-
-        label = params.get("label")
-
-        pg = self._get_placement_group_by_label(label)
+        pg = self._get_placement_group()
 
         # Create the placement group if it does not already exist
         if pg is None:
@@ -147,12 +161,11 @@ class Module(LinodeModuleBase):
         self.results["placement_group"] = pg._raw_json
 
     def _handle_absent(self) -> None:
-        label: str = self.module.params.get("label")
-
-        pg = self._get_placement_group_by_label(label)
+        pg = self._get_placement_group()
 
         if pg is not None:
             self.results["placement_group"] = pg._raw_json
+            label = pg.label
             pg.delete()
             self.register_action("Deleted placement group {0}".format(label))
 
