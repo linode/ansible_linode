@@ -301,6 +301,20 @@ spec_additional_ipv4 = {
     )
 }
 
+linode_instance_placement_group_spec = {
+    "id": SpecField(
+        type=FieldType.integer,
+        description="The id of the placement group.",
+        required=True,
+    ),
+    "compliant_only": SpecField(
+        type=FieldType.bool,
+        description="Whether the newly added/migrated/resized linode "
+        "must be compliant for flexible placement groups.",
+        default=False,
+    ),
+}
+
 linode_instance_spec = {
     "label": SpecField(
         type=FieldType.string,
@@ -499,6 +513,11 @@ linode_instance_spec = {
             "Tags are for organizational purposes only.",
         ],
         editable=True,
+    ),
+    "placement_group": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_placement_group_spec,
+        description=["A Placement Group to create this Linode under."],
     ),
 }
 
