@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip_info as ip_docs
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip_rdns as ip_rdns_docs
@@ -40,7 +40,7 @@ ip_rdns_spec = {
     "rdns": SpecField(
         type=FieldType.string,
         editable=True,
-        description=["The desired rDNS value."],
+        description=["The desired RDNS value."],
     ),
 }
 
@@ -82,28 +82,53 @@ class ReverseDNSModule(LinodeModuleBase):
             required_if=[["state", "present", ["rdns"]]],
         )
 
-    def update_rdns(self, rdns: str) -> None:
+    def _should_update_rdns(
+        self, old_rdns: str, new_rdns: Union[str, ExplicitNullValue]
+    ) -> bool:
+        """
+        Returns whether the old RDNS value and the proposed new RDNS for the
+        IP address differ.
+        """
+
+        # If the RDNS address is being reset, compare the old RDNS against
+        # the Linode API default
+        if isinstance(new_rdns, ExplicitNullValue):
+            ip_address = self.module.params.get("address")
+            new_rdns = (
+                f"{ip_address.replace('.', '-')}.ip.linodeusercontent.com"
+            )
+
+        return new_rdns != old_rdns
+
+    def _attempt_update_rdns(self, rdns: Union[str, ExplicitNullValue]) -> None:
         """
         Update the reverse DNS of the IP address.
         """
         ip_str = self.module.params.get("address")
         ip_obj = self._get_resource_by_id(IPAddress, ip_str)
-        ip_obj.rdns = rdns
-        ip_obj.save()
-        ip_obj._api_get()
-        self.register_action(
-            f"Updated reverse DNS of the IP address {ip_str} to be {rdns}"
-        )
+
+        old_rdns = ip_obj.rdns
+
+        if self._should_update_rdns(old_rdns, rdns):
+            ip_obj.rdns = rdns
+
+            ip_obj.save()
+            ip_obj._api_get()
+            self.register_action(
+                f"Updated reverse DNS of the IP address {ip_str} from {old_rdns} to {ip_obj.rdns}"
+            )
         self.results["ip"] = ip_obj._raw_json
 
     def _handle_present(self) -> None:
         rdns = self.module.params.get("rdns")
+
         if not rdns:
             self.fail("`rdns` attribute is required to update the IP address")
-        self.update_rdns(rdns)
+
+        self._attempt_update_rdns(rdns)
 
     def _handle_absent(self) -> None:
-        self.update_rdns(ExplicitNullValue())
+        self._attempt_update_rdns(ExplicitNullValue())
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for reverse DNS module"""
