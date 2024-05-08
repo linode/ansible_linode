@@ -1207,6 +1207,7 @@ class LinodeInstance(LinodeModuleBase):
                 "backups_enabled",
                 "type",
                 "region",
+                "placement_group",
             )
         }
 
