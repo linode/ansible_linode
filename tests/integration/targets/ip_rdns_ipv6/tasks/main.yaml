@@ -1,0 +1,87 @@
+- name: ip_rdns_ipv6
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create an instance
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        wait: no
+        state: present
+      register: instance_create
+
+    - name: Extract the IPv6 SLAAC address
+      set_fact:
+        slaac: '{{ instance_create.networking.ipv6.slaac.address }}'
+
+    - name: Compute a new RDNS address
+      set_fact:
+        new_rdns: '{{ slaac | replace(":", "-") }}.sslip.io'
+
+    - name: Modify reverse DNS of the IP
+      linode.cloud.ip_rdns:
+        state: present
+        address: '{{ slaac }}'
+        rdns: '{{ new_rdns }}'
+      register: ip_rdns_modified
+
+    - name: Assert RDNS has been updated for the IP
+      assert:
+        that:
+          - ip_rdns_modified.changed
+          - ip_rdns_modified.ip.rdns == new_rdns
+
+    - name: Attempt to modify reverse DNS of the IP again
+      linode.cloud.ip_rdns:
+        state: present
+        address: '{{ slaac }}'
+        rdns: '{{ new_rdns }}'
+      register: ip_rdns_modified
+
+    - name: Assert RDNS has not been updated for the IP
+      assert:
+        that:
+          - not ip_rdns_modified.changed
+
+    - name: Remove reverse DNS of the IP
+      linode.cloud.ip_rdns:
+        state: absent
+        address: '{{ slaac }}'
+      register: ip_rdns_removed
+
+    - name: Assert reverse DNS of IP is removed
+      assert:
+        that:
+          - ip_rdns_removed.ip.address == slaac
+          - ip_rdns_modified.ip.rdns == new_rdns
+          - ip_rdns_removed.ip.rdns != new_rdns
+
+    - name: Attempt to remove RDNS of the IP again
+      linode.cloud.ip_rdns:
+        state: absent
+        address: '{{ slaac }}'
+      register: ip_rdns_removed_again
+
+    - name: Assert RDNS of the IP is unchanged
+      assert:
+        that:
+          - not ip_rdns_removed_again.changed
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete instance
+          linode.cloud.instance:
+            label: '{{ instance_create.instance.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

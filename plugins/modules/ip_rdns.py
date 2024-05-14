@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+from ipaddress import IPv6Address, ip_address
 from typing import Any, Optional, Union
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip_info as ip_docs
@@ -82,6 +83,22 @@ class ReverseDNSModule(LinodeModuleBase):
             required_if=[["state", "present", ["rdns"]]],
         )
 
+    @staticmethod
+    def _build_default_rdns(
+        address: str,
+    ) -> Optional[str]:
+        """
+        Builds the default RDNS address for the given IPv4/IPv6 address.
+        This is only used for local diffing purposes.
+        """
+        parsed_address = ip_address(address)
+
+        # IPv6 addresses have no default RDNS
+        if isinstance(parsed_address, IPv6Address):
+            return None
+
+        return f"{address.replace('.', '-')}.ip.linodeusercontent.com"
+
     def _should_update_rdns(
         self, old_rdns: str, new_rdns: Union[str, ExplicitNullValue]
     ) -> bool:
@@ -93,9 +110,8 @@ class ReverseDNSModule(LinodeModuleBase):
         # If the RDNS address is being reset, compare the old RDNS against
         # the Linode API default
         if isinstance(new_rdns, ExplicitNullValue):
-            ip_address = self.module.params.get("address")
-            new_rdns = (
-                f"{ip_address.replace('.', '-')}.ip.linodeusercontent.com"
+            new_rdns = self._build_default_rdns(
+                self.module.params.get("address")
             )
 
         return new_rdns != old_rdns
