@@ -1,4 +1,4 @@
-- name: ip_rdns_basic
+- name: ip_rdns_ipv6
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -13,18 +13,18 @@
         state: present
       register: instance_create
 
-    - name: Get info about the instance's primary IP
-      linode.cloud.ip_info:
-        address: '{{ instance_create.instance.ipv4[0] }}'
-      register: ip_info
-    
-    - set_fact:
-        new_rdns: '{{ instance_create.instance.ipv4[0] }}.nip.io'
+    - name: Extract the IPv6 SLAAC address
+      set_fact:
+        slaac: '{{ instance_create.networking.ipv6.slaac.address }}'
+
+    - name: Compute a new RDNS address
+      set_fact:
+        new_rdns: '{{ slaac | replace(":", "-") }}.sslip.io'
 
     - name: Modify reverse DNS of the IP
       linode.cloud.ip_rdns:
         state: present
-        address: '{{ instance_create.instance.ipv4[0] }}'
+        address: '{{ slaac }}'
         rdns: '{{ new_rdns }}'
       register: ip_rdns_modified
 
@@ -37,7 +37,7 @@
     - name: Attempt to modify reverse DNS of the IP again
       linode.cloud.ip_rdns:
         state: present
-        address: '{{ instance_create.instance.ipv4[0] }}'
+        address: '{{ slaac }}'
         rdns: '{{ new_rdns }}'
       register: ip_rdns_modified
 
@@ -49,20 +49,20 @@
     - name: Remove reverse DNS of the IP
       linode.cloud.ip_rdns:
         state: absent
-        address: '{{ instance_create.instance.ipv4[0] }}'
+        address: '{{ slaac }}'
       register: ip_rdns_removed
 
     - name: Assert reverse DNS of IP is removed
       assert:
         that:
-          - ip_info.ip.address == instance_create.instance.ipv4[0]
+          - ip_rdns_removed.ip.address == slaac
           - ip_rdns_modified.ip.rdns == new_rdns
           - ip_rdns_removed.ip.rdns != new_rdns
 
     - name: Attempt to remove RDNS of the IP again
       linode.cloud.ip_rdns:
         state: absent
-        address: '{{ instance_create.instance.ipv4[0] }}'
+        address: '{{ slaac }}'
       register: ip_rdns_removed_again
 
     - name: Assert RDNS of the IP is unchanged
@@ -84,5 +84,4 @@
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file or "" }}'
-
 
