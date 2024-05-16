@@ -1240,6 +1240,19 @@ class LinodeInstance(LinodeModuleBase):
                     "non-updatable field".format(self._instance.label)
                 )
 
+        pg = params.get("placement_group")
+        if pg is not None:
+            if pg.get("id") != self._instance.placement_group.id:
+                self.fail(
+                    "failed to update instance {0}: placement_group.id is a "
+                    "non-updatable field".format(self._instance.label)
+                )
+            if pg.get("compliant_only"):
+                self.warn(
+                    "placement_group.compliant_only is non-updatable and only can be "
+                    "specified in the instance creation."
+                )
+
         # Update interfaces
         self._update_interfaces()
 

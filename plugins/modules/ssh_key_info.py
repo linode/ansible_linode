@@ -92,6 +92,8 @@ class LinodeSSHKeyInfo(LinodeModuleBase):
 
         params = filter_null_values(self.module.params)
 
+        ssh_key = None
+
         if "id" in params:
             ssh_key = self._get_ssh_key_by_id(params.get("id"))
         elif "label" in params:
