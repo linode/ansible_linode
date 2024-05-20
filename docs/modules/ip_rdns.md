@@ -38,7 +38,7 @@ Manage a Linode IP address's rDNS.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `address` | <center>`str`</center> | <center>**Required**</center> | The IP address.   |
 | `state` | <center>`str`</center> | <center>Optional</center> | The state of this rDNS of the IP address.  **(Choices: `present`, `absent`)** |
-| `rdns` | <center>`str`</center> | <center>Optional</center> | The desired rDNS value.  **(Updatable)** |
+| `rdns` | <center>`str`</center> | <center>Optional</center> | The desired RDNS value.  **(Updatable)** |
 
 ## Return Values
 
