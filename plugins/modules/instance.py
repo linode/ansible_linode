@@ -301,6 +301,20 @@ spec_additional_ipv4 = {
     )
 }
 
+linode_instance_placement_group_spec = {
+    "id": SpecField(
+        type=FieldType.integer,
+        description="The id of the placement group.",
+        required=True,
+    ),
+    "compliant_only": SpecField(
+        type=FieldType.bool,
+        description="Whether the newly added/migrated/resized linode "
+        "must be compliant for flexible placement groups.",
+        default=False,
+    ),
+}
+
 linode_instance_spec = {
     "label": SpecField(
         type=FieldType.string,
@@ -499,6 +513,11 @@ linode_instance_spec = {
             "Tags are for organizational purposes only.",
         ],
         editable=True,
+    ),
+    "placement_group": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_placement_group_spec,
+        description=["A Placement Group to create this Linode under."],
     ),
 }
 
@@ -1188,6 +1207,7 @@ class LinodeInstance(LinodeModuleBase):
                 "backups_enabled",
                 "type",
                 "region",
+                "placement_group",
             )
         }
 
@@ -1218,6 +1238,19 @@ class LinodeInstance(LinodeModuleBase):
                 self.fail(
                     "failed to update instance {0}: additional_ipv4 is a "
                     "non-updatable field".format(self._instance.label)
+                )
+
+        pg = params.get("placement_group")
+        if pg is not None:
+            if pg.get("id") != self._instance.placement_group.id:
+                self.fail(
+                    "failed to update instance {0}: placement_group.id is a "
+                    "non-updatable field".format(self._instance.label)
+                )
+            if pg.get("compliant_only"):
+                self.warn(
+                    "placement_group.compliant_only is non-updatable and only can be "
+                    "specified in the instance creation."
                 )
 
         # Update interfaces

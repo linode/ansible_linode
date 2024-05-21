@@ -82,7 +82,13 @@ Get info about a Linode Instance.
           ],
           "type": "g6-standard-1",
           "updated": "2018-01-01T00:01:01",
-          "watchdog_enabled": true
+          "watchdog_enabled": true,
+          "placement_group": {
+            "id": 123,
+            "label": "test",
+            "affinity_type": "anti_affinity:local",
+            "is_strict": true
+          }
         }
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#linode-view__responses) for a list of returned fields

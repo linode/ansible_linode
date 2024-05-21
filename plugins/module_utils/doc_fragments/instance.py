@@ -70,7 +70,16 @@ specdoc_examples = ['''
     image: linode/ubuntu22.04
     root_pass: verysecurepassword!!!
     metadata:
-        user_data: myuserdata
+      user_data: myuserdata
+    state: present''', '''
+- name: Create a new Linode instance under a placement group.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-east
+    placement_group: 
+      id: 123
+      compliant_only: false
     state: present''', '''
 - name: Delete a Linode instance.
   linode.cloud.instance:
@@ -119,7 +128,13 @@ result_instance_samples = ['''{
   ],
   "type": "g6-standard-1",
   "updated": "2018-01-01T00:01:01",
-  "watchdog_enabled": true
+  "watchdog_enabled": true,
+  "placement_group": {
+    "id": 123,
+    "label": "test",
+    "affinity_type": "anti_affinity:local",
+    "is_strict": true
+  }
 }''']
 
 result_configs_samples = ['''[
