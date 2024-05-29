@@ -8,7 +8,9 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Any, Optional
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.placement_group_assign as docs
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    placement_group_assign as docs,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
@@ -17,11 +19,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
 )
-from ansible_specdoc.objects import (
-    FieldType,
-    SpecDocMeta,
-    SpecField,
-)
+from ansible_specdoc.objects import FieldType, SpecDocMeta, SpecField
 from linode_api4 import PlacementGroup
 
 placement_group_assignment_spec = {
@@ -46,7 +44,10 @@ placement_group_assignment_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Manages a single assignment between a Linode and a Placement Group.", BETA_DISCLAIMER],
+    description=[
+        "Manages a single assignment between a Linode and a Placement Group.",
+        BETA_DISCLAIMER,
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=placement_group_assignment_spec,
@@ -90,7 +91,9 @@ class Module(LinodeModuleBase):
 
         pg.assign([linode], self.module.params.get("compliant_only"))
 
-        self.register_action("Assign linode {0} to placement group {1}".format(linode, pg.id))
+        self.register_action(
+            "Assign linode {0} to placement group {1}".format(linode, pg.id)
+        )
 
     def _handle_absent(self) -> None:
         """
@@ -101,7 +104,9 @@ class Module(LinodeModuleBase):
 
         pg.unassign([linode])
 
-        self.register_action("Unassign linode {0} from placement group {1}".format(linode, pg.id))
+        self.register_action(
+            "Unassign linode {0} from placement group {1}".format(linode, pg.id)
+        )
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Placement Group Assignment module"""
