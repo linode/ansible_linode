@@ -28,6 +28,7 @@
         wait: false
         state: present
         backups_enabled: true
+        firewall_id : "{{ lookup('env', 'E2E_FIREWALL_ID') }}"
       register: create_backups_enabled
 
     - name: Assert instance created
@@ -99,3 +100,5 @@
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file or "" }}'
+    E2E_FIREWALL_ID: '{{ firewall_id }}'
+

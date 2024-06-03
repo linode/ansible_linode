@@ -32,6 +32,7 @@
         state: present
         additional_ipv4:
           - public: true
+        firewall_id : "{{ lookup('env', 'E2E_FIREWALL_ID') }}"
       register: create_additional_ips
 
     - name: Assert instance created
@@ -170,4 +171,5 @@
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file or "" }}'
+    E2E_FIREWALL_ID: '{{ firewall_id }}'
 
