@@ -110,9 +110,16 @@ def mapping_to_dict(obj: Any) -> Any:
 
 
 def handle_updates(
-    obj: linode_api4.Base, params: dict, mutable_fields: set, register_func: Any
+    obj: linode_api4.Base,
+    params: dict,
+    mutable_fields: set,
+    register_func: Any,
+    ignore_keys: Set[str] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
+
+    if ignore_keys is None:
+        ignore_keys = set()
 
     obj._api_get()
 
@@ -126,7 +133,7 @@ def handle_updates(
     result = set()
 
     for key, new_value in params.items():
-        if not hasattr(obj, key):
+        if not hasattr(obj, key) or key in ignore_keys:
             continue
 
         old_value = parse_linode_types(getattr(obj, key))
