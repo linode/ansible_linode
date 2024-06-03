@@ -73,9 +73,13 @@ unittest:
 
 create-integration-config:
 ifneq ("${LINODE_TOKEN}", "")
-	@echo "api_token: ${LINODE_TOKEN}" > $(INTEGRATION_CONFIG);
+	touch $INTEGRATION_CONFIG
+	@echo "api_token: ${LINODE_TOKEN}" >> $(INTEGRATION_CONFIG);
+    ansible-playbook scripts/create_e2e_cloud_firewall.yaml
 else ifneq ("${LINODE_API_TOKEN}", "")
-	@echo "api_token: ${LINODE_API_TOKEN}" > $(INTEGRATION_CONFIG);
+	touch $INTEGRATION_CONFIG
+	@echo "api_token: ${LINODE_API_TOKEN}" >> $(INTEGRATION_CONFIG);
+    ansible-playbook scripts/create_e2e_cloud_firewall.yaml
 else
 	echo "LINODE_API_TOKEN must be set"; \
 	exit 1;
