@@ -1,10 +1,11 @@
 - name: lke_version_list
   block:
-    - name: List lke versions with no filter
+    - name: List lke_version_list with no filter
       linode.cloud.lke_version_list:
       register: no_filter
 
-    - assert:
+    - name: Assert lke_version_list with no filter
+      assert:
         that:
           - no_filter.lke_versions | length >= 1
 

@@ -2,9 +2,15 @@
 
 List and filter on Linode Regions.
 
+- [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
+
+## Minimum Required Fields
+| Field       | Type  | Required     | Description                                                                                                                                                                                                              |
+|-------------|-------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_token` | `str` | **Required** | The Linode account personal access token. It is necessary to run the module. <br/>It can be exposed by the environment variable `LINODE_API_TOKEN` instead. <br/>See details in [Usage](https://github.com/linode/ansible_linode?tab=readme-ov-file#usage). |
 
 ## Examples
 
@@ -45,20 +51,28 @@ List and filter on Linode Regions.
     - Sample Response:
         ```json
         [
-           {
+            {
               "capabilities": [
                 "Linodes",
+                "Backups",
                 "NodeBalancers",
                 "Block Storage",
-                "Object Storage"
+                "Object Storage",
+                "Kubernetes",
+                "Cloud Firewall",
+                "Vlans",
+                "VPCs",
+                "Metadata",
+                "Premium Plans"
               ],
               "country": "us",
-              "id": "us-east",
-              "label": "Newark, NJ, USA",
+              "id": "us-mia",
+              "label": "Miami, FL",
               "resolvers": {
-                "ipv4": "192.0.2.0,192.0.2.1",
-                "ipv6": "2001:0db8::,2001:0db8::1"
+                "ipv4": "172.233.160.34, 172.233.160.27",
+                "ipv6": "2a01:7e04::f03c:93ff:fead:d31f, 2a01:7e04::f03c:93ff:fead:d37f"
               },
+              "site_type": "core",
               "status": "ok"
             }
         ]

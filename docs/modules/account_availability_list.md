@@ -1,12 +1,18 @@
 # account_availability_list
 
-List and filter on Account Availabilitys.
+List and filter on Account Availabilities.
 
 **:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
 
+- [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
+
+## Minimum Required Fields
+| Field       | Type  | Required     | Description                                                                                                                                                                                                              |
+|-------------|-------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_token` | `str` | **Required** | The Linode account personal access token. It is necessary to run the module. <br/>It can be exposed by the environment variable `LINODE_API_TOKEN` instead. <br/>See details in [Usage](https://github.com/linode/ansible_linode?tab=readme-ov-file#usage). |
 
 ## Examples
 
@@ -21,10 +27,10 @@ List and filter on Account Availabilitys.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | <center>`str`</center> | <center>Optional</center> | The order to list Account Availabilitys in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
-| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Account Availabilitys by.   |
-| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Account Availabilitys.   |
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of Account Availabilitys to return. If undefined, all results will be returned.   |
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list Account Availabilities in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
+| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Account Availabilities by.   |
+| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Account Availabilities.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of Account Availabilities to return. If undefined, all results will be returned.   |
 
 ### filters
 
@@ -35,17 +41,19 @@ List and filter on Account Availabilitys.
 
 ## Return Values
 
-- `account_availabilities` - The returned Account Availabilitys.
+- `account_availabilities` - The returned Account Availabilities.
 
     - Sample Response:
         ```json
         [
             {
               "region": "ap-west",
+              "available": ["NodeBalancers", "Block Storage", "Kubernetes"],
               "unavailable": ["Linode"]
             },
             {
               "region": "ca-central",
+              "available": ["NodeBalancers", "Kubernetes"],
               "unavailable": ["Linode", "Block Storage"]
             }
         ]

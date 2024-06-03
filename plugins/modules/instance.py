@@ -23,6 +23,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     drop_empty_strings,
     filter_null_values,
     filter_null_values_recursive,
+    handle_updates,
     paginated_list_to_json,
     parse_linode_types,
     poll_condition,
@@ -42,6 +43,7 @@ try:
         Disk,
         Firewall,
         Instance,
+        StackScript,
         Volume,
     )
 except ImportError:
@@ -537,7 +539,7 @@ SPECDOC_META = SpecDocMeta(
 )
 
 # Fields that can be updated on an existing instance
-linode_instance_mutable = {"group", "tags"}
+MUTABLE_FIELDS = {"group", "tags"}
 
 linode_instance_config_mutable = {
     "comments",
@@ -807,8 +809,17 @@ class LinodeInstance(LinodeModuleBase):
         self.register_action("Deleted config {0}".format(config.label))
         config.delete()
 
-    def _create_disk_register(self, **kwargs: Any) -> None:
-        size = kwargs.pop("size")
+    def _create_disk_register(self, **params: Any) -> None:
+        size = params.pop("size")
+
+        stackscript_id = params.pop("stackscript_id", None)
+        if stackscript_id is not None:
+            params["stackscript"] = StackScript(self.client, stackscript_id)
+
+        # StackScript data is expected to be specified as kwargs
+        stackscript_data = params.pop("stackscript_data", None)
+        if stackscript_data is not None and isinstance(stackscript_data, dict):
+            params.update(stackscript_data)
 
         # Workaround for race condition on implicit events
         # See: TPT-2738
@@ -820,14 +831,14 @@ class LinodeInstance(LinodeModuleBase):
         create_poller = self.client.polling.event_poller_create(
             "disks", "disk_create", entity_id=self._instance.id
         )
-        self._instance.disk_create(size, **kwargs)
+        self._instance.disk_create(size, **params)
 
         # The disk must be ready before the next disk is created
         create_poller.wait_for_next_event_finished(
             timeout=self._timeout_ctx.seconds_remaining
         )
 
-        self.register_action("Created disk {0}".format(kwargs.get("label")))
+        self.register_action("Created disk {0}".format(params.get("label")))
 
     def _delete_disk_register(self, disk: Disk) -> None:
         self.register_action("Deleted disk {0}".format(disk.label))
@@ -1039,7 +1050,7 @@ class LinodeInstance(LinodeModuleBase):
 
             # Special diffing due to handling in linode_api4-python
             if key == "devices":
-                for device_key, device in old_value.items():
+                for device_key, device in vars(config.devices).items():
                     if not self._compare_param_to_device(
                         new_value[device_key], device
                     ):
@@ -1162,15 +1173,14 @@ class LinodeInstance(LinodeModuleBase):
 
     def _update_instance(self) -> None:
         """Update instance handles all update functionality for the current instance"""
-        should_update = False
 
         params = filter_null_values(self.module.params)
 
-        for key, new_value in params.items():
-            if not hasattr(self._instance, key):
-                continue
-
-            if key in (
+        update_params = {
+            k: v
+            for k, v in params.items()
+            if k
+            not in (
                 "configs",
                 "disks",
                 "boot_config_label",
@@ -1178,31 +1188,12 @@ class LinodeInstance(LinodeModuleBase):
                 "backups_enabled",
                 "type",
                 "region",
-            ):
-                continue
+            )
+        }
 
-            old_value = parse_linode_types(getattr(self._instance, key))
-
-            if new_value != old_value:
-                if key in linode_instance_mutable:
-                    setattr(self._instance, key, new_value)
-                    self.register_action(
-                        'Updated instance {0}: "{1}" -> "{2}"'.format(
-                            key, old_value, new_value
-                        )
-                    )
-
-                    should_update = True
-                    continue
-
-                self.fail(
-                    "failed to update instance {0}: {1} is a non-updatable field".format(
-                        self._instance.label, key
-                    )
-                )
-
-        if should_update:
-            self._instance.save()
+        handle_updates(
+            self._instance, update_params, MUTABLE_FIELDS, self.register_action
+        )
 
         backups_enabled = params.get("backups_enabled")
         if (

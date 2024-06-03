@@ -27,23 +27,54 @@
         address: '{{ instance_create.instance.ipv4[0] }}'
         rdns: '{{ new_rdns }}'
       register: ip_rdns_modified
-    
+
+    - name: Assert RDNS has been updated for the IP
+      assert:
+        that:
+          - ip_rdns_modified.changed
+          - ip_rdns_modified.ip.rdns == new_rdns
+
+    - name: Attempt to modify reverse DNS of the IP again
+      linode.cloud.ip_rdns:
+        state: present
+        address: '{{ instance_create.instance.ipv4[0] }}'
+        rdns: '{{ new_rdns }}'
+      register: ip_rdns_modified
+
+    - name: Assert RDNS has not been updated for the IP
+      assert:
+        that:
+          - not ip_rdns_modified.changed
+
     - name: Remove reverse DNS of the IP
       linode.cloud.ip_rdns:
         state: absent
         address: '{{ instance_create.instance.ipv4[0] }}'
       register: ip_rdns_removed
 
-    - assert:
+    - name: Assert reverse DNS of IP is removed
+      assert:
         that:
           - ip_info.ip.address == instance_create.instance.ipv4[0]
           - ip_rdns_modified.ip.rdns == new_rdns
           - ip_rdns_removed.ip.rdns != new_rdns
 
+    - name: Attempt to remove RDNS of the IP again
+      linode.cloud.ip_rdns:
+        state: absent
+        address: '{{ instance_create.instance.ipv4[0] }}'
+      register: ip_rdns_removed_again
+
+    - name: Assert RDNS of the IP is unchanged
+      assert:
+        that:
+          - not ip_rdns_removed_again.changed
+
   always:
     - ignore_errors: true
       block:
-        - linode.cloud.instance:
+        - name: Delete instance
+          linode.cloud.instance:
             label: '{{ instance_create.instance.label }}'
             state: absent
 

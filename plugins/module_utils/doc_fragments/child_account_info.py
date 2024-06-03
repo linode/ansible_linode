@@ -1,4 +1,4 @@
-"""Documentation fragments for the vpc_info module"""
+"""Documentation fragments for the child_account_info module"""
 
 result_child_account_samples = ['''{
     "active_since": "2018-01-01T00:01:01",

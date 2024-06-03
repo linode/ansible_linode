@@ -4,14 +4,15 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - name: Get available mysql engines list
+    - name: Get available database_engine_list
       linode.cloud.database_engine_list:
         filters:
           - name: engine
             values: mysql
       register: available_engines
 
-    - assert:
+    - name: Assert available database_engine_list
+      assert:
         that:
           - available_engines.database_engines | length >= 1
 
@@ -30,7 +31,8 @@
         state: present
       register: db_create
 
-    - assert:
+    - name: Assert database is created
+      assert:
         that:
           - db_create.database.allow_list | length == 1
           - db_create.database.allow_list[0] == '0.0.0.0/0'
@@ -44,12 +46,13 @@
         id: '{{ db_create.database.id }}'
       register: by_id
 
-    - name: Get info about the database by label
+    - name: Get database_mysql_info by label
       linode.cloud.database_mysql_info:
         label: '{{ db_create.database.label }}'
       register: by_label
 
-    - assert:
+    - name: Assert database_mysql_info by label
+      assert:
         that:
           - by_label.database.allow_list | length == 1
           - by_label.database.allow_list[0] == '0.0.0.0/0'
@@ -82,7 +85,8 @@
         state: present
       register: db_update
 
-    - assert:
+    - name: Assert database is updated
+      assert:
         that:
           - db_update.database.allow_list | length == 1
           - db_update.database.allow_list[0] == '10.0.0.1/32'
@@ -92,7 +96,8 @@
       linode.cloud.database_list:
       register: all_dbs
 
-    - assert:
+    - name: Assert listing all databases
+      assert:
         that:
           - all_dbs.databases | length > 0
 
@@ -129,7 +134,8 @@
   always:
     - ignore_errors: true
       block:
-        - linode.cloud.database_mysql:
+        - name: Delete mysql db
+          linode.cloud.database_mysql:
             label: '{{ db_create.database.label }}'
             state: absent
 

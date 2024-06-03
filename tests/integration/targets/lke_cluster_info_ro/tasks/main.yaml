@@ -29,7 +29,8 @@
         state: present
       register: create_cluster
 
-    - assert:
+    - name: Assert LKE cluster is created
+      assert:
         that:
           - create_cluster.cluster.k8s_version == kube_version
           - create_cluster.cluster.region == 'us-southeast'
@@ -43,7 +44,8 @@
         label: '{{ create_cluster.cluster.label }}'
       register: cluster_info
 
-    - assert:
+    - name: Assert lke_cluster_info with read-only token
+      assert:
         that:
           - cluster_info.cluster.k8s_version == kube_version
           - cluster_info.cluster.region == 'us-southeast'
@@ -54,11 +56,13 @@
   always:
     - ignore_errors: yes
       block:
-        - linode.cloud.lke_cluster:            
+        - name: Delete lke_cluster
+          linode.cloud.lke_cluster:
             label: '{{ create_cluster.cluster.label }}'
             state: absent
 
-        - linode.cloud.token:            
+        - name: Delete token
+          linode.cloud.token:
             label: 'ansible-test-{{ r }}'
             state: absent
 

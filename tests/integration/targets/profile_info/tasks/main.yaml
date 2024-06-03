@@ -1,10 +1,11 @@
 - name: account_info
   block:
-    - name: Get info about the current profile
+    - name: Get profile_info about current profile
       linode.cloud.profile_info:
       register: profile
 
-    - assert:
+    - name: Assert profile_info about current profile
+      assert:
         that:
           - profile.profile.email | length > 0
 

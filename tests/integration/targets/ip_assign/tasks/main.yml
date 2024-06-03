@@ -49,10 +49,12 @@
   always:
     - ignore_errors: true
       block:
-        - linode.cloud.instance:
+        - name: Delete instance
+          linode.cloud.instance:
             label: '{{ create_instance.instance.label }}'
             state: absent
-        - linode.cloud.instance:
+        - name: Delete instance 2
+          linode.cloud.instance:
             label: '{{ create_instance_2.instance.label }}'
             state: absent
 

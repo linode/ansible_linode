@@ -21,7 +21,8 @@
       linode.cloud.user_list:
       register: no_filter
 
-    - assert:
+    - name: Assert user_list with no filter
+      assert:
         that:
           - no_filter.users | length >= 1
 

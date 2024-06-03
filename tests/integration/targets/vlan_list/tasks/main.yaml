@@ -28,7 +28,8 @@
             values: really-cool-vlan
       register: filter
 
-    - assert:
+    - name: Assert vlan_list with filter on label
+      assert:
         that:
           - filter.vlans | length == 1
           - filter.vlans[0].label == 'really-cool-vlan'

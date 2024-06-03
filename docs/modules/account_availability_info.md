@@ -4,15 +4,21 @@ Get info about a Linode Account Availability.
 
 **:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
 
+- [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
+
+## Minimum Required Fields
+| Field       | Type  | Required     | Description                                                                                                                                                                                                              |
+|-------------|-------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_token` | `str` | **Required** | The Linode account personal access token. It is necessary to run the module. <br/>It can be exposed by the environment variable `LINODE_API_TOKEN` instead. <br/>See details in [Usage](https://github.com/linode/ansible_linode?tab=readme-ov-file#usage). |
 
 ## Examples
 
 ```yaml
 - name: Get info about the current Linode account availability
-  linode.cloud.account_info: 
+  linode.cloud.account_availability_info: 
     api_version: v4beta
     region: us-east
 
@@ -34,6 +40,7 @@ Get info about a Linode Account Availability.
         
         {
           "region": "us-east",
+          "available": ["NodeBalancers", "Block Storage", "Kubernetes"],
           "unavailable": ["Linode"]
         }
         

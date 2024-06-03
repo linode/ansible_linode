@@ -1,4 +1,4 @@
-"""Documentation fragments for the vpc_list module"""
+"""Documentation fragments for the child_account_list module"""
 
 specdoc_examples = ['''
 - name: List all of the Child Accounts under the current Account
