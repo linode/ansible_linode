@@ -35,6 +35,7 @@
             ip_ranges: ["10.0.0.5/32"]
         wait: false
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create_instance
 
     - name: Assert instance created

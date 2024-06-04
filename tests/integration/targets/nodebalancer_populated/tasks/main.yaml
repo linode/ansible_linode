@@ -13,7 +13,7 @@
         root_pass: Fn$$oobar123
         private_ip: true
         state: present
-
+        firewall_id: '{{ firewall_id }}'
       register: node1_inst
 
     - name: Assert node1 is created

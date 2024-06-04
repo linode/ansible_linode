@@ -23,6 +23,7 @@
         image: linode/alpine3.19
         wait: false
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: instance_create_shared
 
     - name: Create an IPv6 range

@@ -15,6 +15,7 @@
         private_ip: true
         wait: false
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create_instance
 
     - name: Resolve a VLAN

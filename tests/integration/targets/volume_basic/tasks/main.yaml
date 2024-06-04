@@ -11,6 +11,7 @@
         image: linode/ubuntu22.04
         root_pass: Fn$$oobar123
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create_inst
 
     - name: Assert instance is created

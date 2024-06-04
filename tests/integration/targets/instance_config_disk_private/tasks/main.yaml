@@ -52,6 +52,7 @@
               sdb:
                 disk_label: swap
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: instance_create
 
     - name: Assert instance is provisioned consuming the image

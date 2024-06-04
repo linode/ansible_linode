@@ -12,6 +12,7 @@
         root_pass: Fn$$oobar123
         private_ip: true
         state: present
+        firewall_id: '{{ firewall_id }}'
 
       register: node_inst
 
@@ -27,6 +28,7 @@
         label: 'ansible-nb-populated-{{ r }}'
         region: us-ord
         state: present
+        firewall_id: '{{ firewall_id }}'
         configs:
           - port: 80
             algorithm: roundrobin
