@@ -118,8 +118,7 @@ def handle_updates(
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
-    if ignore_keys is None:
-        ignore_keys = set()
+    ignore_keys = ignore_keys or set()
 
     obj._api_get()
 
