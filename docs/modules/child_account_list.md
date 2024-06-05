@@ -1,10 +1,16 @@
 # child_account_list
 
-List and filter on Child Accounts.
+List and filter on Child Account.
 
+- [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
 - [Return Values](#return-values)
+
+## Minimum Required Fields
+| Field       | Type  | Required     | Description                                                                                                                                                                                                              |
+|-------------|-------|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `api_token` | `str` | **Required** | The Linode account personal access token. It is necessary to run the module. <br/>It can be exposed by the environment variable `LINODE_API_TOKEN` instead. <br/>See details in [Usage](https://github.com/linode/ansible_linode?tab=readme-ov-file#usage). |
 
 ## Examples
 
@@ -18,10 +24,10 @@ List and filter on Child Accounts.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | <center>`str`</center> | <center>Optional</center> | The order to list Child Accounts in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
-| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Child Accounts by.   |
-| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Child Accounts.   |
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of Child Accounts to return. If undefined, all results will be returned.   |
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list Child Account in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
+| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Child Account by.   |
+| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Child Account.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of Child Account to return. If undefined, all results will be returned.   |
 
 ### filters
 
@@ -32,7 +38,7 @@ List and filter on Child Accounts.
 
 ## Return Values
 
-- `child_accounts` - The returned Child Accounts.
+- `child_accounts` - The returned Child Account.
 
     - Sample Response:
         ```json
