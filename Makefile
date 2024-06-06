@@ -78,6 +78,7 @@ delete-e2e-firewall:
 		echo "Successfully deleted firewall"; \
 	else \
 		echo "Failed to delete firewall"; \
+    fi
 
 test: integration-test delete-e2e-firewall
 
