@@ -153,6 +153,11 @@ linode_firewall_spec: dict = {
         editable=True,
         description=["The status of this Firewall."],
     ),
+    "tags": SpecField(
+        type=FieldType.list,
+        editable=True,
+        description=["A list of tags to apply to this Firewall."],
+    ),
     "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
@@ -355,17 +360,20 @@ class LinodeFirewall(LinodeModuleBase):
     def _change_rules(self) -> Optional[dict]:
         """Updates remote firewall rules relative to user-supplied new rules,
         and returns whether anything changed."""
-        local_rules = filter_null_values_recursive(self.module.params["rules"])
-        remote_rules = filter_null_values_recursive(
-            mapping_to_dict(self._firewall.rules)
+        local_rules = (
+            filter_null_values_recursive(self.module.params["rules"]) or {}
+        )
+        remote_rules = (
+            filter_null_values_recursive(mapping_to_dict(self._firewall.rules))
+            or {}
         )
 
-        # user did not specify any rules updates
-        if local_rules is None:
-            local_rules = {}
+        # Ensure only user-defined rules will be used for diffing
+        configurable_fields = set(linode_firewall_rules_spec.keys())
 
-        if remote_rules is None:
-            remote_rules = {}
+        remote_rules = {
+            k: v for k, v in remote_rules.items() if k in configurable_fields
+        }
 
         # Normalize IP addresses for all rules
         for direction in ["inbound", "outbound"]:
@@ -403,6 +411,7 @@ class LinodeFirewall(LinodeModuleBase):
             filter_null_values(self.module.params),
             set(MUTABLE_FIELDS),
             self.register_action,
+            ignore_keys={"devices", "rules"},
         )
 
         changes = self._change_rules()
