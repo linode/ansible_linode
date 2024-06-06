@@ -1,0 +1,36 @@
+- name: Delete Linode E2E Cloud Firewall
+  hosts: localhost
+  gather_facts: yes
+
+  vars:
+    linode_api_token: "{{ lookup('env', 'LINODE_TOKEN') | default(lookup('env', 'LINODE_API_TOKEN')) }}"
+
+  tasks:
+    - name: Read firewall ID from configuration file
+      slurp:
+        src: "../tests/integration/integration_config.yml"
+      register: config_file
+
+    - name: Set firewall_id fact from configuration file
+      set_fact:
+        firewall_id: "{{ (config_file.content | b64decode).splitlines() | select('match', '^firewall_id: ') | first | regex_replace('^firewall_id: ', '') }}"
+
+    - name: Ensure firewall_id is set
+      fail:
+        msg: "firewall_id not found in configuration file."
+      when: firewall_id is not defined or firewall_id == ""
+
+    - name: Find the firewall by ID
+      linode.cloud.firewall_info:
+        id: "{{ firewall_id }}"
+      register: firewall_info
+
+    - name: Delete the firewall
+      linode.cloud.firewall:
+        label: "{{ firewall_info.firewall.label }}"
+        state: absent
+      register: delete_firewall
+
+    - name: Display Deletion Info
+      debug:
+        var: delete_firewall
