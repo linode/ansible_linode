@@ -153,6 +153,11 @@ linode_firewall_spec: dict = {
         editable=True,
         description=["The status of this Firewall."],
     ),
+    "tags": SpecField(
+        type=FieldType.list,
+        editable=True,
+        description=["A list of tags to apply to this Firewall."]
+    ),
     "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
