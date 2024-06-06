@@ -20,6 +20,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
     filter_null_values_recursive,
+    handle_updates,
     mapping_to_dict,
     paginated_list_to_json,
 )
@@ -183,7 +184,7 @@ SPECDOC_META = SpecDocMeta(
 )
 
 # Fields that can be updated on an existing Firewall
-linode_firewall_mutable: List[str] = ["status", "tags"]
+MUTABLE_FIELDS: List[str] = ["status", "tags"]
 
 
 class LinodeFirewall(LinodeModuleBase):
@@ -397,29 +398,12 @@ class LinodeFirewall(LinodeModuleBase):
     def _update_firewall(self) -> None:
         """Handles all update functionality for the current Firewall"""
 
-        # Update mutable values
-        should_update = False
-        params = filter_null_values(self.module.params)
-
-        for key, new_value in params.items():
-            if not hasattr(self._firewall, key):
-                continue
-
-            old_value = getattr(self._firewall, key)
-
-            if new_value != old_value:
-                if key in linode_firewall_mutable:
-                    setattr(self._firewall, key, new_value)
-                    self.register_action(
-                        'Updated Firewall {0}: "{1}" -> "{2}"'.format(
-                            key, old_value, new_value
-                        )
-                    )
-
-                    should_update = True
-
-        if should_update:
-            self._firewall.save()
+        handle_updates(
+            self._firewall,
+            filter_null_values(self.module.params),
+            set(MUTABLE_FIELDS),
+            self.register_action,
+        )
 
         changes = self._change_rules()
         if changes:
@@ -427,7 +411,7 @@ class LinodeFirewall(LinodeModuleBase):
             self.register_action("Updated Firewall rules")
 
         # Update devices
-        devices: Optional[List[Any]] = params.get("devices")
+        devices: Optional[List[Any]] = self.module.params.get("devices")
         if devices is not None:
             self._update_devices(devices)
 
