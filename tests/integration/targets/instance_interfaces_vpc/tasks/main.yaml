@@ -93,7 +93,7 @@
       assert:
         that:
           - subnet_info.subnet.linodes[0].id == update_instance.instance.id
-          - subnet_info.subnet.linodes[0].interfaces[1].id == update_instance.configs[0].interfaces[1].id
+          - subnet_info.subnet.linodes[0].interfaces[0].id == update_instance.configs[0].interfaces[1].id
 
     - name: Unchanged instance interface
       linode.cloud.instance:
