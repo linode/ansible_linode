@@ -67,17 +67,17 @@ integration-test: create-integration-config create-e2e-firewall
 create-e2e-firewall:
 	@echo "Running create e2e firewall playbook..."
 	@if ansible-playbook scripts/create_e2e_cloud_firewall.yaml > /dev/null; then \
-		echo "Successfully created firewall"; \
+		echo "Successfully created e2e firewall"; \
 	else \
-		echo "Failed to create firewall"; \
+		echo "Failed to create e2e firewall"; \
 	fi
 
 delete-e2e-firewall:
 	@echo "Running delete e2e firewall playbook..."
 	@if ansible-playbook scripts/delete_e2e_cloud_firewall.yaml > /dev/null; then \
-		echo "Successfully deleted firewall"; \
+		echo "Successfully deleted e2e firewall"; \
 	else \
-		echo "Failed to delete firewall"; \
+		echo "Failed to delete e2e firewall"; \
     fi
 
 test: integration-test delete-e2e-firewall
