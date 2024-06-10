@@ -67,6 +67,7 @@ Manage Linode Firewalls.
 | [`devices` (sub-options)](#devices) | <center>`list`</center> | <center>Optional</center> | The devices that are attached to this Firewall.  **(Updatable)** |
 | [`rules` (sub-options)](#rules) | <center>`dict`</center> | <center>Optional</center> | The inbound and outbound access rules to apply to this Firewall.  **(Updatable)** |
 | `status` | <center>`str`</center> | <center>Optional</center> | The status of this Firewall.  **(Updatable)** |
+| `tags` | <center>`list`</center> | <center>Optional</center> | A list of tags to apply to this Firewall.  **(Updatable)** |
 
 ### devices
 

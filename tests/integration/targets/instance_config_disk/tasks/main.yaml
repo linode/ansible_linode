@@ -156,7 +156,7 @@
             filesystem: ntfs
         state: present
       register: update_disk_fail
-      failed_when: '"failed to update disk" not in update_disk_fail.msg'
+      failed_when: '"failed to update ext4 -> ntfs" not in update_disk_fail.msg'
 
     - name: Try to use conflicting params
       linode.cloud.instance:

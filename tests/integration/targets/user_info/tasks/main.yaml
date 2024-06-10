@@ -1,0 +1,52 @@
+- name: user_info
+  block:
+    - debug:
+       msg: Skipping for now...(https://jira.linode.com/browse/TPT-2939)
+#    - set_fact:
+#        r: "{{ 1000000000 | random }}"
+#
+#    - name: Create Linode User
+#      linode.cloud.user:
+#        username: 'ansible-test-{{ r }}'
+#        email: 'ansible-test-{{ r }}@linode.com'
+#        state: present
+#      register: create
+#
+#    - name: Assert user created
+#      assert:
+#        that:
+#          - create.user.email is not none
+#          - create.user.restricted == true
+#
+#    - name: Print username for the created user
+#      debug:
+#        msg: "The username is: {{ create.user.username }}"
+#
+#    - name: Get info about a user
+#      linode.cloud.user_info:
+#        username: "{{ create.user.username }}"
+#      register: user_info
+#
+#    - name: Assert user_info for the created user
+#      assert:
+#        that:
+#          - user_info_valid | default(false)
+#          - user_info.user.email is defined
+#          - user_info.user.email | length > 0
+#      when: user_info_valid | default(false)
+#    
+#  always:
+#    - ignore_errors: yes
+#      block:
+#        - name: Delete a Linode User
+#          linode.cloud.user:
+#            username: '{{ create.user.username }}'
+#            state: absent
+#
+#  environment:
+#    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+#    LINODE_API_TOKEN: '{{ api_token }}'
+#    LINODE_API_URL: '{{ api_url }}'
+#    LINODE_API_VERSION: '{{ api_version }}'
+#    LINODE_CA: '{{ ca_file or "" }}'
+#
