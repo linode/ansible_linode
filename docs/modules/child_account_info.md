@@ -1,6 +1,6 @@
-# user_list
+# child_account_info
 
-List Users.
+Get info about a Linode Child Account.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -15,8 +15,9 @@ List Users.
 ## Examples
 
 ```yaml
-- name: List all of the users for the current Linode Account
-  linode.cloud.user_list: {}
+- name: Get info about a Child Account by EUUID
+  linode.cloud.child_account_info:
+    euuid: "FFFFFFFF-FFFF-FFFF-FFFFFFFFFFFFFFFF"
 ```
 
 
@@ -24,29 +25,43 @@ List Users.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | <center>`str`</center> | <center>Optional</center> | The order to list users in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
+| `euuid` | <center>`str`</center> | <center>**Required**</center> | The EUUID of the Child Account to resolve.   |
 
 ## Return Values
 
-- `users` - The returned users.
+- `child_account` - The returned Child Account.
 
     - Sample Response:
         ```json
-        [
-          {
-            "email": "example_user@linode.com",
-            "restricted": true,
-            "user_type": "default",
-            "ssh_keys": [
-              "home-pc",
-              "laptop"
+        {
+            "active_since": "2018-01-01T00:01:01",
+            "address_1": "123 Main Street",
+            "address_2": "Suite A",
+            "balance": 200,
+            "balance_uninvoiced": 145,
+            "billing_source": "external",
+            "capabilities": [
+                "Linodes",
+                "NodeBalancers",
+                "Block Storage",
+                "Object Storage"
             ],
-            "tfa_enabled": null,
-            "username": "example_user"
-          }
-        ]
+            "city": "Philadelphia",
+            "company": "Linode LLC",
+            "country": "US",
+            "credit_card": {
+                "expiry": "11/2022",
+                "last_four": 1111
+            },
+            "email": "john.smith@linode.com",
+            "euuid": "E1AF5EEC-526F-487D-B317EBEB34C87D71",
+            "first_name": "John",
+            "last_name": "Smith",
+            "phone": "215-555-1212",
+            "state": "PA",
+            "tax_id": "ATU99999999",
+            "zip": "19102-1234"
+        }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/account/#users-list__response-samples) for a list of returned fields
 
 
