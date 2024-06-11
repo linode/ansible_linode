@@ -635,9 +635,7 @@ class LinodeLKECluster(LinodeModuleBase):
         if cluster is None:
             cluster = self._create_cluster()
 
-        acl = None
-
-        self._update_cluster(cluster, acl)
+        self._update_cluster(cluster)
 
         # Force lazy-loading
         cluster._api_get()
