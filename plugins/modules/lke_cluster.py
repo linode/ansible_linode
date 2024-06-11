@@ -32,6 +32,42 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import ApiError, KubeVersion, LKECluster
 
+linode_lke_cluster_acl_addresses = {
+    "ipv4": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "A list of IPv4 addresses to grant access to this cluster's control plane."
+        ],
+    ),
+    "ipv6": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "A list of IPv6 addresses to grant access to this cluster's control plane."
+        ],
+    ),
+}
+
+linode_lke_cluster_acl = {
+    "enabled": SpecField(
+        type=FieldType.bool,
+        editable=True,
+        description=[
+            "Whether control plane ACLs are enabled for this cluster.",
+        ],
+    ),
+    "addresses": SpecField(
+        type=FieldType.dict,
+        editable=True,
+        description=[
+            "The addresses allowed to access this cluster's control plane.",
+        ],
+        suboptions=linode_lke_cluster_acl_addresses,
+    ),
+}
+
+
 linode_lke_cluster_autoscaler = {
     "enabled": SpecField(
         type=FieldType.bool,
@@ -128,6 +164,12 @@ linode_lke_cluster_spec = {
             "Control Plane Components of the cluster. "
         ],
         default=False,
+    ),
+    "acl": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_lke_cluster_acl,
+        editable=True,
+        description=["The ACL configuration for this cluster's control plane."],
     ),
     "node_pools": SpecField(
         editable=True,
@@ -478,9 +520,9 @@ class LinodeLKECluster(LinodeModuleBase):
     def _populate_dashboard_url_poll(self, cluster: LKECluster) -> None:
         def condition() -> bool:
             try:
-                self.results["dashboard_url"] = (
-                    cluster.cluster_dashboard_url_view()
-                )
+                self.results[
+                    "dashboard_url"
+                ] = cluster.cluster_dashboard_url_view()
             except ApiError as error:
                 if error.status != 503:
                     raise error
