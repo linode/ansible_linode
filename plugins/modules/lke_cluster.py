@@ -18,6 +18,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_requirements,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    filter_null_values,
     filter_null_values_recursive,
     handle_updates,
     jsonify_node_pool,
@@ -30,7 +31,12 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import ApiError, KubeVersion, LKECluster
+from linode_api4 import (
+    ApiError,
+    KubeVersion,
+    LKECluster,
+    LKEClusterControlPlaneACL,
+)
 
 linode_lke_cluster_acl_addresses = {
     "ipv4": SpecField(
@@ -282,6 +288,25 @@ class LinodeLKECluster(LinodeModuleBase):
                 msg="failed to get lke cluster {0}: {1}".format(name, exception)
             )
 
+    def _safe_get_cluster_acl(
+        self, cluster: LKECluster
+    ) -> Optional[LKEClusterControlPlaneACL]:
+        """
+        Gets the control plane ACL configuration of a cluster, returning None
+        if the user does not currently have access to LKE ACLs.
+        """
+        # Invalidate the cached ACL
+        cluster.invalidate()
+
+        try:
+            acl = cluster.control_plane_acl
+            return acl
+        except ApiError as err:
+            if err.status not in (404, 400):
+                raise err
+
+        return None
+
     def _wait_for_all_nodes_ready(
         self, cluster: LKECluster, timeout: int
     ) -> None:
@@ -306,10 +331,13 @@ class LinodeLKECluster(LinodeModuleBase):
 
         label = params.pop("label")
 
-        # We want HA to be a root-level attribute in ansible
-        high_avail = params.pop("high_availability")
-
-        params["control_plane"] = {"high_availability": high_avail}
+        params["control_plane"] = filter_null_values(
+            {
+                # We want HA and ACL to be root-level attributes
+                "high_availability": params.pop("high_availability"),
+                "acl": params.pop("acl"),
+            }
+        )
 
         # Let's filter down to valid keys
         params = {k: v for k, v in params.items() if k in CREATE_FIELDS}
@@ -331,6 +359,35 @@ class LinodeLKECluster(LinodeModuleBase):
             return self.fail(
                 msg="failed to create lke cluster: {0}".format(exception)
             )
+
+    def _attempt_update_acl(self, cluster: LKECluster):
+        """
+        Handles the update logic for an LKE cluster's control plane ACL configuration.
+        """
+        control_plane_acl = self._safe_get_cluster_acl(cluster)
+        configured_acl = self.module.params.get("acl")
+
+        # We don't want to make any changes if the user has not explicitly defined an ACL
+        if configured_acl is None:
+            return
+
+        user_defined_keys = set(linode_lke_cluster_acl.keys())
+        current_acl = (
+            control_plane_acl.dict if control_plane_acl is not None else {}
+        )
+
+        # Only diff on keys that can be defined by the user
+        current_acl = {
+            k: v for k, v in current_acl.items() if k in user_defined_keys
+        }
+
+        if configured_acl == current_acl:
+            return
+
+        self.register_action(
+            f"Updated LKE cluster {cluster.id} control plane ACL: {current_acl} -> {configured_acl}"
+        )
+        cluster.control_plane_acl_update(configured_acl)
 
     def _cluster_put_updates(self, cluster: LKECluster) -> None:
         """Handles manual field updates for the current LKE cluster"""
@@ -367,6 +424,8 @@ class LinodeLKECluster(LinodeModuleBase):
             }
 
             cluster.save()
+
+        self._attempt_update_acl(cluster)
 
     def _update_cluster(self, cluster: LKECluster) -> None:
         """Handles all update functionality for the current LKE cluster"""
@@ -537,6 +596,13 @@ class LinodeLKECluster(LinodeModuleBase):
         cluster._api_get()
 
         self.results["cluster"] = cluster._raw_json
+
+        # We need to inject the control plane ACL configuration into the cluster's JSON
+        # because it is not returned from the cluster GET endopint
+        self.results["cluster"]["control_plane"][
+            "acl"
+        ] = self._safe_get_cluster_acl(cluster).dict
+
         self.results["node_pools"] = [
             jsonify_node_pool(pool) for pool in cluster.pools
         ]
@@ -569,7 +635,9 @@ class LinodeLKECluster(LinodeModuleBase):
         if cluster is None:
             cluster = self._create_cluster()
 
-        self._update_cluster(cluster)
+        acl = None
+
+        self._update_cluster(cluster, acl)
 
         # Force lazy-loading
         cluster._api_get()
