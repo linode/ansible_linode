@@ -151,6 +151,7 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
             jsonify_node_pool(pool) for pool in cluster.pools
         ]
 
+        # Retrieve kubeconfig
         try:
             self.results["kubeconfig"] = cluster.kubeconfig
         except ApiError as err:
@@ -164,6 +165,7 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
             self.results["kubeconfig"] = ignored_error_messages[err.status]
 
+        # Retrieve dashboard URL
         try:
             self.results["dashboard_url"] = self.client.get(
                 "/lke/clusters/{}/dashboard".format(cluster.id)
@@ -173,6 +175,17 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
                 raise err
 
             self.results["dashboard_url"] = "Dashboard URL not yet available..."
+
+        # Inject ACL configuration into cluster control plane
+        acl = None
+
+        try:
+            acl = cluster.control_plane_acl
+        except ApiError as err:
+            if err.status not in (400, 404):
+                raise err
+
+        self.results["cluster"]["control_plane"]["acl"] = acl
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for LKE cluster info module"""

@@ -90,9 +90,9 @@
     - name: Assert LKE cluster is unchanged
       assert:
         that:
-          - not unchanged_cluster.cluster.changed
+          - not unchanged_cluster.changed
           - unchanged_cluster.cluster.control_plane.acl.enabled
-          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.1/32"
+          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.5/32"
           - unchanged_cluster.cluster.control_plane.acl.addresses.ipv6 == None
 
 
@@ -113,7 +113,7 @@
     - name: Assert ACLs have been disabled on this cluster
       assert:
         that:
-          - acl_disabled_cluster.cluster.changed
+          - acl_disabled_cluster.changed
           - not acl_disabled_cluster.cluster.control_plane.acl.enabled
   always:
     - ignore_errors: yes

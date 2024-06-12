@@ -336,9 +336,8 @@ class LinodeLKECluster(LinodeModuleBase):
 
         params["control_plane"] = filter_null_values(
             {
-                # We want HA and ACL to be root-level attributes
-                "high_availability": params.pop("high_availability"),
-                "acl": params.pop("acl"),
+                "high_availability": params.pop("high_availability", False),
+                "acl": params.pop("acl", None),
             }
         )
 
@@ -608,13 +607,14 @@ class LinodeLKECluster(LinodeModuleBase):
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
 
-        self.results["cluster"] = cluster._raw_json
+        cluster_json = cluster._raw_json
 
         # We need to inject the control plane ACL configuration into the cluster's JSON
         # because it is not returned from the cluster GET endopint
-        self.results["cluster"]["control_plane"]["acl"] = (
-            self._safe_get_cluster_acl(cluster).dict
-        )
+        acl = self._safe_get_cluster_acl(cluster)
+        cluster_json["control_plane"]["acl"] = None if acl is None else acl.dict
+
+        self.results["cluster"] = cluster_json
 
         self.results["node_pools"] = [
             jsonify_node_pool(pool) for pool in cluster.pools

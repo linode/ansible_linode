@@ -104,6 +104,13 @@ Manage Linode LKE clusters.
         ```json
         {
           "control_plane": {
+            "acl": {
+                "addresses": {
+                    "ipv4": ["0.0.0.0/0"], 
+                    "ipv6": ["2001:db8:1234:abcd::/64"]
+                }, 
+                "enabled": true
+            },
             "high_availability": true
           },
           "created": "2019-09-12T21:25:30Z",
