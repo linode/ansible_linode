@@ -185,7 +185,9 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
             if err.status not in (400, 404):
                 raise err
 
-        self.results["cluster"]["control_plane"]["acl"] = acl
+        self.results["cluster"]["control_plane"]["acl"] = (
+            None if acl is None else acl.dict
+        )
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for LKE cluster info module"""
