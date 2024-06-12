@@ -162,7 +162,7 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
         # We need to inject the control plane ACL configuration into the cluster's JSON
         # because it is not returned from the cluster GET endopint
-        cluster["control_plane"]["acl"] = self._safe_get_cluster_acl(cluster)
+        cluster_json["control_plane"]["acl"] = self._safe_get_cluster_acl(cluster)
 
         self.results["cluster"] = cluster_json
 
