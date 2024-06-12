@@ -31,11 +31,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import (
-    ApiError,
-    KubeVersion,
-    LKECluster,
-)
+from linode_api4 import ApiError, KubeVersion, LKECluster
 
 linode_lke_cluster_acl_addresses = {
     "ipv4": SpecField(
