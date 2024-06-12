@@ -61,7 +61,7 @@ Manage Linode LKE clusters.
 | `region` | <center>`str`</center> | <center>Optional</center> | This Kubernetes cluster’s location.   |
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to the Kubernetes cluster.   |
 | `high_availability` | <center>`bool`</center> | <center>Optional</center> | Defines whether High Availability is enabled for the Control Plane Components of the cluster.   **(Default: `False`; Updatable)** |
-| [`acl` (sub-options)](#acl) | <center>`dict`</center> | <center>Optional</center> | The ACL configuration for this cluster's control plane.  **(Updatable)** |
+| [`acl` (sub-options)](#acl) | <center>`dict`</center> | <center>Optional</center> | The ACL configuration for this cluster's control plane. NOTE: Control Plane ACLs may not currently be available to all users.  **(Updatable)** |
 | [`node_pools` (sub-options)](#node_pools) | <center>`list`</center> | <center>Optional</center> | A list of node pools to configure the cluster with  **(Updatable)** |
 | `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the cluster to be ready.  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The period to wait for the cluster to be ready in seconds.  **(Default: `600`)** |

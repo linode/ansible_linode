@@ -175,7 +175,10 @@ linode_lke_cluster_spec = {
         type=FieldType.dict,
         suboptions=linode_lke_cluster_acl,
         editable=True,
-        description=["The ACL configuration for this cluster's control plane."],
+        description=[
+            "The ACL configuration for this cluster's control plane.",
+            "NOTE: Control Plane ACLs may not currently be available to all users.",
+        ],
     ),
     "node_pools": SpecField(
         editable=True,
@@ -365,11 +368,21 @@ class LinodeLKECluster(LinodeModuleBase):
         Handles the update logic for an LKE cluster's control plane ACL configuration.
         """
         control_plane_acl = self._safe_get_cluster_acl(cluster)
-        configured_acl = self.module.params.get("acl")
+        configured_acl = copy.deepcopy(self.module.params.get("acl"))
 
         # We don't want to make any changes if the user has not explicitly defined an ACL
         if configured_acl is None:
             return
+
+        # [] and null are equivalent values for address fields,
+        # so we need to account for this when diffing
+        configured_addresses = configured_acl.get("addresses")
+        if configured_addresses is not None:
+            ipv4 = configured_addresses.get("ipv4")
+            ipv6 = configured_addresses.get("ipv6")
+
+            configured_acl["addresses"]["ipv4"] = None if ipv4 == [] else ipv4
+            configured_acl["addresses"]["ipv6"] = None if ipv6 == [] else ipv6
 
         user_defined_keys = set(linode_lke_cluster_acl.keys())
         current_acl = (
@@ -579,9 +592,9 @@ class LinodeLKECluster(LinodeModuleBase):
     def _populate_dashboard_url_poll(self, cluster: LKECluster) -> None:
         def condition() -> bool:
             try:
-                self.results[
-                    "dashboard_url"
-                ] = cluster.cluster_dashboard_url_view()
+                self.results["dashboard_url"] = (
+                    cluster.cluster_dashboard_url_view()
+                )
             except ApiError as error:
                 if error.status != 503:
                     raise error
@@ -599,9 +612,9 @@ class LinodeLKECluster(LinodeModuleBase):
 
         # We need to inject the control plane ACL configuration into the cluster's JSON
         # because it is not returned from the cluster GET endopint
-        self.results["cluster"]["control_plane"][
-            "acl"
-        ] = self._safe_get_cluster_acl(cluster).dict
+        self.results["cluster"]["control_plane"]["acl"] = (
+            self._safe_get_cluster_acl(cluster).dict
+        )
 
         self.results["node_pools"] = [
             jsonify_node_pool(pool) for pool in cluster.pools

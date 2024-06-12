@@ -1,0 +1,132 @@
+- name: lke_cluster_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Resolve the latest K8s version
+      linode.cloud.lke_version_list: {}
+      register: get_lke_versions
+
+    - set_fact:
+        kube_version: "{{ get_lke_versions.lke_versions[0].id }}"
+
+    - name: Create a Linode LKE cluster
+      linode.cloud.lke_cluster:
+        label: "ansible-test-{{ r }}"
+        region: us-mia
+        k8s_version: "{{ kube_version }}"
+        node_pools:
+          - type: g6-standard-1
+            count: 1
+        acl:
+          enabled: true
+          addresses:
+            ipv4:
+              - 0.0.0.0/0
+            ipv6:
+              - 2001:db8:1234:abcd::/64
+        skip_polling: true
+        state: present
+      register: create_cluster
+
+    - name: Assert LKE cluster is created
+      assert:
+        that:
+          - create_cluster.cluster.k8s_version == kube_version
+          - create_cluster.cluster.region == "us-mia"
+          - create_cluster.cluster.control_plane.acl.enabled
+          - create_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "0.0.0.0/0"
+          - create_cluster.cluster.control_plane.acl.addresses.ipv6[0] == "2001:db8:1234:abcd::/64"
+          - create_cluster.node_pools[0].type == "g6-standard-1"
+          - create_cluster.node_pools[0].count == 1
+
+    - name: Update the ACL configuration for the LKE cluster
+      linode.cloud.lke_cluster:
+        label: "ansible-test-{{ r }}"
+        region: us-mia
+        k8s_version: "{{ kube_version }}"
+        node_pools:
+          - type: g6-standard-1
+            count: 1
+        acl:
+          enabled: true
+          addresses:
+            ipv4:
+              - 10.0.0.5/32
+            ipv6: []
+        skip_polling: true
+        state: present
+      register: update_cluster
+
+    - name: Assert LKE cluster is updated
+      assert:
+        that:
+          - update_cluster.changed
+          - update_cluster.cluster.k8s_version == kube_version
+          - update_cluster.cluster.region == "us-mia"
+          - update_cluster.cluster.control_plane.acl.enabled
+          - update_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.5/32"
+          - update_cluster.cluster.control_plane.acl.addresses.ipv6 == None
+
+
+    - name: Don't change the cluster
+      linode.cloud.lke_cluster:
+        label: "ansible-test-{{ r }}"
+        region: us-mia
+        k8s_version: "{{ kube_version }}"
+        node_pools:
+          - type: g6-standard-1
+            count: 1
+        acl:
+          enabled: true
+          addresses:
+            ipv4:
+              - 10.0.0.5/32
+            ipv6: []
+        skip_polling: true
+        state: present
+      register: unchanged_cluster
+
+    - name: Assert LKE cluster is unchanged
+      assert:
+        that:
+          - not unchanged_cluster.cluster.changed
+          - unchanged_cluster.cluster.control_plane.acl.enabled
+          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.1/32"
+          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv6 == None
+
+
+    - name: Disable ACLs on the cluster
+      linode.cloud.lke_cluster:
+        label: "ansible-test-{{ r }}"
+        region: us-mia
+        k8s_version: "{{ kube_version }}"
+        node_pools:
+          - type: g6-standard-1
+            count: 1
+        acl:
+          enabled: false
+        skip_polling: true
+        state: present
+      register: acl_disabled_cluster
+
+    - name: Assert ACLs have been disabled on this cluster
+      assert:
+        that:
+          - acl_disabled_cluster.cluster.changed
+          - not acl_disabled_cluster.cluster.control_plane.acl.enabled
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the LKE cluster
+          linode.cloud.lke_cluster:
+            label: "{{ create_cluster.cluster.label }}"
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: "{{ ua_prefix }}"
+    LINODE_API_TOKEN: "{{ api_token }}"
+    LINODE_API_URL: "{{ api_url }}"
+    LINODE_API_VERSION: "{{ api_version }}"
+    LINODE_CA: "{{ ca_file or '' }}"
+
