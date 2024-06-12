@@ -143,10 +143,29 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
         return self.fail(msg="one of `label` or `id` must be specified")
 
+    def _safe_get_cluster_acl(
+        self, cluster: LKECluster
+    ) -> Optional[Dict[str, Any]]:
+        # Inject ACL configuration into cluster control plane
+        try:
+            return cluster.control_plane_acl.dict
+        except ApiError as err:
+            if err.status not in (400, 404):
+                raise err
+
+        return None
+
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
 
-        self.results["cluster"] = cluster._raw_json
+        cluster_json = cluster._raw_json
+
+        # We need to inject the control plane ACL configuration into the cluster's JSON
+        # because it is not returned from the cluster GET endopint
+        cluster["control_plane"]["acl"] = self._safe_get_cluster_acl(cluster)
+
+        self.results["cluster"] = cluster_json
+
         self.results["node_pools"] = [
             jsonify_node_pool(pool) for pool in cluster.pools
         ]
@@ -175,17 +194,6 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
                 raise err
 
             self.results["dashboard_url"] = "Dashboard URL not yet available..."
-
-        # Inject ACL configuration into cluster control plane
-        acl = None
-
-        try:
-            acl = cluster.control_plane_acl.dict
-        except ApiError as err:
-            if err.status not in (400, 404):
-                raise err
-
-        self.results["cluster"]["control_plane"]["acl"] = acl
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for LKE cluster info module"""

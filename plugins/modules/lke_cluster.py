@@ -6,7 +6,7 @@
 from __future__ import absolute_import, division, print_function
 
 import copy
-from typing import Any, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster as docs
 import polling
@@ -35,7 +35,6 @@ from linode_api4 import (
     ApiError,
     KubeVersion,
     LKECluster,
-    LKEClusterControlPlaneACL,
 )
 
 linode_lke_cluster_acl_addresses = {
@@ -293,7 +292,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
     def _safe_get_cluster_acl(
         self, cluster: LKECluster
-    ) -> Optional[LKEClusterControlPlaneACL]:
+    ) -> Optional[Dict[str, Any]]:
         """
         Gets the control plane ACL configuration of a cluster, returning None
         if the user does not currently have access to LKE ACLs.
@@ -302,8 +301,7 @@ class LinodeLKECluster(LinodeModuleBase):
         cluster.invalidate()
 
         try:
-            acl = cluster.control_plane_acl
-            return acl
+            return cluster.control_plane_acl.dict
         except ApiError as err:
             if err.status not in (404, 400):
                 raise err
@@ -362,7 +360,7 @@ class LinodeLKECluster(LinodeModuleBase):
                 msg="failed to create lke cluster: {0}".format(exception)
             )
 
-    def _attempt_update_acl(self, cluster: LKECluster):
+    def _attempt_update_acl(self, cluster: LKECluster) -> None:
         """
         Handles the update logic for an LKE cluster's control plane ACL configuration.
         """
@@ -384,9 +382,7 @@ class LinodeLKECluster(LinodeModuleBase):
             configured_acl["addresses"]["ipv6"] = None if ipv6 == [] else ipv6
 
         user_defined_keys = set(linode_lke_cluster_acl.keys())
-        current_acl = (
-            control_plane_acl.dict if control_plane_acl is not None else {}
-        )
+        current_acl = control_plane_acl if control_plane_acl is not None else {}
 
         # Only diff on keys that can be defined by the user
         current_acl = {
@@ -610,9 +606,10 @@ class LinodeLKECluster(LinodeModuleBase):
         cluster_json = cluster._raw_json
 
         # We need to inject the control plane ACL configuration into the cluster's JSON
-        # because it is not returned from the cluster GET endopint
-        acl = self._safe_get_cluster_acl(cluster)
-        cluster_json["control_plane"]["acl"] = None if acl is None else acl.dict
+        # because it is not returned from the cluster GET endpoint
+        cluster_json["control_plane"]["acl"] = self._safe_get_cluster_acl(
+            cluster
+        )
 
         self.results["cluster"] = cluster_json
 
