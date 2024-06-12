@@ -6,7 +6,7 @@
 from __future__ import absolute_import, division, print_function
 
 import copy
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, List, Optional, Set
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_cluster as docs
 import polling
@@ -24,6 +24,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     jsonify_node_pool,
     poll_condition,
     validate_required,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_lke_shared import (
+    safe_get_cluster_acl,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -286,24 +289,6 @@ class LinodeLKECluster(LinodeModuleBase):
                 msg="failed to get lke cluster {0}: {1}".format(name, exception)
             )
 
-    def _safe_get_cluster_acl(
-        self, cluster: LKECluster
-    ) -> Optional[Dict[str, Any]]:
-        """
-        Gets the control plane ACL configuration of a cluster, returning None
-        if the user does not currently have access to LKE ACLs.
-        """
-        # Invalidate the cached ACL
-        cluster.invalidate()
-
-        try:
-            return cluster.control_plane_acl.dict
-        except ApiError as err:
-            if err.status not in (404, 400):
-                raise err
-
-        return None
-
     def _wait_for_all_nodes_ready(
         self, cluster: LKECluster, timeout: int
     ) -> None:
@@ -360,7 +345,7 @@ class LinodeLKECluster(LinodeModuleBase):
         """
         Handles the update logic for an LKE cluster's control plane ACL configuration.
         """
-        control_plane_acl = self._safe_get_cluster_acl(cluster)
+        control_plane_acl = safe_get_cluster_acl(cluster)
         configured_acl = copy.deepcopy(self.module.params.get("acl"))
 
         # We don't want to make any changes if the user has not explicitly defined an ACL
@@ -603,9 +588,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
         # We need to inject the control plane ACL configuration into the cluster's JSON
         # because it is not returned from the cluster GET endpoint
-        cluster_json["control_plane"]["acl"] = self._safe_get_cluster_acl(
-            cluster
-        )
+        cluster_json["control_plane"]["acl"] = safe_get_cluster_acl(cluster)
 
         self.results["cluster"] = cluster_json
 

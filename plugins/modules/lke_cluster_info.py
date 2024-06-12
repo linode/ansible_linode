@@ -24,6 +24,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     filter_null_values,
     jsonify_node_pool,
 )
+from ansible_collections.linode.cloud.plugins.module_utils.linode_lke_shared import (
+    safe_get_cluster_acl,
+)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -143,18 +146,6 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
         return self.fail(msg="one of `label` or `id` must be specified")
 
-    def _safe_get_cluster_acl(
-        self, cluster: LKECluster
-    ) -> Optional[Dict[str, Any]]:
-        # Inject ACL configuration into cluster control plane
-        try:
-            return cluster.control_plane_acl.dict
-        except ApiError as err:
-            if err.status not in (400, 404):
-                raise err
-
-        return None
-
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
 
@@ -162,7 +153,7 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
         # We need to inject the control plane ACL configuration into the cluster's JSON
         # because it is not returned from the cluster GET endopint
-        cluster_json["control_plane"]["acl"] = self._safe_get_cluster_acl(cluster)
+        cluster_json["control_plane"]["acl"] = safe_get_cluster_acl(cluster)
 
         self.results["cluster"] = cluster_json
 
