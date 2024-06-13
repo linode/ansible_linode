@@ -10,6 +10,7 @@
         type: g6-standard-1
         image: linode/alpine3.19
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: instance_create
 
     - name: Create an image from the instance

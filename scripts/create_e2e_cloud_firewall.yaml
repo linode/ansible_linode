@@ -1,0 +1,66 @@
+- name: Create Linode E2E Cloud Firewall
+  hosts: localhost
+  gather_facts: yes
+
+  vars:
+    linode_api_token: "{{ lookup('env', 'LINODE_TOKEN') | default(lookup('env', 'LINODE_API_TOKEN')) }}"
+    firewall_label: "e2e-firewall-{{ lookup('password', '/dev/null length=6 chars=ascii_letters') }}"
+
+  tasks:
+    - name: Get public IP address of local machine
+      uri:
+        url: "https://api.ipify.org?format=json"
+        return_content: yes
+      register: public_ip
+
+    - name: Set public IP address fact
+      set_fact:
+        public_ipv4: "{{ public_ip.json.ip }}"
+
+    - name: Validate public IPv4 address
+      block:
+        - name: Create Linode firewall with inbound rule
+          linode.cloud.firewall:
+            label: "{{ firewall_label }}"
+            rules:
+              inbound_policy: "DROP"
+              outbound_policy: "ACCEPT"
+              inbound:
+                - label: ssh-accept-inbound-rule
+                  addresses:
+                    ipv4: [ "{{ public_ipv4 }}/32" ]
+                  description: 'ACCEPT SSH from test machine'
+                  ports: '22'
+                  protocol: TCP
+                  action: ACCEPT
+              outbound: []
+            state: present
+          register: create
+        - name: Display Firewall Info
+          debug:
+            var: create
+      rescue:
+        - name: Create Linode firewall without inbound rule
+          linode.cloud.firewall:
+            label: "{{ firewall_label }}"
+            rules:
+              inbound_policy: "DROP"
+              outbound_policy: "ACCEPT"
+              inbound: []
+              outbound: []
+            state: present
+          register: create_without_inbound
+        - name: Display Firewall Info (without inbound rule)
+          debug:
+            var: create
+
+    - name: Return Firewall ID
+      set_fact:
+        firewall_id: "{{ create.firewall.id }}"
+      when: create is defined
+
+    - name: Write firewall ID to configuration file
+      lineinfile:
+        path: "../tests/integration/integration_config.yml"
+        line: "firewall_id: {{ firewall_id }}"
+        insertafter: EOF

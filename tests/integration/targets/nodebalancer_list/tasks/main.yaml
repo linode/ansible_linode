@@ -8,6 +8,7 @@
         label: 'ansible-test-empty-{{ r }}'
         region: us-ord
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create
 
     - name: Assert empty NodeBalancer is created

@@ -11,6 +11,7 @@
         image: linode/ubuntu22.04
         wait: no
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: instance_create
 
     - name: Get info about the instance's primary IP

@@ -12,6 +12,7 @@
         private_ip: true
         wait: false
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create
 
     - name: Assert instance created

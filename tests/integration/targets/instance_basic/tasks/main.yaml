@@ -12,6 +12,7 @@
         private_ip: true
         wait: false
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create
 
     - name: Assert instance created
@@ -20,6 +21,16 @@
           - create.changed
           - create.instance.ipv4|length > 1
           - create.networking.ipv4.public[0].address != None
+
+    - name: Get info about the firewall
+      linode.cloud.firewall_info:
+        id: '{{ firewall_id }}'
+      register: firewall_info
+
+    - name: Assert instance is assigned to the firewall
+      assert:
+        that:
+          - firewall_info.devices[0].entity.id == create.instance.id
 
     - name: Create a Linode instance with additional ips and without a root password
       linode.cloud.instance:
@@ -32,6 +43,7 @@
         state: present
         additional_ipv4:
           - public: true
+        firewall_id: '{{ firewall_id }}'
       register: create_additional_ips
 
     - name: Assert instance created
