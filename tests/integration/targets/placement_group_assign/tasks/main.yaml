@@ -3,10 +3,17 @@
     - set_fact:
           r: "{{ 1000000000 | random }}"
 
+    - name: List regions that support PGs
+      linode.cloud.region_list: {}
+      register: valid_regions
+
+    - set_fact:
+        region: '{{ (valid_regions.regions | selectattr("capabilities", "search", "Placement Group") | list)[0].id }}'
+
     - name: Create a Linode placement group
       linode.cloud.placement_group:
         label: 'ansible-test-{{ r }}'
-        region: us-east
+        region: '{{ region }}'
         affinity_type: anti_affinity:local
         state: present
       register: pg_created
@@ -15,7 +22,7 @@
       linode.cloud.instance:
         label: 'ansible-test-pg-{{ r }}'
         type: g6-nanode-1
-        region: us-east
+        region: '{{ region }}'
         state: present
       register: instance
 
