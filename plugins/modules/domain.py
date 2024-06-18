@@ -17,6 +17,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
+    handle_updates,
     paginated_list_to_json,
 )
 from ansible_specdoc.objects import (
@@ -159,7 +160,7 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-linode_domain_mutable: Set[str] = {
+MUTABLE_FIELDS: Set[str] = {
     "axfr_ips",
     "description",
     "expire_sec",
@@ -227,36 +228,12 @@ class LinodeDomain(LinodeModuleBase):
     def _update_domain(self) -> None:
         """Handles all update functionality for the current Domain"""
 
-        # Update mutable values
-        should_update = False
-        params = filter_null_values(self.module.params)
-
-        for key, new_value in params.items():
-            if not hasattr(self._domain, key):
-                continue
-
-            old_value = getattr(self._domain, key)
-
-            if new_value != old_value:
-                if key in linode_domain_mutable:
-                    setattr(self._domain, key, new_value)
-                    self.register_action(
-                        'Updated Domain {0}: "{1}" -> "{2}"'.format(
-                            key, old_value, new_value
-                        )
-                    )
-
-                    should_update = True
-                    continue
-
-                self.fail(
-                    "failed to update domain {0}: {1} is a non-updatable field".format(
-                        self._domain.domain, key
-                    )
-                )
-
-        if should_update:
-            self._domain.save()
+        handle_updates(
+            self._domain,
+            filter_null_values(self.module.params),
+            MUTABLE_FIELDS,
+            self.register_action,
+        )
 
     def _handle_domain(self) -> None:
         params = self.module.params

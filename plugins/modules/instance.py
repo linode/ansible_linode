@@ -1148,17 +1148,12 @@ class LinodeInstance(LinodeModuleBase):
             )
             disk._api_get()
 
-        for key, new_value in filter_null_values(disk_params).items():
-            if not hasattr(disk, key):
-                continue
-
-            old_value = getattr(disk, key)
-            if new_value != old_value:
-                self.fail(
-                    msg="failed to update disk: {0} is a non-mutable field".format(
-                        key
-                    )
-                )
+        handle_updates(
+            disk,
+            filter_null_values(disk_params),
+            set(),
+            self.register_action,
+        )
 
     def _update_disks(self) -> None:
         current_disks = self._instance.disks

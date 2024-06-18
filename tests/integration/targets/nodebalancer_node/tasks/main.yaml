@@ -21,6 +21,7 @@
             protocol: http
             proxy_protocol: none
             stickiness: none
+        firewall_id: '{{ firewall_id }}'
       register: nb
 
     - name: Assert nodebalancer is created with basic configs

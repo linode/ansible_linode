@@ -13,6 +13,7 @@
         wait_timeout: 0
         booted: yes
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: timeout
       failed_when: "'timeout period expired' not in timeout.msg"
   always:

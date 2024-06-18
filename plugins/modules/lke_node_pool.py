@@ -247,9 +247,9 @@ class LinodeLKENodePool(LinodeModuleBase):
         new_count = params.pop("count")
 
         try:
-            handle_updates(pool, params, {}, self.register_action)
+            handle_updates(pool, params, set(), self.register_action)
         except Exception as exception:
-            return self.fail(
+            self.fail(
                 msg="failed to update lke cluster node pool for cluster {0}: {1}".format(
                     cluster_id, exception
                 )

@@ -14,6 +14,7 @@
         rebooted: true
         booted: true
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create
 
     - name: Assert instance created

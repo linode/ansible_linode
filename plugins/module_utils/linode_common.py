@@ -256,7 +256,7 @@ class LinodeModuleBase:
             )
             return self.fail(
                 msg=f"failed to get {resource_name} "
-                "with id {resource_id}: {exception}"
+                f"with id {resource_id}: {exception}"
             )
 
     @property

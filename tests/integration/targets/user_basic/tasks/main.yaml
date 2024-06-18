@@ -15,6 +15,7 @@
         that:
           - create_user.user.email != None
           - create_user.user.restricted == True
+          - create_user.user.user_type is not none
 
     - name: Update the Linode User
       linode.cloud.user:

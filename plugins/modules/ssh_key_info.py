@@ -100,6 +100,7 @@ class LinodeSSHKeyInfo(LinodeModuleBase):
             ssh_key = self._get_ssh_key_by_label(params.get("label"))
 
         self.results["ssh_key"] = ssh_key._raw_json
+
         return self.results
 
 

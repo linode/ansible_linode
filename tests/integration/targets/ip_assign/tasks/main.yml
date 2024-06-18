@@ -10,6 +10,7 @@
         type: g6-standard-1
         image: linode/alpine3.19
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create_instance
 
     - name: Create another Linode Instance
@@ -19,6 +20,7 @@
         type: g6-standard-1
         image: linode/alpine3.19
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create_instance_2
 
     - name: Swap Both IPs

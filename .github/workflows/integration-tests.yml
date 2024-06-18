@@ -16,58 +16,106 @@ jobs:
       run:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
-      - name: checkout repo
+      - name: Checkout repo
         uses: actions/checkout@v3
         with:
           path: .ansible/collections/ansible_collections/linode/cloud
           fetch-depth: 0
           submodules: 'recursive'
 
-      - name: update packages
+      - name: Update packages
         run: sudo apt-get update -y
 
-      - name: install make
-        run: sudo apt-get install -y build-essential
-
-      - name: setup python 3
-        uses: actions/setup-python@v4
+      - name: Setup Python 3
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.x'
 
-      - name: install dependencies
+      - name: Install dependencies
         run: make deps
 
-      - name: install ansible dependencies
+      - name: Install ansible dependencies
         run: ansible-galaxy collection install amazon.aws:==6.0.1
 
-      - name: install collection
+      - name: Install Collection
         run: make install
 
-      - name: replace existing keys
+      - name: Replace Existing Keys
         run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
 
-      - name: run tests
+      - name: Download kubectl and calicoctl for LKE clusters
         run: |
-          if ! make testall > test_output.txt; then
-            echo "EXIT_STATUS=1" >> $GITHUB_ENV
-          fi
-          cat test_output.txt
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          curl -LO "https://github.com/projectcalico/calico/releases/download/v3.25.0/calicoctl-linux-amd64"
+          chmod +x calicoctl-linux-amd64 kubectl
+          mv calicoctl-linux-amd64 /usr/local/bin/calicoctl
+          mv kubectl /usr/local/bin/kubectl
+
+      - name: Run Integration Tests
+        run: |
+          make testall
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
           ANSIBLE_CALLBACKS_ENABLED: "junit"
 
-      - name: Set release version env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Apply Calico Rules to LKE
+        if: always()
+        run: |
+          cd scripts && ./lke_calico_rules_e2e.sh
+        env:
+          LINODE_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
+
+      - name: Upload Test Report as Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xml-test-reports
+          if-no-files-found: ignore
+          path: '.ansible/collections/ansible_collections/linode/cloud/tests/output/junit'
+          retention-days: 1
+
+
+  process-upload-report:
+    runs-on: ubuntu-latest
+    needs: [run-tests]
+    if: always() # Run even if previous job fails
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: pip3 install requests wheel boto3
+
+      # Create directory if it doesn't exist
+      - name: Create output directory
+        run: mkdir -p tests/output/junit
+
+      - name: Download test report
+        uses: actions/download-artifact@v4
+        with:
+          name: xml-test-reports  # Specify the artifact name from the 'run-tests' job
+          path: tests/output/junit
+          continue-on-error: true  # Continue even if artifact download fails
 
       - name: Merge all test xmls in output directory
         run: |
+          ls -R tests/output/junit
           python tod_scripts/merge_ansible_results.py
 
       - name: Add additional information to XML report
         run: |
           filename=$(ls | grep -E '^[0-9]{12}_ansible_merged\.xml$') 
           python tod_scripts/add_to_xml_test_report.py \
-          --branch_name "${{ env.RELEASE_VERSION }}" \
+          --branch_name "${GITHUB_REF#refs/*/}" \
           --gha_run_id "$GITHUB_RUN_ID" \
           --gha_run_number "$GITHUB_RUN_NUMBER" \
           --xmlfile "${filename}"
@@ -79,13 +127,3 @@ jobs:
         env:
           LINODE_CLI_OBJ_ACCESS_KEY: ${{ secrets.LINODE_CLI_OBJ_ACCESS_KEY }}
           LINODE_CLI_OBJ_SECRET_KEY: ${{ secrets.LINODE_CLI_OBJ_SECRET_KEY }}
-
-      - name: Test Execution Status Handler
-        run: |
-          if [[ "$EXIT_STATUS" != 0 ]]; then
-            echo "Test execution contains failure(s), check Run Integration tests step above"
-            exit $EXIT_STATUS 
-          else
-            echo "Tests passed!"
-          fi
-
