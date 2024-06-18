@@ -40,6 +40,7 @@ Name | Description |
 [linode.cloud.nodebalancer_stats](./docs/modules/nodebalancer_stats.md)|View a Linode NodeBalancers Stats.|
 [linode.cloud.object_keys](./docs/modules/object_keys.md)|Manage Linode Object Storage Keys.|
 [linode.cloud.placement_group](./docs/modules/placement_group.md)|Manage a Linode Placement Group.|
+[linode.cloud.placement_group_assign](./docs/modules/placement_group_assign.md)|Manages a single assignment between a Linode and a Placement Group.|
 [linode.cloud.ssh_key](./docs/modules/ssh_key.md)|Manage a Linode SSH key.|
 [linode.cloud.stackscript](./docs/modules/stackscript.md)|Manage a Linode StackScript.|
 [linode.cloud.token](./docs/modules/token.md)|Manage a Linode Token.|
