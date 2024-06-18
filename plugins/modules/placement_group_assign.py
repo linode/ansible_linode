@@ -15,7 +15,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
-    BETA_DISCLAIMER,
     global_authors,
     global_requirements,
 )
@@ -46,7 +45,7 @@ placement_group_assignment_spec = {
 SPECDOC_META = SpecDocMeta(
     description=[
         "Manages a single assignment between a Linode and a Placement Group.",
-        BETA_DISCLAIMER,
+        "NOTE: Placement Groups may not currently be available to all users.",
     ],
     requirements=global_requirements,
     author=global_authors,
