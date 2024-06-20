@@ -2,7 +2,7 @@
 
 Manages a single assignment between a Linode and a Placement Group.
 
-**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+NOTE: Placement Groups may not currently be available to all users.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
