@@ -28,7 +28,11 @@ linode_access_spec = {
         type=FieldType.string,
         required=True,
         description=[
-            "The id of the cluster that the provided bucket exists under."
+            "The id of the cluster that the provided bucket exists under.",
+            "**NOTE: This field has been deprecated because it "
+            + "relies on deprecated API endpoints. Going forward, `region` will "
+            + "be the preferred way to designate where Object Storage resources "
+            + "should be created.**",
         ],
     ),
     "bucket_name": SpecField(

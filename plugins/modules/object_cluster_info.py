@@ -52,7 +52,13 @@ linode_object_cluster_info_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Get info about a Linode Object Storage Cluster."],
+    description=[
+        "**NOTE: This module has been deprecated because it "
+        + "relies on deprecated API endpoints. Going forward, `region` will "
+        + "be the preferred way to designate where Object Storage resources "
+        + "should be created.**",
+        "Get info about a Linode Object Storage Cluster.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_object_cluster_info_spec,

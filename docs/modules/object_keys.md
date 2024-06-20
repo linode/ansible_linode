@@ -52,7 +52,7 @@ Manage Linode Object Storage Keys.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `cluster` | <center>`str`</center> | <center>**Required**</center> | The id of the cluster that the provided bucket exists under.   |
+| `cluster` | <center>`str`</center> | <center>**Required**</center> | The id of the cluster that the provided bucket exists under. **NOTE: This field has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**   |
 | `bucket_name` | <center>`str`</center> | <center>**Required**</center> | The name of the bucket to set the key's permissions for.   |
 | `permissions` | <center>`str`</center> | <center>**Required**</center> | The permissions to give the key.  **(Choices: `read_only`, `write_only`, `read_write`)** |
 

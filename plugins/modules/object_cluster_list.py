@@ -81,7 +81,13 @@ spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["List and filter on Object Storage Clusters."],
+    description=[
+        "**NOTE: This module has been deprecated because it "
+        + "relies on deprecated API endpoints. Going forward, `region` will "
+        + "be the preferred way to designate where Object Storage resources "
+        + "should be created.**",
+        "List and filter on Object Storage Clusters.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=spec,
