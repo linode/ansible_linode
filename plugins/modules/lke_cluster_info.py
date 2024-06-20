@@ -24,6 +24,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     filter_null_values,
     jsonify_node_pool,
 )
+from ansible_collections.linode.cloud.plugins.module_utils.linode_lke_shared import (
+    safe_get_cluster_acl,
+)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -146,11 +149,19 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
 
-        self.results["cluster"] = cluster._raw_json
+        cluster_json = cluster._raw_json
+
+        # We need to inject the control plane ACL configuration into the cluster's JSON
+        # because it is not returned from the cluster GET endopint
+        cluster_json["control_plane"]["acl"] = safe_get_cluster_acl(cluster)
+
+        self.results["cluster"] = cluster_json
+
         self.results["node_pools"] = [
             jsonify_node_pool(pool) for pool in cluster.pools
         ]
 
+        # Retrieve kubeconfig
         try:
             self.results["kubeconfig"] = cluster.kubeconfig
         except ApiError as err:
@@ -164,6 +175,7 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
             self.results["kubeconfig"] = ignored_error_messages[err.status]
 
+        # Retrieve dashboard URL
         try:
             self.results["dashboard_url"] = self.client.get(
                 "/lke/clusters/{}/dashboard".format(cluster.id)
