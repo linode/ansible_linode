@@ -191,6 +191,8 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Constructs and calls the Linode Object Storage Key module"""
 
+        self._attempt_warnings(**kwargs)
+
         state = kwargs.pop("state")
 
         if state == "absent":
