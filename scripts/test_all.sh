@@ -16,13 +16,25 @@ cleanup() {
 # Set trap to ensure cleanup is run on script exit
 trap cleanup EXIT
 
-make create-integration-config
-make create-e2e-firewall
+# Create integration_yaml
+if ! make create-integration-config; then
+    echo "Failed to create integration config..."
+    exit 1
+fi
+
+if ! make create-e2e-firewall; then
+    echo "Failed to create e2e firewall..."
+    exit 1
+fi
 
 export -f run_test
 
-parallel -j $PARALLEL_JOBS --group --keep-order run_test ::: $(ls tests/integration/targets)
-TEST_EXIT_CODE=$?
+# Run tests in parallel
+if ! parallel -j $PARALLEL_JOBS --group --keep-order run_test ::: $(ls tests/integration/targets); then
+    TEST_EXIT_CODE=$?
+else
+    TEST_EXIT_CODE=0
+fi
 
 cleanup
 
