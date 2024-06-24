@@ -7,7 +7,10 @@ run_test() {
 }
 
 cleanup() {
-    make delete-e2e-firewall
+    if [[ -z "$CLEANUP_DONE" ]]; then
+        make delete-e2e-firewall
+        CLEANUP_DONE=1
+    fi
 }
 
 # Set trap to ensure cleanup is run on script exit
