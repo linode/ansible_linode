@@ -213,6 +213,15 @@ class LinodeModuleBase:
         """
         self.module.fail_json(msg=msg, **kwargs)
 
+    def warn(self, msg: str) -> None:
+        """
+        Shortcut for calling module.warn
+
+        :param msg: Error message
+        :return: None
+        """
+        self.module.warn(msg)
+
     def exec_module(self, **kwargs: Any) -> Any:
         """Returns a not implemented error"""
         self.fail(
