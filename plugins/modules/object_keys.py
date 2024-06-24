@@ -179,7 +179,7 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
         # If cluster has been defined for any of the `access` objects,
         # raise a deprecation warning
         if access is not None and any(
-            [v is not None for v in access if v.get("cluster", None)]
+            v is not None for v in access if v.get("cluster", None)
         ):
             self.warn(
                 "The access.cluster field has been deprecated because it relies "
