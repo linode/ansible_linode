@@ -82,7 +82,7 @@ delete-e2e-firewall:
 
 test: integration-test delete-e2e-firewall
 
-testall: create-integration-config
+testall:
 	./scripts/test_all.sh
 
 unittest:
