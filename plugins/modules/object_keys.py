@@ -168,7 +168,7 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
             self._key.delete()
             self.register_action("Deleted key {0}".format(label))
 
-    def _attempt_warnings(self, **kwargs: Any):
+    def _attempt_warnings(self, **kwargs: Any) -> None:
         """
         Raises warnings depending on the user-defined module arguments.
         """
