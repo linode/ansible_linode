@@ -3,7 +3,7 @@
 PARALLEL_JOBS="${PARALLEL_JOBS:=3}"
 
 run_test() {
-    ANSIBLE_RETRY_FILES_ENABLED=false ansible-test integration $(TEST_ARGS)
+    ANSIBLE_RETRY_FILES_ENABLED=false ansible-test integration $1
 }
 
 cleanup() {
@@ -17,24 +17,15 @@ cleanup() {
 trap cleanup EXIT
 
 # Create integration_yaml
-if ! make create-integration-config; then
-    echo "Failed to create integration config..."
-    exit 1
-fi
-
-if ! make create-e2e-firewall; then
-    echo "Failed to create e2e firewall..."
-    exit 1
-fi
+make create-integration-config
+make create-e2e-firewall
 
 export -f run_test
 
 # Run tests in parallel
-if ! parallel -j $PARALLEL_JOBS --group --keep-order run_test ::: $(ls tests/integration/targets); then
-    TEST_EXIT_CODE=$?
-else
-    TEST_EXIT_CODE=0
-fi
+parallel -j $PARALLEL_JOBS --group --keep-order run_test ::: $(ls tests/integration/targets)
+TEST_EXIT_CODE=$?
+
 
 cleanup
 

@@ -66,7 +66,7 @@ integration-test: create-integration-config create-e2e-firewall
 
 create-e2e-firewall:
 	@echo "Running create e2e firewall playbook..."
-	@if e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/create_e2e_cloud_firewall.yaml > /dev/null; then \
+	@if ansible-playbook e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/create_e2e_cloud_firewall.yaml > /dev/null; then \
 		echo "Successfully created e2e firewall"; \
 	else \
 		echo "Failed to create e2e firewall"; \
@@ -74,7 +74,7 @@ create-e2e-firewall:
 
 delete-e2e-firewall:
 	@echo "Running delete e2e firewall playbook..."
-	@if e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/delete_e2e_cloud_firewall.yaml  > /dev/null; then \
+	@if ansible-playbook e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/delete_e2e_cloud_firewall.yaml  > /dev/null; then \
 		echo "Successfully deleted e2e firewall"; \
 	else \
 		echo "Failed to delete e2e firewall"; \
