@@ -37,7 +37,8 @@ module = InfoModule(
     ],
     examples=docs.specdoc_examples,
     description=[
-       "Get info about a Linode Child Account.", "NOTE: Parent/Child related features may not be generally available."
+        "Get info about a Linode Child Account.",
+        "NOTE: Parent/Child related features may not be generally available.",
     ],
 )
 

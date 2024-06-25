@@ -12,17 +12,18 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list im
     ListModule,
 )
 
-result_display_name="Child Account"
+RESULT_DISPLAY_NAME = "Child Account"
 
 module = ListModule(
-    result_display_name=result_display_name,
+    result_display_name=RESULT_DISPLAY_NAME,
     result_field_name="child_accounts",
     endpoint_template="/account/child-accounts",
     result_docs_url="",
     examples=docs.specdoc_examples,
     result_samples=docs.result_child_accounts_samples,
     description=[
-       f"List and filter on {result_display_name}.", "NOTE: Parent/Child related features may not be generally available."
+        f"List and filter on {RESULT_DISPLAY_NAME}.",
+        "NOTE: Parent/Child related features may not be generally available.",
     ],
 )
 
