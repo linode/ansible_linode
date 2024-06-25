@@ -3,7 +3,7 @@
 PARALLEL_JOBS="${PARALLEL_JOBS:=3}"
 
 run_test() {
-    ansible-test integration $(TEST_ARGS)
+    ANSIBLE_RETRY_FILES_ENABLED=false ansible-test integration $(TEST_ARGS)
 }
 
 cleanup() {
