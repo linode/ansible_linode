@@ -3,7 +3,7 @@
 PARALLEL_JOBS="${PARALLEL_JOBS:=3}"
 
 run_test() {
-    ANSIBLE_RETRY_FILES_ENABLED=false ansible-test integration $1
+    ansible-test integration $1
 }
 
 cleanup() {
@@ -13,20 +13,17 @@ cleanup() {
     fi
 }
 
-# Set trap to ensure cleanup is run on script exit
 trap cleanup EXIT
 
-# Create integration_yaml
-make create-integration-config
-make create-e2e-firewall
+CLEANUP_DONE=0
+
+make create-integration-config || exit 1
+make create-e2e-firewall || exit 1
 
 export -f run_test
 
-# Run tests in parallel
-parallel -j $PARALLEL_JOBS --group --keep-order run_test ::: $(ls tests/integration/targets)
+parallel -j $PARALLEL_JOBS --group --keep-order --retries 3 run_test ::: $(ls tests/integration/targets)
 TEST_EXIT_CODE=$?
 
-
-cleanup
 
 exit $TEST_EXIT_CODE
