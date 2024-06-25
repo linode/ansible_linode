@@ -36,6 +36,8 @@ jobs:
         with:
           ref: ${{ inputs.sha }}
           path: .ansible/collections/ansible_collections/linode/cloud
+          fetch-depth: 0
+          submodules: 'recursive'
 
       # Install deps
       - name: update packages
