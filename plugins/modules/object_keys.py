@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.object_keys as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
@@ -14,6 +14,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    handle_updates,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -24,12 +27,19 @@ from ansible_specdoc.objects import (
 from linode_api4 import ObjectStorageKeys
 
 linode_access_spec = {
+    "region": SpecField(
+        type=FieldType.string,
+        description=[
+            "The region of the cluster that the provided bucket exists under."
+        ],
+        conflicts_with=["cluster"],
+    ),
     "cluster": SpecField(
         type=FieldType.string,
-        required=True,
         description=[
             "The id of the cluster that the provided bucket exists under."
         ],
+        conflicts_with=["cluster"],
     ),
     "bucket_name": SpecField(
         type=FieldType.string,
@@ -56,6 +66,12 @@ linode_object_keys_spec = {
         element_type=FieldType.dict,
         suboptions=linode_access_spec,
         description=["A list of access permissions to give the key."],
+    ),
+    "regions": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=["A list of regions to scope this key to."],
+        editable=True,
     ),
     "state": SpecField(
         type=FieldType.string,
@@ -100,6 +116,7 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
         super().__init__(
             module_arg_spec=self.module_arg_spec,
             required_one_of=self.required_one_of,
+            mutually_exclusive=[("access.cluster", "access.region")],
         )
 
     def _get_key_by_label(self, label: str) -> Optional[ObjectStorageKeys]:
@@ -124,31 +141,58 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
             )
 
     def _create_key(
-        self, label: str, bucket_access: Union[dict, List[dict]]
+        self,
+        label: str,
+        bucket_access: Union[dict, List[dict]],
+        regions: List[str],
     ) -> Optional[ObjectStorageKeys]:
         """Creates an Object Storage key with the given label and access"""
 
         try:
             return self.client.object_storage.keys_create(
-                label, bucket_access=bucket_access
+                label, bucket_access=bucket_access, regions=regions
             )
         except Exception as exception:
             return self.fail(
                 msg="failed to create object storage key: {0}".format(exception)
             )
 
+    def _attempt_update_key(
+        self, key: ObjectStorageKeys, params: Dict[str, Any]
+    ):
+        """
+        Attempts to update the given OBJ key.
+        """
+        key.invalidate()
+
+        changed_keys = handle_updates(
+            key,
+            params,
+            {"regions"},
+            self.register_action,
+        )
+
+        # Refresh the key if it was updated
+        if len(changed_keys) > 0:
+            key._api_get()
+
     def _handle_key(self) -> None:
         """Updates the key defined in kwargs"""
 
         params = self.module.params
-        label: str = params.pop("label")
+        label: str = params.get("label")
         access: dict = params.get("access")
+        regions: List[str] = params.get("regions")
 
         self._key = self._get_key_by_label(label)
 
         if self._key is None:
-            self._key = self._create_key(label, bucket_access=access)
+            self._key = self._create_key(
+                label, bucket_access=access, regions=regions
+            )
             self.register_action("Created key {0}".format(label))
+
+        self._attempt_update_key(self._key, params)
 
         self.results["key"] = self._key._raw_json
 
