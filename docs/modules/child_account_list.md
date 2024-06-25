@@ -2,6 +2,8 @@
 
 List and filter on Child Account.
 
+NOTE: Parent/Child related features may not be generally available.
+
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)

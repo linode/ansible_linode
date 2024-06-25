@@ -2,6 +2,8 @@
 
 Get info about a Linode Child Account.
 
+NOTE: Parent/Child related features may not be generally available.
+
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
