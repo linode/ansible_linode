@@ -43,12 +43,27 @@ jobs:
       - name: Replace Existing Keys
         run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
 
+      - name: Download kubectl and calicoctl for LKE clusters
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          curl -LO "https://github.com/projectcalico/calico/releases/download/v3.25.0/calicoctl-linux-amd64"
+          chmod +x calicoctl-linux-amd64 kubectl
+          mv calicoctl-linux-amd64 /usr/local/bin/calicoctl
+          mv kubectl /usr/local/bin/kubectl
+
       - name: Run Integration Tests
         run: |
           make testall
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
           ANSIBLE_CALLBACKS_ENABLED: "junit"
+
+      - name: Apply Calico Rules to LKE
+        if: always()
+        run: |
+          cd e2e_scripts/cloud_security_scripts/lke_calico_rules/ && ./lke_calico_rules_e2e.sh
+        env:
+          LINODE_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
 
       - name: Upload Test Report as Artifact
         if: always()
@@ -94,12 +109,12 @@ jobs:
       - name: Merge all test xmls in output directory
         run: |
           ls -R tests/output/junit
-          python tod_scripts/merge_ansible_results.py
+          python e2e_scripts/tod_scripts/xml_to_obj_storage/ansible_tests/merge_ansible_results.py
 
       - name: Add additional information to XML report
         run: |
           filename=$(ls | grep -E '^[0-9]{12}_ansible_merged\.xml$') 
-          python tod_scripts/add_to_xml_test_report.py \
+          python e2e_scripts/tod_scripts/xml_to_obj_storage/scripts/add_gha_info_to_xml.py \
           --branch_name "${GITHUB_REF#refs/*/}" \
           --gha_run_id "$GITHUB_RUN_ID" \
           --gha_run_number "$GITHUB_RUN_NUMBER" \
@@ -108,7 +123,7 @@ jobs:
       - name: Upload test results to the bucket
         run: |
           filename=$(ls | grep -E '^[0-9]{12}_ansible_merged\.xml$')
-          python3 tod_scripts/test_report_upload_script.py "${filename}"
+          python3 e2e_scripts/tod_scripts/xml_to_obj_storage/scripts/xml_to_obj.py "${filename}"
         env:
           LINODE_CLI_OBJ_ACCESS_KEY: ${{ secrets.LINODE_CLI_OBJ_ACCESS_KEY }}
           LINODE_CLI_OBJ_SECRET_KEY: ${{ secrets.LINODE_CLI_OBJ_SECRET_KEY }}

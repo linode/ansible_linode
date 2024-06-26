@@ -12,6 +12,7 @@
           - test2
           - test3
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create_nodebalancer
 
     - name: Assert NodeBalancer is created

@@ -60,22 +60,43 @@ gendocs:
 
 # if want to add all the test add the tag --tags never at the end
 #	ansible-test integration $(TEST_ARGS) --tags never
-integration-test: create-integration-config
+integration-test: create-integration-config create-e2e-firewall
+	@echo "Running Integration Test(s)..."
 	ansible-test integration $(TEST_ARGS)
 
-test: integration-test
+create-e2e-firewall:
+	@echo "Running create e2e firewall playbook..."
+	@if ansible-playbook e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/create_e2e_cloud_firewall.yaml > /dev/null; then \
+		echo "Successfully created e2e firewall"; \
+	else \
+		echo "Failed to create e2e firewall. Please update the cloud firewall scripts using `git submodule update --init` if yaml file doesn't exist"; \
+		exit 1; \
+	fi
 
-testall: create-integration-config
+delete-e2e-firewall:
+	@echo "Running delete e2e firewall playbook..."
+	@if ansible-playbook e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/delete_e2e_cloud_firewall.yaml  > /dev/null; then \
+		echo "Successfully deleted e2e firewall"; \
+	else \
+		echo "Failed to delete e2e firewall"; \
+    fi
+
+test: integration-test delete-e2e-firewall
+
+testall:
 	./scripts/test_all.sh
 
 unittest:
 	ansible-test units --target-python default
 
+
 create-integration-config:
 ifneq ("${LINODE_TOKEN}", "")
-	@echo "api_token: ${LINODE_TOKEN}" > $(INTEGRATION_CONFIG);
+	@echo -n > $(INTEGRATION_CONFIG)
+	@echo "api_token: ${LINODE_TOKEN}" >> $(INTEGRATION_CONFIG);
 else ifneq ("${LINODE_API_TOKEN}", "")
-	@echo "api_token: ${LINODE_API_TOKEN}" > $(INTEGRATION_CONFIG);
+	@echo -n > $(INTEGRATION_CONFIG)
+	@echo "api_token: ${LINODE_API_TOKEN}" >> $(INTEGRATION_CONFIG);
 else
 	echo "LINODE_API_TOKEN must be set"; \
 	exit 1;

@@ -11,6 +11,7 @@
         image: linode/alpine3.19
         wait: no
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: instance_create
 
     - name: Get ip_info about the instance's primary IP

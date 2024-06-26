@@ -3,6 +3,13 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
+    - name: List regions that support PGs
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        pg_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Placement Group") | list)[0].id }}'
+
     - name: Create a Linode instance without a root password
       linode.cloud.instance:
         label: 'ansible-test-nopass-{{ r }}'
@@ -12,6 +19,7 @@
         private_ip: true
         wait: false
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create
 
     - name: Assert instance created
@@ -32,6 +40,7 @@
         state: present
         additional_ipv4:
           - public: true
+        firewall_id: '{{ firewall_id }}'
       register: create_additional_ips
 
     - name: Assert instance created
@@ -137,6 +146,30 @@
           - info_label.instance.region == 'us-ord'
           - info_label.configs|length == 1
 
+    - name: Create a Linode placement group
+      linode.cloud.placement_group:
+        label: 'ansible-test-{{ r }}'
+        region: '{{ pg_region }}'
+        affinity_type: anti_affinity:local
+        state: present
+      register: pg_created
+
+    - name: Create a Linode instance under a placement group
+      linode.cloud.instance:
+        label: 'ansible-test-pg-{{ r }}'
+        type: g6-nanode-1
+        region: '{{ pg_region }}'
+        placement_group:
+          id: '{{ pg_created.placement_group.id }}'
+          compliant_only: false
+        state: present
+      register: instance_pg
+
+    - name: Assert instance under a placement group
+      assert:
+        that:
+          instance_pg.instance.placement_group.id == pg_created.placement_group.id
+
   always:
     - ignore_errors: yes
       block:
@@ -163,6 +196,30 @@
             that:
               - delete_nopass_ips.changed
               - delete_nopass_ips.instance.id == create_additional_ips.instance.id
+
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ instance_pg.instance.label }}'
+            state: absent
+          register: delete_instance_pg
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_instance_pg.changed
+              - delete_instance_pg.instance.id == instance_pg.instance.id
+
+        - name: Delete a placement group
+          linode.cloud.placement_group:
+            label: '{{ pg_created.placement_group.label }}'
+            state: absent
+          register: pg_deleted
+
+        - name: Assert placement group is deleted
+          assert:
+            that:
+              - pg_deleted.changed
+              - pg_deleted.placement_group.id == pg_created.placement_group.id
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'

@@ -93,7 +93,19 @@ Manage Linode Instances, Configs, and Disks.
     image: linode/ubuntu22.04
     root_pass: verysecurepassword!!!
     metadata:
-        user_data: myuserdata
+      user_data: myuserdata
+    state: present
+```
+
+```yaml
+- name: Create a new Linode instance under a placement group.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-east
+    placement_group: 
+      id: 123
+      compliant_only: false
     state: present
 ```
 
@@ -136,6 +148,7 @@ Manage Linode Instances, Configs, and Disks.
 | `migration_type` | <center>`str`</center> | <center>Optional</center> | The type of migration to use for Region and Type migrations.  **(Choices: `cold`, `warm`; Default: `cold`)** |
 | `auto_disk_resize` | <center>`bool`</center> | <center>Optional</center> | Whether implicitly created disks should be resized during a type change operation.  **(Default: `False`)** |
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object. Tags are for organizational purposes only.  **(Updatable)** |
+| [`placement_group` (sub-options)](#placement_group) | <center>`dict`</center> | <center>Optional</center> | A Placement Group to create this Linode under.   |
 
 ### configs
 
@@ -278,6 +291,13 @@ Manage Linode Instances, Configs, and Disks.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `public` | <center>`bool`</center> | <center>**Required**</center> | Whether the allocated IPv4 address should be public or private.   |
 
+### placement_group
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `id` | <center>`int`</center> | <center>**Required**</center> | The id of the placement group.   |
+| `compliant_only` | <center>`bool`</center> | <center>Optional</center> | Whether the newly added/migrated/resized linode must be compliant for flexible placement groups.  **(Default: `False`)** |
+
 ## Return Values
 
 - `instance` - The instance description in JSON serialized form.
@@ -326,7 +346,13 @@ Manage Linode Instances, Configs, and Disks.
           ],
           "type": "g6-standard-1",
           "updated": "2018-01-01T00:01:01",
-          "watchdog_enabled": true
+          "watchdog_enabled": true,
+          "placement_group": {
+            "id": 123,
+            "label": "test",
+            "affinity_type": "anti_affinity:local",
+            "is_strict": true
+          }
         }
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#linode-view__responses) for a list of returned fields
