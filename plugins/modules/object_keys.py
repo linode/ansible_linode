@@ -28,7 +28,11 @@ linode_access_spec = {
         type=FieldType.string,
         required=True,
         description=[
-            "The id of the cluster that the provided bucket exists under."
+            "The id of the cluster that the provided bucket exists under.",
+            "**NOTE: This field has been deprecated because it "
+            + "relies on deprecated API endpoints. Going forward, `region` will "
+            + "be the preferred way to designate where Object Storage resources "
+            + "should be created.**",
         ],
     ),
     "bucket_name": SpecField(
@@ -164,8 +168,30 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
             self._key.delete()
             self.register_action("Deleted key {0}".format(label))
 
+    def _attempt_warnings(self, **kwargs: Any) -> None:
+        """
+        Raises warnings depending on the user-defined module arguments.
+        """
+
+        # Logic to warn if the `cluster` field has been specified
+        access: Optional[List] = kwargs.get("access", None)
+
+        # If cluster has been defined for any of the `access` objects,
+        # raise a deprecation warning
+        if access is not None and any(
+            v is not None for v in access if v.get("cluster", None)
+        ):
+            self.warn(
+                "The access.cluster field has been deprecated because it relies "
+                "on deprecated API endpoints.\n"
+                "Going forward, region will be the preferred way to designate where Object "
+                "Storage resources should be created."
+            )
+
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Constructs and calls the Linode Object Storage Key module"""
+
+        self._attempt_warnings(**kwargs)
 
         state = kwargs.pop("state")
 
