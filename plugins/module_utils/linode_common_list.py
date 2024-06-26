@@ -53,6 +53,7 @@ class ListModule(
         result_docs_url: str = "",
         params: List[ListModuleParam] = None,
         examples: List[str] = None,
+        description: List[str] = None,
         result_samples: List[str] = None,
         requires_beta: bool = False,
     ) -> None:
@@ -63,6 +64,9 @@ class ListModule(
         self.result_docs_url = result_docs_url
         self.params = params or []
         self.examples = examples or []
+        self.description = description or [
+            f"List and filter on {self.result_display_name}."
+        ]
         self.result_samples = result_samples or []
         self.requires_beta = requires_beta
 
@@ -156,9 +160,9 @@ class ListModule(
                 required=True,
             )
 
-        description = [f"List and filter on {self.result_display_name}."]
+        description = self.description
 
-        if self.requires_beta:
+        if self.requires_beta and BETA_DISCLAIMER not in description:
             description.append(BETA_DISCLAIMER)
 
         return SpecDocMeta(
