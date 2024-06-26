@@ -192,7 +192,10 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
             )
             self.register_action("Created key {0}".format(label))
 
-        self._attempt_update_key(self._key, params)
+            # NOTE: If the key is refreshed at all after creation,
+            # make sure you preserve the secret_key :)
+        else:
+            self._attempt_update_key(self._key, params)
 
         self.results["key"] = self._key._raw_json
 

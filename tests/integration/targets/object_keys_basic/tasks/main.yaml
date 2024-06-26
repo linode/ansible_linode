@@ -1,0 +1,78 @@
+- name: object_keys_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create an OBJ key
+      linode.cloud.object_keys:
+        label: "test-ansible-key-{{ r }}"
+        regions:
+          - us-mia
+          - us-iad
+        state: present
+      register: create
+
+    - name: Assert OBJ key was created successfully
+      assert:
+        that:
+          - create.changed
+          - "not 'REDACTED' in create.key.secret_key"
+          - create.key.regions[0].id in ("us-mia", "us-iad")
+          - create.key.regions[0].s3_endpoint != None
+          - create.key.regions[1].id in ("us-mia", "us-iad")
+          - create.key.regions[1].s3_endpoint != None
+
+    - name: Refresh the OBJ key
+      linode.cloud.object_keys:
+        label: "{{ create.key.label }}"
+        regions:
+          - us-mia
+          - us-iad
+        state: present
+      register: refresh
+
+    - name: Assert OBJ key was not updated
+      assert:
+        that:
+          # - not refresh.changed
+          - "'REDACTED' in refresh.key.secret_key"
+
+#    - name: Create an OBJ key with access restrictions
+#      linode.cloud.object_keys:
+#        label: 'test-ansible-key-access-{{ r }}'
+#        access:
+#          - cluster: us-ord-1
+#            bucket_name: '{{ create_bucket.name }}'
+#            permissions: read_write
+#          - cluster: us-ord-1
+#            bucket_name: '{{ create_bucket.name }}'
+#            permissions: read_only
+#        state: present
+#      register: create_access
+#
+#    - name: Assert key created and access is valid
+#      assert:
+#        that:
+#          - create_access.changed
+#          - 'not "REDACTED" in create_access.key.secret_key'
+#          - create_access.key.bucket_access[0].cluster == 'us-ord-1'
+#          - create_access.key.bucket_access[0].bucket_name == create_bucket.name
+#          - create_access.key.bucket_access[0].permissions == 'read_write'
+#          - create_access.key.bucket_access[1].cluster == 'us-ord-1'
+#          - create_access.key.bucket_access[1].bucket_name == create_bucket.name
+#          - create_access.key.bucket_access[1].permissions == 'read_only'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the OBJ key
+          linode.cloud.object_keys:
+            label: "{{ create.key.label }}"
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
