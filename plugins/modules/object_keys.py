@@ -15,9 +15,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    handle_updates,
-)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -163,18 +160,27 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
         """
         Attempts to update the given OBJ key.
         """
-        key.invalidate()
 
-        changed_keys = handle_updates(
-            key,
-            params,
-            {"regions"},
-            self.register_action,
-        )
+        put_body = {}
 
-        # Refresh the key if it was updated
-        if len(changed_keys) > 0:
-            key._api_get()
+        # We can't use handle_updates here because the structure under `regions`
+        # differs between the request and response
+        configured_regions = params.get("regions")
+        flattened_regions = set(v for v in key.regions)
+
+        if (
+            configured_regions is not None
+            and set(configured_regions) != flattened_regions
+        ):
+            put_body["regions"] = configured_regions
+
+        if len(put_body) > 0:
+            self._client.put(
+                ObjectStorageKeys.api_endpoint, model=key, data=put_body
+            )
+
+            # Refresh the key object
+            self._key._api_get()
 
     def _handle_key(self) -> None:
         """Updates the key defined in kwargs"""

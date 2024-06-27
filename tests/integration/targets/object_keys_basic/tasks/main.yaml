@@ -34,9 +34,27 @@
     - name: Assert OBJ key was not updated
       assert:
         that:
-          # - not refresh.changed
+          - not refresh.changed
           - "'REDACTED' in refresh.key.secret_key"
+          - refresh.key.regions[0].id in ("us-mia", "us-iad")
+          - refresh.key.regions[0].s3_endpoint != None
+          - refresh.key.regions[1].id in ("us-mia", "us-iad")
+          - refresh.key.regions[1].s3_endpoint != None
 
+    - name: Update the regions for the OBJ key
+      linode.cloud.object_keys:
+        label: "{{ create.key.label }}"
+        regions:
+          - us-ord
+        state: present
+      register: update
+
+    - name: Assert OBJ key was updated
+      assert:
+        that:
+          - update.changed
+          - update.key.regions | length == 1
+          - update.key.regions[0].id == "us-ord"
 #    - name: Create an OBJ key with access restrictions
 #      linode.cloud.object_keys:
 #        label: 'test-ansible-key-access-{{ r }}'
