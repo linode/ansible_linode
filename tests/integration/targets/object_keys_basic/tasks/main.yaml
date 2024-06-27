@@ -58,10 +58,10 @@
 
     - name: Create an S3 bucket using the key
       amazon.aws.s3_bucket:
-        s3_url: 'https://{{ update.key.regions[0].s3_endpoint }}/'
-        aws_access_key: '{{ create.key.access_key }}'
-        aws_secret_key: '{{ create.key.secret_key }}'
-        name: 'test-ansible-bucket-{{ r }}'
+        s3_url: "https://{{ update.key.regions[0].s3_endpoint }}/"
+        aws_access_key: "{{ create.key.access_key }}"
+        aws_secret_key: "{{ create.key.secret_key }}"
+        name: "test-ansible-bucket-{{ r }}"
         state: present
       register: create_bucket
 
@@ -141,9 +141,9 @@
       block:
         - name: Delete the OBJ bucket
           amazon.aws.s3_bucket:
-            s3_url: 'https://{{ update.key.regions[0].s3_endpoint }}//'
-            aws_access_key: '{{ create.key.access_key }}'
-            aws_secret_key: '{{ create.key.secret_key }}'
+            s3_url: "https://{{ update.key.regions[0].s3_endpoint }}//"
+            aws_access_key: "{{ create.key.access_key }}"
+            aws_secret_key: "{{ create.key.secret_key }}"
             name: "{{ create_bucket.name }}"
             state: absent
           register: delete_bucket
@@ -159,8 +159,8 @@
             state: absent
 
   environment:
-    LINODE_UA_PREFIX: '{{ ua_prefix }}'
-    LINODE_API_TOKEN: '{{ api_token }}'
-    LINODE_API_URL: '{{ api_url }}'
-    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_UA_PREFIX: "{{ ua_prefix }}"
+    LINODE_API_TOKEN: "{{ api_token }}"
+    LINODE_API_URL: "{{ api_url }}"
+    LINODE_API_VERSION: "{{ api_version }}"
     LINODE_CA: '{{ ca_file or "" }}'
