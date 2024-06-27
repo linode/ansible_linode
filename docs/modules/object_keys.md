@@ -22,11 +22,21 @@ Manage Linode Object Storage Keys.
 ```
 
 ```yaml
-- name: Create a limited Object Storage key
+- name: Create an Object Storage key limited to specific regions
+  linode.cloud.object_keys:
+    label: 'my-region-limited-key'
+    regions:
+        - us-mia
+        - us-ord
+    state: present
+```
+
+```yaml
+- name: Create an Object Storage key limited to specific buckets
   linode.cloud.object_keys:
     label: 'my-limited-key'
     access:
-      - cluster: us-east-1
+      - cluster: us-mia
         bucket_name: my-bucket
         permissions: read_write
     state: present
@@ -65,18 +75,33 @@ Manage Linode Object Storage Keys.
     - Sample Response:
         ```json
         {
-          "access_key": "ACCESSKEY",
+          "access_key": "redacted",
           "bucket_access": [
             {
-              "bucket_name": "example-bucket",
-              "cluster": "ap-south-1",
-              "permissions": "read_only"
+              "bucket_name": "my-bucket",
+              "cluster": "us-iad-1",
+              "permissions": "read_write",
+              "region": "us-iad"
             }
           ],
-          "id": 123,
+          "id": 12345,
           "label": "my-key",
           "limited": true,
-          "secret_key": "SECRETKEY"
+          "regions": [
+            {
+              "id": "us-iad",
+              "s3_endpoint": "us-iad-1.linodeobjects.com"
+            },
+            {
+              "id": "us-ord",
+              "s3_endpoint": "us-ord-1.linodeobjects.com"
+            },
+            {
+              "id": "us-sea",
+              "s3_endpoint": "us-sea-1.linodeobjects.com"
+            }
+          ],
+          "secret_key": "[REDACTED]"
         }
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/object-storage/#object-storage-key-view__responses) for a list of returned fields
