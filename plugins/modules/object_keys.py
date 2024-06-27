@@ -154,6 +154,56 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
                 msg="failed to create object storage key: {0}".format(exception)
             )
 
+    @staticmethod
+    def _access_changed(key: ObjectStorageKeys, params: Dict[str, Any]) -> bool:
+        """
+        Returns whether the user has made any effective changes to the `access` field.
+
+        NOTE: This requires special logic to maintain backwards compatibility
+        with the `cluster` field.
+        """
+
+        configured_access = params.get("access")
+        if configured_access is None:
+            return False
+
+        # Map the region and bucket name to a grant
+        access = {
+            (grant.region, grant.bucket_name): grant
+            for grant in key.bucket_access
+        }
+
+        for configured_grant in configured_access:
+            configured_region = configured_grant.get("region")
+            configured_permissions = configured_grant.get("permissions")
+
+            # Hack to extract the region from a configured cluster
+            if configured_region is None:
+                configured_region = configured_grant.get("cluster").split("-1")[
+                    0
+                ]
+
+            grant_key = (configured_region, configured_grant.get("bucket_name"))
+
+            grant = access.get(grant_key)
+            if grant is None or configured_permissions != grant.permissions:
+                return True
+
+            del access[grant_key]
+
+        # If true, the user attempted to remove a grant
+        return len(access) > 0
+
+    def _validate_updates(
+        self, key: ObjectStorageKeys, params: Dict[str, Any]
+    ) -> None:
+        """
+        Raises an error if any invalid update operations are attempted.
+        """
+
+        if self._access_changed(key, params):
+            self.fail("`access` is not an updatable field")
+
     def _attempt_update_key(
         self, key: ObjectStorageKeys, params: Dict[str, Any]
     ):
@@ -161,19 +211,30 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
         Attempts to update the given OBJ key.
         """
 
+        self._validate_updates(key, params)
+
         put_body = {}
 
         # We can't use handle_updates here because the structure under `regions`
         # differs between the request and response
-        configured_regions = params.get("regions")
-        flattened_regions = set(v for v in key.regions)
+        configured_regions = params.get("regions") or []
+        flattened_regions = set(v.id for v in key.regions)
+
+        # Regions from bucket_access will implicitly be added to the
+        # `regions` attribute, so we should account for that here
+        for grant in key.bucket_access or []:
+            configured_regions.append(grant.region)
 
         if (
             configured_regions is not None
             and set(configured_regions) != flattened_regions
         ):
             put_body["regions"] = configured_regions
+            self.register_action(
+                f"Updated regions from {list(flattened_regions)} to {configured_regions}"
+            )
 
+        # Apply changes
         if len(put_body) > 0:
             self._client.put(
                 ObjectStorageKeys.api_endpoint, model=key, data=put_body
