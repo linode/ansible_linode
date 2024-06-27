@@ -218,7 +218,7 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
 
     def _attempt_update_key(
         self, key: ObjectStorageKeys, params: Dict[str, Any]
-    ):
+    ) -> None:
         """
         Attempts to update the given OBJ key.
         """
@@ -260,7 +260,7 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
 
         params = self.module.params
         label: str = params.get("label")
-        access: dict = params.get("access")
+        access: List[Dict[str, Any]] = params.get("access")
         regions: List[str] = params.get("regions")
 
         self._key = self._get_key_by_label(label)
