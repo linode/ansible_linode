@@ -69,7 +69,8 @@ create-e2e-firewall:
 	@if ansible-playbook e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/create_e2e_cloud_firewall.yaml > /dev/null; then \
 		echo "Successfully created e2e firewall"; \
 	else \
-		echo "Failed to create e2e firewall"; \
+		echo "Failed to create e2e firewall. Please update the cloud firewall scripts using `git submodule update --init` if yaml file doesn't exist"; \
+		exit 1; \
 	fi
 
 delete-e2e-firewall:
