@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.object_keys as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
@@ -14,6 +14,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    filter_null_values,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -36,7 +39,7 @@ linode_access_spec = {
         description=[
             "The id of the cluster that the provided bucket exists under."
         ],
-        conflicts_with=["cluster"],
+        conflicts_with=["region"],
     ),
     "bucket_name": SpecField(
         type=FieldType.string,
@@ -113,7 +116,6 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
         super().__init__(
             module_arg_spec=self.module_arg_spec,
             required_one_of=self.required_one_of,
-            mutually_exclusive=[("access.cluster", "access.region")],
         )
 
     def _get_key_by_label(self, label: str) -> Optional[ObjectStorageKeys]:
@@ -140,10 +142,16 @@ class LinodeObjectStorageKeys(LinodeModuleBase):
     def _create_key(
         self,
         label: str,
-        bucket_access: Union[dict, List[dict]],
-        regions: List[str],
+        bucket_access: Optional[List[Dict[str, Any]]],
+        regions: Optional[List[str]],
     ) -> Optional[ObjectStorageKeys]:
         """Creates an Object Storage key with the given label and access"""
+
+        # The API will reject explicit null values for `bucket_access.region`
+        if bucket_access is not None:
+            bucket_access = [
+                filter_null_values(grant) for grant in bucket_access
+            ]
 
         try:
             return self.client.object_storage.keys_create(

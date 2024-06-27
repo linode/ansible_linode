@@ -47,14 +47,16 @@ Manage Linode Object Storage Keys.
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The unique label to give this key.   |
 | [`access` (sub-options)](#access) | <center>`list`</center> | <center>Optional</center> | A list of access permissions to give the key.   |
+| `regions` | <center>`list`</center> | <center>Optional</center> | A list of regions to scope this key to.  **(Updatable)** |
 
 ### access
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `cluster` | <center>`str`</center> | <center>**Required**</center> | The id of the cluster that the provided bucket exists under.   |
 | `bucket_name` | <center>`str`</center> | <center>**Required**</center> | The name of the bucket to set the key's permissions for.   |
 | `permissions` | <center>`str`</center> | <center>**Required**</center> | The permissions to give the key.  **(Choices: `read_only`, `write_only`, `read_write`)** |
+| `region` | <center>`str`</center> | <center>Optional</center> | The region of the cluster that the provided bucket exists under.  **(Conflicts With: `cluster`)** |
+| `cluster` | <center>`str`</center> | <center>Optional</center> | The id of the cluster that the provided bucket exists under.  **(Conflicts With: `region`)** |
 
 ## Return Values
 
