@@ -82,6 +82,12 @@ SPECDOC_META = SpecDocMeta(
 
 linode_domain_valid_filters = ["id", "domain"]
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
 
 class LinodeDomainInfo(LinodeModuleBase):
     """Module for getting info about a Linode Domain"""

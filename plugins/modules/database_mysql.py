@@ -172,6 +172,12 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS = {"allow_list", "updates"}
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
 
 class Module(LinodeModuleBase):
     """Module for creating and destroying Linode Databases"""

@@ -105,3 +105,7 @@ endif
 	@echo "api_url: $(TEST_API_URL)" >> $(INTEGRATION_CONFIG)
 	@echo "api_version: $(TEST_API_VERSION)" >> $(INTEGRATION_CONFIG)
 	@echo "ca_file: $(TEST_API_CA)" >> $(INTEGRATION_CONFIG)
+
+inject:
+	@echo "Injecting documentation into source files"
+	ansible-specdoc -j -i ./plugins/modules/*.py

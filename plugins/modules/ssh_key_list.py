@@ -96,6 +96,12 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
 
 class SSHKeyListModule(LinodeModuleBase):
     """Module for getting a list of SSH keys in the Linode profile"""

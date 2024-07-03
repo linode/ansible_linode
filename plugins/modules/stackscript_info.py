@@ -51,5 +51,12 @@ module = InfoModule(
 
 SPECDOC_META = module.spec
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
+
 if __name__ == "__main__":
     module.run()

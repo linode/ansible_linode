@@ -58,6 +58,12 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
 
 class LinodeSSHKeyInfo(LinodeModuleBase):
     """Module for getting Linode SSH public key"""

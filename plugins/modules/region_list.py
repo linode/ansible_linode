@@ -94,6 +94,12 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
 
 class Module(LinodeModuleBase):
     """Module for getting a list of Linode regions"""

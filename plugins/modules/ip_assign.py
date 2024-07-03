@@ -69,6 +69,12 @@ SPECDOC_META = SpecDocMeta(
     return_values={},
 )
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
 
 class Module(LinodeModuleBase):
     """Module for assigning IPs to Linodes in a given Region"""

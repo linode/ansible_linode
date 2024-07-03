@@ -91,6 +91,12 @@ SPECDOC_META = SpecDocMeta(
 
 linode_nodebalancer_valid_filters = ["id", "label"]
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
 
 class LinodeNodeBalancerInfo(LinodeModuleBase):
     """Module for getting info about a Linode NodeBalancer"""

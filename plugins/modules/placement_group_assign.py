@@ -54,6 +54,12 @@ SPECDOC_META = SpecDocMeta(
     return_values={},
 )
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
 
 class Module(LinodeModuleBase):
     """Module for creating and destroying Linode Placement Group Assignment"""

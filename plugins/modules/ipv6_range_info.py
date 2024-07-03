@@ -52,6 +52,12 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
 
 class Module(LinodeModuleBase):
     """Module for getting info about a Linode IPv6 range"""
