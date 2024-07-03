@@ -93,9 +93,7 @@ SPEC = {
         type=FieldType.list,
         element_type=FieldType.string,
         editable=True,
-        description=[
-            "A list of customized tags of this new Image."
-        ],
+        description=["A list of customized tags of this new Image."],
     ),
 }
 
@@ -203,7 +201,11 @@ class Module(LinodeModuleBase):
         # Create an image upload
         try:
             image, upload_to = self.client.images.create_upload(
-                label, region, description=description, cloud_init=cloud_init, tags=tags,
+                label,
+                region,
+                description=description,
+                cloud_init=cloud_init,
+                tags=tags,
             )
         except Exception as exception:
             return self.fail(

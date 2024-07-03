@@ -13,7 +13,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info im
     InfoModuleResult,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    paginated_list_to_json,
     safe_find,
 )
 from ansible_specdoc.objects import FieldType
