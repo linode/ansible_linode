@@ -158,6 +158,12 @@ MUTABLE_FIELDS: Set[str] = {
     "weight",
 }
 
+DOCUMENTATION = '''
+'''
+EXAMPLES = '''
+'''
+RETURN = '''
+'''
 
 class LinodeDomainRecord(LinodeModuleBase):
     """Module for creating and destroying Linode Domain records"""

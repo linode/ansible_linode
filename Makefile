@@ -108,4 +108,5 @@ endif
 
 inject:
 	@echo "Injecting documentation into source files"
-	ansible-specdoc -j -i ./plugins/modules/*.py
+	for f in `ls ./plugins/modules/*.py`; do echo $$f; ansible-specdoc -j -i $$f; done
+
