@@ -18,7 +18,7 @@ trap cleanup EXIT
 CLEANUP_DONE=0
 
 make create-integration-config || exit 1
-ansible-playbook e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/create_e2e_cloud_firewall.yaml || exit 1
+make create-e2e-firewall || exit 1
 
 export -f run_test
 
