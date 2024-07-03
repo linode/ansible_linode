@@ -3,7 +3,6 @@
   gather_facts: yes
 
   vars:
-    linode_api_token: "{{ lookup('env', 'LINODE_TOKEN') | default(lookup('env', 'LINODE_API_TOKEN')) }}"
     firewall_label: "e2e-firewall-{{ lookup('password', '/dev/null length=6 chars=ascii_letters') }}"
 
   tasks:
@@ -64,3 +63,9 @@
         path: "../tests/integration/integration_config.yml"
         line: "firewall_id: {{ firewall_id }}"
         insertafter: EOF
+
+  environment:
+    LINODE_API_TOKEN: "{{ lookup('env', 'LINODE_TOKEN') | default(lookup('env', 'LINODE_API_TOKEN')) }}"
+    LINODE_API_URL: "{{ lookup('env', 'TEST_API_URL', default='https://api.linode.com/') }}"
+    LINODE_API_VERSION: "{{ lookup('env', 'TEST_API_VERSION', default='v4beta') }}"
+    LINODE_CA: "{{ lookup('env', 'TEST_API_CA') }}"

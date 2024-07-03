@@ -20,6 +20,8 @@ Manage a Linode Image.
     label: my-image
     description: Created using Ansible!
     disk_id: 12345
+    tags: 
+        - test
     state: present
 ```
 
@@ -29,6 +31,8 @@ Manage a Linode Image.
     label: my-image
     description: Created using Ansible!
     source_file: myimage.img.gz
+    tags: 
+        - test
     state: present
 ```
 
@@ -54,6 +58,7 @@ Manage a Linode Image.
 | `source_file` | <center>`str`</center> | <center>Optional</center> | An image file to create this image with.  **(Conflicts With: `disk_id`)** |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the image to have status `available` before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an image to have status `available`.  **(Default: `600`)** |
+| `tags` | <center>`list`</center> | <center>Optional</center> | A list of customized tags of this new Image.  **(Updatable)** |
 
 ## Return Values
 
@@ -64,19 +69,31 @@ Manage a Linode Image.
         {
           "capabilities": [],
           "created": "2021-08-14T22:44:02",
-          "created_by": "linode",
+          "created_by": "my-account",
           "deprecated": false,
           "description": "Example Image description.",
           "eol": "2026-07-01T04:00:00",
           "expiry": null,
-          "id": "linode/debian11",
+          "id": "private/123",
           "is_public": true,
-          "label": "Debian 11",
+          "label": "my-image",
           "size": 2500,
           "status": null,
           "type": "manual",
           "updated": "2021-08-14T22:44:02",
-          "vendor": "Debian"
+          "vendor": "Debian",
+          "tags": ["test"],
+          "total_size": 5000,
+          "regions": [
+            {
+                "region": "us-east",
+                "status": "available"
+            },
+            {
+                "region": "us-central",
+                "status": "pending"
+            }
+          ]
         }
         ```
     - See the [Linode API response documentation](https://www.linode.com/docs/api/images/#image-view__response-samples) for a list of returned fields
