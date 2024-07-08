@@ -89,6 +89,12 @@ SPEC = {
             "have status `available`."
         ],
     ),
+    "tags": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        editable=True,
+        description=["A list of customized tags of this new Image."],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -108,7 +114,7 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-MUTABLE_FIELDS = {"description"}
+MUTABLE_FIELDS = {"description", "tags"}
 
 
 class Module(LinodeModuleBase):
@@ -164,6 +170,7 @@ class Module(LinodeModuleBase):
         label = self.module.params.get("label")
         description = self.module.params.get("description")
         cloud_init = self.module.params.get("cloud_init")
+        tags = self.module.params.get("tags")
 
         try:
             return self.client.images.create(
@@ -171,6 +178,7 @@ class Module(LinodeModuleBase):
                 label=label,
                 description=description,
                 cloud_init=cloud_init,
+                tags=tags,
             )
         except Exception as exception:
             return self.fail(
@@ -183,6 +191,7 @@ class Module(LinodeModuleBase):
         region = self.module.params.get("region")
         source_file = self.module.params.get("source_file")
         cloud_init = self.module.params.get("cloud_init")
+        tags = self.module.params.get("tags")
 
         if not os.path.exists(source_file):
             return self.fail(
@@ -192,7 +201,11 @@ class Module(LinodeModuleBase):
         # Create an image upload
         try:
             image, upload_to = self.client.images.create_upload(
-                label, region, description=description, cloud_init=cloud_init
+                label,
+                region,
+                description=description,
+                cloud_init=cloud_init,
+                tags=tags,
             )
         except Exception as exception:
             return self.fail(
