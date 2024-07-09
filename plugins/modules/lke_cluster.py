@@ -252,11 +252,11 @@ CREATE_FIELDS: Set[str] = {
     "high_availability",
 }
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

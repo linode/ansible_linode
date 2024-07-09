@@ -158,11 +158,11 @@ MUTABLE_FIELDS: Set[str] = {
     "weight",
 }
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

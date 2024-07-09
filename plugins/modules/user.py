@@ -232,11 +232,11 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS = {"restricted"}
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

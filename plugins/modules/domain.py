@@ -175,11 +175,11 @@ MUTABLE_FIELDS: Set[str] = {
     "group",
 }
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

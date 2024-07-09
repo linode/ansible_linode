@@ -72,11 +72,11 @@ SPECDOC_META = SpecDocMeta(
 
 linode_firewall_valid_filters = ["id", "label"]
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

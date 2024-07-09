@@ -184,11 +184,11 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS = {"allow_list", "updates"}
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

@@ -570,11 +570,11 @@ linode_instance_config_mutable = {
     "interfaces",
 }
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

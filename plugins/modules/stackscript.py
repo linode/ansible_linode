@@ -94,11 +94,11 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS = {"description", "images", "is_public", "rev_note", "script"}
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

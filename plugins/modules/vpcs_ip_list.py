@@ -22,11 +22,11 @@ module = ListModule(
 
 SPECDOC_META = module.spec
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 if __name__ == "__main__":

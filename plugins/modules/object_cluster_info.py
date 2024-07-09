@@ -74,11 +74,11 @@ FILTERABLE_FIELDS = [
     "static_site_domain",
 ]
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

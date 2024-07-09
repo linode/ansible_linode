@@ -91,11 +91,11 @@ SPECDOC_META = SpecDocMeta(
 
 linode_nodebalancer_valid_filters = ["id", "label"]
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

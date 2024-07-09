@@ -98,11 +98,11 @@ SPECDOC_META = SpecDocMeta(
 
 VALID_FILTERS = ["id", "label"]
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

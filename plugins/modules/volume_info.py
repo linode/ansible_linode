@@ -68,11 +68,11 @@ SPECDOC_META = SpecDocMeta(
 
 linode_volume_valid_filters = ["id", "label"]
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

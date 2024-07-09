@@ -82,11 +82,11 @@ SPECDOC_META = SpecDocMeta(
 
 linode_domain_valid_filters = ["id", "domain"]
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

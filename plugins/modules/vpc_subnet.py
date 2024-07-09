@@ -72,11 +72,11 @@ SPECDOC_META = SpecDocMeta(
 
 CREATE_FIELDS = {"label", "ipv4"}
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

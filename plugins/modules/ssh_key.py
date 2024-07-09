@@ -64,11 +64,11 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS = {"label"}
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

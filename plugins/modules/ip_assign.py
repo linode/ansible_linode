@@ -69,11 +69,11 @@ SPECDOC_META = SpecDocMeta(
     return_values={},
 )
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

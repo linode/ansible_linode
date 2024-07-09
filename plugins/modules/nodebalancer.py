@@ -307,11 +307,11 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS: Set[str] = {"client_conn_throttle", "tags"}
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

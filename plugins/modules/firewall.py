@@ -191,11 +191,11 @@ SPECDOC_META = SpecDocMeta(
 # Fields that can be updated on an existing Firewall
 MUTABLE_FIELDS: List[str] = ["status", "tags"]
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 

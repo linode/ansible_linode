@@ -80,11 +80,11 @@ CREATE_FIELDS = {"label", "region", "affinity_type", "is_strict"}
 # Fields that can be updated on an existing placement group
 MUTABLE_FIELDS = {"label"}
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
 """
-EXAMPLES = """
+EXAMPLES = r"""
 """
-RETURN = """
+RETURN = r"""
 """
 
 
