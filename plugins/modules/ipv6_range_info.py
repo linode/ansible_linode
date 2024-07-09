@@ -44,7 +44,8 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "range": SpecReturnValue(
             description="The IPv6 range in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/networking/#ipv6-range-view__response-samples",
+            docs_url="https://www.linode.com/docs/api/networking/"
+            "#ipv6-range-view__response-samples",
             type=FieldType.dict,
             sample=docs.result_range_samples,
         )
