@@ -66,12 +66,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-DOCUMENTATION = '''
-'''
-EXAMPLES = '''
-'''
-RETURN = '''
-'''
+DOCUMENTATION = """
+"""
+EXAMPLES = """
+"""
+RETURN = """
+"""
+
 
 class ReverseDNSModule(LinodeModuleBase):
     """Module for updating Linode IP address's reverse DNS value"""

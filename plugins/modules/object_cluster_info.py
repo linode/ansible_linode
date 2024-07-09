@@ -74,12 +74,13 @@ FILTERABLE_FIELDS = [
     "static_site_domain",
 ]
 
-DOCUMENTATION = '''
-'''
-EXAMPLES = '''
-'''
-RETURN = '''
-'''
+DOCUMENTATION = """
+"""
+EXAMPLES = """
+"""
+RETURN = """
+"""
+
 
 class LinodeObjectStorageClustersInfo(LinodeModuleBase):
     """Module for getting info about a Linode Object Storage Cluster"""

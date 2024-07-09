@@ -51,12 +51,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-DOCUMENTATION = '''
-'''
-EXAMPLES = '''
-'''
-RETURN = '''
-'''
+DOCUMENTATION = """
+"""
+EXAMPLES = """
+"""
+RETURN = """
+"""
+
 
 class LinodeVLANInfo(LinodeModuleBase):
     """Module for getting info about a Linode VLAN"""

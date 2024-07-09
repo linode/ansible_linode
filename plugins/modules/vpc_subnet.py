@@ -72,12 +72,13 @@ SPECDOC_META = SpecDocMeta(
 
 CREATE_FIELDS = {"label", "ipv4"}
 
-DOCUMENTATION = '''
-'''
-EXAMPLES = '''
-'''
-RETURN = '''
-'''
+DOCUMENTATION = """
+"""
+EXAMPLES = """
+"""
+RETURN = """
+"""
+
 
 class Module(LinodeModuleBase):
     """Module for creating and destroying Linode VPCS"""

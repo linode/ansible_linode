@@ -64,12 +64,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-DOCUMENTATION = '''
-'''
-EXAMPLES = '''
-'''
-RETURN = '''
-'''
+DOCUMENTATION = """
+"""
+EXAMPLES = """
+"""
+RETURN = """
+"""
+
 
 class IPShareModule(LinodeModuleBase):
     """Module for configuring Linode shared IPs."""

@@ -72,12 +72,13 @@ SPECDOC_META = SpecDocMeta(
 CREATE_FIELDS = {"label", "region", "description"}
 MUTABLE_FIELDS = {"description"}
 
-DOCUMENTATION = '''
-'''
-EXAMPLES = '''
-'''
-RETURN = '''
-'''
+DOCUMENTATION = """
+"""
+EXAMPLES = """
+"""
+RETURN = """
+"""
+
 
 class Module(LinodeModuleBase):
     """Module for creating and destroying Linode VPCS"""

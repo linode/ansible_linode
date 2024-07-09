@@ -96,12 +96,13 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS: Set[str] = {"address", "mode", "weight"}
 
-DOCUMENTATION = '''
-'''
-EXAMPLES = '''
-'''
-RETURN = '''
-'''
+DOCUMENTATION = """
+"""
+EXAMPLES = """
+"""
+RETURN = """
+"""
+
 
 class LinodeNodeBalancerNode(LinodeModuleBase):
     """Module for managing Linode NodeBalancer nodes"""

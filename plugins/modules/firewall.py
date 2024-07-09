@@ -191,12 +191,13 @@ SPECDOC_META = SpecDocMeta(
 # Fields that can be updated on an existing Firewall
 MUTABLE_FIELDS: List[str] = ["status", "tags"]
 
-DOCUMENTATION = '''
-'''
-EXAMPLES = '''
-'''
-RETURN = '''
-'''
+DOCUMENTATION = """
+"""
+EXAMPLES = """
+"""
+RETURN = """
+"""
+
 
 class LinodeFirewall(LinodeModuleBase):
     """Module for creating and destroying Linode Firewalls"""

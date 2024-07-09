@@ -29,12 +29,12 @@ module = ListModule(
 
 SPECDOC_META = module.spec
 
-DOCUMENTATION = '''
-'''
-EXAMPLES = '''
-'''
-RETURN = '''
-'''
+DOCUMENTATION = """
+"""
+EXAMPLES = """
+"""
+RETURN = """
+"""
 
 if __name__ == "__main__":
     module.run()
