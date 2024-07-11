@@ -37,6 +37,20 @@ Manage a Linode Image.
 ```
 
 ```yaml
+- name: Replicate an image
+  linode.cloud.image:
+    label: my-image
+    description: Created using Ansible!
+    disk_id: 12345
+    tags: 
+        - test
+    regions_to_replicate: 
+        - us-east
+        - us-central
+    state: present
+```
+
+```yaml
 - name: Delete an image
   linode.cloud.image:
     label: my-image
@@ -59,6 +73,7 @@ Manage a Linode Image.
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the image to have status `available` before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an image to have status `available`.  **(Default: `600`)** |
 | `tags` | <center>`list`</center> | <center>Optional</center> | A list of customized tags of this new Image.  **(Updatable)** |
+| `regions_to_replicate` | <center>`list`</center> | <center>Optional</center> | A list of regions that customer wants to replicate this image in. At least one valid region is required and only core regions allowed. Existing images in the regions not passed will be removed.  **(Updatable)** |
 
 ## Return Values
 

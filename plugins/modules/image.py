@@ -95,6 +95,16 @@ SPEC = {
         editable=True,
         description=["A list of customized tags of this new Image."],
     ),
+    "regions_to_replicate": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        editable=True,
+        description=[
+            "A list of regions that customer wants to replicate this image in. "
+            "At least one valid region is required and only core regions allowed. "
+            "Existing images in the regions not passed will be removed."
+        ],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -266,6 +276,20 @@ class Module(LinodeModuleBase):
                 self._wait_for_image_status(image, {"available"})
 
         self._update_image(image)
+
+        new_regions = params.get("regions_to_replicate")
+        old_regions = [r.region for r in image.regions]
+        # Replicate image in new regions
+        if new_regions != old_regions:
+            if new_regions is None or len(new_regions) == 0:
+                return self.fail(
+                    msg="failed to replicate image {0}: regions_to_replicate value {1} is invalid. "
+                    "At least one valid region is required.".format(
+                        label, new_regions
+                    )
+                )
+
+            image.replicate(new_regions)
 
         # Force lazy-loading
         image._api_get()

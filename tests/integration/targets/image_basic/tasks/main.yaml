@@ -96,6 +96,28 @@
           - image_recreate.image.description == 'yooo'
           - image_recreate.image.tags[0] == 'new-tag'
 
+    - name: Replicate the image
+      linode.cloud.image:
+        label: 'ansible-test-{{ r }}'
+        disk_id: '{{ instance_create.disks.0.id }}'
+        description: 'yooo'
+        tags:
+          - 'new-tag'
+        regions_to_replicate:
+          - 'us-east'
+          - 'us-central'
+        state: present
+      register: image_replicate
+
+    - name: Assert image is replicated
+      assert:
+        that:
+          - image_replicate.changed
+          - image_replicate.image.id != image_create.image.id
+          - image_replicate.image.regions[0].region == 'us-east'
+          - image_replicate.image.regions[0].status == 'available'
+          - image_replicate.image.regions | length == 2
+
   always:
     - ignore_errors: yes
       block:
