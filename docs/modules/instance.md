@@ -350,8 +350,8 @@ Manage Linode Instances, Configs, and Disks.
           "placement_group": {
             "id": 123,
             "label": "test",
-            "affinity_type": "anti_affinity:local",
-            "is_strict": true
+            "placement_group_type": "anti_affinity:local",
+            "placement_group_policy": "strict"
           }
         }
         ```

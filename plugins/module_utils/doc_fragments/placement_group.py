@@ -5,8 +5,8 @@ specdoc_examples = ['''
   linode.cloud.placement_group:
     label: my-pg
     region: us-east
-    affinity_type: anti_affinity:local
-    is_strict: True
+    placement_group_type: anti_affinity:local
+    placement_group_policy: flexible
     state: present''', '''
 - name: Update a Linode placement group label
   linode.cloud.placement_group:
@@ -28,8 +28,8 @@ result_placement_group_samples = ['''{
   "id": 123,
   "label": "my-pg",
   "region": "eu-west",
-  "affinity_type": "anti_affinity:local",
-  "is_strict": true,
+  "placement_group_type": "anti_affinity:local",
+  "placement_group_policy": "flexible",
   "is_compliant": true,
   "members": [
     {

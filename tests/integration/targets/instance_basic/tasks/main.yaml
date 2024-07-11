@@ -13,7 +13,7 @@
     - name: Create a Linode instance without a root password
       linode.cloud.instance:
         label: 'ansible-test-nopass-{{ r }}'
-        region: us-ord
+        region: '{{ pg_region }}'
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
@@ -32,7 +32,7 @@
     - name: Create a Linode instance with additional ips and without a root password
       linode.cloud.instance:
         label: 'ansible-test-additional-ips-nopass-{{ r }}'
-        region: us-ord
+        region: '{{ pg_region }}'
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
@@ -53,7 +53,7 @@
     - name: Update the instance region and type
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
-        region: us-ord
+        region: '{{ pg_region }}'
         group: funny
         type: g6-standard-2
         image: linode/ubuntu22.04
@@ -66,7 +66,7 @@
     - name: Update label with invalid string
       linode.cloud.instance:
         label: '!!Invalid!!'
-        region: us-ord
+        region: '{{ pg_region }}'
         group: funny
         type: g6-standard-2
         image: linode/ubuntu22.04
@@ -79,7 +79,7 @@
     - name: Attempt to add additional ips to an instance
       linode.cloud.instance:
         label: '{{ create_additional_ips.instance.label }}'
-        region: us-ord
+        region: '{{ pg_region }}'
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
@@ -95,7 +95,7 @@
     - name: Attempt to remove additional ips from an instance
       linode.cloud.instance:
         label: '{{ create_additional_ips.instance.label }}'
-        region: us-ord
+        region: '{{ pg_region }}'
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
@@ -108,7 +108,7 @@
     - name: Update the instance
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
-        region: us-ord
+        region: '{{ pg_region }}'
         group: funny
         type: g6-standard-1
         image: linode/ubuntu22.04
@@ -130,7 +130,7 @@
       assert:
         that:
           - info_id.instance.ipv4|length > 1
-          - info_id.instance.region == 'us-ord'
+          - info_id.instance.region == pg_region
           - info_id.configs|length == 1
           - info_id.networking.ipv4.public[0].address != None
 
@@ -143,14 +143,15 @@
       assert:
         that:
           - info_label.instance.ipv4|length > 1
-          - info_label.instance.region == 'us-ord'
+          - info_label.instance.region == pg_region
           - info_label.configs|length == 1
 
     - name: Create a Linode placement group
       linode.cloud.placement_group:
         label: 'ansible-test-{{ r }}'
         region: '{{ pg_region }}'
-        affinity_type: anti_affinity:local
+        placement_group_type: anti_affinity:local
+        placement_group_policy: flexible
         state: present
       register: pg_created
 

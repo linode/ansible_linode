@@ -1,4 +1,8 @@
-linode_api4>=5.17.0
+# TODO: Revert before merging to dev
+# linode-api4>=5.17.0
+git+https://github.com/lgarber-akamai/linode_api4-python@ref/placement-group-changes
+
+
 polling>=0.3.2
 types-requests==2.32.0.20240622
 ansible-specdoc>=0.0.14
