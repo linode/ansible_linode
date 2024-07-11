@@ -59,7 +59,7 @@ NOTE: Placement Groups may not currently be available to all users.
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the Placement Group. This field can only contain ASCII letters, digits and dashes.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The region that the placement group is in.   |
 | `placement_group_type` | <center>`str`</center> | <center>Optional</center> | The type of this placement group.   |
-| `placement_group_policy` | <center>`bool`</center> | <center>Optional</center> | The policy for assigning Linodes to this placement group.  **(Choices: `flexible`, `strict`)** |
+| `placement_group_policy` | <center>`str`</center> | <center>Optional</center> | The policy for assigning Linodes to this placement group.  **(Choices: `flexible`, `strict`)** |
 
 ## Return Values
 
