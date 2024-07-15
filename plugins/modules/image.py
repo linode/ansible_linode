@@ -290,6 +290,9 @@ class Module(LinodeModuleBase):
                 )
 
             image.replicate(new_regions)
+            self.register_action(
+                "Replicated image {0} in regions {1}".format(label, new_regions)
+            )
 
         # Force lazy-loading
         image._api_get()
