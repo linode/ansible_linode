@@ -1,7 +1,4 @@
-# TODO(Multicluster OBJ): Revert before merging to dev
-# linode-api4>=5.17.0
-git+https://github.com/linode/linode_api4-python@proj/multicluster-obj
-
+linode-api4>=5.18.0
 polling>=0.3.2
-types-requests==2.32.0.20240712
+types-requests==2.32.0.20240622
 ansible-specdoc>=0.0.14
