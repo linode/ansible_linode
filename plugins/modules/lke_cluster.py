@@ -252,6 +252,13 @@ CREATE_FIELDS: Set[str] = {
     "high_availability",
 }
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeLKECluster(LinodeModuleBase):
     """Module for creating and destroying Linode LKE clusters"""

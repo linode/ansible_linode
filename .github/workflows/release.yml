@@ -35,6 +35,9 @@ jobs:
       - name: install ansible dependencies
         run: ansible-galaxy collection install amazon.aws:==6.0.1
 
+      - name: inject docs using specdoc
+        run: make inject
+
       - name: publish the collection
         run: make publish
         env:

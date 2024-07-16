@@ -68,6 +68,13 @@ SPECDOC_META = SpecDocMeta(
 
 linode_volume_valid_filters = ["id", "label"]
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeVolumeInfo(LinodeModuleBase):
     """Module for getting info about a Linode Volume"""

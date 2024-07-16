@@ -80,6 +80,13 @@ CREATE_FIELDS = {"label", "region", "affinity_type", "is_strict"}
 # Fields that can be updated on an existing placement group
 MUTABLE_FIELDS = {"label"}
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class Module(LinodeModuleBase):
     """Module for creating and destroying Linode Placement Group"""

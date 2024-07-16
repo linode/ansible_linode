@@ -58,6 +58,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class Module(LinodeModuleBase):
     """Module for getting info about a Linode user"""

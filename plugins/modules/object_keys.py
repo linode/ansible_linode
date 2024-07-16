@@ -102,6 +102,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeObjectStorageKeys(LinodeModuleBase):
     """Module for creating and destroying Linode Object Storage Keys"""

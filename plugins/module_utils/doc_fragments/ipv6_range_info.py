@@ -3,7 +3,7 @@
 specdoc_examples = ['''
 - name: Get info about an IPv6 range
   linode.cloud.ipv6_range_info:
-    range: 2600:3c01::''']
+    range: "2600:3c01::"''']
 
 
 result_range_samples = ['''{
