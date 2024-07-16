@@ -4,5 +4,5 @@ git+https://github.com/lgarber-akamai/linode_api4-python@ref/placement-group-cha
 
 
 polling>=0.3.2
-types-requests==2.32.0.20240622
+types-requests==2.32.0.20240712
 ansible-specdoc>=0.0.14
