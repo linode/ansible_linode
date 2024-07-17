@@ -72,6 +72,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeFirewallDevice(LinodeModuleBase):
     """Module for managing Linode Firewall devices"""

@@ -105,3 +105,12 @@ endif
 	@echo "api_url: $(TEST_API_URL)" >> $(INTEGRATION_CONFIG)
 	@echo "api_version: $(TEST_API_VERSION)" >> $(INTEGRATION_CONFIG)
 	@echo "ca_file: $(TEST_API_CA)" >> $(INTEGRATION_CONFIG)
+
+inject:
+	@echo "Injecting documentation into source files"
+	for f in `ls ./plugins/modules/*.py`; do ansible-specdoc -j -i $$f; done
+	ansible-test sanity --test ansible-doc
+
+inject-clean:
+	@echo "Removing injected documentation from source files"
+	for f in `ls ./plugins/modules/*.py`; do ansible-specdoc -jc -i $$f; done

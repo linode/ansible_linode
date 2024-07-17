@@ -94,6 +94,13 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS = {"description", "images", "is_public", "rev_note", "script"}
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class Module(LinodeModuleBase):
     """Module for creating and destroying Linode StackScripts"""

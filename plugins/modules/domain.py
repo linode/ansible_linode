@@ -175,6 +175,13 @@ MUTABLE_FIELDS: Set[str] = {
     "group",
 }
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeDomain(LinodeModuleBase):
     """Module for creating and destroying Linode Domains"""

@@ -64,6 +64,13 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS = {"label"}
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class SSHKeyModule(LinodeModuleBase):
     """Module for creating and destroying Linode SSH keys"""

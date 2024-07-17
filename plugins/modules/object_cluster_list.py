@@ -81,7 +81,13 @@ spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["List and filter on Object Storage Clusters."],
+    description=[
+        "**NOTE: This module has been deprecated because it "
+        + "relies on deprecated API endpoints. Going forward, `region` will "
+        + "be the preferred way to designate where Object Storage resources "
+        + "should be created.**",
+        "List and filter on Object Storage Clusters.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=spec,
@@ -98,6 +104,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class Module(LinodeModuleBase):
     """Module for getting a list of Object Storage Clusters"""
@@ -110,6 +123,13 @@ class Module(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for object storage cluster list module"""
+
+        self.warn(
+            "The linode.cloud.object_cluster_list has been deprecated because it relies "
+            "on deprecated API endpoints.\n"
+            "Going forward, region will be the preferred way to designate where Object "
+            "Storage resources should be created."
+        )
 
         filter_dict = construct_api_filter(self.module.params)
 

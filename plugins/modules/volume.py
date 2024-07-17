@@ -116,6 +116,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeVolume(LinodeModuleBase):
     """Module for creating and destroying Linode Volumes"""
