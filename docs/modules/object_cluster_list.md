@@ -1,5 +1,7 @@
 # object_cluster_list
 
+**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**
+
 List and filter on Object Storage Clusters.
 
 - [Minimum Required Fields](#minimum-required-fields)

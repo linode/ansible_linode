@@ -72,6 +72,13 @@ SPECDOC_META = SpecDocMeta(
 
 linode_firewall_valid_filters = ["id", "label"]
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeFirewallInfo(LinodeModuleBase):
     """Module for viewing info about a Linode Firewall"""

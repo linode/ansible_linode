@@ -66,15 +66,16 @@ integration-test: create-integration-config create-e2e-firewall
 
 create-e2e-firewall:
 	@echo "Running create e2e firewall playbook..."
-	@if ansible-playbook scripts/create_e2e_cloud_firewall.yaml > /dev/null; then \
+	@if ansible-playbook e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/create_e2e_cloud_firewall.yaml > /dev/null; then \
 		echo "Successfully created e2e firewall"; \
 	else \
-		echo "Failed to create e2e firewall"; \
+		echo "Failed to create e2e firewall. Please update the cloud firewall scripts using `git submodule update --init` if yaml file doesn't exist"; \
+		exit 1; \
 	fi
 
 delete-e2e-firewall:
 	@echo "Running delete e2e firewall playbook..."
-	@if ansible-playbook scripts/delete_e2e_cloud_firewall.yaml > /dev/null; then \
+	@if ansible-playbook e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/delete_e2e_cloud_firewall.yaml  > /dev/null; then \
 		echo "Successfully deleted e2e firewall"; \
 	else \
 		echo "Failed to delete e2e firewall"; \
@@ -82,7 +83,7 @@ delete-e2e-firewall:
 
 test: integration-test delete-e2e-firewall
 
-testall: create-integration-config
+testall:
 	./scripts/test_all.sh
 
 unittest:
@@ -104,3 +105,12 @@ endif
 	@echo "api_url: $(TEST_API_URL)" >> $(INTEGRATION_CONFIG)
 	@echo "api_version: $(TEST_API_VERSION)" >> $(INTEGRATION_CONFIG)
 	@echo "ca_file: $(TEST_API_CA)" >> $(INTEGRATION_CONFIG)
+
+inject:
+	@echo "Injecting documentation into source files"
+	for f in `ls ./plugins/modules/*.py`; do ansible-specdoc -j -i $$f; done
+	ansible-test sanity --test ansible-doc
+
+inject-clean:
+	@echo "Removing injected documentation from source files"
+	for f in `ls ./plugins/modules/*.py`; do ansible-specdoc -jc -i $$f; done

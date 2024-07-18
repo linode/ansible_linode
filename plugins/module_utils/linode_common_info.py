@@ -96,6 +96,7 @@ class InfoModule(LinodeModuleBase):
         params: List[InfoModuleParam] = None,
         attributes: List[InfoModuleAttr] = None,
         examples: List[str] = None,
+        description: List[str] = None,
         requires_beta: bool = False,
     ) -> None:
         self.primary_result = primary_result
@@ -103,6 +104,9 @@ class InfoModule(LinodeModuleBase):
         self.params = params or []
         self.attributes = attributes or []
         self.examples = examples or []
+        self.description = description or [
+            f"Get info about a Linode {self.primary_result.display_name}."
+        ]
         self.requires_beta = requires_beta
 
         self.module_arg_spec = self.spec.ansible_spec
@@ -198,11 +202,9 @@ class InfoModule(LinodeModuleBase):
             for v in [self.primary_result] + self.secondary_results
         }
 
-        description = [
-            f"Get info about a Linode {self.primary_result.display_name}."
-        ]
+        description = self.description
 
-        if self.requires_beta:
+        if self.requires_beta and BETA_DISCLAIMER not in description:
             description.append(BETA_DISCLAIMER)
 
         return SpecDocMeta(
