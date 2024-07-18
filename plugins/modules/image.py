@@ -102,7 +102,8 @@ SPEC = {
         description=[
             "A list of regions that customer wants to replicate this image in. "
             "At least one valid region is required and only core regions allowed. "
-            "Existing images in the regions not passed will be removed."
+            "Existing images in the regions not passed will be removed. "
+            "NOTE: Image replication may not currently be available to all users.",
         ],
     ),
 }
