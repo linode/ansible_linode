@@ -307,6 +307,13 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS: Set[str] = {"client_conn_throttle", "tags"}
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeNodeBalancer(LinodeModuleBase):
     """Configuration class for Linode NodeBalancer resource"""

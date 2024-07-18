@@ -1,0 +1,166 @@
+- name: object_keys_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create an OBJ key
+      linode.cloud.object_keys:
+        label: "test-ansible-key-{{ r }}"
+        regions:
+          - us-mia
+          - us-iad
+        state: present
+      register: create
+
+    - name: Assert OBJ key was created successfully
+      assert:
+        that:
+          - create.changed
+          - "not 'REDACTED' in create.key.secret_key"
+          - create.key.regions[0].id in ("us-mia", "us-iad")
+          - create.key.regions[0].s3_endpoint != None
+          - create.key.regions[1].id in ("us-mia", "us-iad")
+          - create.key.regions[1].s3_endpoint != None
+
+    - name: Refresh the OBJ key
+      linode.cloud.object_keys:
+        label: "{{ create.key.label }}"
+        regions:
+          - us-mia
+          - us-iad
+        state: present
+      register: refresh
+
+    - name: Assert OBJ key was not updated
+      assert:
+        that:
+          - not refresh.changed
+          - "'REDACTED' in refresh.key.secret_key"
+          - refresh.key.regions[0].id in ("us-mia", "us-iad")
+          - refresh.key.regions[0].s3_endpoint != None
+          - refresh.key.regions[1].id in ("us-mia", "us-iad")
+          - refresh.key.regions[1].s3_endpoint != None
+
+    - name: Update the regions for the OBJ key
+      linode.cloud.object_keys:
+        label: "{{ create.key.label }}"
+        regions:
+          - us-ord
+        state: present
+      register: update
+
+    - name: Assert OBJ key was updated
+      assert:
+        that:
+          - update.changed
+          - update.key.regions | length == 1
+          - update.key.regions[0].id == "us-ord"
+
+    - name: Create an S3 bucket using the key
+      amazon.aws.s3_bucket:
+        s3_url: "https://{{ update.key.regions[0].s3_endpoint }}/"
+        aws_access_key: "{{ create.key.access_key }}"
+        aws_secret_key: "{{ create.key.secret_key }}"
+        name: "test-ansible-bucket-{{ r }}"
+        state: present
+      register: create_bucket
+
+    - name: Assert bucket was created
+      assert:
+        that:
+          - create_bucket.changed
+
+    - name: Create an OBJ key scoped to the new bucket
+      linode.cloud.object_keys:
+        label: "test-ansible-key-scoped-{{ r }}"
+        regions:
+          - us-mia
+        access:
+          - region: "{{ update.key.regions[0].id }}"
+            bucket_name: "{{ create_bucket.name }}"
+            permissions: read_write
+        state: present
+      register: create_scoped
+
+    - name: Assert the scoped key was created
+      assert:
+        that:
+          - create_scoped.changed
+          - create_scoped.key.bucket_access[0].region == update.key.regions[0].id
+          - create_scoped.key.bucket_access[0].bucket_name == create_bucket.name
+          - create_scoped.key.bucket_access[0].permissions == "read_write"
+          - create_scoped.key.regions[0].id in ("us-ord", "us-mia")
+          - create_scoped.key.regions[1].id in ("us-ord", "us-mia")
+
+    - name: Refresh the scoped key
+      linode.cloud.object_keys:
+        label: "{{ create_scoped.key.label }}"
+        regions:
+          - us-mia
+        access:
+          - cluster: "{{ update.key.regions[0].id }}-1"
+            bucket_name: "{{ create_bucket.name }}"
+            permissions: read_write
+        state: present
+      register: refresh_scoped
+
+    - name: Assert the scoped key was not changed
+      assert:
+        that:
+          - not refresh_scoped.changed
+
+    - name: Refresh the scoped key (region -> cluster in access grant)
+      linode.cloud.object_keys:
+        label: "{{ create_scoped.key.label }}"
+        regions:
+          - us-mia
+        access:
+          - cluster: "{{ update.key.regions[0].id }}-1"
+            bucket_name: "{{ create_bucket.name }}"
+            permissions: read_write
+        state: present
+      register: refresh_scoped
+
+    - name: Assert the scoped key was not changed
+      assert:
+        that:
+          - not refresh_scoped.changed
+
+    - name: Update the scoped key; expect failure
+      linode.cloud.object_keys:
+        label: "{{ create_scoped.key.label }}"
+        regions:
+          - us-mia
+        access: []
+        state: present
+      register: update_scoped
+      failed_when: "'`access` is not an updatable field' not in update_scoped.msg"
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the OBJ bucket
+          amazon.aws.s3_bucket:
+            s3_url: "https://{{ update.key.regions[0].s3_endpoint }}//"
+            aws_access_key: "{{ create.key.access_key }}"
+            aws_secret_key: "{{ create.key.secret_key }}"
+            name: "{{ create_bucket.name }}"
+            state: absent
+          register: delete_bucket
+
+        - name: Delete the scoped OBJ key
+          linode.cloud.object_keys:
+            label: "{{ create_scoped.key.label }}"
+            state: absent
+
+        - name: Delete the OBJ key
+          linode.cloud.object_keys:
+            label: "{{ create.key.label }}"
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: "{{ ua_prefix }}"
+    LINODE_API_TOKEN: "{{ api_token }}"
+    LINODE_API_URL: "{{ api_url }}"
+    LINODE_API_VERSION: "{{ api_version }}"
+    LINODE_CA: '{{ ca_file or "" }}'
