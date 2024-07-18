@@ -81,7 +81,8 @@ SPECDOC_META = SpecDocMeta(
         ),
         "credentials": SpecReturnValue(
             description="The root username and password for an accessible Managed MySQL Database.",
-            docs_url="https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance-credentials",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/"
+            "get-databases-mysql-instance-credentials",
             type=FieldType.dict,
             sample=docs_parent.result_credentials_samples,
         ),
