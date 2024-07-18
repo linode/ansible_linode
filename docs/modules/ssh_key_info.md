@@ -47,6 +47,6 @@ Get info about the Linode SSH public key.
           "ssh_key": "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/profile/#ssh-key-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-ssh-key) for a list of returned fields
 
 

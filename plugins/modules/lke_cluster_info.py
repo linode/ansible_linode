@@ -67,15 +67,13 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "cluster": SpecReturnValue(
             description="The LKE cluster in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#kubernetes-cluster-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster",
             type=FieldType.dict,
             sample=docs_parent.result_cluster,
         ),
         "node_pools": SpecReturnValue(
             description="A list of node pools in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#node-pools-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-pools",
             type=FieldType.list,
             sample=docs_parent.result_node_pools,
         ),
@@ -83,14 +81,12 @@ SPECDOC_META = SpecDocMeta(
             description="The Base64-encoded kubeconfig used to access this cluster. \n"
             "NOTE: This value may be unavailable if the cluster is not "
             "fully provisioned.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#kubeconfig-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-kubeconfig",
             type=FieldType.string,
         ),
         "dashboard_url": SpecReturnValue(
             description="The Cluster Dashboard access URL.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#kubernetes-cluster-dashboard-url-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-dashboard",
             type=FieldType.string,
         ),
     },

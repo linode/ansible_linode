@@ -86,6 +86,6 @@ NOTE: Domain records are identified by their name, target, and type.
           "weight": 50
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/domains/#domain-record-view) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-record) for a list of returned fields
 
 

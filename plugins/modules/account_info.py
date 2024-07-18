@@ -37,7 +37,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "account": SpecReturnValue(
             description="The account info in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/account/#account-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-account",
             type=FieldType.dict,
             sample=docs.result_account_samples,
         )

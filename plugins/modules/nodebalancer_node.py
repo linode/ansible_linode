@@ -87,7 +87,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "node": SpecReturnValue(
             description="The NodeBalancer Node in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/#node-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-node",
             type=FieldType.dict,
             sample=docs.result_node_samples,
         )

@@ -1,10 +1,17 @@
 import pytest
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import InfoModule, InfoModuleResult, \
-    InfoModuleParam, InfoModuleAttr
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
+    InfoModule,
+    InfoModuleResult,
+    InfoModuleParam,
+    InfoModuleAttr,
+)
 from ansible_specdoc.objects import FieldType
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_requirements, global_authors
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
+    global_requirements,
+    global_authors,
+)
 
 
 class TestLinodeInfoModule:
@@ -17,7 +24,7 @@ class TestLinodeInfoModule:
                 field_type=FieldType.dict,
                 display_name="Foo",
                 docs_url="https://linode.com/",
-                samples=['{"foo": "bar"}', '{"foo": "foo"}']
+                samples=['{"foo": "bar"}', '{"foo": "foo"}'],
             ),
             secondary_results=[
                 InfoModuleResult(
@@ -26,14 +33,14 @@ class TestLinodeInfoModule:
                     display_name="Bar",
                     docs_url="https://foo.linode.com/",
                     samples=['{"foo": "bar"}', '{"foo": "foo"}'],
-                    get=lambda *args: "wow"
+                    get=lambda *args: "wow",
                 ),
             ],
             params=[
                 InfoModuleParam(
                     name="parent_id",
                     display_name="Parent",
-                    type=FieldType.integer
+                    type=FieldType.integer,
                 )
             ],
             attributes=[
@@ -41,10 +48,10 @@ class TestLinodeInfoModule:
                     name="attr",
                     display_name="Attr",
                     type=FieldType.string,
-                    get=lambda *args: ["cool"]
+                    get=lambda *args: ["cool"],
                 )
             ],
-            examples=["foo"]
+            examples=["foo"],
         )
 
     def test_init(self, mock_module):
@@ -53,16 +60,17 @@ class TestLinodeInfoModule:
     def test_generate_spec(self, mock_module):
         spec = mock_module.spec
 
-        assert spec.description == [
-            "Get info about a Linode Foo."
-        ]
+        assert spec.description == ["Get info about a Linode Foo."]
         assert spec.requirements == global_requirements
         assert spec.author == global_authors
 
         parent_id_field = spec.options.get("parent_id")
         assert parent_id_field.type == FieldType.integer
         assert parent_id_field.required
-        assert parent_id_field.description == "The ID of the Parent for this resource."
+        assert (
+            parent_id_field.description
+            == "The ID of the Parent for this resource."
+        )
 
         attr_field = spec.options.get("attr")
         assert attr_field.type == FieldType.string
@@ -90,7 +98,7 @@ class TestLinodeInfoModule:
                 name="attr_2",
                 display_name="Attr 2",
                 type=FieldType.string,
-                get=lambda *args: ["cool"]
+                get=lambda *args: ["cool"],
             )
         )
 

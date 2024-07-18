@@ -51,6 +51,6 @@ Get info about a Linode Profile.
           "verified_phone_number": "+5555555555"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/profile/#profile-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-profile) for a list of returned fields
 
 

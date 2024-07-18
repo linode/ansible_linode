@@ -100,8 +100,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "image": SpecReturnValue(
             description="The Image in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/images/"
-            "#image-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-image",
             type=FieldType.dict,
             sample=docs.result_image_samples,
         )

@@ -33,7 +33,7 @@ spec_filter = {
         description=[
             "The name of the field to filter on.",
             "Valid filterable attributes can be found here: "
-            "https://www.linode.com/docs/api/account/#events-list__responses",
+            "https://techdocs.akamai.com/linode-api/reference/get-events",
         ],
     ),
     "values": SpecField(
@@ -84,7 +84,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "events": SpecReturnValue(
             description="The returned events.",
-            docs_url="https://www.linode.com/docs/api/account/#events-list__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-events",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_events_samples,

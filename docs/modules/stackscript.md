@@ -83,6 +83,6 @@ Manage a Linode StackScript.
           "username": "myuser"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/stackscripts/#stackscript-create__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/post-add-stack-script) for a list of returned fields
 
 

@@ -78,6 +78,6 @@ Manage Linode NodeBalancer Nodes.
           "weight": 10
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/nodebalancers/#node-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-node) for a list of returned fields
 
 

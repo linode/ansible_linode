@@ -109,7 +109,7 @@ Manage a Linode NodeBalancer.
           "updated": "2018-03-01T00:01:01"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer) for a list of returned fields
 
 
 - `configs` - A list of configs applied to the NodeBalancer.
@@ -144,7 +144,7 @@ Manage a Linode NodeBalancer.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/nodebalancers/#config-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-config) for a list of returned fields
 
 
 - `nodes` - A list of configs applied to the NodeBalancer.
@@ -164,7 +164,7 @@ Manage a Linode NodeBalancer.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/nodebalancers/#node-view) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-node) for a list of returned fields
 
 
 - `firewalls` - A list IDs for firewalls attached to this NodeBalancer.
@@ -176,6 +176,6 @@ Manage a Linode NodeBalancer.
           5678
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/nodebalancers/#firewalls-list) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-firewalls) for a list of returned fields
 
 
