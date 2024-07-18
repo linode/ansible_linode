@@ -173,10 +173,9 @@ class LinodeDomainRecord(LinodeModuleBase):
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[List[str]] = [
             ["domain", "domain_id"],
-            ["name", "record_id"],
+            [("name", "type"), "record_id"],
         ]
         self.mutually_exclusive: List[List[str]] = [["name", "record_id"]]
-        self.required_together: List[List[str]] = [["name", "type"]]
         self.results = {"changed": False, "actions": [], "record": None}
 
         self._domain: Optional[Domain] = None

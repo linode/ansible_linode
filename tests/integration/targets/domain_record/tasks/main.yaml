@@ -38,6 +38,24 @@
           - record_create.record.ttl_sec == 3600
           - record_create.record.weight == 55
 
+    - name: Create a Service records
+      linode.cloud.domain_record:
+        domain: '{{ domain_create.domain.domain }}'
+        state: present
+        service: carddavs
+        protocol: tcp
+        type: "SRV"
+        target: host.example.com
+        port: 443
+        priority: 0
+        weight: 1
+      register: srv_create
+
+    - name: Assert SRV record is created
+      assert:
+        that:
+          - srv_create.record.type == 'SRV'
+
     - name: Update domain_record
       linode.cloud.domain_record:
         domain: '{{ domain_create.domain.domain }}'
