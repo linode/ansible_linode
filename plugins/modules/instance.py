@@ -570,6 +570,13 @@ linode_instance_config_mutable = {
     "interfaces",
 }
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeInstance(LinodeModuleBase):
     """Module for creating and destroying Linode Instances"""

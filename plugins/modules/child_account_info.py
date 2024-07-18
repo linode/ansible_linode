@@ -36,9 +36,20 @@ module = InfoModule(
         ),
     ],
     examples=docs.specdoc_examples,
+    description=[
+        "Get info about a Linode Child Account.",
+        "NOTE: Parent/Child related features may not be generally available.",
+    ],
 )
 
 SPECDOC_META = module.spec
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 if __name__ == "__main__":
     module.run()

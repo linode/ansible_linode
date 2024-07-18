@@ -96,6 +96,13 @@ SPECDOC_META = SpecDocMeta(
 
 MUTABLE_FIELDS: Set[str] = {"address", "mode", "weight"}
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeNodeBalancerNode(LinodeModuleBase):
     """Module for managing Linode NodeBalancer nodes"""
@@ -212,75 +219,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-DOCUMENTATION = """
-author:
-- Luke Murphy (@decentral1se)
-- Charles Kenney (@charliekenney23)
-- Phillip Campbell (@phillc)
-- Lena Garber (@lbgarber)
-- Jacob Riddle (@jriddle)
-description:
-- Manage Linode NodeBalancer Nodes.
-module: nodebalancer_node
-options:
-  address:
-    description: The private IP Address where this backend can be reached. This must
-      be a private IP address.
-    required: false
-    type: str
-  config_id:
-    description: The ID of the NodeBalancer Config that contains this node.
-    required: true
-    type: int
-  label:
-    description: The label for this node. This is used to identify nodes within a
-      config.
-    required: true
-    type: str
-  mode:
-    choices:
-    - accept
-    - reject
-    - drain
-    - backup
-    description: The mode this NodeBalancer should use when sending traffic to this
-      backend.
-    required: false
-    type: str
-  nodebalancer_id:
-    description: The ID of the NodeBalancer that contains this node.
-    required: true
-    type: int
-  state:
-    choices:
-    - present
-    - absent
-    description: Whether the NodeBalancer node should be present or absent.
-    required: true
-    type: str
-  weight:
-    description: Nodes with a higher weight will receive more traffic.
-    required: false
-    type: int
-requirements:
-- python >= 3
-"""
-
-RETURN = """
-node:The NodeBalancer Node in JSON serialized form.
-  description: 
-  linode_api_docs: "https://www.linode.com/docs/api/nodebalancers/#node-view__responses"
-  returned: always
-  type: dict
-  sample: {
-  "address": "123.123.123.123:80",
-  "config_id": 12345,
-  "id": 12345,
-  "label": "mynode",
-  "mode": "accept",
-  "nodebalancer_id": 12345,
-  "status": "Unknown",
-  "weight": 10
-}
-"""

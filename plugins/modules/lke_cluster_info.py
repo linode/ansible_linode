@@ -98,6 +98,13 @@ SPECDOC_META = SpecDocMeta(
 
 VALID_FILTERS = ["id", "label"]
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeLKEClusterInfo(LinodeModuleBase):
     """Module for getting info about a Linode Volume"""

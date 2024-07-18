@@ -85,6 +85,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 
 class LinodeDomainRecordInfo(LinodeModuleBase):
     """Module for getting info about a Linode Domain record"""
