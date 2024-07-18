@@ -1,4 +1,4 @@
-- name: stackscript_basic
+- name: image_basic
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -105,7 +105,7 @@
           - 'new-tag'
         regions_to_replicate:
           - 'us-east'
-          - 'us-central'
+          - 'eu-west'
         state: present
       register: image_replicate
 

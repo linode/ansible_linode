@@ -285,8 +285,10 @@ class Module(LinodeModuleBase):
 
         self._update_image(image)
 
-        new_regions = params.get("regions_to_replicate")
+        regions_to_replicate = params.get("regions_to_replicate")
+        new_regions: list = [] if regions_to_replicate is None else regions_to_replicate
         old_regions = [r.region for r in image.regions]
+
         # Replicate image in new regions
         if new_regions != old_regions:
             if new_regions is None or len(new_regions) == 0:
