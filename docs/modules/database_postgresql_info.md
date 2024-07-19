@@ -73,7 +73,7 @@ Get info about a Linode PostgreSQL Managed Database.
           "version": "14.6"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-postgresql-database-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instance) for a list of returned fields
 
 
 - `backups` - The database backups in JSON serialized form.
@@ -89,7 +89,7 @@ Get info about a Linode PostgreSQL Managed Database.
            }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-postgresql-database-backups-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instance-backups) for a list of returned fields
 
 
 - `ssl_cert` - The SSL CA certificate for an accessible Managed PostgreSQL Database.
@@ -100,7 +100,7 @@ Get info about a Linode PostgreSQL Managed Database.
           "ca_certificate": "LS0tLS1CRUdJ...=="
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-postgresql-database-ssl-certificate-view) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgresql-instance-ssl) for a list of returned fields
 
 
 - `credentials` - The root username and password for an accessible Managed PostgreSQL Database.
@@ -112,6 +112,6 @@ Get info about a Linode PostgreSQL Managed Database.
           "username": "linroot"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-postgresql-database-credentials-view__request-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instance-credentials) for a list of returned fields
 
 

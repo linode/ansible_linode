@@ -141,7 +141,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "record": SpecReturnValue(
             description="View a single Record on this Domain.",
-            docs_url="https://www.linode.com/docs/api/domains/#domain-record-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain-record",
             type=FieldType.dict,
             sample=docs.result_record_samples,
         )

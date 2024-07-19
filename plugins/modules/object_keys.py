@@ -94,8 +94,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "key": SpecReturnValue(
             description="The Object Storage key in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/object-storage/#object-storage"
-            "-key-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-object-storage-key",
             type=FieldType.dict,
             sample=docs.result_key_samples,
         )

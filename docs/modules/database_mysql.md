@@ -116,7 +116,7 @@ Manage a Linode MySQL database.
           "version": "8.0.30"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-mysql-database-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance) for a list of returned fields
 
 
 - `backups` - The database backups in JSON serialized form.
@@ -132,7 +132,7 @@ Manage a Linode MySQL database.
            }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-mysql-database-backup-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance-backup) for a list of returned fields
 
 
 - `ssl_cert` - The SSL CA certificate for an accessible Managed MySQL Database.
@@ -143,7 +143,7 @@ Manage a Linode MySQL database.
           "ca_certificate": "LS0tLS1CRUdJ...=="
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-mysql-database-ssl-certificate-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance-ssl) for a list of returned fields
 
 
 - `credentials` - The root username and password for an accessible Managed MySQL Database.
@@ -155,6 +155,6 @@ Manage a Linode MySQL database.
           "username": "linroot"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-mysql-database-credentials-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance-credentials) for a list of returned fields
 
 

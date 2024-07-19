@@ -63,6 +63,6 @@ Manage a Linode IP address's rDNS.
           }
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/profile/#ip-address-rdns-update) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-ipv6-range) for a list of returned fields
 
 

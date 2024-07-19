@@ -32,8 +32,7 @@ spec_filter = {
         description=[
             "The name of the field to filter on.",
             "Valid filterable attributes can be found here: "
-            "https://www.linode.com/docs/api/profile/"
-            "#personal-access-tokens-list__responses",
+            "https://techdocs.akamai.com/linode-api/reference/get-profile",
         ],
     ),
     "values": SpecField(
@@ -85,8 +84,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "tokens": SpecReturnValue(
             description="The returned tokens.",
-            docs_url="https://www.linode.com/docs/api/profile/"
-            "#personal-access-tokens-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-personal-access-tokens",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_tokens_samples,

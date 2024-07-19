@@ -68,6 +68,6 @@ Manage Linode Firewall Devices.
           "updated": "2018-01-02T00:01:01"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#firewall-device-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-firewall-device) for a list of returned fields
 
 

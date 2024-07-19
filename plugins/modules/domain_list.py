@@ -31,8 +31,7 @@ spec_filter = {
         description=[
             "The name of the field to filter on.",
             "Valid filterable attributes can be found here: "
-            "https://www.linode.com/docs/api/domains/#domains-list__responses"
-            "#domains-list__responses",
+            "https://techdocs.akamai.com/linode-api/reference/get-domains",
         ],
     ),
     "values": SpecField(
@@ -84,8 +83,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "domains": SpecReturnValue(
             description="The returned domains.",
-            docs_url="https://www.linode.com/docs/api/domains/"
-            "#domains-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-domains",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_domains_samples,

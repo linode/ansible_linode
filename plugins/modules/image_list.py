@@ -14,7 +14,7 @@ module = ListModule(
     result_display_name="Images",
     result_field_name="images",
     endpoint_template="/images",
-    result_docs_url="https://www.linode.com/docs/api/images/#images-list__responses",
+    result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-images",
     result_samples=docs.result_images_samples,
     examples=docs.specdoc_examples,
 )

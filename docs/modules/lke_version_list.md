@@ -39,6 +39,6 @@ List Kubernetes versions available for deployment to a Kubernetes cluster.
             }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubernetes-versions-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-versions) for a list of returned fields
 
 
