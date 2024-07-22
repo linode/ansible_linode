@@ -38,24 +38,6 @@
           - record_create.record.ttl_sec == 3600
           - record_create.record.weight == 55
 
-    - name: Create a Service records
-      linode.cloud.domain_record:
-        domain: '{{ domain_create.domain.domain }}'
-        state: present
-        service: carddavs
-        protocol: tcp
-        type: "SRV"
-        target: host.example.com
-        port: 443
-        priority: 0
-        weight: 1
-      register: srv_create
-
-    - name: Assert SRV record is created
-      assert:
-        that:
-          - srv_create.record.type == 'SRV'
-
     - name: Update domain_record
       linode.cloud.domain_record:
         domain: '{{ domain_create.domain.domain }}'
@@ -164,6 +146,24 @@
           - record_dupe_update.record.ttl_sec == 300
           - record_dupe_update.record.weight == 55
 
+    - name: Create an SRV domain record
+      linode.cloud.domain_record:
+        domain: '{{ domain_create.domain.domain }}'
+        service: carddavs
+        protocol: tcp
+        type: "SRV"
+        target: host.example.com
+        port: 443
+        priority: 0
+        weight: 1
+        state: present
+      register: srv_create
+
+    - name: Assert SRV record is created
+      assert:
+        that:
+          - srv_create.record.type == 'SRV'
+
     - name: Get domain_info
       linode.cloud.domain_info:
         domain: '{{ domain_create.domain.domain }}'
@@ -172,7 +172,7 @@
     - name: Assert domain_info response
       assert:
         that:
-          - domain_info.records|length == 3
+          - domain_info.records|length == 4
 
     - name: Create domain_record containing FQDN
       linode.cloud.domain_record:
@@ -261,7 +261,20 @@
           assert:
             that:
               - record_dupe_delete.changed
-              - record_dupe_delete.record.id == record_dupe_delete.record.id
+              - record_dupe_delete.record.id == record_dupe_create.record.id
+
+        - name: Delete SRV domain_record
+          linode.cloud.domain_record:
+            domain: '{{ domain_create.domain.domain }}'
+            record_id: '{{ srv_create.record.id }}'
+            state: absent
+          register: srv_record_delete
+
+        - name: Assert SRV domain_record is deleted
+          assert:
+            that:
+              - srv_record_delete.changed
+              - srv_record_delete.record.id == srv_create.record.id
 
         - name: Delete domain
           linode.cloud.domain:            
