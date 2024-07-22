@@ -103,7 +103,7 @@
         description: 'yooo'
         tags:
           - 'new-tag'
-        regions_to_replicate:
+        replica_regions:
           - 'us-east'
           - 'eu-west'
         state: present

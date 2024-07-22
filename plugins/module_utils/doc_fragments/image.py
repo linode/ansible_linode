@@ -24,7 +24,7 @@ specdoc_examples = ['''
     disk_id: 12345
     tags: 
         - test
-    regions_to_replicate: 
+    replica_regions: 
         - us-east
         - us-central
     state: present''',  '''
