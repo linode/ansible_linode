@@ -17,6 +17,17 @@ specdoc_examples = ['''
     tags: 
         - test
     state: present''', '''
+- name: Replicate an image
+  linode.cloud.image:
+    label: my-image
+    description: Created using Ansible!
+    disk_id: 12345
+    tags: 
+        - test
+    replica_regions: 
+        - us-east
+        - us-central
+    state: present''',  '''
 - name: Delete an image
   linode.cloud.image:
     label: my-image
