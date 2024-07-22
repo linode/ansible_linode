@@ -95,7 +95,8 @@ SPEC = {
         editable=True,
         description=["A list of customized tags of this new Image."],
     ),
-    "regions_to_replicate": SpecField(
+    # `regions` send to API for image replication
+    "replica_regions": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
         editable=True,
@@ -285,17 +286,15 @@ class Module(LinodeModuleBase):
 
         self._update_image(image)
 
-        regions_to_replicate = params.get("regions_to_replicate")
-        new_regions: list = (
-            [] if regions_to_replicate is None else regions_to_replicate
-        )
+        replica_regions = params.get("replica_regions")
+        new_regions: list = [] if replica_regions is None else replica_regions
         old_regions = [r.region for r in image.regions]
 
         # Replicate image in new regions
         if new_regions != old_regions:
             if new_regions is None or len(new_regions) == 0:
                 return self.fail(
-                    msg="failed to replicate image {0}: regions_to_replicate value {1} is invalid. "
+                    msg="failed to replicate image {0}: replica_regions value {1} is invalid. "
                     "At least one valid region is required.".format(
                         label, new_regions
                     )
