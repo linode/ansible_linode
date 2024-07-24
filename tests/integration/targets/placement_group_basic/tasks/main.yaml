@@ -14,7 +14,8 @@
       linode.cloud.placement_group:
         label: 'ansible-test-{{ r }}'
         region: '{{ region }}'
-        affinity_type: anti_affinity:local
+        placement_group_type: anti_affinity:local
+        placement_group_policy: flexible
         state: present
       register: pg_created
 
@@ -22,8 +23,8 @@
       assert:
         that:
           - pg_created.placement_group.region == region
-          - pg_created.placement_group.affinity_type == 'anti_affinity:local'
-          - pg_created.placement_group.is_strict == false
+          - pg_created.placement_group.placement_group_type == 'anti_affinity:local'
+          - pg_created.placement_group.placement_group_policy == 'flexible'
 
     - name: Update a Linode placement group label
       linode.cloud.placement_group:
