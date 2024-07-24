@@ -34,7 +34,7 @@ spec_filter = {
         description=[
             "The name of the field to filter on.",
             "Valid filterable attributes can be found here: "
-            "https://www.linode.com/docs/api/networking/#vlans-list__response-samples",
+            "https://techdocs.akamai.com/linode-api/reference/get-vlans",
         ],
     ),
     "values": SpecField(
@@ -88,7 +88,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "vlans": SpecReturnValue(
             description="The returned VLANs.",
-            docs_url="https://www.linode.com/docs/api/networking/#vlans-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-vlans",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_vlan_samples,

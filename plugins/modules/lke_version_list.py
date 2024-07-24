@@ -54,8 +54,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "lke_versions": SpecReturnValue(
             description="The returned LKE versions.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#kubernetes-versions-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-versions",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_lke_versions_samples,

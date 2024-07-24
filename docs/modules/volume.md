@@ -103,6 +103,6 @@ Manage a Linode Volume.
           "updated": "2018-01-01T00:01:01"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/volumes/#volume-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-volume) for a list of returned fields
 
 

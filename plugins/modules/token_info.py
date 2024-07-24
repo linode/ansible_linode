@@ -51,8 +51,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "token": SpecReturnValue(
             description="The token in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/profile/"
-            "#personal-access-token-create__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/post-personal-access-token",
             type=FieldType.dict,
             sample=docs_parent.result_token_samples,
         )

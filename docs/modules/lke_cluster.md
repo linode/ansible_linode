@@ -125,7 +125,7 @@ Manage Linode LKE clusters.
           "updated": "2019-09-13T21:24:16Z"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubernetes-cluster-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-cluster) for a list of returned fields
 
 
 - `node_pools` - A list of node pools in JSON serialized form.
@@ -162,15 +162,15 @@ Manage Linode LKE clusters.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#node-pools-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-pools) for a list of returned fields
 
 
 - `kubeconfig` - The Base64-encoded kubeconfig used to access this cluster. 
 NOTE: This value may be unavailable if `skip_polling` is true.
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubeconfig-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-kubeconfig) for a list of returned fields
 
 
 - `dashboard_url` - The Cluster Dashboard access URL.
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubernetes-cluster-dashboard-url-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-dashboard) for a list of returned fields
 
 

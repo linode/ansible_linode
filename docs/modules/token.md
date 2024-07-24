@@ -64,6 +64,6 @@ NOTE: The full Personal Access Token is only returned when a new token has been 
           "token": "abcdefghijklmnop"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/profile/#personal-access-token-create__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/post-personal-access-token) for a list of returned fields
 
 

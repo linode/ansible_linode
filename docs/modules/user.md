@@ -106,7 +106,7 @@ Manage a Linode User.
           "username": "example_user"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/account/#user-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-user) for a list of returned fields
 
 
 - `grants` - The grants info in JSON serialized form.
@@ -179,6 +179,6 @@ Manage a Linode User.
           ]
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/account/#users-grants-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-user-grants) for a list of returned fields
 
 

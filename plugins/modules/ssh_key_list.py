@@ -34,8 +34,7 @@ spec_filter = {
             "The name of the field to filter on.",
             (
                 "Valid filterable attributes can be found here: "
-                "https://www.linode.com/docs/api/profile/"
-                "#ssh-keys-list"
+                "https://techdocs.akamai.com/linode-api/reference/get-profile"
             ),
         ],
     ),
@@ -88,7 +87,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "ssh_keys": SpecReturnValue(
             description="The returned SSH keys.",
-            docs_url="https://www.linode.com/docs/api/profile/#ssh-keys-list",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-ssh-keys",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_ssh_key_list_samples,

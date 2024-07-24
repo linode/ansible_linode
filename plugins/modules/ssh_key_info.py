@@ -50,8 +50,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "ssh_key": SpecReturnValue(
             description="The SSH key in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/profile/"
-            "#ssh-key-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-ssh-key",
             type=FieldType.dict,
             sample=docs.ssh_key_info_response_sample,
         )

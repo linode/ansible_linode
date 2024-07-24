@@ -45,6 +45,6 @@ Manage the Linode shared IPs.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#ip-addresses-share__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/post-share-ips) for a list of returned fields
 
 

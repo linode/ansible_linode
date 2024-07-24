@@ -59,6 +59,6 @@ Get info about a Linode Type.
             "vcpus": 2
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-types/#type-view) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-type) for a list of returned fields
 
 
