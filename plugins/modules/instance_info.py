@@ -25,7 +25,7 @@ module = InfoModule(
         display_name="Instance",
         field_name="instance",
         field_type=FieldType.dict,
-        docs_url="https://www.linode.com/docs/api/linode-instances/#linode-view__responses",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-instance",
         samples=docs_parent.result_instance_samples,
     ),
     secondary_results=[
@@ -33,8 +33,7 @@ module = InfoModule(
             field_name="configs",
             field_type=FieldType.list,
             display_name="Configs",
-            docs_url="https://www.linode.com/docs/api/linode-instances/"
-            "#configuration-profile-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-config",
             samples=docs_parent.result_configs_samples,
             get=lambda client, instance, params: paginated_list_to_json(
                 Instance(client, instance.get("id")).configs
@@ -44,7 +43,7 @@ module = InfoModule(
             field_name="disks",
             field_type=FieldType.list,
             display_name="Disks",
-            docs_url="https://www.linode.com/docs/api/linode-instances/#disk-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-disk",
             samples=docs_parent.result_disks_samples,
             get=lambda client, instance, params: paginated_list_to_json(
                 Instance(client, instance.get("id")).disks
@@ -54,8 +53,7 @@ module = InfoModule(
             field_name="networking",
             field_type=FieldType.dict,
             display_name="Networking Configuration",
-            docs_url="https://www.linode.com/docs/api/linode-instances/"
-            "#networking-information-list__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-ips",
             samples=docs_parent.result_networking_samples,
             get=lambda client, instance, params: client.get(
                 "/linode/instances/{0}/ips".format(instance.get("id"))

@@ -57,6 +57,6 @@ View a Linode NodeBalancers Stats.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/nodebalancers/#nodebalancer-statistics-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-stats) for a list of returned fields
 
 

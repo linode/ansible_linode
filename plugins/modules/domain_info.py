@@ -61,19 +61,19 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "domain": SpecReturnValue(
             description="The domain in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/domains/#domain-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain",
             type=FieldType.dict,
             sample=docs_parent.result_domain_samples,
         ),
         "records": SpecReturnValue(
             description="The domain record in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/domains/#domain-record-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain-record",
             type=FieldType.list,
             sample=docs_parent.result_records_samples,
         ),
         "zone_file": SpecReturnValue(
             description="The zone file for the last rendered zone for the specified domain.",
-            docs_url="https://www.linode.com/docs/api/domains/#domain-zone-file-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain-zone",
             type=FieldType.list,
             sample=docs_parent.result_zone_file_samples,
         ),

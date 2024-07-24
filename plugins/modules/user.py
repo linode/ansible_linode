@@ -216,14 +216,13 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "user": SpecReturnValue(
             description="The user in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/account/#user-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-user",
             type=FieldType.dict,
             sample=docs.result_user_samples,
         ),
         "grants": SpecReturnValue(
             description="The grants info in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/account/"
-            "#users-grants-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-user-grants",
             type=FieldType.dict,
             sample=docs.result_grants_samples,
         ),

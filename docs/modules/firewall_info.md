@@ -90,7 +90,7 @@ Get info about a Linode Firewall.
           "updated": "2018-01-02T00:01:01"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#firewall-view) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-firewall) for a list of returned fields
 
 
 - `devices` - A list of Firewall devices JSON serialized form.
@@ -111,6 +111,6 @@ Get info about a Linode Firewall.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#firewall-device-view) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-firewall-device) for a list of returned fields
 
 

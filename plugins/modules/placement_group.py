@@ -44,16 +44,16 @@ placement_group_spec = {
         type=FieldType.string,
         description=["The region that the placement group is in."],
     ),
-    "affinity_type": SpecField(
+    "placement_group_type": SpecField(
         type=FieldType.string,
-        description=["The affinity policy for Linodes in a placement group."],
+        description=["The type of this placement group."],
     ),
-    "is_strict": SpecField(
-        type=FieldType.bool,
-        default=False,
+    "placement_group_policy": SpecField(
+        type=FieldType.string,
         description=[
-            "Whether Linodes must be able to become compliant during assignment."
+            "The policy for assigning Linodes to this placement group."
         ],
+        choices=["flexible", "strict"],
     ),
 }
 
@@ -76,7 +76,12 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-CREATE_FIELDS = {"label", "region", "affinity_type", "is_strict"}
+CREATE_FIELDS = {
+    "label",
+    "region",
+    "placement_group_type",
+    "placement_group_policy",
+}
 # Fields that can be updated on an existing placement group
 MUTABLE_FIELDS = {"label"}
 

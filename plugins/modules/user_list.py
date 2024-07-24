@@ -53,8 +53,7 @@ SPECDOC_META = SpecDocMeta(
         "users": SpecReturnValue(
             description="The returned users.",
             docs_url=(
-                "https://www.linode.com/docs/api/account/"
-                "#users-list__response-samples"
+                "https://techdocs.akamai.com/linode-api/reference/get-account"
             ),
             type=FieldType.list,
             elements=FieldType.dict,

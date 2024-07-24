@@ -86,12 +86,12 @@ Get info about a Linode Instance.
           "placement_group": {
             "id": 123,
             "label": "test",
-            "affinity_type": "anti_affinity:local",
-            "is_strict": true
+            "placement_group_type": "anti_affinity:local",
+            "placement_group_policy": "strict"
           }
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#linode-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-instance) for a list of returned fields
 
 
 - `configs` - The returned Configs.
@@ -159,7 +159,7 @@ Get info about a Linode Instance.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-config) for a list of returned fields
 
 
 - `disks` - The returned Disks.
@@ -178,7 +178,7 @@ Get info about a Linode Instance.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#disk-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-disk) for a list of returned fields
 
 
 - `networking` - The returned Networking Configuration.
@@ -273,6 +273,6 @@ Get info about a Linode Instance.
           }
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#networking-information-list__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-ips) for a list of returned fields
 
 

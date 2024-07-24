@@ -111,6 +111,6 @@ Manage Linode LKE cluster node pools.
           "type": "g6-standard-4"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#node-pool-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-node-pool) for a list of returned fields
 
 

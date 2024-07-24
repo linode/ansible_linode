@@ -84,8 +84,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "stackscript": SpecReturnValue(
             description="The StackScript in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/stackscripts/"
-            "#stackscript-create__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/post-add-stack-script",
             type=FieldType.dict,
             sample=docs.result_stackscript_samples,
         )

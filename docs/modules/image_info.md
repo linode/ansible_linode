@@ -58,6 +58,6 @@ Get info about a Linode Image.
           "vendor": "Debian"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/images/#image-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-image) for a list of returned fields
 
 

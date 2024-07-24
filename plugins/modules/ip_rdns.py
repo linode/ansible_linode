@@ -58,7 +58,7 @@ SPECDOC_META = SpecDocMeta(
                 "reverse DNS in JSON serialized form."
             ),
             docs_url=(
-                "https://www.linode.com/docs/api/profile/#ip-address-rdns-update"
+                "https://techdocs.akamai.com/linode-api/reference/get-ipv6-range"
             ),
             type=FieldType.dict,
             sample=ip_docs.result_ip_samples,

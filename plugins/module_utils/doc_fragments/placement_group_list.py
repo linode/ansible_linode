@@ -10,8 +10,8 @@ result_placement_groups_samples = ['''[
       "id": 123,
       "label": "test",
       "region": "eu-west",
-      "affinity_type": "anti_affinity:local",
-      "is_strict": true,
+      "placement_group_type": "anti_affinity:local",
+      "placement_group_policy": "strict",
       "is_compliant": true,
       "members": [
         {
