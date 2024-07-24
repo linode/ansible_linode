@@ -55,6 +55,7 @@ Manage Linode LKE cluster node pools.
 | `cluster_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the LKE cluster that contains this node pool.   |
 | `tags` | <center>`list`</center> | <center>**Required**</center> | An array of tags applied to this object. Tags must be unique as they are used by the `lke_node_pool` module to uniquely identify node pools.  **(Updatable)** |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| `disk_encryption` | <center>`str`</center> | <center>**Required**</center> | The disk encryption status of this node pool. NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`, `pde`; Default: `enabled`)** |
 | [`autoscaler` (sub-options)](#autoscaler) | <center>`dict`</center> | <center>Optional</center> | When enabled, the number of nodes autoscales within the defined minimum and maximum values.  **(Updatable)** |
 | `count` | <center>`int`</center> | <center>Optional</center> | The number of nodes in the Node Pool.  **(Updatable)** |
 | [`disks` (sub-options)](#disks) | <center>`list`</center> | <center>Optional</center> | This Node Pool’s custom disk layout. Each item in this array will create a new disk partition for each node in this Node Pool.   |
@@ -89,6 +90,7 @@ Manage Linode LKE cluster node pools.
             "max": 12,
             "min": 3
           },
+          "disk_encryption": "enabled",
           "count": 6,
           "disks": [
             {

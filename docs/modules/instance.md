@@ -122,6 +122,8 @@ Manage Linode Instances, Configs, and Disks.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
+| `lke_cluster_id` | <center>`int`</center> | <center>**Required**</center> | The id of the LKE cluster associated with this Linode, if there is one.   |
+| `disk_encryption` | <center>`str`</center> | <center>**Required**</center> | The disk encryption status of this Linode. NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`, `pde`; Default: `enabled`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The unique label to give this instance.   |
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type of the Linode you are creating.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The location to deploy the instance in. See the [Linode API documentation](https://api.linode.com/v4/regions).   |
@@ -268,6 +270,7 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_encryption` | <center>`str`</center> | <center>**Required**</center> | The disk encryption status of this disk.  **(Choices: `enabled`, `disabled`, `pde`; Default: `enabled`)** |
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label to give this Disk.   |
 | `size` | <center>`int`</center> | <center>**Required**</center> | The size of the Disk in MB.  **(Updatable)** |
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
@@ -353,6 +356,8 @@ Manage Linode Instances, Configs, and Disks.
             "placement_group_type": "anti_affinity:local",
             "placement_group_policy": "strict"
           }
+          "disk_encryption": "enabled",
+          "lke_cluster_id": null                      
         }
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-instance) for a list of returned fields
@@ -438,7 +443,8 @@ Manage Linode Instances, Configs, and Disks.
             "label": "Debian 9 Disk",
             "size": 48640,
             "status": "ready",
-            "updated": "2018-01-01T00:01:01"
+            "updated": "2018-01-01T00:01:01",
+            "disk_encryption": "enabled"
           }
         ]
         ```
