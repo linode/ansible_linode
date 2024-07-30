@@ -50,5 +50,6 @@ Get info about a Linode VPC.
             "updated": "2023-08-31T18:35:03"
         }
         ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vpc) for a list of returned fields
 
 

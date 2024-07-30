@@ -62,7 +62,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "vpc": SpecReturnValue(
             description="The VPC in JSON serialized form.",
-            docs_url="TODO",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-vpc",
             type=FieldType.dict,
             sample=docs.result_vpc_samples,
         )

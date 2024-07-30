@@ -40,7 +40,6 @@ NOTE: Placement Groups may not currently be available to all users.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `placement_group_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the Placement Group for this assignment.   |
 | `linode_id` | <center>`int`</center> | <center>**Required**</center> | The Linode ID to assign or unassign to the Placement Group.   |
-| `compliant_only` | <center>`bool`</center> | <center>Optional</center> | TODO   |
 
 ## Return Values
 
