@@ -40,7 +40,6 @@ ssh_key_spec = {
     ),
     "ssh_key": SpecField(
         type=FieldType.string,
-        editable=True,
         description=["The SSH public key value."],
     ),
 }
