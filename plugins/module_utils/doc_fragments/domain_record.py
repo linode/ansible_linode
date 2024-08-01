@@ -8,6 +8,17 @@ specdoc_examples = ['''
     type: 'A'
     target: '127.0.0.1'
     state: present''', '''
+- name: Create an SRV domain record
+  linode.cloud.domain_record:
+    domain: my-domain.com
+    service: srv-service
+    protocol: tcp
+    type: 'SRV'
+    target: host.example.com
+    port: 443
+    priority: 0
+    weight: 1
+    state: present''', '''
 - name: Delete a domain record
   linode.cloud.domain_record:
     domain: my-domain.com
