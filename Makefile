@@ -62,17 +62,14 @@ gendocs:
 #	ansible-test integration $(TEST_ARGS) --tags never
 integration-test: create-integration-config create-e2e-firewall
 	@echo "Running Integration Test(s)..."
-	OUTPUT=$$(ansible-test integration $(TEST_ARGS) 2>&1); \
-	TEST_EXIT_CODE=$$?; \
-	echo "$$OUTPUT" \
-	@echo "Running Cleanup for E2E firewall..." \
-	make delete-e2e-firewall; \
-	if [ $$TEST_EXIT_CODE -ne 0 ]; then \
-		echo "Integration tests failed, check RECAP above for more details..."; \
-	fi; \
-	exit $$TEST_EXIT_CODE
+	{ \
+		ansible-test integration $(TEST_ARGS); \
+		TEST_EXIT_CODE=$$?; \
+		make delete-e2e-firewall; \
+		exit $$TEST_EXIT_CODE; \
+	}
 
-create-e2e-firewall:
+create-e2e-firewall: update-test-submodules
 	@echo "Running create e2e firewall playbook..."
 	@OUTPUT=$$(ansible-playbook e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/create_e2e_cloud_firewall.yaml 2>&1); \
 	FAILED_COUNT=$$(echo "$$OUTPUT" | grep "failed=" | awk -F 'failed=' '{print $$2}' | awk '{print $$1}'); \
@@ -85,7 +82,7 @@ create-e2e-firewall:
 	fi
 
 
-delete-e2e-firewall:
+delete-e2e-firewall: update-test-submodules
 	@echo "Running delete e2e firewall playbook..."
 	@OUTPUT=$$(ansible-playbook e2e_scripts/cloud_security_scripts/cloud_e2e_firewall/ansible_linode/delete_e2e_cloud_firewall.yaml 2>&1); \
 	FAILED_COUNT=$$(echo "$$OUTPUT" | grep "failed=" | awk -F 'failed=' '{print $$2}' | awk '{print $$1}'); \
@@ -94,8 +91,11 @@ delete-e2e-firewall:
 		echo "$$OUTPUT"; \
 		exit 1; \
 	else \
-		echo "E2E Cloud firewall deleted successfully."; \
+		echo "E2E Cloud firewall created successfully."; \
 	fi
+
+update-test-submodules:
+	@git submodule update --init
 
 test: integration-test
 
