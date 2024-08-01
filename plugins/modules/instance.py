@@ -85,9 +85,8 @@ linode_instance_disk_spec = {
     ),
     "disk_encryption": SpecField(
         type=FieldType.string,
-        description="The disk encryption status of this disk.",
-        required=True,
-        default="enabled",
+        description="The disk encryption status of this disk."
+        + "NOTE: Disk encryption may not currently be available to all users.",
         choices=["enabled", "disabled", "pde"],
     ),
     "image": SpecField(
@@ -533,14 +532,11 @@ linode_instance_spec = {
     "lke_cluster_id": SpecField(
         type=FieldType.integer,
         description="The id of the LKE cluster associated with this Linode, if there is one.",
-        required=True,
     ),
     "disk_encryption": SpecField(
         type=FieldType.string,
         description="The disk encryption status of this Linode. "
         + "NOTE: Disk encryption may not currently be available to all users.",
-        required=True,
-        default="enabled",
         choices=["enabled", "disabled", "pde"],
     ),
 }

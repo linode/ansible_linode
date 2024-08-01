@@ -122,8 +122,6 @@ Manage Linode Instances, Configs, and Disks.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
-| `lke_cluster_id` | <center>`int`</center> | <center>**Required**</center> | The id of the LKE cluster associated with this Linode, if there is one.   |
-| `disk_encryption` | <center>`str`</center> | <center>**Required**</center> | The disk encryption status of this Linode. NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`, `pde`; Default: `enabled`)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The unique label to give this instance.   |
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type of the Linode you are creating.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The location to deploy the instance in. See the [Linode API documentation](https://api.linode.com/v4/regions).   |
@@ -151,6 +149,8 @@ Manage Linode Instances, Configs, and Disks.
 | `auto_disk_resize` | <center>`bool`</center> | <center>Optional</center> | Whether implicitly created disks should be resized during a type change operation.  **(Default: `False`)** |
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object. Tags are for organizational purposes only.  **(Updatable)** |
 | [`placement_group` (sub-options)](#placement_group) | <center>`dict`</center> | <center>Optional</center> | A Placement Group to create this Linode under.   |
+| `lke_cluster_id` | <center>`int`</center> | <center>Optional</center> | The id of the LKE cluster associated with this Linode, if there is one.   |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this Linode. NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`, `pde`)** |
 
 ### configs
 
@@ -270,12 +270,12 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `disk_encryption` | <center>`str`</center> | <center>**Required**</center> | The disk encryption status of this disk.  **(Choices: `enabled`, `disabled`, `pde`; Default: `enabled`)** |
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label to give this Disk.   |
 | `size` | <center>`int`</center> | <center>**Required**</center> | The size of the Disk in MB.  **(Updatable)** |
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
 | `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
 | `filesystem` | <center>`str`</center> | <center>Optional</center> | The filesystem to create this disk with.   |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this disk.NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`, `pde`)** |
 | `image` | <center>`str`</center> | <center>Optional</center> | An Image ID to deploy the Disk from.   |
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The root user’s password on the newly-created Linode.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |

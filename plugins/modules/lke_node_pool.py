@@ -144,8 +144,6 @@ MODULE_SPEC = {
         type=FieldType.string,
         description="The disk encryption status of this node pool. "
         + "NOTE: Disk encryption may not currently be available to all users.",
-        required=True,
-        default="enabled",
         choices=["enabled", "disabled", "pde"],
     ),
 }
