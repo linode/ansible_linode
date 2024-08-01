@@ -14,7 +14,7 @@ module = ListModule(
     result_display_name="all VPC IP Addresses",
     result_field_name="vpcs_ips",
     endpoint_template="/vpcs/ips",
-    result_docs_url="",
+    result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-vpcs-ips",
     examples=docs.specdoc_examples,
     result_samples=docs.result_vpc_samples,
 )

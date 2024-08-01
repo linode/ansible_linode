@@ -54,6 +54,6 @@ Get info about a Linode Placement Group.
         }
         
         ```
-    - See the [Linode API response documentation](TBD) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-placement-group) for a list of returned fields
 
 

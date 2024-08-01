@@ -35,7 +35,7 @@ List and filter on VPC IP Addresses.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here]().   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-vpc-ips).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
@@ -62,5 +62,6 @@ List and filter on VPC IP Addresses.
             }
         ]
         ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vpc-ips) for a list of returned fields
 
 

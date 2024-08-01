@@ -57,5 +57,6 @@ Get info about a Linode VPC Subnet.
             "updated": "2023-08-31T18:53:04"
         }
         ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vpc-subnet) for a list of returned fields
 
 
