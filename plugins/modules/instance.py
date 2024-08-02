@@ -523,6 +523,13 @@ linode_instance_spec = {
         suboptions=linode_instance_placement_group_spec,
         description=["A Placement Group to create this Linode under."],
     ),
+    "swap_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "When deploying from an Image, this field is optional, otherwise it is ignored. "
+            "This is used to set the swap disk size for the newly-created Linode."
+        ],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
