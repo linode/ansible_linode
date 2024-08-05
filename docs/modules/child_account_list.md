@@ -35,7 +35,7 @@ NOTE: Parent/Child related features may not be generally available.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here]().   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-child-accounts).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
@@ -74,5 +74,6 @@ NOTE: Parent/Child related features may not be generally available.
             "zip": "19102-1234"
         }
         ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-child-accounts) for a list of returned fields
 
 

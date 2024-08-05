@@ -65,5 +65,6 @@ NOTE: Parent/Child related features may not be generally available.
             "zip": "19102-1234"
         }
         ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-child-account) for a list of returned fields
 
 

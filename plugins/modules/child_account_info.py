@@ -21,7 +21,7 @@ module = InfoModule(
         field_name="child_account",
         field_type=FieldType.dict,
         display_name="Child Account",
-        docs_url="",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-child-account",
         samples=docs.result_child_account_samples,
     ),
     attributes=[

@@ -63,7 +63,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "subnet": SpecReturnValue(
             description="The VPC in JSON serialized form.",
-            docs_url="TODO",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-vpc-subnet",
             type=FieldType.dict,
             sample=docs.result_subnet_samples,
         )
