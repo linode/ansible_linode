@@ -22,7 +22,7 @@ module = InfoModule(
         display_name="Placement Group",
         field_name="placement_group",
         field_type=FieldType.dict,
-        docs_url="TBD",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-placement-group",
         samples=docs.result_placement_group_samples,
     ),
     attributes=[

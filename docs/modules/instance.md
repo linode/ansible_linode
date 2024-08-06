@@ -151,6 +151,7 @@ Manage Linode Instances, Configs, and Disks.
 | [`placement_group` (sub-options)](#placement_group) | <center>`dict`</center> | <center>Optional</center> | A Placement Group to create this Linode under.   |
 | `lke_cluster_id` | <center>`int`</center> | <center>Optional</center> | The id of the LKE cluster associated with this Linode, if there is one.   |
 | `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this Linode. NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`, `pde`)** |
+| `swap_size` | <center>`int`</center> | <center>Optional</center> | When deploying from an Image, this field is optional, otherwise it is ignored. This is used to set the swap disk size for the newly-created Linode.   |
 
 ### configs
 

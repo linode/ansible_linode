@@ -38,7 +38,8 @@ placement_group_assignment_spec = {
     ),
     "compliant_only": SpecField(
         type=FieldType.bool,
-        description=["TODO"],
+        description=[],
+        doc_hide=True,
     ),
 }
 
