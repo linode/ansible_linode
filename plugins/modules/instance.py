@@ -538,6 +538,7 @@ linode_instance_spec = {
         description="The disk encryption status of this Linode. "
         + "NOTE: Disk encryption may not currently be available to all users.",
         choices=["enabled", "disabled", "pde"],
+    ),
     "swap_size": SpecField(
         type=FieldType.integer,
         description=[
