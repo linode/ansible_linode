@@ -61,7 +61,6 @@ Manage Linode LKE cluster node pools.
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type for all of the nodes in the Node Pool. Required if `state` == `present`.   |
 | `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the node pool to be ready.  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The period to wait for the node pool to be ready in seconds.  **(Default: `600`)** |
-| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this node pool. NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`, `pde`)** |
 
 ### autoscaler
 

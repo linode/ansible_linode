@@ -117,7 +117,6 @@
         type: g6-standard-1
         count: 2
         state: present
-        disk_encryption: 'enabled'
       register: new_pool_de
 
     - name: Assert node pool is added to cluster

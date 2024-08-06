@@ -133,12 +133,6 @@ linode_lke_cluster_node_pool_spec = {
         ],
         suboptions=linode_lke_cluster_autoscaler,
     ),
-    "disk_encryption": SpecField(
-        type=FieldType.string,
-        description="The disk encryption status of this node pool. "
-        + "NOTE: Disk encryption may not currently be available to all users.",
-        choices=["enabled", "disabled", "pde"],
-    ),
 }
 
 linode_lke_cluster_spec = {
