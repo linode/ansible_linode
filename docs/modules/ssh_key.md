@@ -35,7 +35,7 @@ Manage a Linode SSH key.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | This SSH key's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this SSH key.  **(Choices: `present`, `absent`)** |
-| `ssh_key` | <center>`str`</center> | <center>Optional</center> | The SSH public key value.  **(Updatable)** |
+| `ssh_key` | <center>`str`</center> | <center>Optional</center> | The SSH public key value.   |
 
 ## Return Values
 
