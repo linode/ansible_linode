@@ -139,6 +139,7 @@ Manage Linode LKE clusters.
               "max": 12,
               "min": 3
             },
+            "disk_encryption": "enabled",
             "count": 6,
             "disks": [
               {
