@@ -63,7 +63,7 @@ Get info about a Linode Domain.
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain) for a list of returned fields
 
 
-- `records` - The returned Records.
+- `records` - The returned records.
 
     - Sample Response:
         ```json
@@ -88,7 +88,7 @@ Get info about a Linode Domain.
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-records) for a list of returned fields
 
 
-- `zone_file` - The returned Zone File.
+- `zone_file` - The returned zone file.
 
     - Sample Response:
         ```json
