@@ -102,9 +102,16 @@ SPEC = {
         editable=True,
         description=[
             "A list of regions that customer wants to replicate this image in. "
-            "At least one valid region is required and only core regions allowed. "
+            "At least one available region must be provided and only core regions allowed. "
             "Existing images in the regions not passed will be removed. "
             "NOTE: Image replication may not currently be available to all users.",
+        ],
+    ),
+    "wait_for_replications": SpecField(
+        type=FieldType.bool,
+        default=False,
+        description=[
+            "Wait for the all the replications `available` before returning."
         ],
     ),
 }
@@ -118,8 +125,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "image": SpecReturnValue(
             description="The Image in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/images/"
-            "#image-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/post-image",
             type=FieldType.dict,
             sample=docs.result_image_samples,
         )
@@ -183,6 +189,32 @@ class Module(LinodeModuleBase):
             )
         except polling.TimeoutException:
             self.fail("failed to wait for image status: timeout period expired")
+
+    def _wait_for_image_replication_status(
+        self, image: Image, status: Set[str]
+    ) -> None:
+        def poll_func() -> bool:
+            image._api_get()
+            for region in image.regions:
+                if region.status not in status:
+                    return False
+
+            return True
+
+        # Initial attempt
+        if poll_func():
+            return
+
+        try:
+            polling.poll(
+                poll_func,
+                step=10,
+                timeout=self._timeout_ctx.seconds_remaining,
+            )
+        except polling.TimeoutException:
+            self.fail(
+                "failed to wait for image replication status: timeout period expired"
+            )
 
     def _create_image_from_disk(self) -> Optional[Image]:
         disk_id = self.module.params.get("disk_id")
@@ -291,11 +323,13 @@ class Module(LinodeModuleBase):
         old_regions = [r.region for r in image.regions]
 
         # Replicate image in new regions
-        if new_regions != old_regions:
-            if new_regions is None or len(new_regions) == 0:
+        if replica_regions is not None and new_regions != old_regions:
+            if len(new_regions) == 0 or (
+                not set(new_regions) & set(old_regions)
+            ):
                 return self.fail(
                     msg="failed to replicate image {0}: replica_regions value {1} is invalid. "
-                    "At least one valid region is required.".format(
+                    "At least one available region must be provided.".format(
                         label, new_regions
                     )
                 )
@@ -304,6 +338,9 @@ class Module(LinodeModuleBase):
             self.register_action(
                 "Replicated image {0} in regions {1}".format(label, new_regions)
             )
+
+            if params.get("wait_for_replications"):
+                self._wait_for_image_replication_status(image, {"available"})
 
         # Force lazy-loading
         image._api_get()
