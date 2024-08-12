@@ -37,7 +37,17 @@ module = InfoModule(
             get=lambda client, domain, params: paginated_list_to_json(
                 Domain(client, domain["id"]).records
             ),
-        )
+        ),
+        InfoModuleResult(
+            field_name="zone_file",
+            field_type=FieldType.list,
+            display_name="Zone File",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain-zone",
+            samples=docs_parent.result_zone_file_samples,
+            get=lambda client, domain, params: Domain(
+                client, domain["id"]
+            ).zone_file_view(),
+        ),
     ],
     attributes=[
         InfoModuleAttr(
