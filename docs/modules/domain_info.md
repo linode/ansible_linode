@@ -31,12 +31,12 @@ Get info about a Linode Domain.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The unique domain name of the Domain. Optional if `domain` is defined.  **(Conflicts With: `domain`)** |
-| `domain` | <center>`str`</center> | <center>Optional</center> | The unique id of the Domain. Optional if `id` is defined.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Domain to resolve.  **(Conflicts With: `domain`)** |
+| `domain` | <center>`str`</center> | <center>Optional</center> | The domain of the Domain to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 
-- `domain` - The domain in JSON serialized form.
+- `domain` - The returned Domain.
 
     - Sample Response:
         ```json
@@ -63,7 +63,7 @@ Get info about a Linode Domain.
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain) for a list of returned fields
 
 
-- `records` - The domain record in JSON serialized form.
+- `records` - The returned Records.
 
     - Sample Response:
         ```json
@@ -85,28 +85,6 @@ Get info about a Linode Domain.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-record) for a list of returned fields
-
-
-- `zone_file` - The zone file for the last rendered zone for the specified domain.
-
-    - Sample Response:
-        ```json
-        [
-          {
-            "zone_file": [
-              "; example.com [123]",
-              "$TTL 864000",
-              "@  IN  SOA  ns1.linode.com. user.example.com. 2021000066 14400 14400 1209600 86400",
-              "@    NS  ns1.linode.com.",
-              "@    NS  ns2.linode.com.",
-              "@    NS  ns3.linode.com.",
-              "@    NS  ns4.linode.com.",
-              "@    NS  ns5.linode.com."
-            ]
-          }
-        ]
-        ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-zone) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-records) for a list of returned fields
 
 
