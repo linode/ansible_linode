@@ -24,7 +24,7 @@ module = InfoModule(
         display_name="Image",
         field_name="image",
         field_type=FieldType.dict,
-        docs_url="https://www.linode.com/docs/api/images/#image-view__responses",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-image",
         samples=docs_parent.result_image_samples,
     ),
     attributes=[

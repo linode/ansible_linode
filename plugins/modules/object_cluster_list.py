@@ -34,8 +34,7 @@ spec_filter = {
         description=[
             "The name of the field to filter on.",
             "Valid filterable attributes can be found here: "
-            "https://www.linode.com/docs/api/object-storage/"
-            "#clusters-list__responses",
+            "https://techdocs.akamai.com/linode-api/reference/get-object-storage-buckets",
         ],
     ),
     "values": SpecField(
@@ -95,8 +94,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "clusters": SpecReturnValue(
             description="The returned object storage clusters.",
-            docs_url="https://www.linode.com/docs/api/object-storage/"
-            "#clusters-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-object-storage-clusters",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_object_clusters_samples,

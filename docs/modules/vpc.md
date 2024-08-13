@@ -56,6 +56,6 @@ Create, read, and update a Linode VPC.
             "updated": "2023-08-31T18:35:03"
         }
         ```
-    - See the [Linode API response documentation](TODO) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vpc) for a list of returned fields
 
 

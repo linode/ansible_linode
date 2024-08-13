@@ -32,8 +32,7 @@ spec_filter = {
         description=[
             "The name of the field to filter on.",
             "Valid filterable attributes can be found here: "
-            "https://www.linode.com/docs/api/networking/"
-            "#firewalls-list__responses",
+            "https://techdocs.akamai.com/linode-api/reference/get-ips",
         ],
     ),
     "values": SpecField(
@@ -85,8 +84,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "firewalls": SpecReturnValue(
             description="The returned firewalls.",
-            docs_url="https://www.linode.com/docs/api/networking/"
-            "#firewalls-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-firewalls",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_firewalls_samples,

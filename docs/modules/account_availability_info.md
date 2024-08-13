@@ -45,6 +45,6 @@ Get info about a Linode Account Availability.
         }
         
         ```
-    - See the [Linode API response documentation](TBD) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-account-availability) for a list of returned fields
 
 

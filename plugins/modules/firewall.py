@@ -82,7 +82,7 @@ linode_firewall_rule_spec: dict = {
         type=FieldType.string,
         description=[
             "A string representing the port or ports on which traffic will be allowed.",
-            "See https://www.linode.com/docs/api/networking/#firewall-create",
+            "See https://techdocs.akamai.com/linode-api/reference/post-firewalls",
         ],
     ),
     "protocol": SpecField(
@@ -175,13 +175,13 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "firewall": SpecReturnValue(
             description="The Firewall description in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/networking/#firewall-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-firewall",
             type=FieldType.dict,
             sample=docs.result_firewall_samples,
         ),
         "devices": SpecReturnValue(
             description="A list of Firewall devices JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/networking/#firewall-device-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-firewall-device",
             type=FieldType.list,
             sample=docs.result_devices_samples,
         ),

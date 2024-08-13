@@ -47,7 +47,9 @@ linode_domain_record_spec = {
         description=[
             "The name of this Record.",
             "NOTE: If the name of the record ends with the domain, "
-            "it will be dropped from the resulting record's name.",
+            "it will be dropped from the resulting record's name. "
+            "Unused for SRV record. "
+            "Use the service property to set the service name for this record.",
         ],
     ),
     "port": SpecField(
@@ -141,7 +143,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "record": SpecReturnValue(
             description="View a single Record on this Domain.",
-            docs_url="https://www.linode.com/docs/api/domains/#domain-record-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain-record",
             type=FieldType.dict,
             sample=docs.result_record_samples,
         )
@@ -173,10 +175,9 @@ class LinodeDomainRecord(LinodeModuleBase):
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.required_one_of: List[List[str]] = [
             ["domain", "domain_id"],
-            ["name", "record_id"],
+            ["name", "record_id", "service"],
         ]
         self.mutually_exclusive: List[List[str]] = [["name", "record_id"]]
-        self.required_together: List[List[str]] = [["name", "type"]]
         self.results = {"changed": False, "actions": [], "record": None}
 
         self._domain: Optional[Domain] = None
@@ -186,7 +187,6 @@ class LinodeDomainRecord(LinodeModuleBase):
             module_arg_spec=self.module_arg_spec,
             required_one_of=self.required_one_of,
             mutually_exclusive=self.mutually_exclusive,
-            required_together=self.required_together,
         )
 
     def _find_record(
@@ -267,10 +267,13 @@ class LinodeDomainRecord(LinodeModuleBase):
         params = self.module.params
         record_type = params.pop("type")
         record_name = params.get("name")
+        record_service = params.get("service")
 
         try:
             self.register_action(
-                "Created domain record {0}".format(record_name)
+                "Created domain record type {0}: name is {1}; service is {2}".format(
+                    record_type, record_name, record_service
+                )
             )
             return self._domain.record_create(record_type, **params)
         except Exception as exception:
@@ -306,7 +309,9 @@ class LinodeDomainRecord(LinodeModuleBase):
                 "record with id {0} does not exist".format(record_id)
             )
 
-        if self._record is None and record_name is not None:
+        if self._record is None and (
+            record_name is not None or params.get("service") is not None
+        ):
             self._record = self._create_record()
 
         self._update_record()

@@ -106,7 +106,8 @@ linode_instance_disk_spec = {
         type=FieldType.integer,
         description=[
             "The ID of the StackScript to use when creating the instance.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).",
         ],
     ),
     "stackscript_data": SpecField(
@@ -115,7 +116,8 @@ linode_instance_disk_spec = {
             "An object containing arguments to any User Defined Fields present in "
             "the StackScript used when creating the instance.",
             "Only valid when a stackscript_id is provided.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).",
         ],
     ),
 }
@@ -287,8 +289,8 @@ linode_instance_config_spec = {
         editable=True,
         description=[
             "A list of network interfaces to apply to the Linode.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances"
-            "/#configuration-profile-create__request-body-schema).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/post-add-linode-config).",
         ],
     ),
 }
@@ -356,7 +358,8 @@ linode_instance_spec = {
         type=FieldType.integer,
         description=[
             "The ID of the StackScript to use when creating the instance.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).",
         ],
     ),
     "stackscript_data": SpecField(
@@ -365,7 +368,8 @@ linode_instance_spec = {
             "An object containing arguments to any User Defined Fields present in "
             "the StackScript used when creating the instance.",
             "Only valid when a stackscript_id is provided.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).",
         ],
     ),
     "firewall_id": SpecField(
@@ -430,8 +434,8 @@ linode_instance_spec = {
         conflicts_with=["disks", "configs"],
         description=[
             "A list of network interfaces to apply to the Linode.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/"
-            "#linode-create__request-body-schema).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/post-linode-instance).",
         ],
     ),
     "booted": SpecField(
@@ -519,6 +523,13 @@ linode_instance_spec = {
         suboptions=linode_instance_placement_group_spec,
         description=["A Placement Group to create this Linode under."],
     ),
+    "swap_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "When deploying from an Image, this field is optional, otherwise it is ignored. "
+            "This is used to set the swap disk size for the newly-created Linode."
+        ],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -530,27 +541,25 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "instance": SpecReturnValue(
             description="The instance description in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/linode-instances/#linode-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-instance",
             type=FieldType.dict,
             sample=docs.result_instance_samples,
         ),
         "configs": SpecReturnValue(
             description="A list of configs tied to this Linode Instance.",
-            docs_url="https://www.linode.com/docs/api/linode-instances/"
-            "#configuration-profile-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-config",
             type=FieldType.list,
             sample=docs.result_configs_samples,
         ),
         "disks": SpecReturnValue(
             description="A list of disks tied to this Linode Instance.",
-            docs_url="https://www.linode.com/docs/api/linode-instances/#disk-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-disk",
             type=FieldType.list,
             sample=docs.result_disks_samples,
         ),
         "networking": SpecReturnValue(
             description="Networking information about this Linode Instance.",
-            docs_url="https://www.linode.com/docs/api/linode-instances/"
-            "#networking-information-list__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-ips",
             type=FieldType.dict,
             sample=docs.result_networking_samples,
         ),

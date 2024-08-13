@@ -44,7 +44,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "vlan": SpecReturnValue(
             description="The VLAN in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/networking/#vlans-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-vlans",
             type=FieldType.dict,
             sample=docs.result_vlan_samples,
         )

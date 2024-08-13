@@ -112,6 +112,6 @@ Manage a Linode Image.
           ]
         }
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/post-image) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-image) for a list of returned fields
 
 

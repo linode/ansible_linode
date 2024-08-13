@@ -21,8 +21,8 @@ NOTE: Placement Groups may not currently be available to all users.
   linode.cloud.placement_group:
     label: my-pg
     region: us-east
-    affinity_type: anti_affinity:local
-    is_strict: True
+    placement_group_type: anti_affinity:local
+    placement_group_policy: flexible
     state: present
 ```
 
@@ -58,8 +58,8 @@ NOTE: Placement Groups may not currently be available to all users.
 | `id` | <center>`int`</center> | <center>Optional</center> | The unique ID of the placement group.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the Placement Group. This field can only contain ASCII letters, digits and dashes.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The region that the placement group is in.   |
-| `affinity_type` | <center>`str`</center> | <center>Optional</center> | The affinity policy for Linodes in a placement group.   |
-| `is_strict` | <center>`bool`</center> | <center>Optional</center> | Whether Linodes must be able to become compliant during assignment.  **(Default: `False`)** |
+| `placement_group_type` | <center>`str`</center> | <center>Optional</center> | The type of this placement group.   |
+| `placement_group_policy` | <center>`str`</center> | <center>Optional</center> | The policy for assigning Linodes to this placement group.  **(Choices: `flexible`, `strict`)** |
 
 ## Return Values
 
@@ -71,8 +71,8 @@ NOTE: Placement Groups may not currently be available to all users.
           "id": 123,
           "label": "my-pg",
           "region": "eu-west",
-          "affinity_type": "anti_affinity:local",
-          "is_strict": true,
+          "placement_group_type": "anti_affinity:local",
+          "placement_group_policy": "flexible",
           "is_compliant": true,
           "members": [
             {
@@ -82,6 +82,6 @@ NOTE: Placement Groups may not currently be available to all users.
           ]
         }
         ```
-    - See the [Linode API response documentation](TBD) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-placement-group) for a list of returned fields
 
 

@@ -25,11 +25,11 @@ Get info about a Linode User.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `username` | <center>`str`</center> | <center>**Required**</center> | The username of the user.   |
+| `username` | <center>`str`</center> | <center>**Required**</center> | The Username of the User to resolve.   |
 
 ## Return Values
 
-- `user` - The user info in JSON serialized form.
+- `user` - The returned User.
 
     - Sample Response:
         ```json
@@ -45,10 +45,10 @@ Get info about a Linode User.
           "username": "example_user"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/account/#user-view) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-user) for a list of returned fields
 
 
-- `grants` - The grants info in JSON serialized form.
+- `grants` - The returned Grants.
 
     - Sample Response:
         ```json
@@ -118,6 +118,6 @@ Get info about a Linode User.
           ]
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/account/#users-grants-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-user-grants) for a list of returned fields
 
 

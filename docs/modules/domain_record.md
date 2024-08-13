@@ -27,6 +27,20 @@ NOTE: Domain records are identified by their name, target, and type.
 ```
 
 ```yaml
+- name: Create an SRV domain record
+  linode.cloud.domain_record:
+    domain: my-domain.com
+    service: srv-service
+    protocol: tcp
+    type: 'SRV'
+    target: host.example.com
+    port: 443
+    priority: 0
+    weight: 1
+    state: present
+```
+
+```yaml
 - name: Delete a domain record
   linode.cloud.domain_record:
     domain: my-domain.com
@@ -53,7 +67,7 @@ NOTE: Domain records are identified by their name, target, and type.
 | `domain_id` | <center>`int`</center> | <center>Optional</center> | The ID of the parent Domain.   |
 | `domain` | <center>`str`</center> | <center>Optional</center> | The name of the parent Domain.   |
 | `record_id` | <center>`int`</center> | <center>Optional</center> | The id of the record to modify.  **(Conflicts With: `name`)** |
-| `name` | <center>`str`</center> | <center>Optional</center> | The name of this Record. NOTE: If the name of the record ends with the domain, it will be dropped from the resulting record's name.  **(Conflicts With: `record_id`)** |
+| `name` | <center>`str`</center> | <center>Optional</center> | The name of this Record. NOTE: If the name of the record ends with the domain, it will be dropped from the resulting record's name. Unused for SRV record. Use the service property to set the service name for this record.  **(Conflicts With: `record_id`)** |
 | `port` | <center>`int`</center> | <center>Optional</center> | The port this Record points to. Only valid and required for SRV record requests.  **(Updatable)** |
 | `priority` | <center>`int`</center> | <center>Optional</center> | The priority of the target host for this Record. Lower values are preferred. Only valid for MX and SRV record requests. Required for SRV record requests.  **(Updatable)** |
 | `protocol` | <center>`str`</center> | <center>Optional</center> | The protocol this Record’s service communicates with. An underscore (_) is prepended automatically to the submitted value for this property.  **(Updatable)** |
@@ -86,6 +100,6 @@ NOTE: Domain records are identified by their name, target, and type.
           "weight": 50
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/domains/#domain-record-view) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-record) for a list of returned fields
 
 

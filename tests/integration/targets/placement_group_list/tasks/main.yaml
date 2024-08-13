@@ -14,8 +14,8 @@
       linode.cloud.placement_group:
         label: 'ansible-test-{{ r }}'
         region: '{{ region }}'
-        affinity_type: anti_affinity:local
-        is_strict: True
+        placement_group_type: anti_affinity:local
+        placement_group_policy: strict
         state: present
       register: pg_created
 
@@ -31,8 +31,8 @@
         that:
           - pg_list.placement_groups[0].label == pg_created.placement_group.label
           - pg_list.placement_groups[0].region == pg_created.placement_group.region
-          - pg_list.placement_groups[0].affinity_type == pg_created.placement_group.affinity_type
-          - pg_list.placement_groups[0].is_strict == pg_created.placement_group.is_strict
+          - pg_list.placement_groups[0].placement_group_type == pg_created.placement_group.placement_group_type
+          - pg_list.placement_groups[0].placement_group_policy == pg_created.placement_group.placement_group_policy
 
     - name: Delete a placement group
       linode.cloud.placement_group:

@@ -34,7 +34,7 @@ spec_filter = {
             "The name of the field to filter on.",
             "Valid filterable attributes can be found here: "
             # pylint: disable-next=line-too-long
-            "https://www.linode.com/docs/api/stackscripts/#stackscripts-list__response-samples",
+            "https://techdocs.akamai.com/linode-api/reference/get-stack-scripts",
         ],
     ),
     "values": SpecField(
@@ -86,7 +86,7 @@ SPECDOC_META = SpecDocMeta(
         "stackscripts": SpecReturnValue(
             description="The returned stackscripts.",
             # pylint: disable-next=line-too-long
-            docs_url="https://www.linode.com/docs/api/stackscripts/#stackscripts-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-stack-scripts",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_stackscripts_samples,

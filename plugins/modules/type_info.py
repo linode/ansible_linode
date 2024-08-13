@@ -34,7 +34,7 @@ module = InfoModule(
         field_name="type",
         field_type=FieldType.dict,
         display_name="Type",
-        docs_url="https://www.linode.com/docs/api/linode-types/#type-view",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-type",
         samples=docs.result_type_samples,
     ),
     attributes=[

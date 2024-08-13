@@ -119,7 +119,7 @@ Manage a Linode PostgreSQL database.
           "version": "14.6"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-postgresql-database-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instance) for a list of returned fields
 
 
 - `backups` - The database backups in JSON serialized form.
@@ -135,7 +135,7 @@ Manage a Linode PostgreSQL database.
            }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-postgresql-database-backups-list) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instance-backups) for a list of returned fields
 
 
 - `ssl_cert` - The SSL CA certificate for an accessible Managed PostgreSQL Database.
@@ -146,7 +146,7 @@ Manage a Linode PostgreSQL database.
           "ca_certificate": "LS0tLS1CRUdJ...=="
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-postgresql-database-ssl-certificate-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgresql-instance-ssl) for a list of returned fields
 
 
 - `credentials` - The root username and password for an accessible Managed PostgreSQL Database.
@@ -158,6 +158,6 @@ Manage a Linode PostgreSQL database.
           "username": "linroot"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/databases/#managed-postgresql-database-credentials-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instance-credentials) for a list of returned fields
 
 

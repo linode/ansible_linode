@@ -151,8 +151,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "node_pool": SpecReturnValue(
             description="The Node Pool in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#node-pool-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-node-pool",
             type=FieldType.dict,
             sample=docs.result_node_pool,
         )

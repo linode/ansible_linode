@@ -14,7 +14,8 @@
       linode.cloud.placement_group:
         label: 'ansible-test-{{ r }}'
         region: '{{ region }}'
-        affinity_type: anti_affinity:local
+        placement_group_type: anti_affinity:local
+        placement_group_policy: flexible
         state: present
       register: pg_created
 

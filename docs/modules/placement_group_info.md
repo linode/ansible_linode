@@ -42,8 +42,8 @@ Get info about a Linode Placement Group.
           "id": 123,
           "label": "test",
           "region": "eu-west",
-          "affinity_type": "anti_affinity:local",
-          "is_strict": true,
+          "placement_group_type": "anti_affinity:local",
+          "placement_group_policy": "strict",
           "is_compliant": true,
           "members": [
             {
@@ -54,6 +54,6 @@ Get info about a Linode Placement Group.
         }
         
         ```
-    - See the [Linode API response documentation](TBD) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-placement-group) for a list of returned fields
 
 
