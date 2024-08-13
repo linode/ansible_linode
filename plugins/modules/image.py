@@ -89,6 +89,31 @@ SPEC = {
             "have status `available`."
         ],
     ),
+    "tags": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        editable=True,
+        description=["A list of customized tags of this new Image."],
+    ),
+    # `regions` send to API for image replication
+    "replica_regions": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        editable=True,
+        description=[
+            "A list of regions that customer wants to replicate this image in. "
+            "At least one available region must be provided and only core regions allowed. "
+            "Existing images in the regions not passed will be removed. "
+            "NOTE: Image replication may not currently be available to all users.",
+        ],
+    ),
+    "wait_for_replications": SpecField(
+        type=FieldType.bool,
+        default=False,
+        description=[
+            "Wait for the all the replications `available` before returning."
+        ],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -107,7 +132,7 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-MUTABLE_FIELDS = {"description"}
+MUTABLE_FIELDS = {"description", "tags"}
 
 DOCUMENTATION = r"""
 """
@@ -165,11 +190,38 @@ class Module(LinodeModuleBase):
         except polling.TimeoutException:
             self.fail("failed to wait for image status: timeout period expired")
 
+    def _wait_for_image_replication_status(
+        self, image: Image, status: Set[str]
+    ) -> None:
+        def poll_func() -> bool:
+            image._api_get()
+            for region in image.regions:
+                if region.status not in status:
+                    return False
+
+            return True
+
+        # Initial attempt
+        if poll_func():
+            return
+
+        try:
+            polling.poll(
+                poll_func,
+                step=10,
+                timeout=self._timeout_ctx.seconds_remaining,
+            )
+        except polling.TimeoutException:
+            self.fail(
+                "failed to wait for image replication status: timeout period expired"
+            )
+
     def _create_image_from_disk(self) -> Optional[Image]:
         disk_id = self.module.params.get("disk_id")
         label = self.module.params.get("label")
         description = self.module.params.get("description")
         cloud_init = self.module.params.get("cloud_init")
+        tags = self.module.params.get("tags")
 
         try:
             return self.client.images.create(
@@ -177,6 +229,7 @@ class Module(LinodeModuleBase):
                 label=label,
                 description=description,
                 cloud_init=cloud_init,
+                tags=tags,
             )
         except Exception as exception:
             return self.fail(
@@ -189,6 +242,7 @@ class Module(LinodeModuleBase):
         region = self.module.params.get("region")
         source_file = self.module.params.get("source_file")
         cloud_init = self.module.params.get("cloud_init")
+        tags = self.module.params.get("tags")
 
         if not os.path.exists(source_file):
             return self.fail(
@@ -198,7 +252,11 @@ class Module(LinodeModuleBase):
         # Create an image upload
         try:
             image, upload_to = self.client.images.create_upload(
-                label, region, description=description, cloud_init=cloud_init
+                label,
+                region,
+                description=description,
+                cloud_init=cloud_init,
+                tags=tags,
             )
         except Exception as exception:
             return self.fail(
@@ -259,6 +317,30 @@ class Module(LinodeModuleBase):
                 self._wait_for_image_status(image, {"available"})
 
         self._update_image(image)
+
+        replica_regions = params.get("replica_regions")
+        new_regions: list = [] if replica_regions is None else replica_regions
+        old_regions = [r.region for r in image.regions]
+
+        # Replicate image in new regions
+        if replica_regions is not None and new_regions != old_regions:
+            if len(new_regions) == 0 or (
+                not set(new_regions) & set(old_regions)
+            ):
+                return self.fail(
+                    msg="failed to replicate image {0}: replica_regions value {1} is invalid. "
+                    "At least one available region must be provided.".format(
+                        label, new_regions
+                    )
+                )
+
+            image.replicate(new_regions)
+            self.register_action(
+                "Replicated image {0} in regions {1}".format(label, new_regions)
+            )
+
+            if params.get("wait_for_replications"):
+                self._wait_for_image_replication_status(image, {"available"})
 
         # Force lazy-loading
         image._api_get()
