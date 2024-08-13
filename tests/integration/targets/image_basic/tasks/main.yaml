@@ -1,4 +1,4 @@
-- name: stackscript_basic
+- name: image_basic
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -6,7 +6,6 @@
     - name: Create an instance to image
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        # change the region for alpha testing
         region: us-east
         type: g6-standard-1
         image: linode/alpine3.19
@@ -75,6 +74,53 @@
           - image_update.image.status == 'available'
           - image_update.image.description == 'cool2'
           - image_update.image.tags[0] == 'test'
+
+    - name: Replicate the image
+      linode.cloud.image:
+        label: 'ansible-test-{{ r }}'
+        disk_id: '{{ instance_create.disks.0.id }}'
+        description: 'cool2'
+        tags:
+          - 'test'
+        replica_regions:
+          - 'us-east'
+          - 'eu-west'
+        wait_for_replications: yes
+        wait_timeout: 1200
+        state: present
+      register: image_replicate
+
+    - name: Assert image is replicated in 2 regions
+      assert:
+        that:
+          - image_replicate.changed
+          - image_replicate.image.id == image_create.image.id
+          - image_replicate.image.regions | length == 2
+          - image_replicate.image.regions[0].region == 'us-east'
+          - image_replicate.image.regions[0].status == 'available'
+          - image_replicate.image.regions[1].status == 'available'
+
+    - name: Remove one of the image replicas
+      linode.cloud.image:
+        label: 'ansible-test-{{ r }}'
+        disk_id: '{{ instance_create.disks.0.id }}'
+        description: 'cool2'
+        tags:
+          - 'test'
+        replica_regions:
+          - 'eu-west'
+        wait_for_replications: yes
+        wait_timeout: 1200
+        state: present
+      register: image_replicate
+
+    - name: Assert image only has one replica left
+      assert:
+        that:
+          - image_replicate.changed
+          - image_replicate.image.regions | length == 1
+          - image_replicate.image.regions[0].region == 'eu-west'
+          - image_replicate.image.regions[0].status == 'available'
 
     - name: Overwrite the image
       linode.cloud.image:

@@ -37,6 +37,20 @@ Manage a Linode Image.
 ```
 
 ```yaml
+- name: Replicate an image
+  linode.cloud.image:
+    label: my-image
+    description: Created using Ansible!
+    disk_id: 12345
+    tags: 
+        - test
+    replica_regions: 
+        - us-east
+        - us-central
+    state: present
+```
+
+```yaml
 - name: Delete an image
   linode.cloud.image:
     label: my-image
@@ -59,6 +73,8 @@ Manage a Linode Image.
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the image to have status `available` before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an image to have status `available`.  **(Default: `600`)** |
 | `tags` | <center>`list`</center> | <center>Optional</center> | A list of customized tags of this new Image.  **(Updatable)** |
+| `replica_regions` | <center>`list`</center> | <center>Optional</center> | A list of regions that customer wants to replicate this image in. At least one available region must be provided and only core regions allowed. Existing images in the regions not passed will be removed. NOTE: Image replication may not currently be available to all users.  **(Updatable)** |
+| `wait_for_replications` | <center>`bool`</center> | <center>Optional</center> | Wait for the all the replications `available` before returning.  **(Default: `False`)** |
 
 ## Return Values
 
@@ -96,6 +112,6 @@ Manage a Linode Image.
           ]
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/images/#image-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/post-image) for a list of returned fields
 
 
