@@ -13,6 +13,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info im
     InfoModule,
     InfoModuleAttr,
     InfoModuleParam,
+    InfoModuleParamGroup,
+    InfoModuleParamGroupPolicy,
     InfoModuleResult,
 )
 from ansible_specdoc.objects import FieldType
@@ -45,20 +47,19 @@ module = InfoModule(
         samples=docs_parent.result_record_samples,
     ),
     params=[
-        InfoModuleParam(
-            display_name="Domain ID",
-            name="domain_id",
-            type=FieldType.integer,
-            required=False,
-            conflicts_with=["domain"],
-        ),
-        InfoModuleParam(
-            display_name="Domain",
-            name="domain",
-            type=FieldType.string,
-            required=False,
-            conflicts_with=["domain_id"],
-        ),
+        InfoModuleParamGroup(
+            InfoModuleParam(
+                display_name="Domain ID",
+                name="domain_id",
+                type=FieldType.integer,
+            ),
+            InfoModuleParam(
+                display_name="Domain",
+                name="domain",
+                type=FieldType.string,
+            ),
+            policies=[InfoModuleParamGroupPolicy.exactly_one_of],
+        )
     ],
     attributes=[
         InfoModuleAttr(
@@ -84,10 +85,6 @@ module = InfoModule(
             ],
         ),
     ],
-    extended_base_args={
-        "required_one_of": [("domain_id", "domain")],
-        "mutually_exclusive": [("domain_id", "domain")],
-    },
     examples=docs.specdoc_examples,
 )
 
