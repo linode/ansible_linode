@@ -1,6 +1,6 @@
 # domain_record_info
 
-Get info about a Linode Domain Record.
+Get info about a Linode Records.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -35,14 +35,13 @@ Get info about a Linode Domain Record.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `domain_id` | <center>`int`</center> | <center>Optional</center> | The ID of the parent Domain. Optional if `domain` is defined.  **(Conflicts With: `domain`)** |
-| `domain` | <center>`str`</center> | <center>Optional</center> | The name of the parent Domain. Optional if `domain_id` is defined.  **(Conflicts With: `domain_id`)** |
-| `id` | <center>`int`</center> | <center>Optional</center> | The unique id of the subdomain. Optional if `name` is defined.  **(Conflicts With: `name`)** |
-| `name` | <center>`str`</center> | <center>Optional</center> | The name of the domain record. Optional if `id` is defined.  **(Conflicts With: `id`)** |
+| `domain_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the Domain ID for this resource.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Records to resolve.  **(Conflicts With: `name`)** |
+| `name` | <center>`str`</center> | <center>Optional</center> | The name of the Records to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 
-- `record` - View a single Record on this Domain.
+- `record` - The returned Records.
 
     - Sample Response:
         ```json
@@ -62,6 +61,6 @@ Get info about a Linode Domain Record.
           "weight": 50
         }
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-record) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain) for a list of returned fields
 
 

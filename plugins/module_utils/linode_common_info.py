@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import copy
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional
 
@@ -39,6 +40,9 @@ class InfoModuleParam:
     name: str
     display_name: str
     type: FieldType
+
+    required: bool = True
+    conflicts_with: Optional[List[str]] = None
 
 
 @dataclass
@@ -98,6 +102,7 @@ class InfoModule(LinodeModuleBase):
         examples: List[str] = None,
         description: List[str] = None,
         requires_beta: bool = False,
+        extended_base_args: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.primary_result = primary_result
         self.secondary_results = secondary_results or []
@@ -108,6 +113,7 @@ class InfoModule(LinodeModuleBase):
             f"Get info about a Linode {self.primary_result.display_name}."
         ]
         self.requires_beta = requires_beta
+        self.extended_base_args = extended_base_args
 
         self.module_arg_spec = self.spec.ansible_spec
         self.results: Dict[str, Any] = {
@@ -175,8 +181,9 @@ class InfoModule(LinodeModuleBase):
         for param in self.params:
             options[param.name] = SpecField(
                 type=param.type,
-                required=True,
+                required=param.required,
                 description=f"The ID of the {param.display_name} for this resource.",
+                conflicts_with=param.conflicts_with,
             )
 
         # Add attrs to spec
@@ -220,10 +227,30 @@ class InfoModule(LinodeModuleBase):
         """
         Initializes and runs the info module.
         """
+
         attribute_names = [v.name for v in self.attributes]
 
-        super().__init__(
-            module_arg_spec=self.module_arg_spec,
-            required_one_of=[attribute_names],
-            mutually_exclusive=[attribute_names],
+        base_args = {
+            "module_arg_spec": self.module_arg_spec,
+            "required_one_of": [[*attribute_names]],
+            "mutually_exclusive": [[*attribute_names]],
+        }
+
+        # Prevent modules from overriding built-in validation rules
+        extensions = copy.deepcopy(self.extended_base_args or {})
+
+        if "module_arg_spec" in extensions:
+            raise ValueError(
+                "`module_arg_spec` cannot be specified in `module_base_args`"
+            )
+
+        base_args["required_one_of"].extend(
+            extensions.pop("required_one_of", [])
         )
+        base_args["mutually_exclusive"].extend(
+            extensions.pop("mutually_exclusive", [])
+        )
+
+        base_args.update(extensions)
+
+        super().__init__(**base_args)
