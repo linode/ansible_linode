@@ -72,7 +72,8 @@ class InfoModuleResult:
         samples (Optional[List[str]]): A list of sample results for this field.
         get (Optional[Callable]): A function to call out to the API and return the data
                                   for this field.
-                                  NOTE: This is only relevant for secondary results.
+                                  NOTE: This is only relevant for secondary results
+                                  or primary result without any attributes.
     """
 
     field_name: str
@@ -82,7 +83,7 @@ class InfoModuleResult:
     docs_url: Optional[str] = None
     samples: Optional[List[str]] = None
     get: Optional[
-        Callable[[LinodeClient, Dict[str, Any], Dict[str, Any]], Any]
+        Callable[[LinodeClient, Dict[str, Any], Optional[Dict[str, Any]]], Any]
     ] = None
 
 
@@ -137,6 +138,16 @@ class InfoModule(LinodeModuleBase):
                     f"with {attr.display_name} {attr_value}: {exception}"
                 )
             break
+
+        if primary_result is None:
+            # Get the primary result using the result get function
+            try:
+                primary_result = self.primary_result.get(self.client, kwargs)
+            except Exception as exception:
+                self.fail(
+                    msg="Failed to get result for "
+                    f"{self.primary_result.display_name}: {exception}"
+                )
 
         if primary_result is None:
             raise ValueError("Expected a result; got None")
@@ -220,10 +231,14 @@ class InfoModule(LinodeModuleBase):
         """
         Initializes and runs the info module.
         """
-        attribute_names = [v.name for v in self.attributes]
+        attribute_names = (
+            [[v.name for v in self.attributes]]
+            if len(self.attributes) > 0
+            else None
+        )
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
-            required_one_of=[attribute_names],
-            mutually_exclusive=[attribute_names],
+            required_one_of=attribute_names,
+            mutually_exclusive=attribute_names,
         )
