@@ -116,7 +116,7 @@ class InfoModule(LinodeModuleBase):
         self,
         primary_result: InfoModuleResult,
         secondary_results: List[InfoModuleResult] = None,
-        params: List[Union[InfoModuleParam, InfoModuleParamGroup]] = None,
+        params: Optional[List[Union[InfoModuleParam, InfoModuleParamGroup]]] = None,
         attributes: List[InfoModuleAttr] = None,
         examples: List[str] = None,
         description: List[str] = None,
@@ -138,7 +138,7 @@ class InfoModule(LinodeModuleBase):
                 if isinstance(entry, InfoModuleParamGroup)
                 else InfoModuleParamGroup(entry)
             )
-            for entry in params
+            for entry in params or []
         ]
 
         self.module_arg_spec = self.spec.ansible_spec

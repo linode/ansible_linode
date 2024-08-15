@@ -1,6 +1,6 @@
 # domain_record_info
 
-Get info about a Linode Records.
+Get info about a Linode Domain Records.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -35,13 +35,14 @@ Get info about a Linode Records.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `domain_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the Domain ID for this resource.   |
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Records to resolve.  **(Conflicts With: `name`)** |
-| `name` | <center>`str`</center> | <center>Optional</center> | The name of the Records to resolve.  **(Conflicts With: `id`)** |
+| `domain_id` | <center>`int`</center> | <center>Optional</center> | The ID of the Domain ID for this resource.  **(Conflicts With: `domain`)** |
+| `domain` | <center>`str`</center> | <center>Optional</center> | The ID of the Domain for this resource.  **(Conflicts With: `domain_id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Domain Records to resolve.  **(Conflicts With: `name`)** |
+| `name` | <center>`str`</center> | <center>Optional</center> | The name of the Domain Records to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 
-- `record` - The returned Records.
+- `record` - The returned Domain Records.
 
     - Sample Response:
         ```json
@@ -61,6 +62,6 @@ Get info about a Linode Records.
           "weight": 50
         }
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-record) for a list of returned fields
 
 

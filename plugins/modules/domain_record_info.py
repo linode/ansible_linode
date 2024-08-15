@@ -42,8 +42,8 @@ module = InfoModule(
     primary_result=InfoModuleResult(
         field_name="record",
         field_type=FieldType.dict,
-        display_name="Records",
-        docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain",
+        display_name="Domain Records",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain-record",
         samples=docs_parent.result_record_samples,
     ),
     params=[
