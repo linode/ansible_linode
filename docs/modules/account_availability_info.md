@@ -2,7 +2,7 @@
 
 Get info about a Linode Account Availability.
 
-**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+WARNING! This module makes use of beta endpoints and requires the C(api_version) field be explicitly set to C(v4beta).
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
