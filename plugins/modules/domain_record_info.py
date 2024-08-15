@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module allows users to retrieve information about a Linode VPC Subnet."""
+"""This module contains all of the functionality for Linode Domain records."""
 
 from __future__ import absolute_import, division, print_function
 
