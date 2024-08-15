@@ -274,13 +274,13 @@ class InfoModule(LinodeModuleBase):
         """
         Initializes and runs the info module.
         """
-        attribute_names = [v.name for v in self.attributes]
-
         base_module_args = {
             "module_arg_spec": self.module_arg_spec,
-            "required_one_of": [attribute_names],
-            "mutually_exclusive": [attribute_names],
+            "required_one_of": [],
+            "mutually_exclusive": [],
         }
+
+        attribute_names = [v.name for v in self.attributes]
 
         if len(attribute_names) > 0:
             base_module_args["required_one_of"].append(attribute_names)
