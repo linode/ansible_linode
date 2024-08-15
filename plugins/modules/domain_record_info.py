@@ -7,8 +7,12 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Any, Dict
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain_record as docs_parent
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain_record_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    domain_record as docs_parent,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    domain_record_info as docs,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
     InfoModule,
     InfoModuleAttr,
@@ -58,7 +62,7 @@ module = InfoModule(
                 name="domain",
                 type=FieldType.string,
             ),
-            policies=[InfoModuleParamGroupPolicy.exactly_one_of],
+            policies=[InfoModuleParamGroupPolicy.EXACTLY_ONE_OF],
         )
     ],
     attributes=[

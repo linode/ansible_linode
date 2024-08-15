@@ -47,7 +47,7 @@ class InfoModuleParamGroupPolicy(Enum):
     Defines the policies that can be set for a param group.
     """
 
-    exactly_one_of = "exactly_one_of"
+    EXACTLY_ONE_OF = "exactly_one_of"
 
 
 class InfoModuleParamGroup:
@@ -227,7 +227,7 @@ class InfoModule(LinodeModuleBase):
                     description=f"The ID of the {param.display_name} for this resource.",
                 )
 
-                if InfoModuleParamGroupPolicy.exactly_one_of in group.policies:
+                if InfoModuleParamGroupPolicy.EXACTLY_ONE_OF in group.policies:
                     param_spec.conflicts_with = param_names ^ {param.name}
                     param_spec.required = False
 
@@ -287,7 +287,7 @@ class InfoModule(LinodeModuleBase):
             base_module_args["mutually_exclusive"].append(attribute_names)
 
         for entry in self.param_groups:
-            if InfoModuleParamGroupPolicy.exactly_one_of in entry.policies:
+            if InfoModuleParamGroupPolicy.EXACTLY_ONE_OF in entry.policies:
                 param_names = [param.name for param in entry.params]
                 base_module_args["required_one_of"].append(param_names)
                 base_module_args["mutually_exclusive"].append(param_names)
