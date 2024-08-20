@@ -87,6 +87,20 @@
           - record_info_id.record[0].ttl_sec == 14400
           - record_info_id.record[0].weight == 62
 
+    - name: Get domain_record_info with both domain_id and domain
+      linode.cloud.domain_record_info:
+        domain: '{{ domain_create.domain.domain }}'
+        domain_id: '{{ domain_create.domain.id }}'
+        id: '{{ record_create.record.id }}'
+      register: info_mutually_exclusive
+      failed_when: '"mutually exclusive" not in info_mutually_exclusive.msg'
+
+    - name: Get domain_record_info with neither domain_id nor domain
+      linode.cloud.domain_record_info:
+        id: '{{ record_create.record.id }}'
+      register: info_one_of
+      failed_when: '"one of the following" not in info_one_of.msg'
+
     - name: Create domain_record with domain id
       linode.cloud.domain_record:
         domain_id: '{{ domain_create.domain.id }}'

@@ -62,7 +62,7 @@ Name | Description |
 [linode.cloud.database_mysql_info](./docs/modules/database_mysql_info.md)|Get info about a Linode MySQL Managed Database.|
 [linode.cloud.database_postgresql_info](./docs/modules/database_postgresql_info.md)|Get info about a Linode PostgreSQL Managed Database.|
 [linode.cloud.domain_info](./docs/modules/domain_info.md)|Get info about a Linode Domain.|
-[linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|Get info about a Linode Domain Record.|
+[linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|Get info about a Linode Domain Records.|
 [linode.cloud.firewall_info](./docs/modules/firewall_info.md)|Get info about a Linode Firewall.|
 [linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
 [linode.cloud.instance_info](./docs/modules/instance_info.md)|Get info about a Linode Instance.|
@@ -95,7 +95,7 @@ Name | Description |
 [linode.cloud.database_engine_list](./docs/modules/database_engine_list.md)|List and filter on Managed Database engine types.|
 [linode.cloud.database_list](./docs/modules/database_list.md)|List and filter on Linode Managed Databases.|
 [linode.cloud.domain_list](./docs/modules/domain_list.md)|List and filter on Domains.|
-[linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Linode events.|
+[linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Events.|
 [linode.cloud.firewall_list](./docs/modules/firewall_list.md)|List and filter on Firewalls.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Images.|
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Instances.|
