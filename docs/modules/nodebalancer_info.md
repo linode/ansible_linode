@@ -1,6 +1,6 @@
 # nodebalancer_info
 
-Get info about a Linode NodeBalancer.
+Get info about a Linode Node Balancer.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -31,12 +31,12 @@ Get info about a Linode NodeBalancer.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of this NodeBalancer. Optional if `label` is defined.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of this NodeBalancer. Optional if `id` is defined.  **(Conflicts With: `id`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Node Balancer to resolve.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Node Balancer to resolve.  **(Conflicts With: `label`)** |
 
 ## Return Values
 
-- `node_balancer` - The NodeBalancer in JSON serialized form.
+- `node_balancer` - The returned Node Balancer.
 
     - Sample Response:
         ```json
@@ -64,7 +64,7 @@ Get info about a Linode NodeBalancer.
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer) for a list of returned fields
 
 
-- `configs` - A list of configs applied to the NodeBalancer.
+- `configs` - The returned configs.
 
     - Sample Response:
         ```json
@@ -96,10 +96,10 @@ Get info about a Linode NodeBalancer.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-config) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-configs) for a list of returned fields
 
 
-- `nodes` - A list of configs applied to the NodeBalancer.
+- `nodes` - The returned nodes.
 
     - Sample Response:
         ```json
@@ -116,16 +116,50 @@ Get info about a Linode NodeBalancer.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-node) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-config-nodes) for a list of returned fields
 
 
-- `firewalls` - A list IDs for firewalls attached to this NodeBalancer.
+- `firewalls` - The returned firewalls.
 
     - Sample Response:
         ```json
         [
           1234,
           5678
+        ]
+        ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-firewalls) for a list of returned fields
+
+
+- `firewalls_data` - The returned firewalls_data.
+
+    - Sample Response:
+        ```json
+        [
+          {
+            "created": "2020-04-10T13:34:00",
+            "entities": [
+              {
+                "id": 1234,
+                "label": "example-label",
+                "type": "nodebalancer",
+                "url": "/v4/nodebalancers/1234"
+              }
+            ],
+            "id": 45678,
+            "label": "very-cool-label",
+            "rules": {
+              "fingerprint": "abcdefg",
+              "inbound": [],
+              "inbound_policy": "DROP",
+              "outbound": [],
+              "outbound_policy": "DROP",
+              "version": 1
+            },
+              "status": "enabled",
+              "tags": [],
+              "updated": "2020-04-10T13:34:01"
+          }
         ]
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-firewalls) for a list of returned fields
