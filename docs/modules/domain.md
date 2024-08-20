@@ -106,20 +106,19 @@ Manage Linode Domains.
 
     - Sample Response:
         ```json
-        [
-          {
-            "zone_file": [
-              "; example.com [123]",
-              "$TTL 864000",
-              "@  IN  SOA  ns1.linode.com. user.example.com. 2021000066 14400 14400 1209600 86400",
-              "@    NS  ns1.linode.com.",
-              "@    NS  ns2.linode.com.",
-              "@    NS  ns3.linode.com.",
-              "@    NS  ns4.linode.com.",
-              "@    NS  ns5.linode.com."
-            ]
-          }
-        ]
+        
+        {
+          "zone_file": [
+            "; example.com [123]",
+            "$TTL 864000",
+            "@  IN  SOA  ns1.linode.com. user.example.com. 2021000066 14400 14400 1209600 86400",
+            "@    NS  ns1.linode.com.",
+            "@    NS  ns2.linode.com.",
+            "@    NS  ns3.linode.com.",
+            "@    NS  ns4.linode.com.",
+            "@    NS  ns5.linode.com."
+          ]
+        }
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-zone) for a list of returned fields
 
