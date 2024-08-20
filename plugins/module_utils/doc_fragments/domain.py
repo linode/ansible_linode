@@ -49,8 +49,7 @@ result_records_samples = ['''[
   }
 ]''']
 
-result_zone_file_samples = ['''
-{
+result_zone_file_samples = ['''{
   "zone_file": [
     "; example.com [123]",
     "$TTL 864000",

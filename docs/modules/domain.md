@@ -106,7 +106,6 @@ Manage Linode Domains.
 
     - Sample Response:
         ```json
-        
         {
           "zone_file": [
             "; example.com [123]",

@@ -92,7 +92,6 @@ Get info about a Linode Domain.
 
     - Sample Response:
         ```json
-        
         {
           "zone_file": [
             "; example.com [123]",
