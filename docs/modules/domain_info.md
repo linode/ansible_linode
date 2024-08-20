@@ -31,12 +31,12 @@ Get info about a Linode Domain.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The unique domain name of the Domain. Optional if `domain` is defined.  **(Conflicts With: `domain`)** |
-| `domain` | <center>`str`</center> | <center>Optional</center> | The unique id of the Domain. Optional if `id` is defined.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Domain to resolve.  **(Conflicts With: `domain`)** |
+| `domain` | <center>`str`</center> | <center>Optional</center> | The domain of the Domain to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 
-- `domain` - The domain in JSON serialized form.
+- `domain` - The returned Domain.
 
     - Sample Response:
         ```json
@@ -63,7 +63,7 @@ Get info about a Linode Domain.
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain) for a list of returned fields
 
 
-- `records` - The domain record in JSON serialized form.
+- `records` - The returned records.
 
     - Sample Response:
         ```json
@@ -85,10 +85,10 @@ Get info about a Linode Domain.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-record) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-domain-records) for a list of returned fields
 
 
-- `zone_file` - The zone file for the last rendered zone for the specified domain.
+- `zone_file` - The returned zone file.
 
     - Sample Response:
         ```json
