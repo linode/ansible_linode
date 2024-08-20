@@ -104,7 +104,7 @@ Name | Description |
 [linode.cloud.nodebalancer_list](./docs/modules/nodebalancer_list.md)|List and filter on Nodebalancers.|
 [linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.placement_group_list](./docs/modules/placement_group_list.md)|List and filter on Placement Groups.|
-[linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Linode Regions.|
+[linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH keys in the Linode profile.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on Linode stackscripts.|
 [linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Linode Account tokens.|
