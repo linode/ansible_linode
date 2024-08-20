@@ -86,3 +86,30 @@ result_firewalls_samples = ['''[
   1234,
   5678
 ]''']
+
+result_firewalls_data_samples = ['''[
+  {
+    "created": "2020-04-10T13:34:00",
+    "entities": [
+      {
+        "id": 1234,
+        "label": "example-label",
+        "type": "nodebalancer",
+        "url": "/v4/nodebalancers/1234"
+      }
+    ],
+    "id": 45678,
+    "label": "very-cool-label",
+    "rules": {
+      "fingerprint": "abcdefg",
+      "inbound": [],
+      "inbound_policy": "DROP",
+      "outbound": [],
+      "outbound_policy": "DROP",
+      "version": 1
+    },
+      "status": "enabled",
+      "tags": [],
+      "updated": "2020-04-10T13:34:01"
+  }
+]''']
