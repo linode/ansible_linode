@@ -22,7 +22,7 @@ module = InfoModule(
         display_name="Account Availability",
         field_name="account_availability",
         field_type=FieldType.dict,
-        docs_url="TBD",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-account-availability",
         samples=docs.result_account_availability_samples,
     ),
     attributes=[

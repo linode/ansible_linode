@@ -22,7 +22,7 @@ Get info about a Linode Profile.
 
 ## Return Values
 
-- `profile` - The profile info in JSON serialized form.
+- `profile` - The returned Profile.
 
     - Sample Response:
         ```json

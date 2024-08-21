@@ -69,7 +69,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "placement_group": SpecReturnValue(
             description="The Placement Group in JSON serialized form.",
-            docs_url="TBD",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-placement-group",
             type=FieldType.dict,
             sample=docs.result_placement_group_samples,
         )

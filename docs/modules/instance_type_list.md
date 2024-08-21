@@ -1,5 +1,7 @@
 # instance_type_list
 
+**NOTE: This module has been deprecated in favor of `type_list`.
+
 List and filter on Linode Instance Types.
 
 - [Minimum Required Fields](#minimum-required-fields)
@@ -32,21 +34,21 @@ List and filter on Linode Instance Types.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | <center>`str`</center> | <center>Optional</center> | The order to list instance types in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
-| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order instance types by.   |
-| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting instance types.   |
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list Instance Types in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
+| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Instance Types by.   |
+| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Instance Types.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of Instance Types to return. If undefined, all results will be returned.   |
 
 ### filters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable attributes can be found here: https://techdocs.akamai.com/linode-api/reference/get-linode-types   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-linode-types).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
 
-- `instance_types` - The returned instance types.
+- `instance_types` - The returned Instance Types.
 
     - Sample Response:
         ```json

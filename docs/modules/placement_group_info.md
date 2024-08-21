@@ -2,7 +2,7 @@
 
 Get info about a Linode Placement Group.
 
-**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+WARNING! This module makes use of beta endpoints and requires the C(api_version) field be explicitly set to C(v4beta).
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -54,6 +54,6 @@ Get info about a Linode Placement Group.
         }
         
         ```
-    - See the [Linode API response documentation](TBD) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-placement-group) for a list of returned fields
 
 
