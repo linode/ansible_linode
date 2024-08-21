@@ -51,6 +51,51 @@
           - create_instance_disks_disk_encryption.instance.disk_encryption == 'enabled'
           - create_instance_disks_disk_encryption.disks[0].disk_encryption == 'enabled'
 
+    - name: Create a small Linode instance with two disks that sum up to its max size
+      linode.cloud.instance:
+        label: 'ansible-test-disks-max-size-{{ r }}'
+        region: '{{ lde_region }}'
+        type: g6-nanode-1
+        booted: false
+        disks:
+          - label: test-disk-1
+            filesystem: ext4
+            size: 15000
+          - label: test-disk-2
+            filesystem: ext4
+            size: 10000
+        state: present
+        firewall_id: '{{ firewall_id }}'
+        disk_encryption: 'enabled'
+      register: create_instance_disks_max_size
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_instance_disks_max_size.changed
+          - create_instance_disks_max_size.disks[0].size == 15000
+          - create_instance_disks_max_size.disks[1].size == 10000
+
+    - name: Update the instance to resize test-disk-1 and test-disk-2
+      linode.cloud.instance:
+        label: "{{ create_instance_disks_max_size.instance.label }}"
+        disks:
+          - label: test-disk-1
+            filesystem: ext4
+            size: 14500
+          - label: test-disk-2
+            filesystem: ext4
+            size: 10500
+        state: present
+      register: resize_disks
+
+    - name: Assert instance created
+      assert:
+        that:
+          - resize_disks.changed
+          - resize_disks.disks[0].size == 14500
+          - resize_disks.disks[1].size == 10500
+
   always:
     - ignore_errors: yes
       block:
@@ -77,6 +122,18 @@
             that:
               - delete_disks_disk_encryption.changed
               - delete_disks_disk_encryption.instance.id == create_instance_disks_disk_encryption.instance.id
+
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: 'ansible-test-disks-max-size-{{ r }}'
+            state: absent
+          register: delete_disks_max_size
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_disks_max_size.changed
+              - delete_disks_max_size.instance.id == create_instance_disks_max_size.instance.id
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
