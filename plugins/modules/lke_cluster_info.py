@@ -83,13 +83,13 @@ SPECDOC_META = SpecDocMeta(
             "fully provisioned.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-kubeconfig",
             type=FieldType.string,
-            sample=["\"a3ViZWNvbmZpZyBjb250ZW50Cg==\""]
+            sample=['"a3ViZWNvbmZpZyBjb250ZW50Cg=="'],
         ),
         "dashboard_url": SpecReturnValue(
             description="The Cluster Dashboard access URL.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-dashboard",
             type=FieldType.string,
-            sample=["\"https://example.dashboard.linodelke.net\""]
+            sample=['"https://example.dashboard.linodelke.net"'],
         ),
     },
 )

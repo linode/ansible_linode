@@ -82,7 +82,8 @@ SPECDOC_META = SpecDocMeta(
             sample=docs.result_body_samples,
         ),
         "status": SpecReturnValue(
-            description="The response status code.", type=FieldType.integer,
+            description="The response status code.",
+            type=FieldType.integer,
             sample=["200"],
         ),
     },

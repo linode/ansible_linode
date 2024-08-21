@@ -21,7 +21,7 @@ module = ListModule(
     description=[
         "**NOTE: This module has been deprecated in favor of `type_list`.",
         "List and filter on Linode Instance Types.",
-    ]
+    ],
 )
 
 SPECDOC_META = module.spec
