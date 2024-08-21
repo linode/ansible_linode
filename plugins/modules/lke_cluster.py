@@ -225,11 +225,13 @@ SPECDOC_META = SpecDocMeta(
             "NOTE: This value may be unavailable if `skip_polling` is true.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-kubeconfig",
             type=FieldType.string,
+            sample=["\"a3ViZWNvbmZpZyBjb250ZW50Cg==\""]
         ),
         "dashboard_url": SpecReturnValue(
             description="The Cluster Dashboard access URL.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-dashboard",
             type=FieldType.string,
+            sample=["\"https://example.dashboard.linodelke.net\""]
         ),
     },
 )

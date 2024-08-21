@@ -124,9 +124,9 @@ endif
 
 inject:
 	@echo "Injecting documentation into source files"
-	for f in `ls ./plugins/modules/*.py`; do ansible-specdoc -j -i $$f; done
+	for f in `ls ./plugins/modules/*.py`; do echo "$$f" && ansible-specdoc -j -i $$f; done
 	ansible-test sanity --test ansible-doc
 
 inject-clean:
 	@echo "Removing injected documentation from source files"
-	for f in `ls ./plugins/modules/*.py`; do ansible-specdoc -jc -i $$f; done
+	for f in `ls ./plugins/modules/*.py`; do echo "$$f" && ansible-specdoc -jc -i $$f; done
