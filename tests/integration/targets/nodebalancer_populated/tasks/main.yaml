@@ -248,26 +248,34 @@
           - rm_config.configs|length == 1
           - rm_config.nodes|length == 1
 
-    - name: Get info about the NodeBalancer
+    - name: Get info about the NodeBalancer by label
       linode.cloud.nodebalancer_info:
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
+      register: nb_info_label
+
+    - name: Get info about the NodeBalancer by id
+      linode.cloud.nodebalancer_info:
         id: '{{ create_populated_nodebalancer.node_balancer.id }}'
-      register: nb_info
+      register: nb_info_id
 
     - name: Assert that info is valid
       assert:
         that:
-          - nb_info.node_balancer.label == rm_config.node_balancer.label
-          - nb_info.configs|length == 1
-          - nb_info.nodes|length == 1
-          - nb_info.nodes[0] != None
+          - nb_info_label.node_balancer.label == rm_config.node_balancer.label
+          - nb_info_label.configs|length == 1
+          - nb_info_label.nodes|length == 1
+          - nb_info_label.nodes[0] != None
+          - nb_info_id.node_balancer.id == rm_config.node_balancer.id
+          - nb_info_id.configs|length == 1
+          - nb_info_id.nodes|length == 1
+          - nb_info_id.nodes[0] != None
 
     - name: Get info about a NodeBalancer that doesn't exist
       linode.cloud.nodebalancer_info:
         label: 'fake_nodebalancer-{{ r }}'
       register: fake_nb_info
       failed_when:
-        - "'failed' not in fake_nb_info.msg"
+        - "'Failed' not in fake_nb_info.msg"
 
   always:
     - ignore_errors: yes

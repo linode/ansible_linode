@@ -40,13 +40,13 @@ module = InfoModule(
         ),
         InfoModuleResult(
             field_name="zone_file",
-            field_type=FieldType.list,
+            field_type=FieldType.dict,
             display_name="zone file",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain-zone",
             samples=docs_parent.result_zone_file_samples,
-            get=lambda client, domain, params: Domain(
-                client, domain["id"]
-            ).zone_file_view(),
+            get=lambda client, domain, params: {
+                "zone_file": Domain(client, domain["id"]).zone_file_view()
+            },
         ),
     ],
     attributes=[

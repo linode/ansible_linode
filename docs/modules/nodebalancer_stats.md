@@ -1,6 +1,6 @@
 # nodebalancer_stats
 
-View a Linode NodeBalancers Stats.
+Get info about a Linode Node Balancer Stats.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -28,12 +28,12 @@ View a Linode NodeBalancers Stats.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The id of the nodebalancer for which the statistics apply to.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the nodebalancer for which the statistics apply to.  **(Conflicts With: `id`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Node Balancer Stats to resolve.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Node Balancer Stats to resolve.  **(Conflicts With: `label`)** |
 
 ## Return Values
 
-- `node_balancer_stats` - The NodeBalancer Stats in JSON serialized form.
+- `node_balancer_stats` - The returned Node Balancer Stats.
 
     - Sample Response:
         ```json
