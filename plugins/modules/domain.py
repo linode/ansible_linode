@@ -154,7 +154,7 @@ SPECDOC_META = SpecDocMeta(
         "zone_file": SpecReturnValue(
             description="The zone file for the last rendered zone for the specified domain.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain-zone",
-            type=FieldType.list,
+            type=FieldType.dict,
             sample=docs.result_zone_file_samples,
         ),
     },

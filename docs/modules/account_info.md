@@ -22,7 +22,7 @@ Get info about a Linode Account.
 
 ## Return Values
 
-- `account` - The account info in JSON serialized form.
+- `account` - The returned Account.
 
     - Sample Response:
         ```json
