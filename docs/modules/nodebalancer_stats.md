@@ -52,7 +52,7 @@ Get info about a Linode Node Balancer Stats.
                 1679586600000,
                 0
               ]
-            }
+            },
             "title" : "sample-title"
           }
         ]

@@ -21,7 +21,7 @@ result_subnet_samples = ['''{
     "linodes": [
         {
             "id": 1234567,
-            "interfaces": [{"active": false, "id": 654321}],
+            "interfaces": [{"active": false, "id": 654321}]
         }
     ],
     "updated": "2023-08-31T18:53:04"
