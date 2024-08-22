@@ -75,4 +75,9 @@ The Linode API documentation can be found here: https://techdocs.akamai.com/lino
 
 - `status` - The response status code.
 
+    - Sample Response:
+        ```json
+        200
+        ```
+
 

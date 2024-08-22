@@ -57,7 +57,7 @@ List and filter on all VPC IP Addresses.
                 "nat_1_1": null,
                 "gateway": "10.0.0.1",
                 "prefix": 24,
-                "subnet_mask": "255.255.255.0",
+                "subnet_mask": "255.255.255.0"
             }
         ]
         ```

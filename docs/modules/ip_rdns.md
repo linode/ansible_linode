@@ -59,7 +59,7 @@ Manage a Linode IP address's rDNS.
           "vpc_nat_1_1": {
             "vpc_id": 242,
             "subnet_id": 194,
-            "address": "139.144.244.36",
+            "address": "139.144.244.36"
           }
         }
         ```
