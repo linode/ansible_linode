@@ -18,10 +18,8 @@ module = ListModule(
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-types",
     examples=docs.specdoc_examples,
     result_samples=docs.result_instance_type_samples,
-    description=[
-        "**NOTE: This module has been deprecated in favor of `type_list`.",
-        "List and filter on Linode Instance Types.",
-    ],
+    deprecated=True,
+    deprecation_message="This module has been deprecated in favor of `type_list`.",
 )
 
 SPECDOC_META = module.spec
