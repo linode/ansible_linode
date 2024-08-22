@@ -23,7 +23,7 @@ result_nodebalancer_stats_samples = ['''[
         1679586600000,
         0
       ]
-    }
+    },
     "title" : "sample-title"
   }
 ]''']
