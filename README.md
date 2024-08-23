@@ -110,7 +110,7 @@ Name | Description |
 [linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Linode Account tokens.|
 [linode.cloud.type_list](./docs/modules/type_list.md)|List and filter on Types.|
 [linode.cloud.user_list](./docs/modules/user_list.md)|List Users.|
-[linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
+[linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on VLANs.|
 [linode.cloud.volume_list](./docs/modules/volume_list.md)|List and filter on Linode Volumes.|
 [linode.cloud.vpc_ip_list](./docs/modules/vpc_ip_list.md)|List and filter on VPC IP Addresses.|
 [linode.cloud.vpc_list](./docs/modules/vpc_list.md)|List and filter on VPCs.|
