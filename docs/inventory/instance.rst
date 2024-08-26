@@ -58,7 +58,7 @@ Parameters
 
 
   **strict (type=bool):**
-    \• If \ :literal:`yes`\  make invalid entries a fatal error, otherwise skip and continue.
+    \• If :literal:`yes` make invalid entries a fatal error, otherwise skip and continue.
 
     \• Since it is possible to use facts in the expressions they might not always be available and we ignore those errors by default.
 
@@ -94,13 +94,13 @@ Parameters
       **default_value (type=str):**
         \• The default value when the host variable's value is an empty string.
 
-        \• This option is mutually exclusive with \ :literal:`keyed\_groups[].trailing\_separator`\ .
+        \• This option is mutually exclusive with :literal:`keyed\_groups[].trailing\_separator`.
 
 
       **trailing_separator (type=bool, default=True):**
-        \• Set this option to \ :literal:`False`\  to omit the \ :literal:`keyed\_groups[].separator`\  after the host variable when the value is an empty string.
+        \• Set this option to :literal:`False` to omit the :literal:`keyed\_groups[].separator` after the host variable when the value is an empty string.
 
-        \• This option is mutually exclusive with \ :literal:`keyed\_groups[].default\_value`\ .
+        \• This option is mutually exclusive with :literal:`keyed\_groups[].default\_value`.
 
 
 
