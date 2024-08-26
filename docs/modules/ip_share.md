@@ -41,7 +41,7 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
         [
           {
             "linode_id": 12345,
-            "ips": ["192.0.2.1", "2001:db8:3c4d:15::"],
+            "ips": ["192.0.2.1", "2001:db8:3c4d:15::"]
           }
         ]
         ```
