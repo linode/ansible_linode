@@ -106,10 +106,20 @@ Get info about a Linode LKE cluster.
 
 - `kubeconfig` - The Base64-encoded kubeconfig used to access this cluster. 
 NOTE: This value may be unavailable if the cluster is not fully provisioned.
+
+    - Sample Response:
+        ```json
+        "a3ViZWNvbmZpZyBjb250ZW50Cg=="
+        ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-kubeconfig) for a list of returned fields
 
 
 - `dashboard_url` - The Cluster Dashboard access URL.
+
+    - Sample Response:
+        ```json
+        "https://example.dashboard.linodelke.net"
+        ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-dashboard) for a list of returned fields
 
 

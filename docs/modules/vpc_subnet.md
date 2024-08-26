@@ -55,7 +55,7 @@ Create, read, and update a Linode VPC Subnet.
             "linodes": [
                 {
                     "id": 1234567,
-                    "interfaces": [{"active": false, "id": 654321}],
+                    "interfaces": [{"active": false, "id": 654321}]
                 }
             ],
             "updated": "2023-08-31T18:53:04"
