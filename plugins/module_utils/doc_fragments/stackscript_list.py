@@ -29,7 +29,7 @@ result_stackscripts_samples = ['''[
         "label": "a-stackscript",
         "mine": true,
         "rev_note": "Set up MySQL",
-        "script": "\"#!/bin/bash\"\\n",
+        "script": "\\\"#!/bin/bash\\\"\\n",
         "updated": "2018-01-01T00:01:01",
         "user_defined_fields": [
             {
