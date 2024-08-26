@@ -107,7 +107,7 @@ Name | Description |
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH keys in the Linode profile.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on StackScripts.|
-[linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Linode Account tokens.|
+[linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Tokens.|
 [linode.cloud.type_list](./docs/modules/type_list.md)|List and filter on Types.|
 [linode.cloud.user_list](./docs/modules/user_list.md)|List and filter on Users.|
 [linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
