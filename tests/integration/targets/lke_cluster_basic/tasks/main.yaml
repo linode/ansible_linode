@@ -24,6 +24,13 @@
         node_pools:
           - type: g6-standard-1
             count: 3
+            labels:
+               foo.example.com/test: bar
+               foo.example.com/test2: foo
+            taints:
+                - key: foo.example.com/test2
+                  value: test
+                  effect: NoExecute
           - type: g6-standard-4
             count: 1
             autoscaler:
@@ -41,6 +48,11 @@
           - create_cluster.cluster.region == 'us-southeast'
           - create_cluster.node_pools[0].type == 'g6-standard-1'
           - create_cluster.node_pools[0].count == 3
+          - create_cluster.node_pools[0].labels['foo.example.com/test'] == 'bar'
+          - create_cluster.node_pools[0].labels['foo.example.com/test2'] == 'foo'
+          - create_cluster.node_pools[0].taints[0].key == 'foo.example.com/test2'
+          - create_cluster.node_pools[0].taints[0].value == 'test'
+          - create_cluster.node_pools[0].taints[0].effect == 'NoExecute'
           - create_cluster.node_pools[1].autoscaler.enabled
           - create_cluster.node_pools[1].autoscaler.min == 1
           - create_cluster.node_pools[1].autoscaler.max == 2
@@ -54,6 +66,13 @@
         node_pools:
           - type: g6-standard-1
             count: 2
+            labels:
+              foo.example.com/update: updated
+              foo.example.com/test2: foo
+            taints:
+              - key: foo.example.com/update
+                value: updated
+                effect: PreferNoSchedule
           - type: g6-standard-2
             count: 1
           - type: g6-standard-1
@@ -72,6 +91,12 @@
           - update_pools.node_pools[0].type == 'g6-standard-1'
           - update_pools.node_pools[0].count == 2
           - update_pools.node_pools[0].id == create_cluster.node_pools[0].id
+
+          - update_pools.node_pools[0].labels['foo.example.com/update'] == 'updated'
+          - update_pools.node_pools[0].labels['foo.example.com/test2'] == 'foo'
+          - update_pools.node_pools[0].taints[0].key == 'foo.example.com/update'
+          - update_pools.node_pools[0].taints[0].value == 'updated'
+          - update_pools.node_pools[0].taints[0].effect == 'PreferNoSchedule'
 
           - update_pools.node_pools[1].type == 'g6-standard-2'
           - update_pools.node_pools[1].count == 1
@@ -114,8 +139,8 @@
     - name: Get lke_cluster_info about the cluster by id
       linode.cloud.lke_cluster_info:
         id: '{{ upgrade.cluster.id }}'
-        
-        
+
+
       register: info_by_id
 
     - name: Assert lke_cluster_info about cluster by id

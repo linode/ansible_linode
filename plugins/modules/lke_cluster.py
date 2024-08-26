@@ -112,6 +112,28 @@ linode_lke_cluster_disk = {
     ),
 }
 
+linode_lke_cluster_taint = {
+    "key": SpecField(
+        type=FieldType.string,
+        description=["The Kubernetes taint key."],
+        required=True,
+        editable=True,
+    ),
+    "value": SpecField(
+        type=FieldType.string,
+        description=["The Kubernetes taint value."],
+        required=True,
+        editable=True,
+    ),
+    "effect": SpecField(
+        type=FieldType.string,
+        description=["The Kubernetes taint effect."],
+        required=True,
+        editable=True,
+        choices=["NoSchedule", "PreferNoSchedule", "NoExecute"],
+    ),
+}
+
 linode_lke_cluster_node_pool_spec = {
     "count": SpecField(
         type=FieldType.integer,
@@ -132,6 +154,23 @@ linode_lke_cluster_node_pool_spec = {
             "defined minimum and maximum values."
         ],
         suboptions=linode_lke_cluster_autoscaler,
+    ),
+    "labels": SpecField(
+        type=FieldType.dict,
+        editable=True,
+        description=[
+            "Key-value pairs added as labels to nodes in the node pool. "
+            "Labels help classify your nodes and to easily select subsets of objects."
+        ],
+    ),
+    "taints": SpecField(
+        type=FieldType.list,
+        editable=True,
+        description=[
+            "Kubernetes taints to add to node pool nodes. Taints help control "
+            "how pods are scheduled onto nodes, specifically allowing them to repel certain pods."
+        ],
+        suboptions=linode_lke_cluster_taint,
     ),
 }
 
@@ -419,6 +458,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
         self._attempt_update_acl(cluster)
 
+    # pylint: disable=too-many-statements
     def _update_cluster(self, cluster: LKECluster) -> None:
         """Handles all update functionality for the current LKE cluster"""
 
@@ -466,6 +506,32 @@ class LinodeLKECluster(LinodeModuleBase):
                         current_pool.autoscaler = pool.get("autoscaler")
                         current_pool.save()
 
+                    if (
+                        "taints" in pool
+                        and current_pool.taints != pool["taints"]
+                    ):
+                        self.register_action(
+                            "Updated taints for Node Pool {}".format(
+                                current_pool.id
+                            )
+                        )
+
+                        current_pool.taints = pool.get("taints")
+                        current_pool.save()
+
+                    if (
+                        "labels" in pool
+                        and current_pool.labels != pool["labels"]
+                    ):
+                        self.register_action(
+                            "Updated labels for Node Pool {}".format(
+                                current_pool.id
+                            )
+                        )
+
+                        current_pool.labels = pool.get("labels")
+                        current_pool.save()
+
                     pools_handled[k] = True
                     should_keep[i] = True
                     break
@@ -506,6 +572,32 @@ class LinodeLKECluster(LinodeModuleBase):
                             )
                         )
                         existing_pool.autoscaler = pool["autoscaler"]
+                        should_update = True
+
+                    if (
+                        "taints" in pool
+                        and existing_pool.taints != pool["taints"]
+                    ):
+                        self.register_action(
+                            "Updated taints for Node Pool {}".format(
+                                existing_pool.id
+                            )
+                        )
+
+                        existing_pool.taints = pool["taints"]
+                        should_update = True
+
+                    if (
+                        "labels" in pool
+                        and existing_pool.labels != pool["labels"]
+                    ):
+                        self.register_action(
+                            "Updated labels for Node Pool {}".format(
+                                existing_pool.id
+                            )
+                        )
+
+                        existing_pool.labels = pool["labels"]
                         should_update = True
 
                     if should_update:

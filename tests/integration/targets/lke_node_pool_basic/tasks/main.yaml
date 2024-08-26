@@ -37,6 +37,13 @@
         tags: ['my-pool']
         type: g6-standard-1
         count: 2
+        labels:
+          foo.example.com/test: bar
+          foo.example.com/test2: foo
+        taints:
+          - key: foo.example.com/test2
+            value: test
+            effect: NoExecute
         state: present
       register: new_pool
 
@@ -47,6 +54,11 @@
           - new_pool.node_pool.type == 'g6-standard-1'
           - new_pool.node_pool.nodes[0].status == 'ready'
           - new_pool.node_pool.nodes[1].status == 'ready'
+          - new_pool.node_pool.labels['foo.example.com/test'] == 'bar'
+          - new_pool.node_pool.labels['foo.example.com/test2'] == 'foo'
+          - new_pool.node_pool.taints[0].key == 'foo.example.com/test2'
+          - new_pool.node_pool.taints[0].value == 'test'
+          - new_pool.node_pool.taints[0].effect == 'NoExecute'
 
     - name: Attempt to update an invalid field on the node pool
       linode.cloud.lke_node_pool:
@@ -71,6 +83,13 @@
           enabled: true
           min: 1
           max: 3
+        labels:
+          foo.example.com/update: updated
+          foo.example.com/test2: foo
+        taints:
+          - key: foo.example.com/update
+            value: updated
+            effect: PreferNoSchedule
         state: present
       register: update_pool
 
@@ -82,6 +101,11 @@
           - update_pool.node_pool.autoscaler.enabled
           - update_pool.node_pool.autoscaler.min == 1
           - update_pool.node_pool.autoscaler.max == 3
+          - update_pool.node_pool.labels['foo.example.com/update'] == 'updated'
+          - update_pool.node_pool.labels['foo.example.com/test2'] == 'foo'
+          - update_pool.node_pool.taints[0].key == 'foo.example.com/update'
+          - update_pool.node_pool.taints[0].value == 'updated'
+          - update_pool.node_pool.taints[0].effect == 'PreferNoSchedule'
 
   always:
     - ignore_errors: yes

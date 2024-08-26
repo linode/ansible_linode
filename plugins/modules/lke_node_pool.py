@@ -69,6 +69,28 @@ linode_lke_pool_disks = {
     ),
 }
 
+linode_lke_pool_taint = {
+    "key": SpecField(
+        type=FieldType.string,
+        description=["The Kubernetes taint key."],
+        required=True,
+        editable=True,
+    ),
+    "value": SpecField(
+        type=FieldType.string,
+        description=["The Kubernetes taint value."],
+        required=True,
+        editable=True,
+    ),
+    "effect": SpecField(
+        type=FieldType.string,
+        description=["The Kubernetes taint effect."],
+        required=True,
+        editable=True,
+        choices=["NoSchedule", "PreferNoSchedule", "NoExecute"],
+    ),
+}
+
 MODULE_SPEC = {
     "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "cluster_id": SpecField(
@@ -139,6 +161,23 @@ MODULE_SPEC = {
             "The period to wait for the node pool to be ready in seconds."
         ],
         default=600,
+    ),
+    "labels": SpecField(
+        type=FieldType.dict,
+        editable=True,
+        description=[
+            "Key-value pairs added as labels to nodes in the node pool. "
+            "Labels help classify your nodes and to easily select subsets of objects."
+        ],
+    ),
+    "taints": SpecField(
+        type=FieldType.list,
+        editable=True,
+        description=[
+            "Kubernetes taints to add to node pool nodes. Taints help control "
+            "how pods are scheduled onto nodes, specifically allowing them to repel certain pods."
+        ],
+        suboptions=linode_lke_pool_taint,
     ),
 }
 
@@ -251,6 +290,8 @@ class LinodeLKENodePool(LinodeModuleBase):
             params.pop("autoscaler") if "autoscaler" in params else None
         )
         new_count = params.pop("count")
+        new_taints = params.pop("taints") if "taints" in params else None
+        new_labels = params.pop("labels") if "labels" in params else None
 
         try:
             handle_updates(pool, params, set(), self.register_action)
@@ -274,6 +315,16 @@ class LinodeLKENodePool(LinodeModuleBase):
         if new_autoscaler is not None and pool.autoscaler != new_autoscaler:
             self.register_action("Updated autoscaler for Node Pool")
             pool.autoscaler = new_autoscaler
+            should_update = True
+
+        if new_taints is not None and pool.taints != new_taints:
+            self.register_action("Updated taints for Node Pool")
+            pool.taints = new_taints
+            should_update = True
+
+        if new_labels is not None and pool.labels != new_labels:
+            self.register_action("Updated labels for Node Pool")
+            pool.labels = new_labels
             should_update = True
 
         if should_update:
