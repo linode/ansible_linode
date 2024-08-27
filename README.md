@@ -109,7 +109,7 @@ Name | Description |
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on StackScripts.|
 [linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Tokens.|
 [linode.cloud.type_list](./docs/modules/type_list.md)|List and filter on Types.|
-[linode.cloud.user_list](./docs/modules/user_list.md)|List Users.|
+[linode.cloud.user_list](./docs/modules/user_list.md)|List and filter on Users.|
 [linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on Linode VLANs.|
 [linode.cloud.volume_list](./docs/modules/volume_list.md)|List and filter on Linode Volumes.|
 [linode.cloud.vpc_ip_list](./docs/modules/vpc_ip_list.md)|List and filter on VPC IP Addresses.|
@@ -177,6 +177,31 @@ For more information on Ansible collection usage, see [Ansible's official usage 
 ## Examples
 
 Use-case examples for this collection can be found [here](./examples/README.md).
+
+## Development
+
+The following section outlines various information relating to the development of this collection.
+
+### Attaching a Debugger
+
+To quickly and easily attach a debugger to a running module in this collection, 
+you can use the [madbg](https://pypi.org/project/madbg/) package:
+
+1. Install `madbg` in your local Python environment:
+
+```shell
+pip install madbg
+```
+
+2. Call `madbg.set_trace(...)` at the location you would like to create a breakpoint at:
+
+```shell
+import madbg; madbg.set_trace()
+```
+
+3. Run the module in either a playbook or a test.
+4. In a separate shell, run `madbg connect`.
+5. You should now be able to remotely debug the module as soon as the breakpoint is triggered.
 
 ## Licensing
 

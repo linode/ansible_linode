@@ -102,6 +102,31 @@ For more information on Ansible collection usage, see [Ansible's official usage 
 
 Use-case examples for this collection can be found [here](./examples/README.md).
 
+## Development
+
+The following section outlines various information relating to the development of this collection.
+
+### Attaching a Debugger
+
+To quickly and easily attach a debugger to a running module in this collection, 
+you can use the [madbg](https://pypi.org/project/madbg/) package:
+
+1. Install `madbg` in your local Python environment:
+
+```shell
+pip install madbg
+```
+
+2. Call `madbg.set_trace(...)` at the location you would like to create a breakpoint at:
+
+```shell
+import madbg; madbg.set_trace()
+```
+
+3. Run the module in either a playbook or a test.
+4. In a separate shell, run `madbg connect`.
+5. You should now be able to remotely debug the module as soon as the breakpoint is triggered.
+
 ## Licensing
 
 GNU General Public License v3.0.
