@@ -135,8 +135,6 @@ result_instance_samples = ['''{
     "placement_group_type": "anti_affinity:local",
     "placement_group_policy": "strict"
   }
-  "disk_encryption": "enabled",
-  "lke_cluster_id": null                      
 }''']
 
 result_configs_samples = ['''[
@@ -208,8 +206,7 @@ result_disks_samples = ['''[
     "label": "Debian 9 Disk",
     "size": 48640,
     "status": "ready",
-    "updated": "2018-01-01T00:01:01",
-    "disk_encryption": "enabled"
+    "updated": "2018-01-01T00:01:01"
   }
 ]''']
 

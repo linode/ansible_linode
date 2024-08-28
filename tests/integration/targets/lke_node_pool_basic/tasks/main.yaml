@@ -10,13 +10,6 @@
     - set_fact:
         kube_version: '{{ lke_versions.lke_versions[0].id }}'
 
-    - name: List regions that support Disk Encryption
-      linode.cloud.region_list: {}
-      register: all_regions
-
-    - set_fact:
-        lde_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Disk Encryption") | list)[0].id }}'
-
     - name: Create a minimal LKE cluster
       linode.cloud.lke_cluster:
         label: 'ansible-test-{{ r }}'
@@ -90,44 +83,6 @@
           - update_pool.node_pool.autoscaler.min == 1
           - update_pool.node_pool.autoscaler.max == 3
 
-    - name: Create a minimal LKE cluster
-      linode.cloud.lke_cluster:
-        label: 'ansible-test-de-{{ r }}'
-        region: '{{ lde_region }}'
-        k8s_version: '{{ kube_version }}'
-        node_pools:
-          - type: g6-standard-1
-            count: 1
-        skip_polling: true
-        state: present
-      register: create_cluster_de
-
-    - name: Assert minimal LKE cluster is created
-      assert:
-        that:
-          - create_cluster_de.cluster.k8s_version == kube_version
-          - create_cluster_de.node_pools[0].type == 'g6-standard-1'
-          - create_cluster_de.node_pools[0].count == 1
-
-    - name: Add a node pool to the cluster
-      linode.cloud.lke_node_pool:
-        cluster_id: '{{ create_cluster_de.cluster.id }}'
-
-        tags: ['my-pool']
-        type: g6-standard-1
-        count: 2
-        state: present
-      register: new_pool_de
-
-    - name: Assert node pool is added to cluster
-      assert:
-        that:
-          - new_pool_de.node_pool.count == 2
-          - new_pool_de.node_pool.type == 'g6-standard-1'
-          - new_pool_de.node_pool.disk_encryption == 'enabled'
-          - new_pool_de.node_pool.nodes[0].status == 'ready'
-          - new_pool_de.node_pool.nodes[1].status == 'ready'
-
   always:
     - ignore_errors: yes
       block:
@@ -139,15 +94,6 @@
         - name: Delete the LKE cluster
           linode.cloud.lke_cluster:
             label: '{{ create_cluster.cluster.label }}'
-            state: absent
-        - name: Delete the LKE cluster node pool
-          linode.cloud.lke_node_pool:
-            cluster_id: '{{ create_cluster_de.cluster.id }}'
-            tags: ['my-pool']
-            state: absent
-        - name: Delete the LKE cluster
-          linode.cloud.lke_cluster:
-            label: '{{ create_cluster_de.cluster.label }}'
             state: absent
 
   environment:

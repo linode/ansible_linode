@@ -77,7 +77,6 @@ Get info about a Linode LKE cluster.
               "max": 12,
               "min": 3
             },
-            "disk_encryption": "enabled",
             "count": 6,
             "disks": [
               {
