@@ -94,9 +94,7 @@ List and filter on Instances.
               ],
               "type": "g6-standard-1",
               "updated": "2018-01-01T00:01:01",
-              "watchdog_enabled": true,
-              "disk_encryption": "enabled",
-              "lke_cluster_id": null
+              "watchdog_enabled": true
             }
         ]
         ```
