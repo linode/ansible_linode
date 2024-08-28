@@ -73,7 +73,7 @@ Name | Description |
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.placement_group_info](./docs/modules/placement_group_info.md)|Get info about a Linode Placement Group.|
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
-[linode.cloud.ssh_key_info](./docs/modules/ssh_key_info.md)|Get info about the Linode SSH public key.|
+[linode.cloud.ssh_key_info](./docs/modules/ssh_key_info.md)|Get info about a Linode SSH Key.|
 [linode.cloud.stackscript_info](./docs/modules/stackscript_info.md)|Get info about a Linode StackScript.|
 [linode.cloud.token_info](./docs/modules/token_info.md)|Get info about a Linode Personal Access Token.|
 [linode.cloud.type_info](./docs/modules/type_info.md)|Get info about a Linode Type.|
@@ -105,7 +105,7 @@ Name | Description |
 [linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.placement_group_list](./docs/modules/placement_group_list.md)|List and filter on Placement Groups.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
-[linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH keys in the Linode profile.|
+[linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH Keys.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on StackScripts.|
 [linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Tokens.|
 [linode.cloud.type_list](./docs/modules/type_list.md)|List and filter on Types.|
