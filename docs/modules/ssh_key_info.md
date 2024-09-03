@@ -1,6 +1,6 @@
 # ssh_key_info
 
-Get info about the Linode SSH public key.
+Get info about a Linode SSH Key.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -31,12 +31,12 @@ Get info about the Linode SSH public key.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the SSH key.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the SSH key.  **(Conflicts With: `id`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the SSH Key to resolve.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the SSH Key to resolve.  **(Conflicts With: `label`)** |
 
 ## Return Values
 
-- `ssh_key` - The SSH key in JSON serialized form.
+- `ssh_key` - The returned SSH Key.
 
     - Sample Response:
         ```json
