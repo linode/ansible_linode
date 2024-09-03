@@ -99,7 +99,7 @@ Name | Description |
 [linode.cloud.firewall_list](./docs/modules/firewall_list.md)|List and filter on Firewalls.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Images.|
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Instances.|
-[linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|**NOTE: This module has been deprecated in favor of `type_list`.|
+[linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|**NOTE: This module has been deprecated in favor of `type_list`.**|
 [linode.cloud.lke_version_list](./docs/modules/lke_version_list.md)|List and filter on LKE Versions.|
 [linode.cloud.nodebalancer_list](./docs/modules/nodebalancer_list.md)|List and filter on Node Balancers.|
 [linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|

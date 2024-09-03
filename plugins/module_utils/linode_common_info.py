@@ -124,6 +124,8 @@ class InfoModule(LinodeModuleBase):
         examples: List[str] = None,
         description: List[str] = None,
         requires_beta: bool = False,
+        deprecated: bool = False,
+        deprecation_message: Optional[str] = None,
     ) -> None:
         self.primary_result = primary_result
         self.secondary_results = secondary_results or []
@@ -133,6 +135,15 @@ class InfoModule(LinodeModuleBase):
             f"Get info about a Linode {self.primary_result.display_name}."
         ]
         self.requires_beta = requires_beta
+        self.deprecated = deprecated
+        self.deprecation_message = (
+            deprecation_message or "This module has been deprecated."
+        )
+
+        # If this module is deprecated, we should add the deprecation message
+        # to the module's description.
+        if self.deprecated:
+            self.description.insert(0, f"**NOTE: {self.deprecation_message}**")
 
         # Singular params should be translated into groups
         self.param_groups = [
@@ -274,6 +285,10 @@ class InfoModule(LinodeModuleBase):
         """
         Initializes and runs the info module.
         """
+
+        if self.deprecated:
+            self.warn(self.deprecation_message)
+
         base_module_args = {
             "module_arg_spec": self.module_arg_spec,
             "required_one_of": [],
