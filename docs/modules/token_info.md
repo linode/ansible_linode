@@ -31,12 +31,12 @@ Get info about a Linode Personal Access Token.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the token.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the token.  **(Conflicts With: `id`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Personal Access Token to resolve.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Personal Access Token to resolve.  **(Conflicts With: `label`)** |
 
 ## Return Values
 
-- `token` - The token in JSON serialized form.
+- `token` - The returned Personal Access Token.
 
     - Sample Response:
         ```json
@@ -49,6 +49,6 @@ Get info about a Linode Personal Access Token.
           "token": "abcdefghijklmnop"
         }
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/post-personal-access-token) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-personal-access-tokens) for a list of returned fields
 
 
