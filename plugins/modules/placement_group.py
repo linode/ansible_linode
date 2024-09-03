@@ -55,6 +55,12 @@ placement_group_spec = {
         ],
         choices=["flexible", "strict"],
     ),
+    "state": SpecField(
+        type=FieldType.string,
+        description=["The desired state of the target."],
+        choices=["present", "absent"],
+        required=True,
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(

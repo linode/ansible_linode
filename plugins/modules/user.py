@@ -165,11 +165,6 @@ SPEC_GRANTS = {
 }
 
 SPEC = {
-    # We don't use label for this module
-    "label": SpecField(
-        type=FieldType.string,
-        doc_hide=True,
-    ),
     "username": SpecField(
         type=FieldType.string,
         required=True,

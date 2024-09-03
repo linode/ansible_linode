@@ -36,8 +36,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import ApiError, LKECluster
 
 linode_lke_cluster_info_spec = {
-    # We need to overwrite attributes to exclude them as requirements
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "id": SpecField(
         type=FieldType.integer,
         required=False,

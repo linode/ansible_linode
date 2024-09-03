@@ -29,8 +29,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import Domain
 
 linode_domain_spec = {
-    # Unused for domain objects
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "axfr_ips": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,

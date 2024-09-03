@@ -207,14 +207,7 @@ class InfoModule(LinodeModuleBase):
         Returns the ansible-specdoc spec for this module.
         """
 
-        options = {
-            "state": SpecField(
-                type=FieldType.string, required=False, doc_hide=True
-            ),
-            "label": SpecField(
-                type=FieldType.string, required=False, doc_hide=True
-            ),
-        }
+        options = {}
 
         # Add params to spec
         for group in self.param_groups:

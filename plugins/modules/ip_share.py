@@ -25,9 +25,6 @@ from ansible_specdoc.objects import (
 from linode_api4.objects import Instance
 
 ip_share_spec = {
-    # Disable the default values
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "ips": SpecField(
         type=FieldType.list,
         required=True,

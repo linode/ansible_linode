@@ -70,7 +70,6 @@ linode_lke_pool_disks = {
 }
 
 MODULE_SPEC = {
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "cluster_id": SpecField(
         type=FieldType.integer,
         required=True,
