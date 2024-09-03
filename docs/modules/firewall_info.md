@@ -31,12 +31,12 @@ Get info about a Linode Firewall.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The unique id of the Firewall. Optional if `label` is defined.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The Firewall’s label. Optional if `id` is defined.  **(Conflicts With: `id`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Firewall to resolve.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Firewall to resolve.  **(Conflicts With: `label`)** |
 
 ## Return Values
 
-- `firewall` - The Firewall description in JSON serialized form.
+- `firewall` - The returned Firewall.
 
     - Sample Response:
         ```json
@@ -93,7 +93,7 @@ Get info about a Linode Firewall.
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-firewall) for a list of returned fields
 
 
-- `devices` - A list of Firewall devices JSON serialized form.
+- `devices` - The returned devices.
 
     - Sample Response:
         ```json
@@ -111,6 +111,6 @@ Get info about a Linode Firewall.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-firewall-device) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-firewall-devices) for a list of returned fields
 
 
