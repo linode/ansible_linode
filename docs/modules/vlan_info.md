@@ -2,8 +2,6 @@
 
 Get info about a Linode VLAN.
 
-WARNING! This module makes use of beta endpoints and requires the C(api_version) field be explicitly set to C(v4beta).
-
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -28,11 +26,12 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | <center>`str`</center> | <center>**Required**</center> | The VLAN’s label.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VLAN to resolve.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VLAN to resolve.  **(Conflicts With: `label`)** |
 
 ## Return Values
 
-- `vlan` - The VLAN in JSON serialized form.
+- `vlan` - The returned VLAN.
 
     - Sample Response:
         ```json
