@@ -39,6 +39,12 @@ ip_share_spec = {
             "The ID of the primary Linode that the addresses will be shared with."
         ],
     ),
+    "state": SpecField(
+        type=FieldType.string,
+        description=["The desired state of the target."],
+        choices=["present", "absent"],
+        required=True,
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
