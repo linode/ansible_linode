@@ -87,6 +87,8 @@ Manage Linode LKE clusters.
 | `count` | <center>`int`</center> | <center>**Required**</center> | The number of nodes in the Node Pool.  **(Updatable)** |
 | `type` | <center>`str`</center> | <center>**Required**</center> | The Linode Type for all of the nodes in the Node Pool.   |
 | [`autoscaler` (sub-options)](#autoscaler) | <center>`dict`</center> | <center>Optional</center> | When enabled, the number of nodes autoscales within the defined minimum and maximum values.  **(Updatable)** |
+| `labels` | <center>`dict`</center> | <center>Optional</center> | Key-value pairs added as labels to nodes in the node pool. Labels help classify your nodes and to easily select subsets of objects.  **(Updatable)** |
+| [`taints` (sub-options)](#taints) | <center>`list`</center> | <center>Optional</center> | Kubernetes taints to add to node pool nodes. Taints help control how pods are scheduled onto nodes, specifically allowing them to repel certain pods.  **(Updatable)** |
 
 ### autoscaler
 
@@ -95,6 +97,14 @@ Manage Linode LKE clusters.
 | `enabled` | <center>`bool`</center> | <center>Optional</center> | Whether autoscaling is enabled for this Node Pool. NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.  **(Updatable)** |
 | `max` | <center>`int`</center> | <center>Optional</center> | The maximum number of nodes to autoscale to. Defaults to the value provided by the count field.  **(Updatable)** |
 | `min` | <center>`int`</center> | <center>Optional</center> | The minimum number of nodes to autoscale to. Defaults to the Node Pool’s count.  **(Updatable)** |
+
+### taints
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `key` | <center>`str`</center> | <center>**Required**</center> | The Kubernetes taint key.  **(Updatable)** |
+| `value` | <center>`str`</center> | <center>**Required**</center> | The Kubernetes taint value.  **(Updatable)** |
+| `effect` | <center>`str`</center> | <center>**Required**</center> | The Kubernetes taint effect.  **(Choices: `NoSchedule`, `PreferNoSchedule`, `NoExecute`; Updatable)** |
 
 ## Return Values
 
