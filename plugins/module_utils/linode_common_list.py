@@ -126,13 +126,6 @@ class ListModule(
         }
 
         options = {
-            # Disable the default values
-            "state": SpecField(
-                type=FieldType.string, required=False, doc_hide=True
-            ),
-            "label": SpecField(
-                type=FieldType.string, required=False, doc_hide=True
-            ),
             "order": SpecField(
                 type=FieldType.string,
                 description=[

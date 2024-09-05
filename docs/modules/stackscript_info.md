@@ -31,8 +31,8 @@ Get info about a Linode StackScript.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the StackScript to resolve.  **(Conflicts With: `id`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to resolve.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the StackScript to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 

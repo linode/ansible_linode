@@ -37,8 +37,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import MySQLDatabase
 
 spec = {
-    # Disable the default values
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "id": SpecField(
         type=FieldType.string,
         conflicts_with=["label"],

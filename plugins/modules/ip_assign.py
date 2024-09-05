@@ -35,9 +35,6 @@ linode_ip_assignments_spec: dict = {
 }
 
 spec = {
-    # Disable the default values
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "assignments": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,

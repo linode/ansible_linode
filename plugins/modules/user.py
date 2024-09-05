@@ -165,11 +165,6 @@ SPEC_GRANTS = {
 }
 
 SPEC = {
-    # We don't use label for this module
-    "label": SpecField(
-        type=FieldType.string,
-        doc_hide=True,
-    ),
     "username": SpecField(
         type=FieldType.string,
         required=True,
@@ -377,7 +372,8 @@ class Module(LinodeModuleBase):
             k: v
             for k, v in params.items()
             if k
-            not in list(LINODE_COMMON_ARGS.keys()) + ["grants", "ua_prefix"]
+            not in list(LINODE_COMMON_ARGS.keys())
+            + ["grants", "ua_prefix", "state"]
         }
 
         try:

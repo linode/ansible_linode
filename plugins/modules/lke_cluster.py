@@ -238,6 +238,12 @@ linode_lke_cluster_spec = {
         ],
         default=600,
     ),
+    "state": SpecField(
+        type=FieldType.string,
+        description=["The desired state of the target."],
+        choices=["present", "absent"],
+        required=True,
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -745,7 +751,7 @@ class LinodeLKECluster(LinodeModuleBase):
             self.register_action("Deleted cluster {0}".format(cluster))
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for Domain module"""
+        """Entrypoint for LKE Cluster module"""
         state = kwargs.get("state")
 
         if state == "absent":
