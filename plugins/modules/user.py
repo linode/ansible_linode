@@ -372,7 +372,7 @@ class Module(LinodeModuleBase):
             k: v
             for k, v in params.items()
             if k
-            not in list(LINODE_COMMON_ARGS.keys()) + ["grants", "ua_prefix"]
+            not in list(LINODE_COMMON_ARGS.keys()) + ["grants", "ua_prefix", "state"]
         }
 
         try:
