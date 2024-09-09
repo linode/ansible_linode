@@ -50,9 +50,6 @@ spec_filter = {
 }
 
 spec = {
-    # Disable the default values
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "order": SpecField(
         type=FieldType.string,
         description=["The order to list databases in."],

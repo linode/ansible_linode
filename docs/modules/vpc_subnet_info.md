@@ -34,8 +34,8 @@ Get info about a Linode VPC Subnet.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the VPC for this resource.   |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC Subnet to resolve.  **(Conflicts With: `id`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC Subnet to resolve.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC Subnet to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 

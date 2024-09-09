@@ -31,6 +31,7 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `ips` | <center>`list`</center> | <center>**Required**</center> | A list of secondary Linode IPs to share with the primary Linode.   |
 | `linode_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the primary Linode that the addresses will be shared with.   |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
 
 ## Return Values
 

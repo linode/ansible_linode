@@ -55,6 +55,7 @@ NOTE: Placement Groups may not currently be available to all users.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
+| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The unique ID of the placement group.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the Placement Group. This field can only contain ASCII letters, digits and dashes.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The region that the placement group is in.   |
