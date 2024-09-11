@@ -16,6 +16,13 @@
         # Sometimes only one LKE version is available for provisioning
         kube_version: '{{ lke_versions[1].id if lke_versions|length > 1 else lke_versions[0].id }}'
 
+    - name: List regions that support Disk Encryption
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        lde_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Disk Encryption") | list)[0].id }}'
+
     - name: Create a Linode LKE cluster
       linode.cloud.lke_cluster:
         label: 'ansible-test-{{ r }}'
@@ -172,6 +179,23 @@
           - info_by_label.node_pools[0].count == 1
           - info_by_label.node_pools[0].id == create_cluster.node_pools[0].id
 
+    - name: Create a Linode LKE cluster with a pool with disk encryption enabled
+      linode.cloud.lke_cluster:
+        label: 'ansible-test-de-{{ r }}'
+        region: '{{ lde_region }}'
+        k8s_version: '{{ old_kube_version }}'
+        node_pools:
+          - type: g6-standard-1
+            count: 3
+        skip_polling: true
+        state: present
+      register: create_cluster_disk_encryption
+
+    - name: Assert LKE cluster is created
+      assert:
+        that:
+          - create_cluster_disk_encryption.node_pools[0].disk_encryption == 'enabled'
+
   always:
     - ignore_errors: yes
       block:
@@ -179,6 +203,12 @@
           linode.cloud.lke_cluster:
             label: '{{ create_cluster.cluster.label }}'
             state: absent
+
+        - name: Delete the LKE cluster
+          linode.cloud.lke_cluster:
+            label: '{{ create_cluster_disk_encryption.cluster.label }}'
+            state: absent
+      
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'

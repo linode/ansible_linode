@@ -1,0 +1,143 @@
+- name: instance_disk_encryption
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions that support Disk Encryption
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        lde_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Disk Encryption") | list)[0].id }}'
+
+    - name: Create a Linode instance with disk encryption set
+      linode.cloud.instance:
+        label: 'ansible-test-disk-encryption-{{ r }}'
+        region: '{{ lde_region }}'
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        private_ip: true
+        wait: false
+        state: present
+        firewall_id: '{{ firewall_id }}'
+        disk_encryption: 'enabled'
+      register: create_instance_with_disk_encryption
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_instance_with_disk_encryption.changed
+          - create_instance_with_disk_encryption.instance.disk_encryption == 'enabled'
+
+    - name: Create a Linode instance with explicit disks with disk encryption set
+      linode.cloud.instance:
+        label: 'ansible-test-disks-disk-encryption-{{ r }}'
+        region: '{{ lde_region }}'
+        type: g6-standard-1
+        booted: false
+        disks:
+          - label: test-disk
+            filesystem: ext4
+            size: 5000
+        state: present
+        firewall_id: '{{ firewall_id }}'
+        disk_encryption: 'enabled'
+      register: create_instance_disks_disk_encryption
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_instance_disks_disk_encryption.changed
+          - create_instance_disks_disk_encryption.instance.disk_encryption == 'enabled'
+          - create_instance_disks_disk_encryption.disks[0].disk_encryption == 'enabled'
+
+    - name: Create a small Linode instance with two disks that sum up to its max size
+      linode.cloud.instance:
+        label: 'ansible-test-disks-max-size-{{ r }}'
+        region: '{{ lde_region }}'
+        type: g6-nanode-1
+        booted: false
+        disks:
+          - label: test-disk-1
+            filesystem: ext4
+            size: 15000
+          - label: test-disk-2
+            filesystem: ext4
+            size: 10000
+        state: present
+        firewall_id: '{{ firewall_id }}'
+        disk_encryption: 'enabled'
+      register: create_instance_disks_max_size
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_instance_disks_max_size.changed
+          - create_instance_disks_max_size.disks[0].size == 15000
+          - create_instance_disks_max_size.disks[1].size == 10000
+
+    - name: Update the instance to resize test-disk-1 and test-disk-2
+      linode.cloud.instance:
+        label: "{{ create_instance_disks_max_size.instance.label }}"
+        disks:
+          - label: test-disk-1
+            filesystem: ext4
+            size: 14500
+          - label: test-disk-2
+            filesystem: ext4
+            size: 10500
+        state: present
+      register: resize_disks
+
+    - name: Assert instance created
+      assert:
+        that:
+          - resize_disks.changed
+          - resize_disks.disks[0].size == 14500
+          - resize_disks.disks[1].size == 10500
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: 'ansible-test-disk-encryption-{{ r }}'
+            state: absent
+          register: delete_disk_encryption
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_disk_encryption.changed
+              - delete_disk_encryption.instance.id == create_instance_with_disk_encryption.instance.id
+
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: 'ansible-test-disks-disk-encryption-{{ r }}'
+            state: absent
+          register: delete_disks_disk_encryption
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_disks_disk_encryption.changed
+              - delete_disks_disk_encryption.instance.id == create_instance_disks_disk_encryption.instance.id
+
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: 'ansible-test-disks-max-size-{{ r }}'
+            state: absent
+          register: delete_disks_max_size
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_disks_max_size.changed
+              - delete_disks_max_size.instance.id == create_instance_disks_max_size.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
