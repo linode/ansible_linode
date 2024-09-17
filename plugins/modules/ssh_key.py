@@ -40,7 +40,6 @@ ssh_key_spec = {
     ),
     "ssh_key": SpecField(
         type=FieldType.string,
-        editable=True,
         description=["The SSH public key value."],
     ),
 }
@@ -54,8 +53,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "ssh_key": SpecReturnValue(
             description="The created SSH key in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/profile/"
-            "#ssh-key-add__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/post-add-ssh-key",
             type=FieldType.dict,
             sample=docs.result_ssh_key_samples,
         )
@@ -63,6 +61,13 @@ SPECDOC_META = SpecDocMeta(
 )
 
 MUTABLE_FIELDS = {"label"}
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class SSHKeyModule(LinodeModuleBase):

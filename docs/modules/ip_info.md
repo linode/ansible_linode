@@ -46,10 +46,10 @@ Get info about a Linode IP.
           "vpc_nat_1_1": {
             "vpc_id": 242,
             "subnet_id": 194,
-            "address": "139.144.244.36",
+            "address": "139.144.244.36"
           }
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#ip-address-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-ip) for a list of returned fields
 
 

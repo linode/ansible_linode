@@ -1,131 +1,35 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module allows users to list Linode instance types."""
+"""This module allows users to list Linode instance types. Deprecated in favor of type_list."""
 from __future__ import absolute_import, division, print_function
-
-from typing import Any, Dict, Optional
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     instance_type_list as docs,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    LinodeModuleBase,
-)
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
-    global_authors,
-    global_requirements,
-)
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    construct_api_filter,
-    get_all_paginated,
-)
-from ansible_specdoc.objects import (
-    FieldType,
-    SpecDocMeta,
-    SpecField,
-    SpecReturnValue,
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list import (
+    ListModule,
 )
 
-spec_filter = {
-    "name": SpecField(
-        type=FieldType.string,
-        required=True,
-        description=[
-            "The name of the field to filter on.",
-            "Valid filterable attributes can be found here: "
-            "linode.com/docs/api/linode-types/"
-            "#types-list__responses",
-        ],
-    ),
-    "values": SpecField(
-        type=FieldType.list,
-        element_type=FieldType.string,
-        required=True,
-        description=[
-            "A list of values to allow for this field.",
-            "Fields will pass this filter if at least one of these values matches.",
-        ],
-    ),
-}
-
-spec = {
-    # Disable the default values
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "order": SpecField(
-        type=FieldType.string,
-        description=["The order to list instance types in."],
-        default="asc",
-        choices=["desc", "asc"],
-    ),
-    "order_by": SpecField(
-        type=FieldType.string,
-        description=["The attribute to order instance types by."],
-    ),
-    "filters": SpecField(
-        type=FieldType.list,
-        element_type=FieldType.dict,
-        suboptions=spec_filter,
-        description=[
-            "A list of filters to apply to the resulting instance types."
-        ],
-    ),
-    "count": SpecField(
-        type=FieldType.integer,
-        description=[
-            "The number of results to return.",
-            "If undefined, all results will be returned.",
-        ],
-    ),
-}
-
-SPECDOC_META = SpecDocMeta(
-    description=["List and filter on Linode Instance Types."],
-    requirements=global_requirements,
-    author=global_authors,
-    options=spec,
+module = ListModule(
+    result_display_name="Instance Types",
+    result_field_name="instance_types",
+    endpoint_template="/linode/types",
+    result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-types",
     examples=docs.specdoc_examples,
-    return_values={
-        "instance_types": SpecReturnValue(
-            description="The returned instance types.",
-            docs_url="https://www.linode.com/docs/api/linode-types/"
-            "#types-list__response-samples",
-            type=FieldType.list,
-            elements=FieldType.dict,
-            sample=docs.result_instance_type_samples,
-        )
-    },
+    result_samples=docs.result_instance_type_samples,
+    deprecated=True,
+    deprecation_message="This module has been deprecated in favor of `type_list`.",
 )
 
+SPECDOC_META = module.spec
 
-class Module(LinodeModuleBase):
-    """Module for getting a list of Linode instance types"""
-
-    def __init__(self) -> None:
-        self.module_arg_spec = SPECDOC_META.ansible_spec
-        self.results: Dict[str, Any] = {"instance_types": []}
-
-        super().__init__(module_arg_spec=self.module_arg_spec)
-
-    def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for instance type list module"""
-
-        filter_dict = construct_api_filter(self.module.params)
-
-        self.results["instance_types"] = get_all_paginated(
-            self.client,
-            "/linode/types",
-            filter_dict,
-            num_results=self.module.params["count"],
-        )
-        return self.results
-
-
-def main() -> None:
-    """Constructs and calls the module"""
-    Module()
-
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 if __name__ == "__main__":
-    main()
+    module.run()

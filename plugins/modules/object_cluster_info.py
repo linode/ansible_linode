@@ -52,7 +52,13 @@ linode_object_cluster_info_spec = {
 }
 
 SPECDOC_META = SpecDocMeta(
-    description=["Get info about a Linode Object Storage Cluster."],
+    description=[
+        "**NOTE: This module has been deprecated because it "
+        + "relies on deprecated API endpoints. Going forward, `region` will "
+        + "be the preferred way to designate where Object Storage resources "
+        + "should be created.**",
+        "Get info about a Linode Object Storage Cluster.",
+    ],
     requirements=global_requirements,
     author=global_authors,
     options=linode_object_cluster_info_spec,
@@ -60,7 +66,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "clusters": SpecReturnValue(
             description="The Object Storage clusters in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/object-storage/#cluster-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-object-storage-cluster",
             type=FieldType.list,
             sample=docs.result_clusters_samples,
         )
@@ -73,6 +79,13 @@ FILTERABLE_FIELDS = [
     "domain",
     "static_site_domain",
 ]
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class LinodeObjectStorageClustersInfo(LinodeModuleBase):
@@ -120,6 +133,13 @@ class LinodeObjectStorageClustersInfo(LinodeModuleBase):
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Constructs and calls the Linode Object Storage Clusters module"""
+
+        self.warn(
+            "The linode.cloud.object_cluster_info module has been deprecated because it "
+            "relies on deprecated API endpoints.\n"
+            "Going forward, region will be the preferred way to designate where Object "
+            "Storage resources should be created."
+        )
 
         clusters = self._get_matching_clusters()
 

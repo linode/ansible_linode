@@ -93,7 +93,19 @@ Manage Linode Instances, Configs, and Disks.
     image: linode/ubuntu22.04
     root_pass: verysecurepassword!!!
     metadata:
-        user_data: myuserdata
+      user_data: myuserdata
+    state: present
+```
+
+```yaml
+- name: Create a new Linode instance under a placement group.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-east
+    placement_group: 
+      id: 123
+      compliant_only: false
     state: present
 ```
 
@@ -116,15 +128,15 @@ Manage Linode Instances, Configs, and Disks.
 | `image` | <center>`str`</center> | <center>Optional</center> | The image ID to deploy the instance disk from.  **(Conflicts With: `disks`,`configs`)** |
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If not specified, one will be generated. This generated password will be available in the task success JSON.   |
-| `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
-| `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
+| `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
+| `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `firewall_id` | <center>`int`</center> | <center>Optional</center> | The ID of a Firewall this Linode to assign this Linode to.   |
 | `private_ip` | <center>`bool`</center> | <center>Optional</center> | If true, the created Linode will have private networking enabled.   |
 | `group` | <center>`str`</center> | <center>Optional</center> | The group that the instance should be marked under. Please note, that group labelling is deprecated but still supported. The encouraged method for marking instances is to use tags.  **(Updatable)** |
 | `boot_config_label` | <center>`str`</center> | <center>Optional</center> | The label of the config to boot from.   |
 | [`configs` (sub-options)](#configs) | <center>`list`</center> | <center>Optional</center> | A list of Instance configs to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create).  **(Updatable; Conflicts With: `image`,`interfaces`)** |
 | [`disks` (sub-options)](#disks) | <center>`list`</center> | <center>Optional</center> | A list of Disks to create on the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#disk-create).  **(Updatable; Conflicts With: `image`,`interfaces`)** |
-| [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#linode-create__request-body-schema).  **(Conflicts With: `disks`,`configs`)** |
+| [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/post-linode-instance).  **(Conflicts With: `disks`,`configs`)** |
 | `booted` | <center>`bool`</center> | <center>Optional</center> | Whether the new Instance should be booted. This will default to True if the Instance is deployed from an Image or Backup.   |
 | `backup_id` | <center>`int`</center> | <center>Optional</center> | The id of the Backup to restore to the new Instance. May not be provided if "image" is given.   |
 | [`metadata` (sub-options)](#metadata) | <center>`dict`</center> | <center>Optional</center> | Fields relating to the Linode Metadata service.   |
@@ -136,6 +148,9 @@ Manage Linode Instances, Configs, and Disks.
 | `migration_type` | <center>`str`</center> | <center>Optional</center> | The type of migration to use for Region and Type migrations.  **(Choices: `cold`, `warm`; Default: `cold`)** |
 | `auto_disk_resize` | <center>`bool`</center> | <center>Optional</center> | Whether implicitly created disks should be resized during a type change operation.  **(Default: `False`)** |
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object. Tags are for organizational purposes only.  **(Updatable)** |
+| [`placement_group` (sub-options)](#placement_group) | <center>`dict`</center> | <center>Optional</center> | A Placement Group to create this Linode under.   |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this Linode. NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`)** |
+| `swap_size` | <center>`int`</center> | <center>Optional</center> | When deploying from an Image, this field is optional, otherwise it is ignored. This is used to set the swap disk size for the newly-created Linode.   |
 
 ### configs
 
@@ -150,7 +165,7 @@ Manage Linode Instances, Configs, and Disks.
 | `root_device` | <center>`str`</center> | <center>Optional</center> | The root device to boot.  **(Updatable)** |
 | `run_level` | <center>`str`</center> | <center>Optional</center> | Defines the state of your Linode after booting.  **(Updatable)** |
 | `virt_mode` | <center>`str`</center> | <center>Optional</center> | Controls the virtualization mode.  **(Choices: `paravirt`, `fullvirt`; Updatable)** |
-| [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create__request-body-schema).  **(Updatable)** |
+| [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/post-add-linode-config).  **(Updatable)** |
 
 ### devices
 
@@ -260,10 +275,11 @@ Manage Linode Instances, Configs, and Disks.
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
 | `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
 | `filesystem` | <center>`str`</center> | <center>Optional</center> | The filesystem to create this disk with.   |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this disk.NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`)** |
 | `image` | <center>`str`</center> | <center>Optional</center> | An Image ID to deploy the Disk from.   |
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The root user’s password on the newly-created Linode.   |
-| `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
-| `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).   |
+| `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
+| `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 
 ### metadata
 
@@ -277,6 +293,13 @@ Manage Linode Instances, Configs, and Disks.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `public` | <center>`bool`</center> | <center>**Required**</center> | Whether the allocated IPv4 address should be public or private.   |
+
+### placement_group
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `id` | <center>`int`</center> | <center>**Required**</center> | The id of the placement group.   |
+| `compliant_only` | <center>`bool`</center> | <center>Optional</center> | Whether the newly added/migrated/resized linode must be compliant for flexible placement groups.  **(Default: `False`)** |
 
 ## Return Values
 
@@ -326,10 +349,18 @@ Manage Linode Instances, Configs, and Disks.
           ],
           "type": "g6-standard-1",
           "updated": "2018-01-01T00:01:01",
-          "watchdog_enabled": true
+          "watchdog_enabled": true,
+          "placement_group": {
+            "id": 123,
+            "label": "test",
+            "placement_group_type": "anti_affinity:local",
+            "placement_group_policy": "strict"
+          }
+          "disk_encryption": "enabled",
+          "lke_cluster_id": null                      
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#linode-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-instance) for a list of returned fields
 
 
 - `configs` - A list of configs tied to this Linode Instance.
@@ -397,7 +428,7 @@ Manage Linode Instances, Configs, and Disks.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-config) for a list of returned fields
 
 
 - `disks` - A list of disks tied to this Linode Instance.
@@ -412,11 +443,12 @@ Manage Linode Instances, Configs, and Disks.
             "label": "Debian 9 Disk",
             "size": 48640,
             "status": "ready",
-            "updated": "2018-01-01T00:01:01"
+            "updated": "2018-01-01T00:01:01",
+            "disk_encryption": "enabled"
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#disk-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-disk) for a list of returned fields
 
 
 - `networking` - Networking information about this Linode Instance.
@@ -511,6 +543,6 @@ Manage Linode Instances, Configs, and Disks.
           }
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#networking-information-list__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-ips) for a list of returned fields
 
 

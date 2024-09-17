@@ -1,6 +1,6 @@
 # lke_version_list
 
-List Kubernetes versions available for deployment to a Kubernetes cluster.
+List and filter on LKE Versions.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -24,12 +24,21 @@ List Kubernetes versions available for deployment to a Kubernetes cluster.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | <center>`str`</center> | <center>Optional</center> | The order to list lke versions in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list LKE Versions in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
+| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order LKE Versions by.   |
+| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting LKE Versions.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of LKE Versions to return. If undefined, all results will be returned.   |
+
+### filters
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-lke-versions).   |
+| `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
 
-- `lke_versions` - The returned LKE versions.
+- `lke_versions` - The returned LKE Versions.
 
     - Sample Response:
         ```json
@@ -39,6 +48,6 @@ List Kubernetes versions available for deployment to a Kubernetes cluster.
             }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubernetes-versions-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-versions) for a list of returned fields
 
 

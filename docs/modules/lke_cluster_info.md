@@ -42,6 +42,13 @@ Get info about a Linode LKE cluster.
         ```json
         {
           "control_plane": {
+            "acl": {
+                "addresses": {
+                    "ipv4": ["0.0.0.0/0"], 
+                    "ipv6": ["2001:db8:1234:abcd::/64"]
+                }, 
+                "enabled": true
+            },
             "high_availability": true
           },
           "created": "2019-09-12T21:25:30Z",
@@ -56,7 +63,7 @@ Get info about a Linode LKE cluster.
           "updated": "2019-09-13T21:24:16Z"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubernetes-cluster-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-cluster) for a list of returned fields
 
 
 - `node_pools` - A list of node pools in JSON serialized form.
@@ -70,6 +77,7 @@ Get info about a Linode LKE cluster.
               "max": 12,
               "min": 3
             },
+            "disk_encryption": "enabled",
             "count": 6,
             "disks": [
               {
@@ -93,15 +101,25 @@ Get info about a Linode LKE cluster.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#node-pools-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-pools) for a list of returned fields
 
 
 - `kubeconfig` - The Base64-encoded kubeconfig used to access this cluster. 
 NOTE: This value may be unavailable if the cluster is not fully provisioned.
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubeconfig-view__responses) for a list of returned fields
+
+    - Sample Response:
+        ```json
+        "a3ViZWNvbmZpZyBjb250ZW50Cg=="
+        ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-kubeconfig) for a list of returned fields
 
 
 - `dashboard_url` - The Cluster Dashboard access URL.
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#kubernetes-cluster-dashboard-url-view__responses) for a list of returned fields
+
+    - Sample Response:
+        ```json
+        "https://example.dashboard.linodelke.net"
+        ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-dashboard) for a list of returned fields
 
 

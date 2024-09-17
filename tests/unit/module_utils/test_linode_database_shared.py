@@ -1,9 +1,13 @@
 from linode_api4 import ApiError
 import pytest
-from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import validate_allow_list, validate_shared_db_input, call_protected_provisioning
+from ansible_collections.linode.cloud.plugins.module_utils.linode_database_shared import (
+    validate_allow_list,
+    validate_shared_db_input,
+    call_protected_provisioning,
+)
 
 
-class TestLinodeDatabaseShared():
+class TestLinodeDatabaseShared:
 
     def test_validate_allow_list_valid_cidr(self):
         # Valid CIDR format
@@ -12,7 +16,12 @@ class TestLinodeDatabaseShared():
 
     def test_validate_allow_list_invalid_cidr(self):
         # Invalid CIDR format
-        allow_list = {"192.168.0.1/24", "10.0.0.0", "172.16.0.0/12", "200.100.50.25"}
+        allow_list = {
+            "192.168.0.1/24",
+            "10.0.0.0",
+            "172.16.0.0/12",
+            "200.100.50.25",
+        }
         with pytest.raises(ValueError):
             validate_allow_list(allow_list)
 
@@ -38,6 +47,6 @@ class TestLinodeDatabaseShared():
         # Simulate an ApiError with status other than 400
         def mock_provisioning_function():
             raise ApiError(status=404, message="Not found")
-        
+
         with pytest.raises(ApiError):
             call_protected_provisioning(mock_provisioning_function)

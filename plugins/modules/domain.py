@@ -17,6 +17,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
+    handle_updates,
     paginated_list_to_json,
 )
 from ansible_specdoc.objects import (
@@ -28,8 +29,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import Domain
 
 linode_domain_spec = {
-    # Unused for domain objects
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "axfr_ips": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
@@ -140,26 +139,26 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "domain": SpecReturnValue(
             description="The domain in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/domains/#domain-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain",
             type=FieldType.dict,
             sample=docs.result_domain_samples,
         ),
         "records": SpecReturnValue(
             description="The domain record in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/domains/#domain-record-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain-record",
             type=FieldType.list,
             sample=docs.result_records_samples,
         ),
         "zone_file": SpecReturnValue(
             description="The zone file for the last rendered zone for the specified domain.",
-            docs_url="https://www.linode.com/docs/api/domains/#domain-zone-file-view",
-            type=FieldType.list,
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-domain-zone",
+            type=FieldType.dict,
             sample=docs.result_zone_file_samples,
         ),
     },
 )
 
-linode_domain_mutable: Set[str] = {
+MUTABLE_FIELDS: Set[str] = {
     "axfr_ips",
     "description",
     "expire_sec",
@@ -173,6 +172,13 @@ linode_domain_mutable: Set[str] = {
     "type",
     "group",
 }
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class LinodeDomain(LinodeModuleBase):
@@ -227,36 +233,12 @@ class LinodeDomain(LinodeModuleBase):
     def _update_domain(self) -> None:
         """Handles all update functionality for the current Domain"""
 
-        # Update mutable values
-        should_update = False
-        params = filter_null_values(self.module.params)
-
-        for key, new_value in params.items():
-            if not hasattr(self._domain, key):
-                continue
-
-            old_value = getattr(self._domain, key)
-
-            if new_value != old_value:
-                if key in linode_domain_mutable:
-                    setattr(self._domain, key, new_value)
-                    self.register_action(
-                        'Updated Domain {0}: "{1}" -> "{2}"'.format(
-                            key, old_value, new_value
-                        )
-                    )
-
-                    should_update = True
-                    continue
-
-                self.fail(
-                    "failed to update domain {0}: {1} is a non-updatable field".format(
-                        self._domain.domain, key
-                    )
-                )
-
-        if should_update:
-            self._domain.save()
+        handle_updates(
+            self._domain,
+            filter_null_values(self.module.params),
+            MUTABLE_FIELDS,
+            self.register_action,
+        )
 
     def _handle_domain(self) -> None:
         params = self.module.params

@@ -14,12 +14,19 @@ module = ListModule(
     result_display_name="VPCs",
     result_field_name="vpcs",
     endpoint_template="/vpcs",
-    result_docs_url="",
+    result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-vpcs",
     examples=docs.specdoc_examples,
     result_samples=docs.result_vpc_samples,
 )
 
 SPECDOC_META = module.spec
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 if __name__ == "__main__":
     module.run()

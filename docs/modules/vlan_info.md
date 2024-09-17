@@ -2,8 +2,6 @@
 
 Get info about a Linode VLAN.
 
-**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
-
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -28,11 +26,12 @@ Get info about a Linode VLAN.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | <center>`str`</center> | <center>**Required**</center> | The VLAN’s label.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VLAN to resolve.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VLAN to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 
-- `vlan` - The VLAN in JSON serialized form.
+- `vlan` - The returned VLAN.
 
     - Sample Response:
         ```json
@@ -46,6 +45,6 @@ Get info about a Linode VLAN.
           "region": "ap-west"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#vlans-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vlans) for a list of returned fields
 
 

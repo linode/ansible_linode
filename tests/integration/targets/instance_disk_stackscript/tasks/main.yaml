@@ -29,6 +29,7 @@
             stackscript_data:
               package: cowsay
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: instance_create
 
     - name: Assert instance is created with explicit disk and stackscript

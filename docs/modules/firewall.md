@@ -67,6 +67,7 @@ Manage Linode Firewalls.
 | [`devices` (sub-options)](#devices) | <center>`list`</center> | <center>Optional</center> | The devices that are attached to this Firewall.  **(Updatable)** |
 | [`rules` (sub-options)](#rules) | <center>`dict`</center> | <center>Optional</center> | The inbound and outbound access rules to apply to this Firewall.  **(Updatable)** |
 | `status` | <center>`str`</center> | <center>Optional</center> | The status of this Firewall.  **(Updatable)** |
+| `tags` | <center>`list`</center> | <center>Optional</center> | A list of tags to apply to this Firewall.  **(Updatable)** |
 
 ### devices
 
@@ -92,7 +93,7 @@ Manage Linode Firewalls.
 | `action` | <center>`str`</center> | <center>**Required**</center> | Controls whether traffic is accepted or dropped by this rule.  **(Choices: `ACCEPT`, `DROP`)** |
 | [`addresses` (sub-options)](#addresses) | <center>`dict`</center> | <center>Optional</center> | Allowed IPv4 or IPv6 addresses.   |
 | `description` | <center>`str`</center> | <center>Optional</center> | A description for this rule.   |
-| `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See https://www.linode.com/docs/api/networking/#firewall-create   |
+| `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See https://techdocs.akamai.com/linode-api/reference/post-firewalls   |
 | `protocol` | <center>`str`</center> | <center>Optional</center> | The type of network traffic to allow.   |
 
 ### addresses
@@ -110,7 +111,7 @@ Manage Linode Firewalls.
 | `action` | <center>`str`</center> | <center>**Required**</center> | Controls whether traffic is accepted or dropped by this rule.  **(Choices: `ACCEPT`, `DROP`)** |
 | [`addresses` (sub-options)](#addresses) | <center>`dict`</center> | <center>Optional</center> | Allowed IPv4 or IPv6 addresses.   |
 | `description` | <center>`str`</center> | <center>Optional</center> | A description for this rule.   |
-| `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See https://www.linode.com/docs/api/networking/#firewall-create   |
+| `ports` | <center>`str`</center> | <center>Optional</center> | A string representing the port or ports on which traffic will be allowed. See https://techdocs.akamai.com/linode-api/reference/post-firewalls   |
 | `protocol` | <center>`str`</center> | <center>Optional</center> | The type of network traffic to allow.   |
 
 ## Return Values
@@ -169,7 +170,7 @@ Manage Linode Firewalls.
           "updated": "2018-01-02T00:01:01"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#firewall-view) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-firewall) for a list of returned fields
 
 
 - `devices` - A list of Firewall devices JSON serialized form.
@@ -190,6 +191,6 @@ Manage Linode Firewalls.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#firewall-device-view) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-firewall-device) for a list of returned fields
 
 

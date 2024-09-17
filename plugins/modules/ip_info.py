@@ -47,12 +47,19 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "ip": SpecReturnValue(
             description="The IP in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/networking/#ip-address-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-ip",
             type=FieldType.dict,
             sample=docs.result_ip_samples,
         )
     },
 )
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class Module(LinodeModuleBase):

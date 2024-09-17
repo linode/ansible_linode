@@ -165,11 +165,6 @@ SPEC_GRANTS = {
 }
 
 SPEC = {
-    # We don't use label for this module
-    "label": SpecField(
-        type=FieldType.string,
-        doc_hide=True,
-    ),
     "username": SpecField(
         type=FieldType.string,
         required=True,
@@ -216,14 +211,13 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "user": SpecReturnValue(
             description="The user in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/account/#user-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-user",
             type=FieldType.dict,
             sample=docs.result_user_samples,
         ),
         "grants": SpecReturnValue(
             description="The grants info in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/account/"
-            "#users-grants-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-user-grants",
             type=FieldType.dict,
             sample=docs.result_grants_samples,
         ),
@@ -231,6 +225,13 @@ SPECDOC_META = SpecDocMeta(
 )
 
 MUTABLE_FIELDS = {"restricted"}
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class Module(LinodeModuleBase):
@@ -371,7 +372,8 @@ class Module(LinodeModuleBase):
             k: v
             for k, v in params.items()
             if k
-            not in list(LINODE_COMMON_ARGS.keys()) + ["grants", "ua_prefix"]
+            not in list(LINODE_COMMON_ARGS.keys())
+            + ["grants", "ua_prefix", "state"]
         }
 
         try:

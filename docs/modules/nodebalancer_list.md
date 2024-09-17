@@ -1,6 +1,6 @@
 # nodebalancer_list
 
-List and filter on Nodebalancers.
+List and filter on Node Balancers.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -32,21 +32,21 @@ List and filter on Nodebalancers.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | <center>`str`</center> | <center>Optional</center> | The order to list nodebalancers in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
-| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order nodebalancers by.   |
-| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting nodebalancers.   |
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list Node Balancers in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
+| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Node Balancers by.   |
+| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Node Balancers.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of Node Balancers to return. If undefined, all results will be returned.   |
 
 ### filters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable attributes can be found here: https://www.linode.com/docs/api/nodebalancers/#nodebalancers-list__responses   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-node-balancers).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
 
-- `nodebalancers` - The returned nodebalancers.
+- `nodebalancers` - The returned Node Balancers.
 
     - Sample Response:
         ```json
@@ -73,6 +73,6 @@ List and filter on Nodebalancers.
             }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/nodebalancers/#nodebalancers-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancers) for a list of returned fields
 
 

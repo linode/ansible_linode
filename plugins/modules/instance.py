@@ -83,6 +83,12 @@ linode_instance_disk_spec = {
         type=FieldType.string,
         description=["The filesystem to create this disk with."],
     ),
+    "disk_encryption": SpecField(
+        type=FieldType.string,
+        description="The disk encryption status of this disk."
+        + "NOTE: Disk encryption may not currently be available to all users.",
+        choices=["enabled", "disabled"],
+    ),
     "image": SpecField(
         type=FieldType.string,
         description=["An Image ID to deploy the Disk from."],
@@ -106,7 +112,8 @@ linode_instance_disk_spec = {
         type=FieldType.integer,
         description=[
             "The ID of the StackScript to use when creating the instance.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).",
         ],
     ),
     "stackscript_data": SpecField(
@@ -115,7 +122,8 @@ linode_instance_disk_spec = {
             "An object containing arguments to any User Defined Fields present in "
             "the StackScript used when creating the instance.",
             "Only valid when a stackscript_id is provided.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).",
         ],
     ),
 }
@@ -287,8 +295,8 @@ linode_instance_config_spec = {
         editable=True,
         description=[
             "A list of network interfaces to apply to the Linode.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances"
-            "/#configuration-profile-create__request-body-schema).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/post-add-linode-config).",
         ],
     ),
 }
@@ -299,6 +307,20 @@ spec_additional_ipv4 = {
         description="Whether the allocated IPv4 address should be public or private.",
         required=True,
     )
+}
+
+linode_instance_placement_group_spec = {
+    "id": SpecField(
+        type=FieldType.integer,
+        description="The id of the placement group.",
+        required=True,
+    ),
+    "compliant_only": SpecField(
+        type=FieldType.bool,
+        description="Whether the newly added/migrated/resized linode "
+        "must be compliant for flexible placement groups.",
+        default=False,
+    ),
 }
 
 linode_instance_spec = {
@@ -342,7 +364,8 @@ linode_instance_spec = {
         type=FieldType.integer,
         description=[
             "The ID of the StackScript to use when creating the instance.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).",
         ],
     ),
     "stackscript_data": SpecField(
@@ -351,7 +374,8 @@ linode_instance_spec = {
             "An object containing arguments to any User Defined Fields present in "
             "the StackScript used when creating the instance.",
             "Only valid when a stackscript_id is provided.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/stackscripts/).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).",
         ],
     ),
     "firewall_id": SpecField(
@@ -416,8 +440,8 @@ linode_instance_spec = {
         conflicts_with=["disks", "configs"],
         description=[
             "A list of network interfaces to apply to the Linode.",
-            "See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/"
-            "#linode-create__request-body-schema).",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/post-linode-instance).",
         ],
     ),
     "booted": SpecField(
@@ -500,6 +524,24 @@ linode_instance_spec = {
         ],
         editable=True,
     ),
+    "placement_group": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_placement_group_spec,
+        description=["A Placement Group to create this Linode under."],
+    ),
+    "disk_encryption": SpecField(
+        type=FieldType.string,
+        description="The disk encryption status of this Linode. "
+        + "NOTE: Disk encryption may not currently be available to all users.",
+        choices=["enabled", "disabled"],
+    ),
+    "swap_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "When deploying from an Image, this field is optional, otherwise it is ignored. "
+            "This is used to set the swap disk size for the newly-created Linode."
+        ],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -511,27 +553,25 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "instance": SpecReturnValue(
             description="The instance description in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/linode-instances/#linode-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-instance",
             type=FieldType.dict,
             sample=docs.result_instance_samples,
         ),
         "configs": SpecReturnValue(
             description="A list of configs tied to this Linode Instance.",
-            docs_url="https://www.linode.com/docs/api/linode-instances/"
-            "#configuration-profile-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-config",
             type=FieldType.list,
             sample=docs.result_configs_samples,
         ),
         "disks": SpecReturnValue(
             description="A list of disks tied to this Linode Instance.",
-            docs_url="https://www.linode.com/docs/api/linode-instances/#disk-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-disk",
             type=FieldType.list,
             sample=docs.result_disks_samples,
         ),
         "networking": SpecReturnValue(
             description="Networking information about this Linode Instance.",
-            docs_url="https://www.linode.com/docs/api/linode-instances/"
-            "#networking-information-list__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-ips",
             type=FieldType.dict,
             sample=docs.result_networking_samples,
         ),
@@ -550,6 +590,13 @@ linode_instance_config_mutable = {
     "virt_mode",
     "interfaces",
 }
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class LinodeInstance(LinodeModuleBase):
@@ -1129,17 +1176,12 @@ class LinodeInstance(LinodeModuleBase):
             )
             disk._api_get()
 
-        for key, new_value in filter_null_values(disk_params).items():
-            if not hasattr(disk, key):
-                continue
-
-            old_value = getattr(disk, key)
-            if new_value != old_value:
-                self.fail(
-                    msg="failed to update disk: {0} is a non-mutable field".format(
-                        key
-                    )
-                )
+        handle_updates(
+            disk,
+            filter_null_values(disk_params),
+            set(),
+            self.register_action,
+        )
 
     def _update_disks(self) -> None:
         current_disks = self._instance.disks
@@ -1188,6 +1230,7 @@ class LinodeInstance(LinodeModuleBase):
                 "backups_enabled",
                 "type",
                 "region",
+                "placement_group",
             )
         }
 
@@ -1218,6 +1261,19 @@ class LinodeInstance(LinodeModuleBase):
                 self.fail(
                     "failed to update instance {0}: additional_ipv4 is a "
                     "non-updatable field".format(self._instance.label)
+                )
+
+        pg = params.get("placement_group")
+        if pg is not None:
+            if pg.get("id") != self._instance.placement_group.id:
+                self.fail(
+                    "failed to update instance {0}: placement_group.id is a "
+                    "non-updatable field".format(self._instance.label)
+                )
+            if pg.get("compliant_only"):
+                self.warn(
+                    "placement_group.compliant_only is non-updatable and only can be "
+                    "specified in the instance creation."
                 )
 
         # Update interfaces

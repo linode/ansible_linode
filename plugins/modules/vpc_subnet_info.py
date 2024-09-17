@@ -42,7 +42,7 @@ module = InfoModule(
         field_name="subnet",
         field_type=FieldType.dict,
         display_name="VPC Subnet",
-        docs_url="",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-vpc-subnet",
         samples=docs_parent.result_subnet_samples,
     ),
     params=[
@@ -72,6 +72,13 @@ module = InfoModule(
 )
 
 SPECDOC_META = module.spec
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 if __name__ == "__main__":
     module.run()

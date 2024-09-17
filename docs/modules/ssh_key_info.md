@@ -1,6 +1,6 @@
 # ssh_key_info
 
-Get info about the Linode SSH public key.
+Get info about a Linode SSH Key.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -31,12 +31,12 @@ Get info about the Linode SSH public key.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the SSH key.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the SSH key.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the SSH Key to resolve.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the SSH Key to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 
-- `ssh_key` - The SSH key in JSON serialized form.
+- `ssh_key` - The returned SSH Key.
 
     - Sample Response:
         ```json
@@ -47,6 +47,6 @@ Get info about the Linode SSH public key.
           "ssh_key": "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/profile/#ssh-key-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-ssh-key) for a list of returned fields
 
 

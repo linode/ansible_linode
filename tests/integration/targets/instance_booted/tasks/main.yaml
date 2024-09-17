@@ -12,7 +12,9 @@
         root_pass: Fn$$oobar123
         private_ip: true
         booted: true
+        swap_size: 512
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create
 
     - name: Assert instance created

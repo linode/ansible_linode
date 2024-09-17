@@ -1,6 +1,6 @@
 # region_list
 
-List and filter on Linode Regions.
+List and filter on Regions.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -32,21 +32,21 @@ List and filter on Linode Regions.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | <center>`str`</center> | <center>Optional</center> | The order to list regions in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
-| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order regions by.   |
-| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting regions.   |
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list Regions in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
+| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Regions by.   |
+| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Regions.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of Regions to return. If undefined, all results will be returned.   |
 
 ### filters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable attributes can be found here: https://www.linode.com/docs/api/regions/#regions-list__responses   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-regions).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
 
-- `regions` - The returned regions.
+- `regions` - The returned Regions.
 
     - Sample Response:
         ```json
@@ -77,6 +77,6 @@ List and filter on Linode Regions.
             }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/regions/#regions-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-regions) for a list of returned fields
 
 

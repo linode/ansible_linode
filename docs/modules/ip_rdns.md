@@ -59,10 +59,10 @@ Manage a Linode IP address's rDNS.
           "vpc_nat_1_1": {
             "vpc_id": 242,
             "subnet_id": 194,
-            "address": "139.144.244.36",
+            "address": "139.144.244.36"
           }
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/profile/#ip-address-rdns-update) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-ipv6-range) for a list of returned fields
 
 

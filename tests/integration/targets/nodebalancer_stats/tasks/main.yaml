@@ -12,6 +12,7 @@
         root_pass: Fn$$oobar123
         private_ip: true
         state: present
+        firewall_id: '{{ firewall_id }}'
 
       register: node_inst
 
@@ -27,6 +28,7 @@
         label: 'ansible-nb-populated-{{ r }}'
         region: us-ord
         state: present
+        firewall_id: '{{ firewall_id }}'
         configs:
           - port: 80
             algorithm: roundrobin
@@ -74,13 +76,11 @@
       linode.cloud.nodebalancer_stats:
         id: '{{ create_populated_nodebalancer.node_balancer.id }}'
       register: nodebalancer_stats_id
-      failed_when: '"Stats are unavailable at this time" not in nodebalancer_stats_id.msg'
 
     - name: Get stats about the Nodebalancer by label
       linode.cloud.nodebalancer_stats:
         label: '{{ create_populated_nodebalancer.node_balancer.label }}'
       register: nodebalancer_stats_label
-      failed_when: '"Stats are unavailable at this time" not in nodebalancer_stats_label.msg'
 
   always:
     - ignore_errors: yes

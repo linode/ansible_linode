@@ -35,9 +35,6 @@ linode_ip_assignments_spec: dict = {
 }
 
 spec = {
-    # Disable the default values
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "assignments": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
@@ -68,6 +65,13 @@ SPECDOC_META = SpecDocMeta(
     examples=docs.specdoc_examples,
     return_values={},
 )
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class Module(LinodeModuleBase):

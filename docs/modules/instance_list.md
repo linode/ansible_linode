@@ -1,6 +1,6 @@
 # instance_list
 
-List and filter on Linode Instances.
+List and filter on Instances.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -32,21 +32,21 @@ List and filter on Linode Instances.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `order` | <center>`str`</center> | <center>Optional</center> | The order to list instances in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
-| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order instances by.   |
-| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting instances.   |
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
+| `order` | <center>`str`</center> | <center>Optional</center> | The order to list Instances in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
+| `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Instances by.   |
+| [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Instances.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of Instances to return. If undefined, all results will be returned.   |
 
 ### filters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable attributes can be found here: https://www.linode.com/docs/api/linode-instances/#linodes-list__responses   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-linode-instances).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
 
-- `instances` - The returned instances.
+- `instances` - The returned Instances.
 
     - Sample Response:
         ```json
@@ -94,10 +94,12 @@ List and filter on Linode Instances.
               ],
               "type": "g6-standard-1",
               "updated": "2018-01-01T00:01:01",
-              "watchdog_enabled": true
+              "watchdog_enabled": true,
+              "disk_encryption": "enabled",
+              "lke_cluster_id": null
             }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#linodes-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-instances) for a list of returned fields
 
 

@@ -53,8 +53,11 @@ class ListModule(
         result_docs_url: str = "",
         params: List[ListModuleParam] = None,
         examples: List[str] = None,
+        description: List[str] = None,
         result_samples: List[str] = None,
         requires_beta: bool = False,
+        deprecated: bool = False,
+        deprecation_message: Optional[str] = None,
     ) -> None:
         self.result_display_name = result_display_name
         self.result_field_name = result_field_name
@@ -63,14 +66,29 @@ class ListModule(
         self.result_docs_url = result_docs_url
         self.params = params or []
         self.examples = examples or []
+        self.description = description or [
+            f"List and filter on {self.result_display_name}."
+        ]
         self.result_samples = result_samples or []
         self.requires_beta = requires_beta
+        self.deprecated = deprecated
+        self.deprecation_message = (
+            deprecation_message or "This module has been deprecated."
+        )
 
         self.module_arg_spec = self.spec.ansible_spec
         self.results: Dict[str, Any] = {self.result_field_name: []}
 
+        # If this module is deprecated, we should add the deprecation message
+        # to the module's description.
+        if self.deprecated:
+            self.description.insert(0, f"**NOTE: {self.deprecation_message}**")
+
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for list module"""
+
+        if self.deprecated:
+            self.warn(self.deprecation_message)
 
         filter_dict = construct_api_filter(self.module.params)
 
@@ -108,13 +126,6 @@ class ListModule(
         }
 
         options = {
-            # Disable the default values
-            "state": SpecField(
-                type=FieldType.string, required=False, doc_hide=True
-            ),
-            "label": SpecField(
-                type=FieldType.string, required=False, doc_hide=True
-            ),
             "order": SpecField(
                 type=FieldType.string,
                 description=[
@@ -156,9 +167,9 @@ class ListModule(
                 required=True,
             )
 
-        description = [f"List and filter on {self.result_display_name}."]
+        description = self.description
 
-        if self.requires_beta:
+        if self.requires_beta and BETA_DISCLAIMER not in description:
             description.append(BETA_DISCLAIMER)
 
         return SpecDocMeta(

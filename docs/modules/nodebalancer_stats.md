@@ -1,6 +1,6 @@
 # nodebalancer_stats
 
-View a Linode NodeBalancers Stats.
+Get info about a Linode Node Balancer Stats.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -28,12 +28,12 @@ View a Linode NodeBalancers Stats.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The id of the nodebalancer for which the statistics apply to.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the nodebalancer for which the statistics apply to.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Node Balancer Stats to resolve.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Node Balancer Stats to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 
-- `node_balancer_stats` - The NodeBalancer Stats in JSON serialized form.
+- `node_balancer_stats` - The returned Node Balancer Stats.
 
     - Sample Response:
         ```json
@@ -52,11 +52,11 @@ View a Linode NodeBalancers Stats.
                 1679586600000,
                 0
               ]
-            }
+            },
             "title" : "sample-title"
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/nodebalancers/#nodebalancer-statistics-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-stats) for a list of returned fields
 
 

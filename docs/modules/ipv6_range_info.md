@@ -17,7 +17,7 @@ Get info about a Linode IPv6 range.
 ```yaml
 - name: Get info about an IPv6 range
   linode.cloud.ipv6_range_info:
-    range: 2600:3c01::
+    range: "2600:3c01::"
 ```
 
 
@@ -43,6 +43,6 @@ Get info about a Linode IPv6 range.
           "region": "us-east"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#ipv6-range-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-ipv6-range) for a list of returned fields
 
 

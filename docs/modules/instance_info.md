@@ -31,8 +31,8 @@ Get info about a Linode Instance.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Instance to resolve.  **(Conflicts With: `id`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Instance to resolve.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Instance to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 
@@ -82,10 +82,18 @@ Get info about a Linode Instance.
           ],
           "type": "g6-standard-1",
           "updated": "2018-01-01T00:01:01",
-          "watchdog_enabled": true
+          "watchdog_enabled": true,
+          "placement_group": {
+            "id": 123,
+            "label": "test",
+            "placement_group_type": "anti_affinity:local",
+            "placement_group_policy": "strict"
+          }
+          "disk_encryption": "enabled",
+          "lke_cluster_id": null                      
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#linode-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-instance) for a list of returned fields
 
 
 - `configs` - The returned Configs.
@@ -153,7 +161,7 @@ Get info about a Linode Instance.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-config) for a list of returned fields
 
 
 - `disks` - The returned Disks.
@@ -168,11 +176,12 @@ Get info about a Linode Instance.
             "label": "Debian 9 Disk",
             "size": 48640,
             "status": "ready",
-            "updated": "2018-01-01T00:01:01"
+            "updated": "2018-01-01T00:01:01",
+            "disk_encryption": "enabled"
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#disk-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-disk) for a list of returned fields
 
 
 - `networking` - The returned Networking Configuration.
@@ -267,6 +276,6 @@ Get info about a Linode Instance.
           }
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-instances/#networking-information-list__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-ips) for a list of returned fields
 
 

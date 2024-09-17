@@ -7,7 +7,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 )
 
 
-class TestLinodeHelper():
+class TestLinodeHelper:
 
     def test_dict_select_spec(self):
         target = {
@@ -77,4 +77,6 @@ class TestLinodeHelper():
         try:
             validate_required(required_fields, params)
         except Exception as e:
-            pytest.fail(f"validate_required raised an unexpected exception: {e}")
+            pytest.fail(
+                f"validate_required raised an unexpected exception: {e}"
+            )

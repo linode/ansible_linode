@@ -11,6 +11,7 @@
         image: linode/ubuntu22.04
         wait: false
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create_no_set_backup
 
     - name: Assert instance created
@@ -28,6 +29,7 @@
         wait: false
         state: present
         backups_enabled: true
+        firewall_id: '{{ firewall_id }}'
       register: create_backups_enabled
 
     - name: Assert instance created
@@ -99,3 +101,5 @@
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file or "" }}'
+    E2E_FIREWALL_ID: '{{ firewall_id }}'
+

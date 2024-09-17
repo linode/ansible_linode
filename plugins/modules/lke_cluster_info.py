@@ -24,6 +24,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     filter_null_values,
     jsonify_node_pool,
 )
+from ansible_collections.linode.cloud.plugins.module_utils.linode_lke_shared import (
+    safe_get_cluster_acl,
+)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -33,8 +36,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import ApiError, LKECluster
 
 linode_lke_cluster_info_spec = {
-    # We need to overwrite attributes to exclude them as requirements
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "id": SpecField(
         type=FieldType.integer,
         required=False,
@@ -64,15 +65,13 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "cluster": SpecReturnValue(
             description="The LKE cluster in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#kubernetes-cluster-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster",
             type=FieldType.dict,
             sample=docs_parent.result_cluster,
         ),
         "node_pools": SpecReturnValue(
             description="A list of node pools in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#node-pools-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-pools",
             type=FieldType.list,
             sample=docs_parent.result_node_pools,
         ),
@@ -80,20 +79,27 @@ SPECDOC_META = SpecDocMeta(
             description="The Base64-encoded kubeconfig used to access this cluster. \n"
             "NOTE: This value may be unavailable if the cluster is not "
             "fully provisioned.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#kubeconfig-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-kubeconfig",
             type=FieldType.string,
+            sample=['"a3ViZWNvbmZpZyBjb250ZW50Cg=="'],
         ),
         "dashboard_url": SpecReturnValue(
             description="The Cluster Dashboard access URL.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#kubernetes-cluster-dashboard-url-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-dashboard",
             type=FieldType.string,
+            sample=['"https://example.dashboard.linodelke.net"'],
         ),
     },
 )
 
 VALID_FILTERS = ["id", "label"]
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class LinodeLKEClusterInfo(LinodeModuleBase):
@@ -146,11 +152,19 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
 
-        self.results["cluster"] = cluster._raw_json
+        cluster_json = cluster._raw_json
+
+        # We need to inject the control plane ACL configuration into the cluster's JSON
+        # because it is not returned from the cluster GET endopint
+        cluster_json["control_plane"]["acl"] = safe_get_cluster_acl(cluster)
+
+        self.results["cluster"] = cluster_json
+
         self.results["node_pools"] = [
             jsonify_node_pool(pool) for pool in cluster.pools
         ]
 
+        # Retrieve kubeconfig
         try:
             self.results["kubeconfig"] = cluster.kubeconfig
         except ApiError as err:
@@ -164,6 +178,7 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
             self.results["kubeconfig"] = ignored_error_messages[err.status]
 
+        # Retrieve dashboard URL
         try:
             self.results["dashboard_url"] = self.client.get(
                 "/lke/clusters/{}/dashboard".format(cluster.id)

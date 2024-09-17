@@ -31,8 +31,8 @@ Get info about a Linode VPC.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC to resolve.  **(Conflicts With: `id`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC to resolve.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 
@@ -50,5 +50,6 @@ Get info about a Linode VPC.
             "updated": "2023-08-31T18:35:03"
         }
         ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vpc) for a list of returned fields
 
 

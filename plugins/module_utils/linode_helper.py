@@ -9,6 +9,7 @@ from linode_api4 import (
     LinodeClient,
     LKENodePool,
     LKENodePoolNode,
+    LKENodePoolTaint,
     MappedObject,
     and_,
 )
@@ -110,9 +111,15 @@ def mapping_to_dict(obj: Any) -> Any:
 
 
 def handle_updates(
-    obj: linode_api4.Base, params: dict, mutable_fields: set, register_func: Any
+    obj: linode_api4.Base,
+    params: dict,
+    mutable_fields: set,
+    register_func: Any,
+    ignore_keys: Set[str] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
+
+    ignore_keys = ignore_keys or set()
 
     obj._api_get()
 
@@ -126,7 +133,7 @@ def handle_updates(
     result = set()
 
     for key, new_value in params.items():
-        if not hasattr(obj, key):
+        if not hasattr(obj, key) or key in ignore_keys:
             continue
 
         old_value = parse_linode_types(getattr(obj, key))
@@ -197,6 +204,7 @@ def jsonify_node_pool(pool: LKENodePool) -> Dict[str, Any]:
     result = pool._raw_json
 
     result["nodes"] = [jsonify_node_pool_node(node) for node in pool.nodes]
+    result["taints"] = [jsonify_node_pool_taint(taint) for taint in pool.taints]
 
     return result
 
@@ -208,6 +216,16 @@ def jsonify_node_pool_node(node: LKENodePoolNode) -> Dict[str, Any]:
         "id": node.id,
         "instance_id": node.instance_id,
         "status": node.status,
+    }
+
+
+def jsonify_node_pool_taint(taint: LKENodePoolTaint) -> Dict[str, Any]:
+    """Converts an LKENodePoolTaint into a JSON-compatible dict"""
+
+    return {
+        "key": taint.key,
+        "value": taint.value,
+        "effect": taint.effect,
     }
 
 
@@ -277,13 +295,13 @@ def get_all_paginated(
     result = []
     current_page = 1
     page_size = 100
-    num_pages = 1
+    num_pages: Optional[int] = None
 
     if num_results is not None and num_results < page_size:
         # Clamp the page size
         page_size = max(min(num_results, 100), 25)
 
-    while current_page <= num_pages and (
+    while (num_pages is None or current_page <= num_pages) and (
         num_results is None or len(result) < num_results
     ):
         response = client.get(
@@ -293,6 +311,10 @@ def get_all_paginated(
 
         if "data" not in response or "page" not in response:
             raise Exception("Invalid list response")
+
+        # We only want to set num_pages once to avoid undefined behavior
+        # when the number of pages changes mid-aggregation
+        num_pages = num_pages or response["pages"]
 
         result.extend(response["data"])
 

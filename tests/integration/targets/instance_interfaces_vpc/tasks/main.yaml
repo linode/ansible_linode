@@ -35,6 +35,7 @@
             ip_ranges: ["10.0.0.5/32"]
         wait: false
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create_instance
 
     - name: Assert instance created
@@ -93,7 +94,7 @@
       assert:
         that:
           - subnet_info.subnet.linodes[0].id == update_instance.instance.id
-          - subnet_info.subnet.linodes[0].interfaces[1].id == update_instance.configs[0].interfaces[1].id
+          - subnet_info.subnet.linodes[0].interfaces[0].id == update_instance.configs[0].interfaces[1].id
 
     - name: Unchanged instance interface
       linode.cloud.instance:

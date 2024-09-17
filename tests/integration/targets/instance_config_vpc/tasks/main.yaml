@@ -48,6 +48,7 @@
         wait: false
         booted: false
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create_instance
 
     - name: Assert instance created

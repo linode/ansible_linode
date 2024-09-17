@@ -60,7 +60,7 @@ SPEC = {
         type=FieldType.dict,
         description=[
             "A YAML structure corresponding to the X-Filter request header.",
-            "See: https://www.linode.com/docs/api/#filtering-and-sorting",
+            "See: https://techdocs.akamai.com/linode-api/reference",
         ],
     ),
 }
@@ -69,7 +69,7 @@ SPECDOC_META = SpecDocMeta(
     description=[
         "Make an arbitrary Linode API request.",
         "The Linode API documentation can be found here: "
-        "https://www.linode.com/docs/api",
+        "https://techdocs.akamai.com/linode-api/reference",
     ],
     requirements=global_requirements,
     author=global_authors,
@@ -82,10 +82,19 @@ SPECDOC_META = SpecDocMeta(
             sample=docs.result_body_samples,
         ),
         "status": SpecReturnValue(
-            description="The response status code.", type=FieldType.integer
+            description="The response status code.",
+            type=FieldType.integer,
+            sample=["200"],
         ),
     },
 )
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class Module(LinodeModuleBase):

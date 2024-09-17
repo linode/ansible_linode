@@ -1,0 +1,86 @@
+- name: placement_group_basic
+  block:
+    - set_fact:
+          r: "{{ 1000000000 | random }}"
+
+    - name: List regions that support PGs
+      linode.cloud.region_list: {}
+      register: valid_regions
+
+    - set_fact:
+        region: '{{ (valid_regions.regions | selectattr("capabilities", "search", "Placement Group") | list)[0].id }}'
+
+    - name: Create a Linode placement group
+      linode.cloud.placement_group:
+        label: 'ansible-test-{{ r }}'
+        region: '{{ region }}'
+        placement_group_type: anti_affinity:local
+        placement_group_policy: flexible
+        state: present
+      register: pg_created
+
+    - name: Create a Linode instance
+      linode.cloud.instance:
+        label: 'ansible-test-pg-{{ r }}'
+        type: g6-nanode-1
+        region: '{{ region }}'
+        state: present
+      register: instance
+
+    - name: Assign Linode to the placement group
+      linode.cloud.placement_group_assign:
+        placement_group_id: '{{ pg_created.placement_group.id }}'
+        linode_id: '{{ instance.instance.id }}'
+        state: present
+      register: pg_assign
+
+    - name: Get placement group info
+      linode.cloud.placement_group_info:
+        id: '{{ pg_created.placement_group.id }}'
+      register: pg_assign_info
+
+    - name: Assert that placement group assignment is successful
+      assert:
+        that:
+          - pg_assign.changed
+          - instance.instance.id == pg_assign_info.placement_group.members[0].linode_id
+
+    - name: Unassign Linode to the placement group
+      linode.cloud.placement_group_assign:
+        placement_group_id: '{{ pg_created.placement_group.id }}'
+        linode_id: '{{ instance.instance.id }}'
+        state: absent
+      register: pg_unassign
+
+    - name: Get placement group info
+      linode.cloud.placement_group_info:
+        id: '{{ pg_created.placement_group.id }}'
+      register: pg_unassign_info
+
+    - name: Assert that placement group unassignment is successful
+      assert:
+        that:
+          - pg_unassign.changed
+          - pg_unassign_info.placement_group.members | length < 1
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ instance.instance.label }}'
+            state: absent
+          register: delete_instance
+
+        - name: Delete a placement group
+          linode.cloud.placement_group:
+            label: '{{ pg_created.placement_group.label }}'
+            state: absent
+          register: pg_deleted
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

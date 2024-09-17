@@ -6,7 +6,8 @@
 from __future__ import absolute_import, division, print_function
 
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional
+from enum import Enum
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
@@ -41,6 +42,28 @@ class InfoModuleParam:
     type: FieldType
 
 
+class InfoModuleParamGroupPolicy(Enum):
+    """
+    Defines the policies that can be set for a param group.
+    """
+
+    EXACTLY_ONE_OF = "exactly_one_of"
+
+
+class InfoModuleParamGroup:
+    """
+    A base class representing a group of InfoModuleParams.
+    """
+
+    def __init__(
+        self,
+        *param: InfoModuleParam,
+        policies: Optional[List[InfoModuleParamGroupPolicy]] = None,
+    ):
+        self.params = param
+        self.policies = policies or set()
+
+
 @dataclass
 class InfoModuleAttr:
     """
@@ -72,7 +95,8 @@ class InfoModuleResult:
         samples (Optional[List[str]]): A list of sample results for this field.
         get (Optional[Callable]): A function to call out to the API and return the data
                                   for this field.
-                                  NOTE: This is only relevant for secondary results.
+                                  NOTE: This is only relevant for secondary results
+                                  or primary result without any attributes.
     """
 
     field_name: str
@@ -82,7 +106,7 @@ class InfoModuleResult:
     docs_url: Optional[str] = None
     samples: Optional[List[str]] = None
     get: Optional[
-        Callable[[LinodeClient, Dict[str, Any], Dict[str, Any]], Any]
+        Callable[[LinodeClient, Dict[str, Any], Optional[Dict[str, Any]]], Any]
     ] = None
 
 
@@ -93,17 +117,43 @@ class InfoModule(LinodeModuleBase):
         self,
         primary_result: InfoModuleResult,
         secondary_results: List[InfoModuleResult] = None,
-        params: List[InfoModuleParam] = None,
+        params: Optional[
+            List[Union[InfoModuleParam, InfoModuleParamGroup]]
+        ] = None,
         attributes: List[InfoModuleAttr] = None,
         examples: List[str] = None,
+        description: List[str] = None,
         requires_beta: bool = False,
+        deprecated: bool = False,
+        deprecation_message: Optional[str] = None,
     ) -> None:
         self.primary_result = primary_result
         self.secondary_results = secondary_results or []
-        self.params = params or []
         self.attributes = attributes or []
         self.examples = examples or []
+        self.description = description or [
+            f"Get info about a Linode {self.primary_result.display_name}."
+        ]
         self.requires_beta = requires_beta
+        self.deprecated = deprecated
+        self.deprecation_message = (
+            deprecation_message or "This module has been deprecated."
+        )
+
+        # If this module is deprecated, we should add the deprecation message
+        # to the module's description.
+        if self.deprecated:
+            self.description.insert(0, f"**NOTE: {self.deprecation_message}**")
+
+        # Singular params should be translated into groups
+        self.param_groups = [
+            (
+                entry
+                if isinstance(entry, InfoModuleParamGroup)
+                else InfoModuleParamGroup(entry)
+            )
+            for entry in params or []
+        ]
 
         self.module_arg_spec = self.spec.ansible_spec
         self.results: Dict[str, Any] = {
@@ -135,6 +185,16 @@ class InfoModule(LinodeModuleBase):
             break
 
         if primary_result is None:
+            # Get the primary result using the result get function
+            try:
+                primary_result = self.primary_result.get(self.client, kwargs)
+            except Exception as exception:
+                self.fail(
+                    msg="Failed to get result for "
+                    f"{self.primary_result.display_name}: {exception}"
+                )
+
+        if primary_result is None:
             raise ValueError("Expected a result; got None")
 
         self.results[self.primary_result.field_name] = primary_result
@@ -158,22 +218,24 @@ class InfoModule(LinodeModuleBase):
         Returns the ansible-specdoc spec for this module.
         """
 
-        options = {
-            "state": SpecField(
-                type=FieldType.string, required=False, doc_hide=True
-            ),
-            "label": SpecField(
-                type=FieldType.string, required=False, doc_hide=True
-            ),
-        }
+        options = {}
 
         # Add params to spec
-        for param in self.params:
-            options[param.name] = SpecField(
-                type=param.type,
-                required=True,
-                description=f"The ID of the {param.display_name} for this resource.",
-            )
+        for group in self.param_groups:
+            param_names = {param.name for param in group.params}
+
+            for param in group.params:
+                param_spec = SpecField(
+                    type=param.type,
+                    required=True,
+                    description=f"The ID of the {param.display_name} for this resource.",
+                )
+
+                if InfoModuleParamGroupPolicy.EXACTLY_ONE_OF in group.policies:
+                    param_spec.conflicts_with = param_names ^ {param.name}
+                    param_spec.required = False
+
+                options[param.name] = param_spec
 
         # Add attrs to spec
         for attr in self.attributes:
@@ -198,11 +260,9 @@ class InfoModule(LinodeModuleBase):
             for v in [self.primary_result] + self.secondary_results
         }
 
-        description = [
-            f"Get info about a Linode {self.primary_result.display_name}."
-        ]
+        description = self.description
 
-        if self.requires_beta:
+        if self.requires_beta and BETA_DISCLAIMER not in description:
             description.append(BETA_DISCLAIMER)
 
         return SpecDocMeta(
@@ -218,10 +278,26 @@ class InfoModule(LinodeModuleBase):
         """
         Initializes and runs the info module.
         """
+
+        if self.deprecated:
+            self.warn(self.deprecation_message)
+
+        base_module_args = {
+            "module_arg_spec": self.module_arg_spec,
+            "required_one_of": [],
+            "mutually_exclusive": [],
+        }
+
         attribute_names = [v.name for v in self.attributes]
 
-        super().__init__(
-            module_arg_spec=self.module_arg_spec,
-            required_one_of=[attribute_names],
-            mutually_exclusive=[attribute_names],
-        )
+        if len(attribute_names) > 0:
+            base_module_args["required_one_of"].append(attribute_names)
+            base_module_args["mutually_exclusive"].append(attribute_names)
+
+        for entry in self.param_groups:
+            if InfoModuleParamGroupPolicy.EXACTLY_ONE_OF in entry.policies:
+                param_names = [param.name for param in entry.params]
+                base_module_args["required_one_of"].append(param_names)
+                base_module_args["mutually_exclusive"].append(param_names)
+
+        super().__init__(**base_module_args)

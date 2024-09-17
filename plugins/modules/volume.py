@@ -109,12 +109,19 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "volume": SpecReturnValue(
             description="The volume in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/volumes/#volume-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-volume",
             type=FieldType.dict,
             sample=docs.result_volume_samples,
         )
     },
 )
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class LinodeVolume(LinodeModuleBase):

@@ -1,11 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module contains all of the functionality for Linode NodeBalancers."""
+"""This module allows users to retrieve information about a Linode NodeBalancer."""
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, List, Optional
+from typing import Any, Dict, List
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     nodebalancer as docs_parent,
@@ -13,172 +13,125 @@ from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     nodebalancer_info as docs,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    LinodeModuleBase,
-)
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
-    global_authors,
-    global_requirements,
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
+    InfoModule,
+    InfoModuleAttr,
+    InfoModuleResult,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    create_filter_and,
+    paginated_list_to_json,
+    safe_find,
 )
-from ansible_specdoc.objects import (
-    FieldType,
-    SpecDocMeta,
-    SpecField,
-    SpecReturnValue,
-)
-from linode_api4 import NodeBalancer, NodeBalancerConfig, NodeBalancerNode
+from ansible_specdoc.objects import FieldType
+from linode_api4 import LinodeClient, NodeBalancer
 
-linode_nodebalancer_info_spec = {
-    # We need to overwrite attributes to exclude them as requirements
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "id": SpecField(
-        type=FieldType.integer,
-        required=False,
-        conflicts_with=["label"],
-        description=[
-            "The ID of this NodeBalancer.",
-            "Optional if `label` is defined.",
-        ],
-    ),
-    "label": SpecField(
-        type=FieldType.string,
-        required=False,
-        conflicts_with=["id"],
-        description=[
-            "The label of this NodeBalancer.",
-            "Optional if `id` is defined.",
-        ],
-    ),
-}
 
-SPECDOC_META = SpecDocMeta(
-    description=["Get info about a Linode NodeBalancer."],
-    requirements=global_requirements,
-    author=global_authors,
-    options=linode_nodebalancer_info_spec,
+def _get_firewalls_data(
+    client: LinodeClient, nodebalancer: NodeBalancer, params: Dict[str, Any]
+) -> List[Any]:
+    firewalls = NodeBalancer(client, nodebalancer["id"]).firewalls()
+    firewalls_json = []
+    for firewall in firewalls:
+        firewall._api_get()
+        firewalls_json.append(firewall._raw_json)
+    return firewalls_json
+
+
+def _get_nodes(
+    client: LinodeClient, nodebalancer: NodeBalancer, params: Dict[str, Any]
+) -> List[Any]:
+    configs = NodeBalancer(client, nodebalancer["id"]).configs
+    nodes_json = []
+    for config in configs:
+        for node in config.nodes:
+            node._api_get()
+            nodes_json.append(node._raw_json)
+    return nodes_json
+
+
+module = InfoModule(
+    primary_result=InfoModuleResult(
+        field_name="node_balancer",
+        field_type=FieldType.dict,
+        display_name="Node Balancer",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer",
+        samples=docs_parent.result_node_balancer_samples,
+    ),
+    secondary_results=[
+        InfoModuleResult(
+            field_name="configs",
+            field_type=FieldType.list,
+            display_name="configs",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-configs",
+            samples=docs_parent.result_configs_samples,
+            get=lambda client, nodebalancer, params: paginated_list_to_json(
+                NodeBalancer(client, nodebalancer["id"]).configs
+            ),
+        ),
+        InfoModuleResult(
+            field_name="nodes",
+            field_type=FieldType.list,
+            display_name="nodes",
+            docs_url="https://techdocs.akamai.com/linode-api/"
+            + "reference/get-node-balancer-config-nodes",
+            samples=docs_parent.result_nodes_samples,
+            get=_get_nodes,
+        ),
+        InfoModuleResult(
+            field_name="firewalls",
+            field_type=FieldType.list,
+            display_name="firewalls",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-firewalls",
+            samples=docs_parent.result_firewalls_samples,
+            get=lambda client, nodebalancer, params: [
+                firewall.id
+                for firewall in NodeBalancer(
+                    client, nodebalancer["id"]
+                ).firewalls()
+            ],
+        ),
+        InfoModuleResult(
+            field_name="firewalls_data",
+            field_type=FieldType.list,
+            display_name="firewalls_data",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-firewalls",
+            samples=docs_parent.result_firewalls_data_samples,
+            get=_get_firewalls_data,
+        ),
+    ],
+    attributes=[
+        InfoModuleAttr(
+            display_name="ID",
+            name="id",
+            type=FieldType.integer,
+            get=lambda client, params: client.load(
+                NodeBalancer,
+                params.get("id"),
+            )._raw_json,
+        ),
+        InfoModuleAttr(
+            display_name="label",
+            name="label",
+            type=FieldType.string,
+            get=lambda client, params: safe_find(
+                client.nodebalancers,
+                NodeBalancer.label == params.get("label"),
+                raise_not_found=True,
+            )._raw_json,
+        ),
+    ],
     examples=docs.specdoc_examples,
-    return_values={
-        "node_balancer": SpecReturnValue(
-            description="The NodeBalancer in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses",
-            type="dict",
-            sample=docs_parent.result_node_balancer_samples,
-        ),
-        "configs": SpecReturnValue(
-            description="A list of configs applied to the NodeBalancer.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/#config-view__responses",
-            type=FieldType.list,
-            sample=docs_parent.result_configs_samples,
-        ),
-        "nodes": SpecReturnValue(
-            description="A list of configs applied to the NodeBalancer.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/#node-view",
-            type=FieldType.list,
-            sample=docs_parent.result_nodes_samples,
-        ),
-        "firewalls": SpecReturnValue(
-            description="A list IDs for firewalls attached to this NodeBalancer.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/#firewalls-list",
-            type=FieldType.list,
-            elements=FieldType.integer,
-            sample=docs_parent.result_firewalls_samples,
-        ),
-    },
 )
 
-linode_nodebalancer_valid_filters = ["id", "label"]
 
+SPECDOC_META = module.spec
 
-class LinodeNodeBalancerInfo(LinodeModuleBase):
-    """Module for getting info about a Linode NodeBalancer"""
-
-    def __init__(self) -> None:
-        self.module_arg_spec = SPECDOC_META.ansible_spec
-        self.required_one_of: List[str] = []
-        self.results: dict = {
-            "node_balancer": None,
-            "configs": [],
-            "nodes": [],
-            "firewalls": [],
-        }
-
-        super().__init__(
-            module_arg_spec=self.module_arg_spec,
-            required_one_of=self.required_one_of,
-        )
-
-    def _get_matching_nodebalancer(self) -> Optional[NodeBalancer]:
-        filter_items = {
-            k: v
-            for k, v in self.module.params.items()
-            if k in linode_nodebalancer_valid_filters and v is not None
-        }
-
-        filter_statement = create_filter_and(NodeBalancer, filter_items)
-
-        try:
-            # Special case because ID is not filterable
-            if "id" in filter_items.keys():
-                result = NodeBalancer(self.client, self.module.params.get("id"))
-                result._api_get()  # Force lazy-loading
-
-                return result
-
-            return self.client.nodebalancers(filter_statement)[0]
-        except IndexError:
-            return None
-        except Exception as exception:
-            return self.fail(
-                msg="failed to get nodebalancer {0}".format(exception)
-            )
-
-    def _get_node_by_label(
-        self, config: NodeBalancerConfig, label: str
-    ) -> Optional[NodeBalancerNode]:
-        try:
-            return config.nodes(NodeBalancerNode.label == label)[0]
-        except IndexError:
-            return None
-        except Exception as exception:
-            return self.fail(
-                msg="failed to get nodebalancer node {0}, {1}".format(
-                    label, exception
-                )
-            )
-
-    def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for NodeBalancer Info module"""
-
-        node_balancer = self._get_matching_nodebalancer()
-
-        if node_balancer is None:
-            return self.fail("failed to get nodebalancer")
-
-        self.results["node_balancer"] = node_balancer._raw_json
-
-        for config in node_balancer.configs:
-            self.results["configs"].append(config._raw_json)
-
-            for node in config.nodes:
-                node._api_get()
-
-                self.results["nodes"].append(node._raw_json)
-
-        # NOTE: Only the Firewall IDs are used here to reduce the
-        # number of API requests made by this module and to simplify
-        # the module result.
-        self.results["firewalls"] = [v.id for v in node_balancer.firewalls()]
-
-        return self.results
-
-
-def main() -> None:
-    """Constructs and calls the Linode NodeBalancer Info module"""
-    LinodeNodeBalancerInfo()
-
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 if __name__ == "__main__":
-    main()
+    module.run()

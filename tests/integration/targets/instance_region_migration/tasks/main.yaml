@@ -10,6 +10,7 @@
         type: g6-nanode-1
         image: linode/ubuntu22.04
         state: present
+        firewall_id: '{{ firewall_id }}'
       register: create
 
     - name: Assert instance is created

@@ -5,90 +5,59 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, List, Optional
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user_info as docs
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
-    LinodeModuleBase,
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
+    InfoModule,
+    InfoModuleAttr,
+    InfoModuleResult,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
-    global_authors,
-    global_requirements,
-)
-from ansible_specdoc.objects import (
-    FieldType,
-    SpecDocMeta,
-    SpecField,
-    SpecReturnValue,
-)
+from ansible_specdoc.objects import FieldType
 from linode_api4 import User
 
-spec = {
-    # Disable the default values
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "username": SpecField(
-        type=FieldType.string,
-        required=True,
-        description=["The username of the user."],
+module = InfoModule(
+    primary_result=InfoModuleResult(
+        field_name="user",
+        field_type=FieldType.dict,
+        display_name="User",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-user",
+        samples=docs.result_user_samples,
     ),
-}
-
-SPECDOC_META = SpecDocMeta(
-    description=["Get info about a Linode User."],
-    requirements=global_requirements,
-    author=global_authors,
-    options=spec,
+    secondary_results=[
+        InfoModuleResult(
+            field_name="grants",
+            field_type=FieldType.dict,
+            display_name="Grants",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-user-grants",
+            samples=docs.result_grants_samples,
+            get=lambda client, user, params: client.get(
+                # We can't use the UserGrants type here because
+                # it does not serialize directly to JSON or store
+                # the API response JSON.
+                f"/account/users/{user['username']}/grants"
+            ),
+        )
+    ],
+    attributes=[
+        InfoModuleAttr(
+            name="username",
+            display_name="Username",
+            type=FieldType.string,
+            get=lambda client, params: client.load(
+                User, params.get("username")
+            )._raw_json,
+        )
+    ],
     examples=docs.specdoc_examples,
-    return_values={
-        "user": SpecReturnValue(
-            description="The user info in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/account/#user-view",
-            type=FieldType.dict,
-            sample=docs.result_user_samples,
-        ),
-        "grants": SpecReturnValue(
-            description="The grants info in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/account/#users-grants-view__response-samples",
-            type=FieldType.dict,
-            sample=docs.result_grants_samples,
-        ),
-    },
 )
 
+SPECDOC_META = module.spec
 
-class Module(LinodeModuleBase):
-    """Module for getting info about a Linode user"""
-
-    def __init__(self) -> None:
-        self.required_one_of: List[str] = []
-        self.results = {"user": None}
-
-        self.module_arg_spec = SPECDOC_META.ansible_spec
-
-        super().__init__(
-            module_arg_spec=self.module_arg_spec,
-            required_one_of=self.required_one_of,
-        )
-
-    def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for user info module"""
-
-        user = self.client.account.users(
-            User.username == self.module.params.get("username")
-        )
-        grants = user.grants
-
-        self.results["user"] = user._raw_json
-        self.results["grants"] = grants._raw_json
-
-        return self.results
-
-
-def main() -> None:
-    """Constructs and calls the module"""
-    Module()
-
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 if __name__ == "__main__":
-    main()
+    module.run()

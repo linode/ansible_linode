@@ -22,7 +22,7 @@ Get info about a Linode Account.
 
 ## Return Values
 
-- `account` - The account info in JSON serialized form.
+- `account` - The returned Account.
 
     - Sample Response:
         ```json
@@ -68,6 +68,6 @@ Get info about a Linode Account.
           "zip": "19102-1234"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/account/#account-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-account) for a list of returned fields
 
 

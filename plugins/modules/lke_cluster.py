@@ -18,11 +18,15 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_requirements,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    filter_null_values,
     filter_null_values_recursive,
     handle_updates,
     jsonify_node_pool,
     poll_condition,
     validate_required,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_lke_shared import (
+    safe_get_cluster_acl,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -31,6 +35,42 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 from linode_api4 import ApiError, KubeVersion, LKECluster
+
+linode_lke_cluster_acl_addresses = {
+    "ipv4": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "A list of IPv4 addresses to grant access to this cluster's control plane."
+        ],
+    ),
+    "ipv6": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "A list of IPv6 addresses to grant access to this cluster's control plane."
+        ],
+    ),
+}
+
+linode_lke_cluster_acl = {
+    "enabled": SpecField(
+        type=FieldType.bool,
+        editable=True,
+        description=[
+            "Whether control plane ACLs are enabled for this cluster.",
+        ],
+    ),
+    "addresses": SpecField(
+        type=FieldType.dict,
+        editable=True,
+        description=[
+            "The addresses allowed to access this cluster's control plane.",
+        ],
+        suboptions=linode_lke_cluster_acl_addresses,
+    ),
+}
+
 
 linode_lke_cluster_autoscaler = {
     "enabled": SpecField(
@@ -72,6 +112,28 @@ linode_lke_cluster_disk = {
     ),
 }
 
+linode_lke_cluster_taint = {
+    "key": SpecField(
+        type=FieldType.string,
+        description=["The Kubernetes taint key."],
+        required=True,
+        editable=True,
+    ),
+    "value": SpecField(
+        type=FieldType.string,
+        description=["The Kubernetes taint value."],
+        required=True,
+        editable=True,
+    ),
+    "effect": SpecField(
+        type=FieldType.string,
+        description=["The Kubernetes taint effect."],
+        required=True,
+        editable=True,
+        choices=["NoSchedule", "PreferNoSchedule", "NoExecute"],
+    ),
+}
+
 linode_lke_cluster_node_pool_spec = {
     "count": SpecField(
         type=FieldType.integer,
@@ -92,6 +154,23 @@ linode_lke_cluster_node_pool_spec = {
             "defined minimum and maximum values."
         ],
         suboptions=linode_lke_cluster_autoscaler,
+    ),
+    "labels": SpecField(
+        type=FieldType.dict,
+        editable=True,
+        description=[
+            "Key-value pairs added as labels to nodes in the node pool. "
+            "Labels help classify your nodes and to easily select subsets of objects."
+        ],
+    ),
+    "taints": SpecField(
+        type=FieldType.list,
+        editable=True,
+        description=[
+            "Kubernetes taints to add to node pool nodes. Taints help control "
+            "how pods are scheduled onto nodes, specifically allowing them to repel certain pods."
+        ],
+        suboptions=linode_lke_cluster_taint,
     ),
 }
 
@@ -129,6 +208,15 @@ linode_lke_cluster_spec = {
         ],
         default=False,
     ),
+    "acl": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_lke_cluster_acl,
+        editable=True,
+        description=[
+            "The ACL configuration for this cluster's control plane.",
+            "NOTE: Control Plane ACLs may not currently be available to all users.",
+        ],
+    ),
     "node_pools": SpecField(
         editable=True,
         type=FieldType.list,
@@ -150,6 +238,12 @@ linode_lke_cluster_spec = {
         ],
         default=600,
     ),
+    "state": SpecField(
+        type=FieldType.string,
+        description=["The desired state of the target."],
+        choices=["present", "absent"],
+        required=True,
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -161,30 +255,28 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "cluster": SpecReturnValue(
             description="The LKE cluster in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#kubernetes-cluster-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster",
             type=FieldType.dict,
             sample=docs.result_cluster,
         ),
         "node_pools": SpecReturnValue(
             description="A list of node pools in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#node-pools-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-pools",
             type=FieldType.list,
             sample=docs.result_node_pools,
         ),
         "kubeconfig": SpecReturnValue(
             description="The Base64-encoded kubeconfig used to access this cluster. \n"
             "NOTE: This value may be unavailable if `skip_polling` is true.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#kubeconfig-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-kubeconfig",
             type=FieldType.string,
+            sample=['"a3ViZWNvbmZpZyBjb250ZW50Cg=="'],
         ),
         "dashboard_url": SpecReturnValue(
             description="The Cluster Dashboard access URL.",
-            docs_url="https://www.linode.com/docs/api/linode-kubernetes-engine-lke/"
-            "#kubernetes-cluster-dashboard-url-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-cluster-dashboard",
             type=FieldType.string,
+            sample=['"https://example.dashboard.linodelke.net"'],
         ),
     },
 )
@@ -202,6 +294,13 @@ CREATE_FIELDS: Set[str] = {
     "control_plane",
     "high_availability",
 }
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class LinodeLKECluster(LinodeModuleBase):
@@ -264,10 +363,12 @@ class LinodeLKECluster(LinodeModuleBase):
 
         label = params.pop("label")
 
-        # We want HA to be a root-level attribute in ansible
-        high_avail = params.pop("high_availability")
-
-        params["control_plane"] = {"high_availability": high_avail}
+        params["control_plane"] = filter_null_values(
+            {
+                "high_availability": params.pop("high_availability", False),
+                "acl": params.pop("acl", None),
+            }
+        )
 
         # Let's filter down to valid keys
         params = {k: v for k, v in params.items() if k in CREATE_FIELDS}
@@ -289,6 +390,43 @@ class LinodeLKECluster(LinodeModuleBase):
             return self.fail(
                 msg="failed to create lke cluster: {0}".format(exception)
             )
+
+    def _attempt_update_acl(self, cluster: LKECluster) -> None:
+        """
+        Handles the update logic for an LKE cluster's control plane ACL configuration.
+        """
+        control_plane_acl = safe_get_cluster_acl(cluster)
+        configured_acl = copy.deepcopy(self.module.params.get("acl"))
+
+        # We don't want to make any changes if the user has not explicitly defined an ACL
+        if configured_acl is None:
+            return
+
+        # [] and null are equivalent values for address fields,
+        # so we need to account for this when diffing
+        configured_addresses = configured_acl.get("addresses")
+        if configured_addresses is not None:
+            ipv4 = configured_addresses.get("ipv4")
+            ipv6 = configured_addresses.get("ipv6")
+
+            configured_acl["addresses"]["ipv4"] = None if ipv4 == [] else ipv4
+            configured_acl["addresses"]["ipv6"] = None if ipv6 == [] else ipv6
+
+        user_defined_keys = set(linode_lke_cluster_acl.keys())
+        current_acl = control_plane_acl if control_plane_acl is not None else {}
+
+        # Only diff on keys that can be defined by the user
+        current_acl = {
+            k: v for k, v in current_acl.items() if k in user_defined_keys
+        }
+
+        if configured_acl == current_acl:
+            return
+
+        self.register_action(
+            f"Updated LKE cluster {cluster.id} control plane ACL: {current_acl} -> {configured_acl}"
+        )
+        cluster.control_plane_acl_update(configured_acl)
 
     def _cluster_put_updates(self, cluster: LKECluster) -> None:
         """Handles manual field updates for the current LKE cluster"""
@@ -326,6 +464,9 @@ class LinodeLKECluster(LinodeModuleBase):
 
             cluster.save()
 
+        self._attempt_update_acl(cluster)
+
+    # pylint: disable=too-many-statements
     def _update_cluster(self, cluster: LKECluster) -> None:
         """Handles all update functionality for the current LKE cluster"""
 
@@ -373,6 +514,32 @@ class LinodeLKECluster(LinodeModuleBase):
                         current_pool.autoscaler = pool.get("autoscaler")
                         current_pool.save()
 
+                    if (
+                        "taints" in pool
+                        and current_pool.taints != pool["taints"]
+                    ):
+                        self.register_action(
+                            "Updated taints for Node Pool {}".format(
+                                current_pool.id
+                            )
+                        )
+
+                        current_pool.taints = pool.get("taints")
+                        current_pool.save()
+
+                    if (
+                        "labels" in pool
+                        and current_pool.labels != pool["labels"]
+                    ):
+                        self.register_action(
+                            "Updated labels for Node Pool {}".format(
+                                current_pool.id
+                            )
+                        )
+
+                        current_pool.labels = pool.get("labels")
+                        current_pool.save()
+
                     pools_handled[k] = True
                     should_keep[i] = True
                     break
@@ -413,6 +580,32 @@ class LinodeLKECluster(LinodeModuleBase):
                             )
                         )
                         existing_pool.autoscaler = pool["autoscaler"]
+                        should_update = True
+
+                    if (
+                        "taints" in pool
+                        and existing_pool.taints != pool["taints"]
+                    ):
+                        self.register_action(
+                            "Updated taints for Node Pool {}".format(
+                                existing_pool.id
+                            )
+                        )
+
+                        existing_pool.taints = pool["taints"]
+                        should_update = True
+
+                    if (
+                        "labels" in pool
+                        and existing_pool.labels != pool["labels"]
+                    ):
+                        self.register_action(
+                            "Updated labels for Node Pool {}".format(
+                                existing_pool.id
+                            )
+                        )
+
+                        existing_pool.labels = pool["labels"]
                         should_update = True
 
                     if should_update:
@@ -494,7 +687,14 @@ class LinodeLKECluster(LinodeModuleBase):
     def _populate_results(self, cluster: LKECluster) -> None:
         cluster._api_get()
 
-        self.results["cluster"] = cluster._raw_json
+        cluster_json = cluster._raw_json
+
+        # We need to inject the control plane ACL configuration into the cluster's JSON
+        # because it is not returned from the cluster GET endpoint
+        cluster_json["control_plane"]["acl"] = safe_get_cluster_acl(cluster)
+
+        self.results["cluster"] = cluster_json
+
         self.results["node_pools"] = [
             jsonify_node_pool(pool) for pool in cluster.pools
         ]
@@ -551,7 +751,7 @@ class LinodeLKECluster(LinodeModuleBase):
             self.register_action("Deleted cluster {0}".format(cluster))
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for Domain module"""
+        """Entrypoint for LKE Cluster module"""
         state = kwargs.get("state")
 
         if state == "absent":

@@ -1,8 +1,6 @@
 # vlan_list
 
-List and filter on Linode VLANs.
-
-**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+List and filter on VLANs.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -40,13 +38,13 @@ List and filter on Linode VLANs.
 | `order` | <center>`str`</center> | <center>Optional</center> | The order to list VLANs in.  **(Choices: `desc`, `asc`; Default: `asc`)** |
 | `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order VLANs by.   |
 | [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting VLANs.   |
-| `count` | <center>`int`</center> | <center>Optional</center> | The number of results to return. If undefined, all results will be returned.   |
+| `count` | <center>`int`</center> | <center>Optional</center> | The number of VLANs to return. If undefined, all results will be returned.   |
 
 ### filters
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable attributes can be found here: https://www.linode.com/docs/api/networking/#vlans-list__response-samples   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-vlans).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
@@ -67,6 +65,6 @@ List and filter on Linode VLANs.
            }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#vlans-list__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vlans) for a list of returned fields
 
 

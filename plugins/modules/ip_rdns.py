@@ -26,8 +26,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import ExplicitNullValue, IPAddress
 
 ip_rdns_spec = {
-    # Disable the default values
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "state": SpecField(
         type=FieldType.string,
         choices=["present", "absent"],
@@ -58,13 +56,20 @@ SPECDOC_META = SpecDocMeta(
                 "reverse DNS in JSON serialized form."
             ),
             docs_url=(
-                "https://www.linode.com/docs/api/profile/#ip-address-rdns-update"
+                "https://techdocs.akamai.com/linode-api/reference/get-ipv6-range"
             ),
             type=FieldType.dict,
             sample=ip_docs.result_ip_samples,
         )
     },
 )
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class ReverseDNSModule(LinodeModuleBase):

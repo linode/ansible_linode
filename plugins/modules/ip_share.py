@@ -25,9 +25,6 @@ from ansible_specdoc.objects import (
 from linode_api4.objects import Instance
 
 ip_share_spec = {
-    # Disable the default values
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "ips": SpecField(
         type=FieldType.list,
         required=True,
@@ -41,6 +38,12 @@ ip_share_spec = {
         description=[
             "The ID of the primary Linode that the addresses will be shared with."
         ],
+    ),
+    "state": SpecField(
+        type=FieldType.string,
+        description=["The desired state of the target."],
+        choices=["present", "absent"],
+        required=True,
     ),
 }
 
@@ -56,13 +59,19 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "ip_share_stats": SpecReturnValue(
             description="The Linode IP share info in JSON serialized form",
-            docs_url="https://www.linode.com/docs/api/networking/"
-            + "#ip-addresses-share__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/post-share-ips",
             type=FieldType.dict,
             sample=ip_share_docs.result_ip_share_stats_samples,
         )
     },
 )
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class IPShareModule(LinodeModuleBase):

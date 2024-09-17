@@ -33,7 +33,7 @@ List and filter on all VPC IP Addresses.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here]().   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-vpcs-ips).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
@@ -57,9 +57,10 @@ List and filter on all VPC IP Addresses.
                 "nat_1_1": null,
                 "gateway": "10.0.0.1",
                 "prefix": 24,
-                "subnet_mask": "255.255.255.0",
+                "subnet_mask": "255.255.255.0"
             }
         ]
         ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vpcs-ips) for a list of returned fields
 
 

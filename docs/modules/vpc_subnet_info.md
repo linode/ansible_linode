@@ -34,8 +34,8 @@ Get info about a Linode VPC Subnet.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the VPC for this resource.   |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC Subnet to resolve.  **(Conflicts With: `id`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC Subnet to resolve.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC Subnet to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 
@@ -51,11 +51,12 @@ Get info about a Linode VPC Subnet.
             "linodes": [
                 {
                     "id": 1234567,
-                    "interfaces": [{"active": false, "id": 654321}],
+                    "interfaces": [{"active": false, "id": 654321}]
                 }
             ],
             "updated": "2023-08-31T18:53:04"
         }
         ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vpc-subnet) for a list of returned fields
 
 

@@ -37,8 +37,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import MySQLDatabase
 
 spec = {
-    # Disable the default values
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "id": SpecField(
         type=FieldType.string,
         conflicts_with=["label"],
@@ -60,35 +58,41 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "database": SpecReturnValue(
             description="The database in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/databases/"
-            "#managed-mysql-database-view__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/"
+            "get-databases-mysql-instance",
             type=FieldType.dict,
             sample=docs_parent.result_database_samples,
         ),
         "backups": SpecReturnValue(
             description="The database backups in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/databases/"
-            "#managed-mysql-database-backup-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/"
+            "get-databases-mysql-instance-backup",
             type=FieldType.dict,
             sample=docs_parent.result_backups_samples,
         ),
         "ssl_cert": SpecReturnValue(
             description="The SSL CA certificate for an accessible Managed MySQL Database.",
-            docs_url="https://www.linode.com/docs/api/databases/"
-            "#managed-mysql-database-ssl-certificate-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/"
+            "get-databases-mysql-instance-ssl",
             type=FieldType.dict,
             sample=docs_parent.result_ssl_cert_samples,
         ),
         "credentials": SpecReturnValue(
             description="The root username and password for an accessible Managed MySQL Database.",
-            docs_url="https://www.linode.com/docs/api/databases/"
-            "#managed-mysql-database-credenti"
-            "als-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/"
+            "get-databases-mysql-instance-credentials",
             type=FieldType.dict,
             sample=docs_parent.result_credentials_samples,
         ),
     },
 )
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class Module(LinodeModuleBase):

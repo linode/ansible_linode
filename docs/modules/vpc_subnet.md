@@ -55,12 +55,12 @@ Create, read, and update a Linode VPC Subnet.
             "linodes": [
                 {
                     "id": 1234567,
-                    "interfaces": [{"active": false, "id": 654321}],
+                    "interfaces": [{"active": false, "id": 654321}]
                 }
             ],
             "updated": "2023-08-31T18:53:04"
         }
         ```
-    - See the [Linode API response documentation](TODO) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vpc-subnet) for a list of returned fields
 
 

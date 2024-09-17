@@ -20,6 +20,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
     filter_null_values_recursive,
+    handle_updates,
     mapping_to_dict,
     paginated_list_to_json,
 )
@@ -81,7 +82,7 @@ linode_firewall_rule_spec: dict = {
         type=FieldType.string,
         description=[
             "A string representing the port or ports on which traffic will be allowed.",
-            "See https://www.linode.com/docs/api/networking/#firewall-create",
+            "See https://techdocs.akamai.com/linode-api/reference/post-firewalls",
         ],
     ),
     "protocol": SpecField(
@@ -152,6 +153,11 @@ linode_firewall_spec: dict = {
         editable=True,
         description=["The status of this Firewall."],
     ),
+    "tags": SpecField(
+        type=FieldType.list,
+        editable=True,
+        description=["A list of tags to apply to this Firewall."],
+    ),
     "state": SpecField(
         type=FieldType.string,
         description=["The desired state of the target."],
@@ -169,13 +175,13 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "firewall": SpecReturnValue(
             description="The Firewall description in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/networking/#firewall-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-firewall",
             type=FieldType.dict,
             sample=docs.result_firewall_samples,
         ),
         "devices": SpecReturnValue(
             description="A list of Firewall devices JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/networking/#firewall-device-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-firewall-device",
             type=FieldType.list,
             sample=docs.result_devices_samples,
         ),
@@ -183,7 +189,14 @@ SPECDOC_META = SpecDocMeta(
 )
 
 # Fields that can be updated on an existing Firewall
-linode_firewall_mutable: List[str] = ["status", "tags"]
+MUTABLE_FIELDS: List[str] = ["status", "tags"]
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class LinodeFirewall(LinodeModuleBase):
@@ -354,17 +367,20 @@ class LinodeFirewall(LinodeModuleBase):
     def _change_rules(self) -> Optional[dict]:
         """Updates remote firewall rules relative to user-supplied new rules,
         and returns whether anything changed."""
-        local_rules = filter_null_values_recursive(self.module.params["rules"])
-        remote_rules = filter_null_values_recursive(
-            mapping_to_dict(self._firewall.rules)
+        local_rules = (
+            filter_null_values_recursive(self.module.params["rules"]) or {}
+        )
+        remote_rules = (
+            filter_null_values_recursive(mapping_to_dict(self._firewall.rules))
+            or {}
         )
 
-        # user did not specify any rules updates
-        if local_rules is None:
-            local_rules = {}
+        # Ensure only user-defined rules will be used for diffing
+        configurable_fields = set(linode_firewall_rules_spec.keys())
 
-        if remote_rules is None:
-            remote_rules = {}
+        remote_rules = {
+            k: v for k, v in remote_rules.items() if k in configurable_fields
+        }
 
         # Normalize IP addresses for all rules
         for direction in ["inbound", "outbound"]:
@@ -397,29 +413,13 @@ class LinodeFirewall(LinodeModuleBase):
     def _update_firewall(self) -> None:
         """Handles all update functionality for the current Firewall"""
 
-        # Update mutable values
-        should_update = False
-        params = filter_null_values(self.module.params)
-
-        for key, new_value in params.items():
-            if not hasattr(self._firewall, key):
-                continue
-
-            old_value = getattr(self._firewall, key)
-
-            if new_value != old_value:
-                if key in linode_firewall_mutable:
-                    setattr(self._firewall, key, new_value)
-                    self.register_action(
-                        'Updated Firewall {0}: "{1}" -> "{2}"'.format(
-                            key, old_value, new_value
-                        )
-                    )
-
-                    should_update = True
-
-        if should_update:
-            self._firewall.save()
+        handle_updates(
+            self._firewall,
+            filter_null_values(self.module.params),
+            set(MUTABLE_FIELDS),
+            self.register_action,
+            ignore_keys={"devices", "rules"},
+        )
 
         changes = self._change_rules()
         if changes:
@@ -427,7 +427,7 @@ class LinodeFirewall(LinodeModuleBase):
             self.register_action("Updated Firewall rules")
 
         # Update devices
-        devices: Optional[List[Any]] = params.get("devices")
+        devices: Optional[List[Any]] = self.module.params.get("devices")
         if devices is not None:
             self._update_devices(devices)
 

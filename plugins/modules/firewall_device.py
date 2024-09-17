@@ -65,12 +65,19 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "device": SpecReturnValue(
             description="The Firewall Device in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/networking/#firewall-device-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-firewall-device",
             type=FieldType.dict,
             sample=docs.result_device_samples,
         )
     },
 )
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class LinodeFirewallDevice(LinodeModuleBase):

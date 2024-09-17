@@ -2,7 +2,7 @@
 
 Manage the Linode shared IPs.
 
-**:warning: This module makes use of beta endpoints and requires the `api_version` field be explicitly set to `v4beta`.**
+WARNING! This module makes use of beta endpoints and requires the C(api_version) field be explicitly set to C(v4beta).
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -31,6 +31,7 @@ Manage the Linode shared IPs.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `ips` | <center>`list`</center> | <center>**Required**</center> | A list of secondary Linode IPs to share with the primary Linode.   |
 | `linode_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the primary Linode that the addresses will be shared with.   |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
 
 ## Return Values
 
@@ -41,10 +42,10 @@ Manage the Linode shared IPs.
         [
           {
             "linode_id": 12345,
-            "ips": ["192.0.2.1", "2001:db8:3c4d:15::"],
+            "ips": ["192.0.2.1", "2001:db8:3c4d:15::"]
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/networking/#ip-addresses-share__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/post-share-ips) for a list of returned fields
 
 

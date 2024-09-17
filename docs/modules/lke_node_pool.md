@@ -61,6 +61,8 @@ Manage Linode LKE cluster node pools.
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type for all of the nodes in the Node Pool. Required if `state` == `present`.   |
 | `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the node pool to be ready.  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The period to wait for the node pool to be ready in seconds.  **(Default: `600`)** |
+| `labels` | <center>`dict`</center> | <center>Optional</center> | Key-value pairs added as labels to nodes in the node pool. Labels help classify your nodes and to easily select subsets of objects.  **(Updatable)** |
+| [`taints` (sub-options)](#taints) | <center>`list`</center> | <center>Optional</center> | Kubernetes taints to add to node pool nodes. Taints help control how pods are scheduled onto nodes, specifically allowing them to repel certain pods.  **(Updatable)** |
 
 ### autoscaler
 
@@ -77,6 +79,14 @@ Manage Linode LKE cluster node pools.
 | `type` | <center>`str`</center> | <center>**Required**</center> | This custom disk partition’s filesystem type.  **(Choices: `raw`, `ext4`)** |
 | `size` | <center>`int`</center> | <center>**Required**</center> | The size of this custom disk partition in MB.   |
 
+### taints
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `key` | <center>`str`</center> | <center>**Required**</center> | The Kubernetes taint key.  **(Updatable)** |
+| `value` | <center>`str`</center> | <center>**Required**</center> | The Kubernetes taint value.  **(Updatable)** |
+| `effect` | <center>`str`</center> | <center>**Required**</center> | The Kubernetes taint effect.  **(Choices: `NoSchedule`, `PreferNoSchedule`, `NoExecute`; Updatable)** |
+
 ## Return Values
 
 - `node_pool` - The Node Pool in JSON serialized form.
@@ -89,6 +99,7 @@ Manage Linode LKE cluster node pools.
             "max": 12,
             "min": 3
           },
+          "disk_encryption": "enabled",
           "count": 6,
           "disks": [
             {
@@ -111,6 +122,6 @@ Manage Linode LKE cluster node pools.
           "type": "g6-standard-4"
         }
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/linode-kubernetes-engine-lke/#node-pool-view__response-samples) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-node-pool) for a list of returned fields
 
 

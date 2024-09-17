@@ -70,11 +70,6 @@ LINODE_COMMON_ARGS = {
         "fallback": (env_fallback, ["LINODE_API_URL"]),
         "default": "https://api.linode.com/",
     },
-    "state": {
-        "type": "str",
-        "required": True,
-        "choices": ["present", "absent"],
-    },
     "ua_prefix": {
         "type": "str",
         "description": "An HTTP User-Agent Prefix to prepend in API requests.",
@@ -85,21 +80,6 @@ LINODE_COMMON_ARGS = {
         "type": "str",
         "description": "A path to a custom certificate authority for using alternate APIs.",
         "fallback": (env_fallback, ["LINODE_CA"]),
-    },
-}
-
-LINODE_TAG_ARGS = {
-    "tags": {
-        "type": "list",
-        "description": "The tags to assign to this resource.",
-    },
-}
-
-LINODE_LABEL_ARGS = {
-    "label": {
-        "type": "str",
-        "required": True,
-        "description": "The label to assign to this resource.",
     },
 }
 
@@ -130,8 +110,6 @@ class LinodeModuleBase:
     def __init__(
         self,
         module_arg_spec: dict,
-        supports_tags: bool = True,
-        has_label: bool = True,
         bypass_checks: bool = False,
         no_log: bool = False,
         mutually_exclusive: Any = None,
@@ -144,12 +122,6 @@ class LinodeModuleBase:
     ) -> None:
         arg_spec = {}
         arg_spec.update(LINODE_COMMON_ARGS)
-
-        if has_label:
-            arg_spec.update(LINODE_LABEL_ARGS)
-
-        if supports_tags:
-            arg_spec.update(LINODE_TAG_ARGS)
 
         arg_spec.update(module_arg_spec)
 
@@ -212,6 +184,15 @@ class LinodeModuleBase:
         :return: None
         """
         self.module.fail_json(msg=msg, **kwargs)
+
+    def warn(self, msg: str) -> None:
+        """
+        Shortcut for calling module.warn
+
+        :param msg: Error message
+        :return: None
+        """
+        self.module.warn(msg)
 
     def exec_module(self, **kwargs: Any) -> Any:
         """Returns a not implemented error"""

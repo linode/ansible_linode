@@ -1,5 +1,7 @@
 # object_cluster_info
 
+**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**
+
 Get info about a Linode Object Storage Cluster.
 
 - [Minimum Required Fields](#minimum-required-fields)
@@ -52,6 +54,6 @@ Get info about a Linode Object Storage Cluster.
           }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/object-storage/#cluster-view__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-object-storage-cluster) for a list of returned fields
 
 

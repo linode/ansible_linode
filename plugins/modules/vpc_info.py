@@ -23,7 +23,7 @@ module = InfoModule(
         field_name="vpc",
         field_type=FieldType.dict,
         display_name="VPC",
-        docs_url="",
+        docs_url="https://techdocs.akamai.com/linode-api/reference/get-vpc",
         samples=docs_parent.result_vpc_samples,
     ),
     attributes=[
@@ -51,6 +51,13 @@ module = InfoModule(
 )
 
 SPECDOC_META = module.spec
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 if __name__ == "__main__":
     module.run()

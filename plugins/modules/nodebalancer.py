@@ -279,25 +279,25 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "node_balancer": SpecReturnValue(
             description="The NodeBalancer in JSON serialized form.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/#nodebalancer-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer",
             type=FieldType.dict,
             sample=docs.result_node_balancer_samples,
         ),
         "configs": SpecReturnValue(
             description="A list of configs applied to the NodeBalancer.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/#config-view__responses",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-config",
             type=FieldType.list,
             sample=docs.result_configs_samples,
         ),
         "nodes": SpecReturnValue(
             description="A list of configs applied to the NodeBalancer.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/#node-view",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-node",
             type=FieldType.list,
             sample=docs.result_nodes_samples,
         ),
         "firewalls": SpecReturnValue(
             description="A list IDs for firewalls attached to this NodeBalancer.",
-            docs_url="https://www.linode.com/docs/api/nodebalancers/#firewalls-list",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-firewalls",
             type=FieldType.list,
             elements=FieldType.integer,
             sample=docs.result_firewalls_samples,
@@ -306,6 +306,13 @@ SPECDOC_META = SpecDocMeta(
 )
 
 MUTABLE_FIELDS: Set[str] = {"client_conn_throttle", "tags"}
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class LinodeNodeBalancer(LinodeModuleBase):

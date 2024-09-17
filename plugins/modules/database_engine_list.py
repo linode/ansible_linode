@@ -34,8 +34,7 @@ spec_filter = {
         description=[
             "The name of the field to filter on.",
             "Valid filterable attributes can be found here: "
-            "https://www.linode.com/docs/api/databases/"
-            "#managed-database-engines-list__responses",
+            "https://techdocs.akamai.com/linode-api/reference/get-databases-engines",
         ],
     ),
     "values": SpecField(
@@ -50,9 +49,6 @@ spec_filter = {
 }
 
 spec = {
-    # Disable the default values
-    "state": SpecField(type=FieldType.string, required=False, doc_hide=True),
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "order": SpecField(
         type=FieldType.string,
         description=["The order to list database engine types in."],
@@ -89,14 +85,20 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "engines": SpecReturnValue(
             description="The returned database engine types.",
-            docs_url="https://www.linode.com/docs/api/databases/"
-            "#managed-database-engines-list__response-samples",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-databases-engines",
             type=FieldType.list,
             elements=FieldType.dict,
             sample=docs.result_engines_samples,
         )
     },
 )
+
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
 
 
 class Module(LinodeModuleBase):

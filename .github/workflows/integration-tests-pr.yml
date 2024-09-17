@@ -36,6 +36,8 @@ jobs:
         with:
           ref: ${{ inputs.sha }}
           path: .ansible/collections/ansible_collections/linode/cloud
+          fetch-depth: 0
+          submodules: 'recursive'
 
       # Install deps
       - name: update packages
@@ -61,10 +63,25 @@ jobs:
       - name: replace existing keys
         run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
 
+      - name: Download kubectl and calicoctl for LKE clusters
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          curl -LO "https://github.com/projectcalico/calico/releases/download/v3.25.0/calicoctl-linux-amd64"
+          chmod +x calicoctl-linux-amd64 kubectl
+          mv calicoctl-linux-amd64 /usr/local/bin/calicoctl
+          mv kubectl /usr/local/bin/kubectl
+
       - run: make deps && make TEST_ARGS="-v ${{ inputs.tests }}" test
         if: ${{ steps.disallowed-char-check.outputs.match == '' }}
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
+
+      - name: Apply Calico Rules to LKE
+        if: always()
+        run: |
+          cd e2e_scripts/cloud_security_scripts/lke_calico_rules/ && ./lke_calico_rules_e2e.sh
+        env:
+          LINODE_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
       
       - name: Get the hash value of the latest commit from the PR branch
         uses: octokit/graphql-action@v2.x

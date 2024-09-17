@@ -49,7 +49,7 @@ List and filter on Images.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://www.linode.com/docs/api/images/#images-list__responses).   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-images).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
@@ -61,22 +61,33 @@ List and filter on Images.
         [
            {
               "created":"2021-08-14T22:44:02",
-              "created_by":"linode",
+              "created_by":"my-account",
               "deprecated":false,
               "description":"Example Image description.",
               "eol":"2026-07-01T04:00:00",
               "expiry":null,
-              "id":"linode/debian11",
-              "is_public":true,
-              "label":"Debian 11",
+              "id":"private/123",
+              "is_public":false,
+              "label":"test",
               "size":2500,
               "status":null,
               "type":"manual",
               "updated":"2021-08-14T22:44:02",
-              "vendor":"Debian"
-           }
+              "vendor":"Debian",
+              "tags": ["test"],
+              "total_size": 5000,
+              "regions": [
+                {
+                    "region": "us-east",
+                    "status": "available"
+                },
+                {
+                    "region": "us-central",
+                    "status": "pending"
+                }]
+               }
         ]
         ```
-    - See the [Linode API response documentation](https://www.linode.com/docs/api/images/#images-list__responses) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-images) for a list of returned fields
 
 
