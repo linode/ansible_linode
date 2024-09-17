@@ -28,8 +28,6 @@ from ansible_specdoc.objects import (
 from linode_api4 import Domain, DomainRecord
 
 linode_domain_record_spec = {
-    # Unused for domain record objects
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "domain_id": SpecField(
         type=FieldType.integer, description=["The ID of the parent Domain."]
     ),

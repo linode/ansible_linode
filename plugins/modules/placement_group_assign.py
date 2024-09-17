@@ -22,8 +22,6 @@ from ansible_specdoc.objects import FieldType, SpecDocMeta, SpecField
 from linode_api4 import PlacementGroup
 
 placement_group_assignment_spec = {
-    # Disable the default values
-    "label": SpecField(type=FieldType.string, required=False, doc_hide=True),
     "placement_group_id": SpecField(
         type=FieldType.integer,
         required=True,
@@ -40,6 +38,12 @@ placement_group_assignment_spec = {
         type=FieldType.bool,
         description=[],
         doc_hide=True,
+    ),
+    "state": SpecField(
+        type=FieldType.string,
+        description=["The desired state of the target."],
+        choices=["present", "absent"],
+        required=True,
     ),
 }
 

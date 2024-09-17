@@ -9,6 +9,7 @@ from linode_api4 import (
     LinodeClient,
     LKENodePool,
     LKENodePoolNode,
+    LKENodePoolTaint,
     MappedObject,
     and_,
 )
@@ -203,6 +204,7 @@ def jsonify_node_pool(pool: LKENodePool) -> Dict[str, Any]:
     result = pool._raw_json
 
     result["nodes"] = [jsonify_node_pool_node(node) for node in pool.nodes]
+    result["taints"] = [jsonify_node_pool_taint(taint) for taint in pool.taints]
 
     return result
 
@@ -214,6 +216,16 @@ def jsonify_node_pool_node(node: LKENodePoolNode) -> Dict[str, Any]:
         "id": node.id,
         "instance_id": node.instance_id,
         "status": node.status,
+    }
+
+
+def jsonify_node_pool_taint(taint: LKENodePoolTaint) -> Dict[str, Any]:
+    """Converts an LKENodePoolTaint into a JSON-compatible dict"""
+
+    return {
+        "key": taint.key,
+        "value": taint.value,
+        "effect": taint.effect,
     }
 
 

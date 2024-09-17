@@ -83,6 +83,12 @@ linode_instance_disk_spec = {
         type=FieldType.string,
         description=["The filesystem to create this disk with."],
     ),
+    "disk_encryption": SpecField(
+        type=FieldType.string,
+        description="The disk encryption status of this disk."
+        + "NOTE: Disk encryption may not currently be available to all users.",
+        choices=["enabled", "disabled"],
+    ),
     "image": SpecField(
         type=FieldType.string,
         description=["An Image ID to deploy the Disk from."],
@@ -522,6 +528,12 @@ linode_instance_spec = {
         type=FieldType.dict,
         suboptions=linode_instance_placement_group_spec,
         description=["A Placement Group to create this Linode under."],
+    ),
+    "disk_encryption": SpecField(
+        type=FieldType.string,
+        description="The disk encryption status of this Linode. "
+        + "NOTE: Disk encryption may not currently be available to all users.",
+        choices=["enabled", "disabled"],
     ),
     "swap_size": SpecField(
         type=FieldType.integer,

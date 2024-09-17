@@ -57,6 +57,7 @@ Manage Linode LKE clusters.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | This Kubernetes cluster’s unique label.   |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
 | `k8s_version` | <center>`str`</center> | <center>Optional</center> | The desired Kubernetes version for this Kubernetes cluster in the format of <major>.<minor>, and the latest supported patch version will be deployed. A version upgrade requires that you manually recycle the nodes in your cluster.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>Optional</center> | This Kubernetes cluster’s location.   |
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to the Kubernetes cluster.   |
@@ -87,6 +88,8 @@ Manage Linode LKE clusters.
 | `count` | <center>`int`</center> | <center>**Required**</center> | The number of nodes in the Node Pool.  **(Updatable)** |
 | `type` | <center>`str`</center> | <center>**Required**</center> | The Linode Type for all of the nodes in the Node Pool.   |
 | [`autoscaler` (sub-options)](#autoscaler) | <center>`dict`</center> | <center>Optional</center> | When enabled, the number of nodes autoscales within the defined minimum and maximum values.  **(Updatable)** |
+| `labels` | <center>`dict`</center> | <center>Optional</center> | Key-value pairs added as labels to nodes in the node pool. Labels help classify your nodes and to easily select subsets of objects.  **(Updatable)** |
+| [`taints` (sub-options)](#taints) | <center>`list`</center> | <center>Optional</center> | Kubernetes taints to add to node pool nodes. Taints help control how pods are scheduled onto nodes, specifically allowing them to repel certain pods.  **(Updatable)** |
 
 ### autoscaler
 
@@ -95,6 +98,14 @@ Manage Linode LKE clusters.
 | `enabled` | <center>`bool`</center> | <center>Optional</center> | Whether autoscaling is enabled for this Node Pool. NOTE: Subsequent playbook runs will override nodes created by the cluster autoscaler.  **(Updatable)** |
 | `max` | <center>`int`</center> | <center>Optional</center> | The maximum number of nodes to autoscale to. Defaults to the value provided by the count field.  **(Updatable)** |
 | `min` | <center>`int`</center> | <center>Optional</center> | The minimum number of nodes to autoscale to. Defaults to the Node Pool’s count.  **(Updatable)** |
+
+### taints
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `key` | <center>`str`</center> | <center>**Required**</center> | The Kubernetes taint key.  **(Updatable)** |
+| `value` | <center>`str`</center> | <center>**Required**</center> | The Kubernetes taint value.  **(Updatable)** |
+| `effect` | <center>`str`</center> | <center>**Required**</center> | The Kubernetes taint effect.  **(Choices: `NoSchedule`, `PreferNoSchedule`, `NoExecute`; Updatable)** |
 
 ## Return Values
 
@@ -139,6 +150,7 @@ Manage Linode LKE clusters.
               "max": 12,
               "min": 3
             },
+            "disk_encryption": "enabled",
             "count": 6,
             "disks": [
               {

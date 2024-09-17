@@ -1,8 +1,8 @@
 # instance_type_list
 
-**NOTE: This module has been deprecated in favor of `type_list`.
+**NOTE: This module has been deprecated in favor of `type_list`.**
 
-List and filter on Linode Instance Types.
+List and filter on Instance Types.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
