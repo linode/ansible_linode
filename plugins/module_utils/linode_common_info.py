@@ -110,7 +110,7 @@ class InfoModuleResult:
     ] = None
 
 
-class InfoModule(LinodeModuleBase):
+class InfoModule(LinodeModuleBase):  # pylint: disable=too-many-positional
     """A common module for listing API resources given a set of filters."""
 
     def __init__(

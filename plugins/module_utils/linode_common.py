@@ -104,7 +104,7 @@ RETRY_INTERVAL_SECONDS = float(4)
 RETRY_STATUSES = {408, 429, 502}
 
 
-class LinodeModuleBase:
+class LinodeModuleBase:  # pylint: disable=too-many-positional
     """A base for all Linode resource modules."""
 
     def __init__(
