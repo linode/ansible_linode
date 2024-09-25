@@ -1,3 +1,5 @@
+"""Documentation fragments for the region module"""
+
 result_region_samples = ["""{
     "id": "us-mia",
     "label": "Miami, FL",
