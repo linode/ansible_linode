@@ -30,7 +30,7 @@ deps:
 	pip install -r requirements.txt -r requirements-dev.txt --upgrade
 
 lint:
-	pylint plugins
+	pylint --disable=too-many-positional-arguments plugins
 
 	mypy plugins/modules
 	mypy plugins/inventory
