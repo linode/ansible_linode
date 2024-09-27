@@ -114,6 +114,7 @@ class InfoModule(LinodeModuleBase):
     """A common module for listing API resources given a set of filters."""
 
     def __init__(
+        # pylint: disable=too-many-positional-arguments
         self,
         primary_result: InfoModuleResult,
         secondary_results: List[InfoModuleResult] = None,
