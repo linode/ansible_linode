@@ -100,8 +100,11 @@ Name | Description |
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Images.|
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Instances.|
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|**NOTE: This module has been deprecated in favor of `type_list`.**|
+[linode.cloud.lke_type_list](./docs/modules/lke_type_list.md)|List and filter on LKE Types.|
 [linode.cloud.lke_version_list](./docs/modules/lke_version_list.md)|List and filter on LKE Versions.|
+[linode.cloud.network_transfer_prices_list](./docs/modules/network_transfer_prices_list.md)|List and filter on Network Transfer Prices.|
 [linode.cloud.nodebalancer_list](./docs/modules/nodebalancer_list.md)|List and filter on Node Balancers.|
+[linode.cloud.nodebalancer_type_list](./docs/modules/nodebalancer_type_list.md)|List and filter on Node Balancer Types.|
 [linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.placement_group_list](./docs/modules/placement_group_list.md)|List and filter on Placement Groups.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
@@ -112,6 +115,7 @@ Name | Description |
 [linode.cloud.user_list](./docs/modules/user_list.md)|List and filter on Users.|
 [linode.cloud.vlan_list](./docs/modules/vlan_list.md)|List and filter on VLANs.|
 [linode.cloud.volume_list](./docs/modules/volume_list.md)|List and filter on Linode Volumes.|
+[linode.cloud.volume_type_list](./docs/modules/volume_type_list.md)|List and filter on Volume Types.|
 [linode.cloud.vpc_ip_list](./docs/modules/vpc_ip_list.md)|List and filter on VPC IP Addresses.|
 [linode.cloud.vpc_list](./docs/modules/vpc_list.md)|List and filter on VPCs.|
 [linode.cloud.vpc_subnet_list](./docs/modules/vpc_subnet_list.md)|List and filter on VPC Subnets.|

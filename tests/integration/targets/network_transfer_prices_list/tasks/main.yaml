@@ -1,0 +1,32 @@
+- name: network_transfer_prices_list
+  block:
+    - name: List network transfer prices with no filter
+      linode.cloud.network_transfer_prices_list:
+      register: no_filter
+
+    - name: Assert network transfer prices with no filter
+      assert:
+        that:
+          - no_filter.network_transfer_prices | length >= 1
+
+    - name: List network transfer prices with filter on label
+      linode.cloud.network_transfer_prices_list:
+        filters:
+          - name: label
+            values: Network Transfer
+      register: filter
+
+    - name: Assert network transfer prices with filter on label
+      assert:
+        that:
+          - filter.network_transfer_prices | length >= 1
+          - filter.network_transfer_prices[0].label == 'Network Transfer'
+          - filter.network_transfer_prices[0].region_prices | length >= 1
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+
