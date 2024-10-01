@@ -115,6 +115,7 @@ class InfoModule(LinodeModuleBase):
 
     # pylint: disable=too-many-positional-arguments
     def __init__(
+        # pylint: disable=too-many-positional-arguments
         self,
         primary_result: InfoModuleResult,
         secondary_results: List[InfoModuleResult] = None,

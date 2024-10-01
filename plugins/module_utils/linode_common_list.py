@@ -42,7 +42,7 @@ class ListModuleParam:
 
 class ListModule(
     LinodeModuleBase
-):  # pylint: disable=too-many-instance-attributes
+):  # pylint: disable=too-many-instance-attributes,too-many-positional-arguments
     """A common module for listing API resources given a set of filters."""
 
     # pylint: disable=too-many-positional-arguments
