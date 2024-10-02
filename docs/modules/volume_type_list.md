@@ -71,7 +71,7 @@ List and filter on Volume Types.
                         "monthly": 0.14
                     }
                 ],
-                "transfer": 0,
+                "transfer": 0
             }
         ]
         ```

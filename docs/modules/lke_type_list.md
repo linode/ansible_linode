@@ -71,7 +71,7 @@ List and filter on LKE Types.
                         "monthly": 84.0
                     }
                 ],
-                "transfer": 0,
+                "transfer": 0
             }
         ]
         ```

@@ -30,6 +30,6 @@ result_volume_type_samples = ['''[
                 "monthly": 0.14
             }
         ],
-        "transfer": 0,
+        "transfer": 0
     }
 ]''']

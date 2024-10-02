@@ -30,6 +30,6 @@ result_nodebalancer_type_samples = ['''[
                 "monthly": 14.0
             }
         ],
-        "transfer": 0,
+        "transfer": 0
     }
 ]''']

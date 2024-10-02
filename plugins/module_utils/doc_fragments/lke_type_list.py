@@ -30,6 +30,6 @@ result_lke_type_samples = ['''[
                 "monthly": 84.0
             }
         ],
-        "transfer": 0,
+        "transfer": 0
     }
 ]''']

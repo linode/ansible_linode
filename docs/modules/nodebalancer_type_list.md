@@ -71,7 +71,7 @@ List and filter on Node Balancer Types.
                         "monthly": 14.0
                     }
                 ],
-                "transfer": 0,
+                "transfer": 0
             }
         ]
         ```

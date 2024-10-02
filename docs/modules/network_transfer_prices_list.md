@@ -60,7 +60,7 @@ List and filter on Network Transfer Prices.
                     "monthly": null
                 },
                 "region_prices": [],
-                "transfer": 0,
+                "transfer": 0
             }
         ]
         ```
