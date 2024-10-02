@@ -77,7 +77,7 @@ specdoc_examples = ['''
     label: my-linode
     type: g6-nanode-1
     region: us-east
-    placement_group: 
+    placement_group:
       id: 123
       compliant_only: false
     state: present''', '''
@@ -129,14 +129,14 @@ result_instance_samples = ['''{
   "type": "g6-standard-1",
   "updated": "2018-01-01T00:01:01",
   "watchdog_enabled": true,
+  "disk_encryption": "enabled",
+  "lke_cluster_id": null,
   "placement_group": {
     "id": 123,
     "label": "test",
     "placement_group_type": "anti_affinity:local",
     "placement_group_policy": "strict"
   }
-  "disk_encryption": "enabled",
-  "lke_cluster_id": null                      
 }''']
 
 result_configs_samples = ['''[
