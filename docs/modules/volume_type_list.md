@@ -61,12 +61,12 @@ List and filter on Volume Types.
                 },
                 "region_prices": [
                     {
-                        "id": "id-cgk"
+                        "id": "id-cgk",
                         "hourly": 0.00018,
                         "monthly": 0.12
                     },
                     {
-                        "id": "br-gru"
+                        "id": "br-gru",
                         "hourly": 0.00021,
                         "monthly": 0.14
                     }

@@ -20,12 +20,12 @@ result_nodebalancer_type_samples = ['''[
         },
         "region_prices": [
             {
-                "id": "id-cgk"
+                "id": "id-cgk",
                 "hourly": 0.018,
                 "monthly": 12.0
             },
             {
-                "id": "br-gru"
+                "id": "br-gru",
                 "hourly": 0.021,
                 "monthly": 14.0
             }
