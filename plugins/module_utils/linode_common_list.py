@@ -63,7 +63,10 @@ class ListModule(
         self.result_field_name = result_field_name
         self.endpoint_template = endpoint_template
 
-        self.result_docs_url = result_docs_url or "https://techdocs.akamai.com/linode-api/reference/api"
+        self.result_docs_url = (
+            result_docs_url
+            or "https://techdocs.akamai.com/linode-api/reference/api"
+        )
         self.params = params or []
         self.examples = examples or []
         self.description = description or [
