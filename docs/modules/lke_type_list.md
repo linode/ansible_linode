@@ -61,17 +61,17 @@ List and filter on LKE Types.
                 },
                 "region_prices": [
                     {
-                        "id": "id-cgk"
+                        "id": "id-cgk",
                         "hourly": 0.108,
                         "monthly": 72.0
                     },
                     {
-                        "id": "br-gru"
+                        "id": "br-gru",
                         "hourly": 0.126,
                         "monthly": 84.0
                     }
                 ],
-                "transfer": 0,
+                "transfer": 0
             }
         ]
         ```
