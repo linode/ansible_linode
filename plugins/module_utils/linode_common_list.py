@@ -42,7 +42,7 @@ class ListModuleParam:
 
 class ListModule(
     LinodeModuleBase
-):  # pylint: disable=too-many-instance-attributes,too-many-positional-arguments
+):  # pylint: disable=too-many-instance-attributes
     """A common module for listing API resources given a set of filters."""
 
     def __init__(
@@ -50,7 +50,7 @@ class ListModule(
         result_display_name: str,
         result_field_name: str,
         endpoint_template: str,
-        result_docs_url: str = "",
+        result_docs_url: Optional[str] = None,
         params: List[ListModuleParam] = None,
         examples: List[str] = None,
         description: List[str] = None,
@@ -63,7 +63,10 @@ class ListModule(
         self.result_field_name = result_field_name
         self.endpoint_template = endpoint_template
 
-        self.result_docs_url = result_docs_url
+        self.result_docs_url = (
+            result_docs_url
+            or "https://techdocs.akamai.com/linode-api/reference/api"
+        )
         self.params = params or []
         self.examples = examples or []
         self.description = description or [

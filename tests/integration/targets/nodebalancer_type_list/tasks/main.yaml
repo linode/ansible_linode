@@ -1,0 +1,32 @@
+- name: nodebalancer_type_list
+  block:
+    - name: List nodebalancer types with no filter
+      linode.cloud.nodebalancer_type_list:
+      register: no_filter
+
+    - name: Assert nodebalancer types with no filter
+      assert:
+        that:
+          - no_filter.nodebalancer_types | length >= 1
+
+    - name: List nodebalancer types with filter on label
+      linode.cloud.nodebalancer_type_list:
+        filters:
+          - name: label
+            values: NodeBalancer
+      register: filter
+
+    - name: Assert nodebalancer types with filter on class
+      assert:
+        that:
+          - filter.nodebalancer_types | length >= 1
+          - filter.nodebalancer_types[0].label == 'NodeBalancer'
+          - filter.nodebalancer_types[0].region_prices | length >= 1
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+
