@@ -1,0 +1,32 @@
+- name: lke_type_list
+  block:
+    - name: List lke types with no filter
+      linode.cloud.lke_type_list:
+      register: no_filter
+
+    - name: Assert lke types with no filter
+      assert:
+        that:
+          - no_filter.lke_types | length >= 1
+
+    - name: List lke types with filter on label
+      linode.cloud.lke_type_list:
+        filters:
+          - name: label
+            values: LKE Standard Availability
+      register: filter
+
+    - name: Assert lke types with filter on class
+      assert:
+        that:
+          - filter.lke_types | length >= 1
+          - filter.lke_types[0].label == 'LKE Standard Availability'
+          - filter.lke_types[0].region_prices | length == 0
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+
