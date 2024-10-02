@@ -1,0 +1,32 @@
+- name: volume_type_list
+  block:
+    - name: List volume types with no filter
+      linode.cloud.volume_type_list:
+      register: no_filter
+
+    - name: Assert volume types with no filter
+      assert:
+        that:
+          - no_filter.volume_types | length >= 1
+
+    - name: List volume types with filter on label
+      linode.cloud.volume_type_list:
+        filters:
+          - name: label
+            values: Storage Volume
+      register: filter
+
+    - name: Assert volume types with filter on class
+      assert:
+        that:
+          - filter.volume_types | length >= 1
+          - filter.volume_types[0].label == 'Storage Volume'
+          - filter.volume_types[0].region_prices | length >= 1
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+
