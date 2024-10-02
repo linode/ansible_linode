@@ -73,6 +73,7 @@ Name | Description |
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.placement_group_info](./docs/modules/placement_group_info.md)|Get info about a Linode Placement Group.|
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
+[linode.cloud.region_info](./docs/modules/region_info.md)|Get info about a Linode Region.|
 [linode.cloud.ssh_key_info](./docs/modules/ssh_key_info.md)|Get info about a Linode SSH Key.|
 [linode.cloud.stackscript_info](./docs/modules/stackscript_info.md)|Get info about a Linode StackScript.|
 [linode.cloud.token_info](./docs/modules/token_info.md)|Get info about a Linode Personal Access Token.|
