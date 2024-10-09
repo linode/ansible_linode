@@ -12,7 +12,7 @@
         disks:
           - label: test-disk
             filesystem: ext4
-            size: 10
+            size: 100
         configs:
           - label: cool-config
             comments: really cool config
@@ -38,7 +38,7 @@
         that:
           - create.changed
           - create.disks[0].label == 'test-disk'
-          - create.disks[0].size == 10
+          - create.disks[0].size == 100
           - create.disks[0].filesystem == 'ext4'
 
           - create.configs[0].comments == 'really cool config'
@@ -63,7 +63,7 @@
         disks:
           - label: test-disk
             filesystem: ext4
-            size: 10
+            size: 100
         configs:
           - label: cool-config
             comments: really cool config
@@ -97,7 +97,7 @@
         disks:
           - label: test-disk
             filesystem: ext4
-            size: 10
+            size: 100
         configs:
           - label: cool-config
             comments: really cool config but slightly different
@@ -118,7 +118,7 @@
         that:
           - update_config.changed
           - update_config.disks[0].label == 'test-disk'
-          - update_config.disks[0].size == 10
+          - update_config.disks[0].size == 100
           - update_config.disks[0].filesystem == 'ext4'
 
           - update_config.configs[0].comments == 'really cool config but slightly different'
@@ -132,7 +132,7 @@
         booted: false
         disks:
           - label: test-disk
-            size: 11
+            size: 101
         state: present
       register: resize
 
@@ -142,7 +142,7 @@
           - resize.changed
           - resize.configs|length == 0
           - resize.disks[0].label == 'test-disk'
-          - resize.disks[0].size == 11
+          - resize.disks[0].size == 101
 
     - name: Try to update the disk
       linode.cloud.instance:
@@ -152,7 +152,7 @@
         booted: false
         disks:
           - label: test-disk
-            size: 11
+            size: 101
             filesystem: ntfs
         state: present
       register: update_disk_fail
@@ -167,7 +167,7 @@
         booted: false
         disks:
           - label: test-disk
-            size: 11
+            size: 101
         state: present
       register: disk_conflict
       failed_when: '"mutually exclusive" not in disk_conflict.msg'
@@ -180,7 +180,7 @@
         booted: true
         disks:
           - label: test-disk
-            size: 11
+            size: 101
 
           - label: boot-disk
             size: 4096
@@ -203,7 +203,7 @@
           - boot.changed
           - boot.instance.status == 'running'
           - boot.disks[0].label == 'test-disk'
-          - boot.disks[0].size == 11
+          - boot.disks[0].size == 101
           - boot.disks[1].label == 'boot-disk'
           - boot.disks[1].size == 4096
           - boot.configs[0].label == 'boot-config'
