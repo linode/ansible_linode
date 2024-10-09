@@ -19,6 +19,6 @@ result_network_transfer_prices_samples = ['''[
             "monthly": null
         },
         "region_prices": [],
-        "transfer": 0,
+        "transfer": 0
     }
 ]''']
