@@ -19,7 +19,6 @@ module = ListModule(
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-placement-groups",
     result_samples=docs.result_placement_groups_samples,
     examples=docs.specdoc_examples,
-    requires_beta=True,
 )
 
 SPECDOC_META = module.spec
