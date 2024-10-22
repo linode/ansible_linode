@@ -50,7 +50,6 @@ placement_group_assignment_spec = {
 SPECDOC_META = SpecDocMeta(
     description=[
         "Manages a single assignment between a Linode and a Placement Group.",
-        "NOTE: Placement Groups may not currently be available to all users.",
     ],
     requirements=global_requirements,
     author=global_authors,
