@@ -3,11 +3,11 @@
 specdoc_examples = ['''
 - name: List all of the Linode regions
   linode.cloud.region_list: {}''', '''
-- name: Resolve all Linode regions
+- name: Filtered Linode regions
   linode.cloud.region_list:
     filters:
-      - name: id
-        values: us-east''']
+      - name: site_type
+        values: core''']
 
 result_regions_samples = ['''[
     {
