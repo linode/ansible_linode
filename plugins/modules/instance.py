@@ -524,6 +524,13 @@ linode_instance_spec = {
         ],
         editable=True,
     ),
+    "capabilities": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "Read-only. A list of capabilities this compute instance supports.",
+        ],
+    ),
     "placement_group": SpecField(
         type=FieldType.dict,
         suboptions=linode_instance_placement_group_spec,

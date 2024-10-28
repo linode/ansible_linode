@@ -75,6 +75,7 @@ Manage a Linode Volume.
 | `region` | <center>`str`</center> | <center>Optional</center> | The location to deploy the volume in. See https://api.linode.com/v4/regions   |
 | `size` | <center>`int`</center> | <center>Optional</center> | The size of this volume, in GB. Be aware that volumes may only be resized up after creation.  **(Updatable)** |
 | `attached` | <center>`bool`</center> | <center>Optional</center> | If true, the volume will be attached to a Linode. Otherwise, the volume will be detached.  **(Default: `True`; Updatable)** |
+| `encryption` | <center>`str`</center> | <center>Optional</center> | Enables encryption on the volume. Full disk encryption ensures the data stored on a block storage volume drive is secure.  **(Choices: `disabled`, `enabled`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for a volume to have the active status.  **(Default: `240`)** |
 | `source_volume_id` | <center>`int`</center> | <center>Optional</center> | The volume id of the desired volume to clone.   |
 | `tags` | <center>`list`</center> | <center>Optional</center> | The tags to be attached to the volume.   |
