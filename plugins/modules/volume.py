@@ -74,6 +74,14 @@ linode_volume_spec = {
             "Otherwise, the volume will be detached."
         ],
     ),
+    "encryption": SpecField(
+        type=FieldType.string,
+        description=[
+            "Enables encryption on the volume. Full disk encryption ensures "
+            "the data stored on a block storage volume drive is secure."
+        ],
+        choices=["disabled", "enabled"],
+    ),
     "wait_timeout": SpecField(
         type=FieldType.integer,
         default=240,
