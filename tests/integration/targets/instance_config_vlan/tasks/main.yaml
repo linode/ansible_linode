@@ -11,7 +11,7 @@
         disks:
           - label: test-disk
             filesystem: ext4
-            size: 10
+            size: 20
         configs:
           - label: cool-config
             devices:
@@ -43,7 +43,7 @@
         disks:
           - label: test-disk
             filesystem: ext4
-            size: 10
+            size: 20
         configs:
           - label: cool-config
             devices:
@@ -76,7 +76,7 @@
         disks:
           - label: test-disk
             filesystem: ext4
-            size: 10
+            size: 20
         configs:
           - label: cool-config
             devices:
