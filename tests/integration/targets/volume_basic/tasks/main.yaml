@@ -95,6 +95,7 @@
         that:
           - volume_info_label.volume.linode_id == attach_volume.volume.linode_id
           - volume_info_label.volume.size == attach_volume.volume.size
+          - volume_info_label.volume.encryption == attach_volume.volume.encryption
 
     - name: Detach the volume
       linode.cloud.volume:
