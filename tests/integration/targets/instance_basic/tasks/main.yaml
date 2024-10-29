@@ -133,6 +133,7 @@
           - info_id.instance.region == pg_region
           - info_id.configs|length == 1
           - info_id.networking.ipv4.public[0].address != None
+          - info_id.instance.capabilities == create.instance.capabilities
 
     - name: Get info about the instance by label
       linode.cloud.instance_info:
