@@ -42,7 +42,7 @@ List and filter on Node Balancer Types.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/api).   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-types).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
@@ -75,6 +75,6 @@ List and filter on Node Balancer Types.
             }
         ]
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/api) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-types) for a list of returned fields
 
 
