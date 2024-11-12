@@ -1,11 +1,28 @@
 name: Run Integration Tests
 
 on:
-  workflow_dispatch: null
+  workflow_dispatch:
+    inputs:
+      python-version:
+        description: 'Specify Python version to use'
+        required: false
+      run-eol-python-version:
+        description: 'Run EOL python version?'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
   push:
     branches:
       - main
       - dev
+
+env:
+  DEFAULT_PYTHON_VERSION: "3.10"
+  EOL_PYTHON_VERSION: "3.8"
+  EXIT_STATUS: 0
 
 jobs:
   integration-tests:
@@ -29,7 +46,7 @@ jobs:
       - name: Setup Python 3
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: ${{ inputs.run-eol-python-version == 'true' && env.EOL_PYTHON_VERSION || inputs.python-version || env.DEFAULT_PYTHON_VERSION }}
 
       - name: Install dependencies
         run: make deps
