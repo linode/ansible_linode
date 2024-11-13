@@ -45,7 +45,7 @@
         disks:
           - label: test-disk
             filesystem: ext4
-            size: 10
+            size: 25
         configs:
           - label: cool-config
             devices:

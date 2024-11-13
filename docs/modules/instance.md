@@ -103,7 +103,7 @@ Manage Linode Instances, Configs, and Disks.
     label: my-linode
     type: g6-nanode-1
     region: us-east
-    placement_group: 
+    placement_group:
       id: 123
       compliant_only: false
     state: present
@@ -148,6 +148,7 @@ Manage Linode Instances, Configs, and Disks.
 | `migration_type` | <center>`str`</center> | <center>Optional</center> | The type of migration to use for Region and Type migrations.  **(Choices: `cold`, `warm`; Default: `cold`)** |
 | `auto_disk_resize` | <center>`bool`</center> | <center>Optional</center> | Whether implicitly created disks should be resized during a type change operation.  **(Default: `False`)** |
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object. Tags are for organizational purposes only.  **(Updatable)** |
+| `capabilities` | <center>`list`</center> | <center>Optional</center> | Read-only. A list of capabilities this compute instance supports.   |
 | [`placement_group` (sub-options)](#placement_group) | <center>`dict`</center> | <center>Optional</center> | A Placement Group to create this Linode under.   |
 | `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this Linode. NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`)** |
 | `swap_size` | <center>`int`</center> | <center>Optional</center> | When deploying from an Image, this field is optional, otherwise it is ignored. This is used to set the swap disk size for the newly-created Linode.   |
@@ -350,14 +351,14 @@ Manage Linode Instances, Configs, and Disks.
           "type": "g6-standard-1",
           "updated": "2018-01-01T00:01:01",
           "watchdog_enabled": true,
+          "disk_encryption": "enabled",
+          "lke_cluster_id": null,
           "placement_group": {
             "id": 123,
             "label": "test",
             "placement_group_type": "anti_affinity:local",
             "placement_group_policy": "strict"
           }
-          "disk_encryption": "enabled",
-          "lke_cluster_id": null                      
         }
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-instance) for a list of returned fields

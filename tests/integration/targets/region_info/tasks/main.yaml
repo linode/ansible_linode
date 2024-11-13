@@ -1,0 +1,26 @@
+- name: region_list
+  block:
+    - name: List regions that support PGs
+      linode.cloud.region_list: {}
+      register: all_regions
+    
+    - set_fact:
+        selected_region: "{{ (all_regions.regions | list)[0] }}"
+
+    - name: Get Info of a Linode Region
+      linode.cloud.region_info:
+        id: "{{ selected_region.id }}"
+      register: region_info
+    
+    - name: Assert GET placement_group_info response
+      assert:
+        that:
+          - region_info.region.id == selected_region.id
+          - region_info.region.label == selected_region.label
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

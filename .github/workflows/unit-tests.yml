@@ -11,6 +11,9 @@ jobs:
     # TODO:
     # Upgrade back to ubuntu-latest when the permission issue fixed
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: [ '3.9','3.10','3.11', '3.12' ]
     defaults:
       run:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
@@ -23,7 +26,7 @@ jobs:
       - name: setup python 3
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
 
       - name: install dependencies
         run: make deps
