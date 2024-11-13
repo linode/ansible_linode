@@ -13,6 +13,7 @@ module = ListModule(
     result_display_name="LKE Types",
     result_field_name="lke_types",
     endpoint_template="/lke/types",
+    result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-lke-types",
     examples=docs.specdoc_examples,
     result_samples=docs.result_lke_type_samples,
 )

@@ -15,6 +15,7 @@ module = ListModule(
     result_display_name="Node Balancer Types",
     result_field_name="nodebalancer_types",
     endpoint_template="/nodebalancers/types",
+    result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-types",
     examples=docs.specdoc_examples,
     result_samples=docs.result_nodebalancer_type_samples,
 )
