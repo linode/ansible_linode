@@ -6,7 +6,7 @@ on:
 
 jobs:
   notify:
-    if: github.repository == 'linode/ansible_linode'
+#    if: github.repository == 'linode/ansible_linode'
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack - Main Message
