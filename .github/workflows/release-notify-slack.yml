@@ -16,15 +16,9 @@ jobs:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
           payload: |
-            {
-              channel: ${{ secrets.DEV_DX_SLACK_CHANNEL_ID }}
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*New Release Published: _ansible_linode_ - ${{ github.event.release.tag_name }} is now live!* :tada:"
-                  }
-                }
-              ]
-            }
+            channel: ${{ secrets.DEV_DX_SLACK_CHANNEL_ID }}
+            blocks:
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: "*New Release Published: _ansible_linode_ - ${{ github.event.release.tag_name }} is now live!* :tada:"
