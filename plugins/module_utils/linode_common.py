@@ -7,7 +7,6 @@ from typing import Any, Type
 
 import polling
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    format_api_error,
     format_generic_error,
 )
 
@@ -159,7 +158,7 @@ class LinodeModuleBase:
                 res = self.exec_module(**self.module.params)
             except ApiError as err:
                 # We don't want to return a stack trace for an API error
-                self.fail(msg=format_api_error(err))
+                self.fail(msg=f"Error from Linode API: {str(err)}")
             except polling.TimeoutException as err:
                 self.fail(
                     msg="failed to wait for condition: timeout period expired"
