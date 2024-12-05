@@ -3,16 +3,12 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - name: Create a booted Linode instance
+    - name: Create a Linode Instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-ord
+        region: us-southeast
         type: g6-standard-1
-        image: linode/ubuntu22.04
-        root_pass: Fn$$oobar123
-        private_ip: true
-        booted: true
-        swap_size: 512
+        image: linode/alpine3.19
         state: present
         firewall_id: '{{ firewall_id }}'
       register: create_instance
