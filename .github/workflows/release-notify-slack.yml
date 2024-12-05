@@ -6,7 +6,7 @@ on:
 
 jobs:
   notify:
-#    if: github.repository == 'linode/ansible_linode'
+    if: github.repository == 'linode/ansible_linode'
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack - Main Message
@@ -21,4 +21,4 @@ jobs:
               - type: section
                 text:
                   type: mrkdwn
-                  text: "*New Release Published: _ansible_linode_ - ${{ github.event.release.tag_name }} is now live!* :tada:"
+                  text: "*New Release Published: _ansible_linode_ <${{ github.event.release.html_url }}|${{ github.event.release.tag_name }}> is now live!* :tada:"
