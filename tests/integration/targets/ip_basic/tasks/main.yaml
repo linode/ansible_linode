@@ -1,0 +1,50 @@
+- name: ip
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a booted Linode instance
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        private_ip: true
+        booted: true
+        swap_size: 512
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: create_instance
+
+    - name: Allocate a new IP to the Linode
+      linode.cloud.ip:
+        linode_id: '{{ create_instance.instance.id }}'
+        public: true
+        type: ipv4
+      register: allocate_ip
+
+    - name: Assert changes
+      assert:
+        that:
+          - allocate_ip.ip.linode_id == create_instance.instance.id
+          - allocate_ip.ip.type == 'ipv4'
+          - allocate_ip.ip.region == create_instance.instance.region
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete instance
+          linode.cloud.instance:
+            label: '{{ create_instance.instance.label }}'
+            state: absent
+
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+
+
