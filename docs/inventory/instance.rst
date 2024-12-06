@@ -76,19 +76,19 @@ Parameters
 
 
       **parent_group (type=str):**
-        \• parent group for keyed group
+        \• parent group for keyed group.
 
 
       **prefix (type=str):**
-        \• A keyed group name will start with this prefix
+        \• A keyed group name will start with this prefix.
 
 
       **separator (type=str, default=_):**
-        \• separator used to build the keyed group name
+        \• separator used to build the keyed group name.
 
 
       **key (type=str):**
-        \• The key from input dictionary used to generate groups
+        \• The key from input dictionary used to generate groups.
 
 
       **default_value (type=str):**
@@ -98,7 +98,7 @@ Parameters
 
 
       **trailing_separator (type=bool, default=True):**
-        \• Set this option to \ :literal:`False`\  to omit the \ :literal:`keyed\_groups[].separator`\  after the host variable when the value is an empty string.
+        \• Set this option to :literal:`false` to omit the :literal:`keyed\_groups[].separator` after the host variable when the value is an empty string.
 
         \• This option is mutually exclusive with \ :literal:`keyed\_groups[].default\_value`\ .
 
@@ -109,13 +109,13 @@ Parameters
 
 
   **leading_separator (type=boolean, default=True):**
-    \• Use in conjunction with keyed\_groups.
+    \• Use in conjunction with :literal:`keyed\_groups`.
 
     \• By default, a keyed group that does not have a prefix or a separator provided will have a name that starts with an underscore.
 
-    \• This is because the default prefix is "" and the default separator is "\_".
+    \• This is because the default prefix is :literal:`""` and the default separator is :literal:`"\_"`.
 
-    \• Set this option to False to omit the leading underscore (or other separator) if no prefix is given.
+    \• Set this option to :literal:`false` to omit the leading underscore (or other separator) if no prefix is given.
 
     \• If the group name is derived from a mapping the separator is still used to concatenate the items.
 
