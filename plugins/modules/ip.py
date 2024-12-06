@@ -42,7 +42,7 @@ spec: dict = {
     "address": SpecField(
         type=FieldType.string,
         description=["The IP address to delete."],
-        conflicts_with=["linode_id", "public", "type"]
+        conflicts_with=["linode_id", "public", "type"],
     ),
     "state": SpecField(
         type=FieldType.string,
