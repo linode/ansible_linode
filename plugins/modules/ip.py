@@ -22,7 +22,6 @@ from ansible_specdoc.objects import FieldType, SpecDocMeta, SpecField
 spec: dict = {
     "linode_id": SpecField(
         type=FieldType.integer,
-        required=True,
         description=[
             "The ID of a Linode you have access to "
             "that this address will be allocated to."
@@ -30,17 +29,26 @@ spec: dict = {
     ),
     "public": SpecField(
         type=FieldType.bool,
-        required=True,
         description=["Whether to create a public or private IPv4 address."],
     ),
     "type": SpecField(
         type=FieldType.string,
-        required=True,
         choices=["ipv4"],
         description=[
             "The type of address you are requesting. "
             "Only IPv4 addresses may be allocated through this operation."
         ],
+    ),
+    "address": SpecField(
+        type=FieldType.string,
+        description=["The IP address to delete."],
+        conflicts_with=["linode_id", "public", "type"]
+    ),
+    "state": SpecField(
+        type=FieldType.string,
+        choices=["present", "absent"],
+        required=True,
+        description=["The state of this IP."],
     ),
 }
 
@@ -77,10 +85,14 @@ class Module(LinodeModuleBase):
             "actions": [],
             "ip": None,
         }
-        super().__init__(module_arg_spec=self.module_arg_spec)
+        super().__init__(
+            module_arg_spec=self.module_arg_spec,
+            required_together=[
+                ("linode_id", "public", "type"),
+            ],
+        )
 
-    def exec_module(self, **kwargs: Any) -> Optional[dict]:
-        """Entrypoint for ip module"""
+    def _handle_present(self) -> None:
         params = filter_null_values(self.module.params)
         linode_id = params.get("linode_id")
         public = params.get("public")
@@ -94,6 +106,21 @@ class Module(LinodeModuleBase):
             self.fail(msg=f"failed to allocate IP to Linode {linode_id}: {exc}")
 
         self.results["ip"] = ip._raw_json
+
+    def _handle_absent(self) -> None:
+        # TODO: Implement deleting IP once it's available in python-sdk
+        return None
+
+    def exec_module(self, **kwargs: Any) -> Optional[dict]:
+        """Entrypoint for IP module"""
+
+        state = kwargs.get("state")
+
+        if state == "absent":
+            self._handle_absent()
+            return self.results
+
+        self._handle_present()
 
         return self.results
 

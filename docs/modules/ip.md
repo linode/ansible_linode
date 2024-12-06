@@ -20,6 +20,7 @@ Allocates a new IPv4 Address on your Account. The Linode must be configured to s
     linode_id: 123
     public: true
     type: ipv4
+    state: present
 ```
 
 
@@ -27,9 +28,11 @@ Allocates a new IPv4 Address on your Account. The Linode must be configured to s
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `linode_id` | <center>`int`</center> | <center>**Required**</center> | The ID of a Linode you have access to that this address will be allocated to.   |
-| `public` | <center>`bool`</center> | <center>**Required**</center> | Whether to create a public or private IPv4 address.   |
-| `type` | <center>`str`</center> | <center>**Required**</center> | The type of address you are requesting. Only IPv4 addresses may be allocated through this operation.  **(Choices: `ipv4`)** |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The state of this IP.  **(Choices: `present`, `absent`)** |
+| `linode_id` | <center>`int`</center> | <center>Optional</center> | The ID of a Linode you have access to that this address will be allocated to.   |
+| `public` | <center>`bool`</center> | <center>Optional</center> | Whether to create a public or private IPv4 address.   |
+| `type` | <center>`str`</center> | <center>Optional</center> | The type of address you are requesting. Only IPv4 addresses may be allocated through this operation.  **(Choices: `ipv4`)** |
+| `address` | <center>`str`</center> | <center>Optional</center> | The IP address to delete.  **(Conflicts With: `linode_id`,`public`,`type`)** |
 
 ## Return Values
 

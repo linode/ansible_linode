@@ -18,6 +18,7 @@
         linode_id: '{{ create_instance.instance.id }}'
         public: true
         type: ipv4
+        state: present
       register: allocate_ip
 
     - name: Assert changes
@@ -26,6 +27,12 @@
           - allocate_ip.ip.linode_id == create_instance.instance.id
           - allocate_ip.ip.type == 'ipv4'
           - allocate_ip.ip.region == create_instance.instance.region
+
+#    - name: Delete an IP
+#      linode.cloud.ip:
+#        address: allocate_ip.ip.address
+#        state: absent
+#      register: delete_ip
 
   always:
     - ignore_errors: true
