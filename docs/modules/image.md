@@ -73,7 +73,7 @@ Manage a Linode Image.
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the image to have status `available` before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an image to have status `available`.  **(Default: `600`)** |
 | `tags` | <center>`list`</center> | <center>Optional</center> | A list of customized tags of this new Image.  **(Updatable)** |
-| `replica_regions` | <center>`list`</center> | <center>Optional</center> | A list of regions that customer wants to replicate this image in. At least one available region must be provided and only core regions allowed. Existing images in the regions not passed will be removed. NOTE: Image replication may not currently be available to all users.  **(Updatable)** |
+| `replica_regions` | <center>`list`</center> | <center>Optional</center> | A list of regions that customer wants to replicate this image in. At least one available region must be provided and only core regions allowed. Existing images in the regions not passed will be removed.   **(Updatable)** |
 | `wait_for_replications` | <center>`bool`</center> | <center>Optional</center> | Wait for the all the replications `available` before returning.  **(Default: `False`)** |
 
 ## Return Values
