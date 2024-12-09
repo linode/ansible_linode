@@ -351,6 +351,11 @@ linode_instance_spec = {
             "A list of SSH public key parts to deploy for the root user."
         ],
     ),
+    "authorized_users": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=["A list of usernames."],
+    ),
     "root_pass": SpecField(
         type=FieldType.string,
         no_log=True,
