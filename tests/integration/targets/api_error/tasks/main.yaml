@@ -1,0 +1,24 @@
+- name: api_error
+  block:
+    - name: Attempt to create an instance with validation errors
+      linode.cloud.instance:
+        region: fake-region
+        type: g6-fake-plan
+        state: present
+      register: failing_request
+      failed_when: '"msg" not in failing_request'
+
+    - name: Ensure the error message is formatted as expected
+      assert:
+        that:
+          - failing_request.changed == False
+          - 'failing_request.msg.startswith("Error from Linode API: POST /v4beta/linode/instances: [400]")'
+          - '"type: A valid plan type by that ID was not found" in failing_request.msg'
+          - '"region: region is not valid" in failing_request.msg'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

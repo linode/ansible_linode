@@ -27,7 +27,7 @@ install: build
 	ansible-galaxy collection install *.tar.gz --force -p $(COLLECTIONS_PATH)
 
 deps:
-	pip install -r requirements.txt -r requirements-dev.txt --upgrade
+	pip install -r requirements.txt -r requirements-dev.txt --force
 
 lint:
 	pylint plugins
@@ -91,7 +91,7 @@ delete-e2e-firewall: update-test-submodules
 		echo "$$OUTPUT"; \
 		exit 1; \
 	else \
-		echo "E2E Cloud firewall created successfully."; \
+		echo "E2E Cloud firewall deleted successfully."; \
 	fi
 
 update-test-submodules:
@@ -101,6 +101,9 @@ test: integration-test
 
 testall:
 	./scripts/test_all.sh
+
+smoketest:
+	./scripts/test_basic_smoke.sh
 
 unittest:
 	ansible-test units --target-python default

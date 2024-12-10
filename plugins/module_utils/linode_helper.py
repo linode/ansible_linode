@@ -5,7 +5,6 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, cast
 import linode_api4
 import polling
 from linode_api4 import (
-    ApiError,
     LinodeClient,
     LKENodePool,
     LKENodePoolNode,
@@ -327,12 +326,6 @@ def get_all_paginated(
         result = result[:num_results]
 
     return result
-
-
-def format_api_error(err: ApiError) -> str:
-    """Formats an API error into a readable string"""
-
-    return f"Error from Linode API: [{err.status}] {';'.join(err.errors)}"
 
 
 def format_generic_error(err: Exception) -> str:
