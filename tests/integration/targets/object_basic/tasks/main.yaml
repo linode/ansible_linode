@@ -39,10 +39,12 @@
 
     - name: Create an S3 bucket
       amazon.aws.s3_bucket:
-        s3_url: 'http://{{ info_by_id.clusters[0].domain }}/'
+        endpoint_url: 'https://{{ info_by_id.clusters[0].domain }}/'
         aws_access_key: '{{ create_key.key.access_key }}'
         aws_secret_key: '{{ create_key.key.secret_key }}'
         name: 'test-ansible-bucket-{{ r }}'
+        ceph: true
+        region: "default"
         state: present
       register: create_bucket
 
@@ -77,14 +79,16 @@
           - create_access.key.bucket_access[1].permissions == 'read_only'
 
   always:
-    - ignore_errors: yes
+    - ignore_errors: true
       block:
       - name: Delete the S3 bucket
         amazon.aws.s3_bucket:
-          s3_url: 'http://{{ info_by_id.clusters[0].domain }}/'
+          endpoint_url: 'https://{{ info_by_id.clusters[0].domain }}/'
           aws_access_key: '{{ create_key.key.access_key }}'
           aws_secret_key: '{{ create_key.key.secret_key }}'
           name: '{{ create_bucket.name }}'
+          ceph: true
+          region: "default"
           state: absent
         register: delete_bucket
 
