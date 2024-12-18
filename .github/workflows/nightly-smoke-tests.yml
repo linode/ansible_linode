@@ -28,9 +28,6 @@ jobs:
           fetch-depth: 0
           submodules: 'recursive'
 
-      - name: Update packages
-        run: sudo apt-get update -y
-
       - name: Setup Python 3
         uses: actions/setup-python@v5
         with:
