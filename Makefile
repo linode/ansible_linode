@@ -102,6 +102,9 @@ test: integration-test
 testall:
 	./scripts/test_all.sh
 
+smoketest:
+	./scripts/test_basic_smoke.sh
+
 unittest:
 	ansible-test units --target-python default
 

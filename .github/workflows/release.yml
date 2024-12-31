@@ -33,7 +33,7 @@ jobs:
         run: make deps
 
       - name: install ansible dependencies
-        run: ansible-galaxy collection install amazon.aws:==6.0.1
+        run: ansible-galaxy collection install amazon.aws:==9.1.0
 
       - name: inject docs using specdoc
         run: make inject

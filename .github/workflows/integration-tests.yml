@@ -40,9 +40,6 @@ jobs:
           fetch-depth: 0
           submodules: 'recursive'
 
-      - name: Update packages
-        run: sudo apt-get update -y
-
       - name: Setup Python 3
         uses: actions/setup-python@v5
         with:
@@ -52,7 +49,7 @@ jobs:
         run: make deps
 
       - name: Install ansible dependencies
-        run: ansible-galaxy collection install amazon.aws:==6.0.1
+        run: ansible-galaxy collection install amazon.aws:==9.1.0
 
       - name: Install Collection
         run: make install

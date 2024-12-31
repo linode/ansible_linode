@@ -58,11 +58,13 @@
 
     - name: Create an S3 bucket using the key
       amazon.aws.s3_bucket:
-        s3_url: "https://{{ update.key.regions[0].s3_endpoint }}/"
+        endpoint_url: "https://{{ update.key.regions[0].s3_endpoint }}/"
         aws_access_key: "{{ create.key.access_key }}"
         aws_secret_key: "{{ create.key.secret_key }}"
         name: "test-ansible-bucket-{{ r }}"
         state: present
+        ceph: true
+        region: "default"
       register: create_bucket
 
     - name: Assert bucket was created
@@ -137,14 +139,16 @@
       failed_when: "'`access` is not an updatable field' not in update_scoped.msg"
 
   always:
-    - ignore_errors: yes
+    - ignore_errors: true
       block:
         - name: Delete the OBJ bucket
           amazon.aws.s3_bucket:
-            s3_url: "https://{{ update.key.regions[0].s3_endpoint }}//"
+            endpoint_url: "https://{{ update.key.regions[0].s3_endpoint }}//"
             aws_access_key: "{{ create.key.access_key }}"
             aws_secret_key: "{{ create.key.secret_key }}"
             name: "{{ create_bucket.name }}"
+            ceph: true
+            region: "default"
             state: absent
           register: delete_bucket
 

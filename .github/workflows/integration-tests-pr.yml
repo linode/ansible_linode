@@ -39,13 +39,6 @@ jobs:
           fetch-depth: 0
           submodules: 'recursive'
 
-      # Install deps
-      - name: update packages
-        run: sudo apt-get update -y
-
-      - name: install make
-        run: sudo apt-get install -y build-essential
-
       - name: setup python 3
         uses: actions/setup-python@v5
         with:
@@ -55,7 +48,7 @@ jobs:
         run: make deps
 
       - name: install ansible dependencies
-        run: ansible-galaxy collection install amazon.aws:==6.0.1
+        run: ansible-galaxy collection install amazon.aws:==9.1.0
 
       - name: install collection
         run: make install
