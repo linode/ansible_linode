@@ -108,8 +108,11 @@ class Module(LinodeModuleBase):
         self.results["ip"] = ip._raw_json
 
     def _handle_absent(self) -> None:
-        # TODO: Implement deleting IP once it's available in python-sdk
-        return None
+        # TODO: Implement deleting IP once it's available in python-sdk.
+        #  Raise an error for now when user reaches deleting IP.
+        self.fail(
+            msg="failed to delete IP: IP deleting is currently not supported."
+        )
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for IP module"""
