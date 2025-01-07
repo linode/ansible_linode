@@ -30,6 +30,7 @@ Name | Description |
 [linode.cloud.firewall_device](./docs/modules/firewall_device.md)|Manage Linode Firewall Devices.|
 [linode.cloud.image](./docs/modules/image.md)|Manage a Linode Image.|
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
+[linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account. The Linode must be configured to support additional addresses - please Open a support ticket requesting additional addresses before attempting allocation.|
 [linode.cloud.ip_assign](./docs/modules/ip_assign.md)|Assign IPs to Linodes in a given Region.|
 [linode.cloud.ip_rdns](./docs/modules/ip_rdns.md)|Manage a Linode IP address's rDNS.|
 [linode.cloud.ip_share](./docs/modules/ip_share.md)|Manage the Linode shared IPs.|
