@@ -2,14 +2,14 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
-      tests:
-        description: 'The tests to run.'
+      test_suite:
+        description: "Specify  test suite to run from the 'tests/integration/targets' directory. Examples: 'domain_basic', 'image_basic', etc. If not provided, all suites are executed"
         required: false
       sha:
-        description: 'The hash value of the commit.'
+        description: 'Specify commit hash to test. This value is mandatory to ensure the tests run against a specific commit'
         required: true
       pull_request_number:
-        description: 'The number of the PR.'
+        description: 'Specify pull request number associated with the commit. Optional, but recommended when providing a commit hash (sha)'
         required: false
 
 name: Integration tests on PR
@@ -26,7 +26,7 @@ jobs:
       - uses: actions-ecosystem/action-regex-match@v2
         id: disallowed-char-check
         with:
-          text: ${{ inputs.tests }}
+          text: ${{ inputs.test_suite }}
           regex: '[^a-z0-9_]'
           flags: gi
 
@@ -56,7 +56,7 @@ jobs:
       - name: replace existing keys
         run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
 
-      - run: make deps && make TEST_ARGS="-v ${{ inputs.tests }}" test
+      - run: make deps && make TEST_SUITE="${{ inputs.test_suite }}" test-int
         if: ${{ steps.disallowed-char-check.outputs.match == '' }}
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
