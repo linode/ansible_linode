@@ -92,7 +92,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install Python dependencies
-        run: pip3 install requests wheel boto3
+        run: pip3 install requests wheel boto3==1.35.99
 
       # Create directory if it doesn't exist
       - name: Create output directory
