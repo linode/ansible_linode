@@ -8,6 +8,7 @@ TEST_API_VERSION ?= v4beta
 TEST_API_CA ?=
 
 TEST_ARGS := -v
+TEST_SUITE :=
 INTEGRATION_CONFIG := ./tests/integration/integration_config.yml
 
 clean:
@@ -63,7 +64,7 @@ gendocs:
 integration-test: create-integration-config create-e2e-firewall
 	@echo "Running Integration Test(s)..."
 	{ \
-		ansible-test integration $(TEST_ARGS); \
+		ansible-test integration $(TEST_ARGS) $(TEST_SUITE); \
 		TEST_EXIT_CODE=$$?; \
 		make delete-e2e-firewall; \
 		exit $$TEST_EXIT_CODE; \
@@ -95,17 +96,17 @@ delete-e2e-firewall: update-test-submodules
 	fi
 
 update-test-submodules:
-	@git submodule update --init
+	@git submodule update --init --recursive
 
-test: integration-test
+test-int: integration-test
 
 testall:
 	./scripts/test_all.sh
 
-smoketest:
+test-smoke:
 	./scripts/test_basic_smoke.sh
 
-unittest:
+test-unit:
 	ansible-test units --target-python default
 
 
