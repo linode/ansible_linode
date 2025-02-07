@@ -14,7 +14,7 @@ Synopsis
 
 Reads instance inventories from Linode.
 
-Uses a YAML configuration file that ends with linode.(yml|yaml).
+Uses a YAML configuration file that ends with linode.(yml\|yaml).
 
 Linode labels are used by default as the hostnames.
 

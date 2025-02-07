@@ -46,6 +46,47 @@ SPEC_UPDATE_WINDOW = {
     ),
 }
 
+SPEC_FORK = {
+    "restore_time": SpecField(
+        type=FieldType.string,
+        description=["The database timestamp from which it was restored."],
+    ),
+    "source": SpecField(
+        type=FieldType.string,
+        description=["The instance id of the database that was forked from."],
+    ),
+}
+
+
+SPEC_UPDATE_WINDOW_V2 = {
+    "day_of_week": SpecField(
+        type=FieldType.integer,
+        required=True,
+        choices=list(range(1, 8)),
+        description=[
+            "The day to perform maintenance. 1=Monday, 2=Tuesday, etc."
+        ],
+    ),
+    "duration": SpecField(
+        type=FieldType.integer,
+        required=True,
+        description=["The maximum maintenance window time in hours."],
+    ),
+    "frequency": SpecField(
+        type=FieldType.string,
+        choices=["weekly", "monthly"],
+        default="weekly",
+        description=[
+            "Whether maintenance occurs on a weekly or monthly basis."
+        ],
+    ),
+    "hour_of_day": SpecField(
+        type=FieldType.integer,
+        required=True,
+        description=["The hour to begin maintenance based in UTC time."],
+    ),
+}
+
 
 def validate_allow_list(allow_list: Set[str]) -> None:
     """Validates the allow_list field params."""
