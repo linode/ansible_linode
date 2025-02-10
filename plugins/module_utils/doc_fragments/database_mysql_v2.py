@@ -20,6 +20,18 @@ specdoc_examples = ['''
     allow_list:
       - 0.0.0.0/0
     state: present''', '''
+- name: Create a MySQL database with an explicit maintenance schedule
+  linode.cloud.database_mysql_v2:
+    label: my-db
+    region: us-mia
+    engine: mysql/8
+    type: g6-nanode-1
+    updates:
+        duration: 4
+        frequency: weekly
+        hour_of_day: 16
+        day_of_week: 4
+    state: present''', '''
 - name: Create a MySQL database forked from another database
   linode.cloud.database_mysql_v2:
     label: my-db
