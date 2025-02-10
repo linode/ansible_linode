@@ -48,6 +48,9 @@
           - (db_create.database.version| split('.'))[0] == engine_version
           - db_create.database.region == target_region
           - db_create.database.type == 'g6-nanode-1'
+          - db_create.ssl_cert.ca_certificate != None
+          - db_create.credentials.username | length > 0
+          - db_create.credentials.password | length > 0
 
     - name: Update the database's allow list
       linode.cloud.database_mysql_v2:
@@ -71,6 +74,9 @@
           - (db_update.database.version | split('.'))[0] == engine_version
           - db_update.database.region == target_region
           - db_update.database.type == 'g6-nanode-1'
+          - db_create.ssl_cert.ca_certificate != None
+          - db_create.credentials.username | length > 0
+          - db_create.credentials.password | length > 0
 
     - name: Refresh the database
       linode.cloud.database_mysql_v2:
