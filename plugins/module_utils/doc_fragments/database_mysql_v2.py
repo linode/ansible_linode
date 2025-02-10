@@ -35,6 +35,9 @@ specdoc_examples = ['''
 - name: Create a MySQL database forked from another database
   linode.cloud.database_mysql_v2:
     label: my-db
+    region: us-mia
+    engine: mysql/8
+    type: g6-nanode-1
     fork:
         source: 12345
     state: present''', '''

@@ -119,6 +119,9 @@
     - name: Fork the database
       linode.cloud.database_mysql_v2:
         label: "ansible-test-{{ r }}-forked"
+        region: us-mia
+        engine: mysql/8
+        type: g6-nanode-1
         fork:
           source: "{{ db_refresh.database.id }}"
         state: present
