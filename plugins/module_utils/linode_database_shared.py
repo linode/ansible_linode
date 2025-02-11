@@ -55,7 +55,7 @@ SPEC_FORK = {
         description=["The database timestamp from which it was restored."],
     ),
     "source": SpecField(
-        type=FieldType.string,
+        type=FieldType.integer,
         description=["The instance id of the database that was forked from."],
     ),
 }

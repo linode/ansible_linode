@@ -94,7 +94,7 @@ Create, read, and update a Linode MySQL database.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `restore_time` | <center>`str`</center> | <center>Optional</center> | The database timestamp from which it was restored.   |
-| `source` | <center>`str`</center> | <center>Optional</center> | The instance id of the database that was forked from.   |
+| `source` | <center>`int`</center> | <center>Optional</center> | The instance id of the database that was forked from.   |
 
 ### updates
 
