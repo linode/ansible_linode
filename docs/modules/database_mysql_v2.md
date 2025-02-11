@@ -87,6 +87,7 @@ Create, read, and update a Linode MySQL database.
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Instance type used by the Managed Database for its nodes.  **(Updatable)** |
 | [`fork` (sub-options)](#fork) | <center>`dict`</center> | <center>Optional</center> | Information about a database to fork from.   |
 | [`updates` (sub-options)](#updates) | <center>`dict`</center> | <center>Optional</center> | Configuration settings for automated patch update maintenance for the Managed Database.  **(Updatable)** |
+| `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The maximum number of seconds a poll operation can take before raising an error.  **(Default: `2700`)** |
 
 ### fork
 

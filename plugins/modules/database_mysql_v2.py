@@ -8,8 +8,6 @@ from __future__ import absolute_import, division, print_function
 import copy
 from typing import Any, Optional
 
-from linode_api4.polling import TimeoutContext
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql_v2 as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
@@ -24,7 +22,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_requirements,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    filter_null_values,
+    filter_null_values_recursive,
     handle_updates,
     mapping_to_dict,
     poll_condition,
@@ -101,7 +99,7 @@ SPEC = {
             "raising an error."
         ],
         default=45 * 60,
-    )
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -173,10 +171,14 @@ class Module(LinodeModuleBase):
             database._api_get()
             return database.status == desired_status
 
-        poll_condition(__poll_status, timeout=self._timeout_ctx.seconds_remaining, step=step)
+        poll_condition(
+            __poll_status,
+            timeout=self._timeout_ctx.seconds_remaining,
+            step=step,
+        )
 
     def _create(self) -> MySQLDatabase:
-        params = filter_null_values(
+        params = filter_null_values_recursive(
             {
                 k: v
                 for k, v in self.module.params.items()
@@ -201,10 +203,16 @@ class Module(LinodeModuleBase):
             "database", "database_create"
         )
 
+        import q
+
+        q.q(params)
+
         database = self.client.database.mysql_create(**params)
 
         create_poller.set_entity_id(database.id)
-        create_poller.wait_for_next_event_finished(timeout=30 * 60)
+        create_poller.wait_for_next_event_finished(
+            timeout=self._timeout_ctx.seconds_remaining
+        )
 
         self._wait_for_database_status(database, "active")
 
@@ -265,11 +273,7 @@ class Module(LinodeModuleBase):
         # NOTE: We don't poll for the database_update event here because it is not
         # triggered under all conditions.
         if len(updated_fields) > 0:
-            self._wait_for_database_status(
-                database,
-                "active",
-                timeout=120*60
-            )
+            self._wait_for_database_status(database, "active")
 
         # Sometimes the cluster_size attribute doesn't update until shortly after
         # a resize operation
@@ -279,7 +283,11 @@ class Module(LinodeModuleBase):
                 database._api_get()
                 return database.cluster_size == params["cluster_size"]
 
-            poll_condition(__poll_condition, timeout=self._timeout_ctx.seconds_remaining, step=1)
+            poll_condition(
+                __poll_condition,
+                timeout=self._timeout_ctx.seconds_remaining,
+                step=1,
+            )
 
     def _populate_results(self, database: MySQLDatabase) -> None:
         database._api_get()
