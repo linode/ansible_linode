@@ -106,6 +106,9 @@
             count: 1
         acl:
           enabled: false
+          # TODO:: Remove empty addresses after 500 error is handled properly
+          addresses:
+            {}
         skip_polling: true
         state: present
       register: acl_disabled_cluster
