@@ -16,6 +16,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_database_share
     SPEC_FORK,
     SPEC_UPDATE_WINDOW_V2,
     call_protected_provisioning,
+    wait_for_database_status,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
@@ -161,22 +162,6 @@ class Module(LinodeModuleBase):
             module_arg_spec=self.module_arg_spec,
         )
 
-    def _wait_for_database_status(
-        self,
-        database: MySQLDatabase,
-        desired_status: str,
-        step: int = 2,
-    ) -> None:
-        def __poll_status() -> bool:
-            database._api_get()
-            return database.status == desired_status
-
-        poll_condition(
-            __poll_status,
-            timeout=self._timeout_ctx.seconds_remaining,
-            step=step,
-        )
-
     def _create(self) -> MySQLDatabase:
         params = filter_null_values_recursive(
             {
@@ -214,7 +199,12 @@ class Module(LinodeModuleBase):
             timeout=self._timeout_ctx.seconds_remaining
         )
 
-        self._wait_for_database_status(database, "active")
+        wait_for_database_status(
+            self.client,
+            database,
+            "active",
+            timeout=self._timeout_ctx.seconds_remaining,
+        )
 
         # The `updates` field is not currently supported in the POST
         # request body.
@@ -223,7 +213,12 @@ class Module(LinodeModuleBase):
             database.updates = params.get("updates")
             database.save()
 
-            self._wait_for_database_status(database, "active")
+            wait_for_database_status(
+                self.client,
+                database,
+                "active",
+                timeout=self._timeout_ctx.seconds_remaining,
+            )
 
         return database
 
@@ -273,7 +268,12 @@ class Module(LinodeModuleBase):
         # NOTE: We don't poll for the database_update event here because it is not
         # triggered under all conditions.
         if len(updated_fields) > 0:
-            self._wait_for_database_status(database, "active")
+            wait_for_database_status(
+                self.client,
+                database,
+                "active",
+                timeout=self._timeout_ctx.seconds_remaining,
+            )
 
         # Sometimes the cluster_size attribute doesn't update until shortly after
         # a resize operation
