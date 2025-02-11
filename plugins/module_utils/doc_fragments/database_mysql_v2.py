@@ -93,4 +93,3 @@ result_credentials_samples = ['''{
 result_ssl_cert_samples = ['''{
   "ca_certificate": "LS0tLS1CRUdJ...=="
 }''']
-
