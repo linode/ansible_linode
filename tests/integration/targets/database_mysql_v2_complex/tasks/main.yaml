@@ -164,7 +164,6 @@
       assert:
         that:
           - db_forked.changed == True
-          - db_forked.database.id == db_refresh.database.id
           - db_forked.database.fork.source == db_refresh.database.id
 
   always:
