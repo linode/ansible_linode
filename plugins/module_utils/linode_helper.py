@@ -137,6 +137,11 @@ def handle_updates(
 
         old_value = parse_linode_types(getattr(obj, key))
 
+        if isinstance(new_value, dict):
+            # If this field is a dict, we only want to compare values that are
+            # specified by the user
+            old_value, new_value = dict_select_matching(old_value, new_value)
+
         has_diff = new_value != old_value
 
         # We should convert properties to sets
