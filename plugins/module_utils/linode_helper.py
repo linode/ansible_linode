@@ -140,7 +140,10 @@ def handle_updates(
         if isinstance(new_value, dict):
             # If this field is a dict, we only want to compare values that are
             # specified by the user
-            old_value, new_value = dict_select_matching(old_value, new_value)
+            old_value, new_value = dict_select_matching(
+                filter_null_values_recursive(old_value),
+                filter_null_values_recursive(new_value),
+            )
 
         has_diff = new_value != old_value
 
