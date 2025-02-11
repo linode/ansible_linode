@@ -188,10 +188,6 @@ class Module(LinodeModuleBase):
             "database", "database_create"
         )
 
-        import q
-
-        q.q(params)
-
         database = self.client.database.mysql_create(**params)
 
         create_poller.set_entity_id(database.id)
