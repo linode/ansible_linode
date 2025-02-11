@@ -8,6 +8,8 @@ from __future__ import absolute_import, division, print_function
 import copy
 from typing import Any, Optional
 
+from linode_api4.polling import TimeoutContext
+
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.database_mysql_v2 as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
@@ -92,6 +94,14 @@ SPEC = {
         ],
         editable=True,
     ),
+    "wait_timeout": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The maximum number of seconds a poll operation can take before "
+            "raising an error."
+        ],
+        default=45 * 60,
+    )
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -153,18 +163,17 @@ class Module(LinodeModuleBase):
             module_arg_spec=self.module_arg_spec,
         )
 
-    @staticmethod
     def _wait_for_database_status(
+        self,
         database: MySQLDatabase,
         desired_status: str,
-        timeout: int = 30 * 60,
         step: int = 2,
     ) -> None:
         def __poll_status() -> bool:
             database._api_get()
             return database.status == desired_status
 
-        poll_condition(__poll_status, timeout=timeout, step=step)
+        poll_condition(__poll_status, timeout=self._timeout_ctx.seconds_remaining, step=step)
 
     def _create(self) -> MySQLDatabase:
         params = filter_null_values(
@@ -256,7 +265,11 @@ class Module(LinodeModuleBase):
         # NOTE: We don't poll for the database_update event here because it is not
         # triggered under all conditions.
         if len(updated_fields) > 0:
-            self._wait_for_database_status(database, "active")
+            self._wait_for_database_status(
+                database,
+                "active",
+                timeout=120*60
+            )
 
         # Sometimes the cluster_size attribute doesn't update until shortly after
         # a resize operation
@@ -266,7 +279,7 @@ class Module(LinodeModuleBase):
                 database._api_get()
                 return database.cluster_size == params["cluster_size"]
 
-            poll_condition(__poll_condition, timeout=120, step=1)
+            poll_condition(__poll_condition, timeout=self._timeout_ctx.seconds_remaining, step=1)
 
     def _populate_results(self, database: MySQLDatabase) -> None:
         database._api_get()
