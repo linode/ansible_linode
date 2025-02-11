@@ -59,13 +59,13 @@
           - db_create.database.updates.frequency == 'weekly'
           - db_create.database.updates.hour_of_day == 22
           - db_create.database.updates.day_of_week == 3
-          -
+
     - name: Update the database
       linode.cloud.database_mysql_v2:
         label: "ansible-test-{{ r }}"
         region: "{{ target_region }}"
         engine: "{{ engine_id }}"
-        type: g6-nanode-1
+        type: g6-standard-1
         cluster_size: 3
         allow_list:
           - 10.0.0.3/32
