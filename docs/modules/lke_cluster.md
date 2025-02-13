@@ -66,6 +66,7 @@ Manage Linode LKE clusters.
 | [`node_pools` (sub-options)](#node_pools) | <center>`list`</center> | <center>Optional</center> | A list of node pools to configure the cluster with  **(Updatable)** |
 | `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the cluster to be ready.  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The period to wait for the cluster to be ready in seconds.  **(Default: `600`)** |
+| `apl_enabled` | <center>`bool`</center> | <center>Optional</center> | Whether this cluster should use APL. NOTE: This endpoint is in beta.  **(Default: `False`)** |
 
 ### acl
 
