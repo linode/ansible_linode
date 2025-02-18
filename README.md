@@ -23,6 +23,7 @@ Name | Description |
 --- | ------------ |
 [linode.cloud.api_request](./docs/modules/api_request.md)|Make an arbitrary Linode API request.|
 [linode.cloud.database_mysql](./docs/modules/database_mysql.md)|Manage a Linode MySQL database.|
+[linode.cloud.database_mysql_v2](./docs/modules/database_mysql_v2.md)|Create, read, and update a Linode MySQL database.|
 [linode.cloud.database_postgresql](./docs/modules/database_postgresql.md)|Manage a Linode PostgreSQL database.|
 [linode.cloud.domain](./docs/modules/domain.md)|Manage Linode Domains.|
 [linode.cloud.domain_record](./docs/modules/domain_record.md)|Manage Linode Domain Records.|
@@ -108,6 +109,7 @@ Name | Description |
 [linode.cloud.nodebalancer_list](./docs/modules/nodebalancer_list.md)|List and filter on Node Balancers.|
 [linode.cloud.nodebalancer_type_list](./docs/modules/nodebalancer_type_list.md)|List and filter on Node Balancer Types.|
 [linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
+[linode.cloud.object_storage_endpoint_list](./docs/modules/object_storage_endpoint_list.md)|List and filter on Object Storage Endpoints.|
 [linode.cloud.placement_group_list](./docs/modules/placement_group_list.md)|List and filter on Placement Groups.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH Keys.|

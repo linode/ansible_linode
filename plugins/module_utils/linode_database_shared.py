@@ -2,10 +2,13 @@
 Shared helper functions and structures for all Managed Database modules.
 """
 
-from typing import Any, Callable, Dict, Optional, Set
+from typing import Any, Callable, Dict, Optional, Set, TypeVar
 
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    poll_condition,
+)
 from ansible_specdoc.objects import FieldType, SpecField
-from linode_api4 import ApiError
+from linode_api4 import ApiError, LinodeClient
 
 SPEC_UPDATE_WINDOW = {
     "day_of_week": SpecField(
@@ -45,6 +48,71 @@ SPEC_UPDATE_WINDOW = {
         ],
     ),
 }
+
+SPEC_FORK = {
+    "restore_time": SpecField(
+        type=FieldType.string,
+        description=["The database timestamp from which it was restored."],
+    ),
+    "source": SpecField(
+        type=FieldType.integer,
+        description=["The instance id of the database that was forked from."],
+    ),
+}
+
+
+SPEC_UPDATE_WINDOW_V2 = {
+    "day_of_week": SpecField(
+        type=FieldType.integer,
+        required=True,
+        choices=list(range(1, 8)),
+        description=[
+            "The day to perform maintenance. 1=Monday, 2=Tuesday, etc."
+        ],
+    ),
+    "duration": SpecField(
+        type=FieldType.integer,
+        required=True,
+        description=["The maximum maintenance window time in hours."],
+    ),
+    "frequency": SpecField(
+        type=FieldType.string,
+        choices=["weekly", "monthly"],
+        default="weekly",
+        description=[
+            "Whether maintenance occurs on a weekly or monthly basis."
+        ],
+    ),
+    "hour_of_day": SpecField(
+        type=FieldType.integer,
+        required=True,
+        description=["The hour to begin maintenance based in UTC time."],
+    ),
+}
+
+T = TypeVar("T")
+
+
+def wait_for_database_status(
+    client: LinodeClient,
+    database: T,
+    desired_status: str,
+    timeout: int = 45 * 60,
+    step: int = 2,
+) -> None:
+    """
+    Wait for the given database to enter the given desired status.
+    """
+
+    def __poll_status() -> bool:
+        database._api_get()
+        return database.status == desired_status
+
+    poll_condition(
+        __poll_status,
+        timeout=timeout,
+        step=step,
+    )
 
 
 def validate_allow_list(allow_list: Set[str]) -> None:
