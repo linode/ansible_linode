@@ -189,6 +189,11 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
             self.results["dashboard_url"] = "Dashboard URL not yet available..."
 
+        # Inject the APL URLs if APL is enabled
+        if cluster.apl_enabled:
+            self.results["cluster"]["apl_console_url"] = cluster.apl_console_url
+            self.results["cluster"]["apl_health_check_url"] = cluster.apl_health_check_url
+
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for LKE cluster info module"""
 
