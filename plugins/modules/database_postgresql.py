@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module contains all of the functionality for Linode Images."""
+"""This module contains all of the functionality for Linode PostgreSQL Database Clusters."""
 
 from __future__ import absolute_import, division, print_function
 
