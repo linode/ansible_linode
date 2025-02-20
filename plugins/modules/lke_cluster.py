@@ -214,7 +214,6 @@ linode_lke_cluster_spec = {
         editable=True,
         description=[
             "The ACL configuration for this cluster's control plane.",
-            "NOTE: Control Plane ACLs may not currently be available to all users.",
         ],
     ),
     "node_pools": SpecField(
