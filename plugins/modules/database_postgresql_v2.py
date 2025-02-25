@@ -240,7 +240,7 @@ class Module(LinodeModuleBase):
 
         # The `updates` field is returned with an additional `pending` key that isn't
         # defined by the user, so we need to inject the actual value here.
-        if "updates" in params and params["updates"] is not None:
+        if params.get("updates") is not None:
             params["updates"]["pending"] = database.updates.pending
 
         updated_fields = handle_updates(
