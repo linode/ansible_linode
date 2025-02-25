@@ -1,6 +1,6 @@
-# database_mysql_v2
+# database_postgresql_v2
 
-Create, read, and update a Linode MySQL database.
+Create, read, and update a Linode PostgreSQL database.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -15,11 +15,11 @@ Create, read, and update a Linode MySQL database.
 ## Examples
 
 ```yaml
-- name: Create a basic MySQL database
-  linode.cloud.database_mysql_v2:
+- name: Create a basic PostgreSQL database
+  linode.cloud.database_postgresql_v2:
     label: my-db
     region: us-mia
-    engine: mysql/8
+    engine: postgresql/16
     type: g6-nanode-1
     allow_list:
       - 0.0.0.0/0
@@ -27,11 +27,11 @@ Create, read, and update a Linode MySQL database.
 ```
 
 ```yaml
-- name: Create a MySQL database with three nodes
-  linode.cloud.database_mysql_v2:
+- name: Create a PostgreSQL database with three nodes
+  linode.cloud.database_postgresql_v2:
     label: my-db
     region: us-mia
-    engine: mysql/8
+    engine: postgresql/16
     type: g6-standard-1
     cluster_size: 3
     allow_list:
@@ -40,11 +40,11 @@ Create, read, and update a Linode MySQL database.
 ```
 
 ```yaml
-- name: Create a MySQL database with an explicit maintenance schedule
-  linode.cloud.database_mysql_v2:
+- name: Create a PostgreSQL database with an explicit maintenance schedule
+  linode.cloud.database_postgresql_v2:
     label: my-db
     region: us-mia
-    engine: mysql/8
+    engine: postgresql/16
     type: g6-nanode-1
     updates:
         duration: 4
@@ -55,11 +55,11 @@ Create, read, and update a Linode MySQL database.
 ```
 
 ```yaml
-- name: Create a MySQL database forked from another database
-  linode.cloud.database_mysql_v2:
+- name: Create a PostgreSQL database forked from another database
+  linode.cloud.database_postgresql_v2:
     label: my-db
     region: us-mia
-    engine: mysql/8
+    engine: postgresql/16
     type: g6-nanode-1
     fork:
         source: 12345
@@ -67,8 +67,8 @@ Create, read, and update a Linode MySQL database.
 ```
 
 ```yaml
-- name: Delete a MySQL database
-  linode.cloud.database_mysql_v2:
+- name: Delete a PostgreSQL database
+  linode.cloud.database_postgresql_v2:
     label: my-db
     state: absent
 ```
@@ -118,7 +118,7 @@ Create, read, and update a Linode MySQL database.
             "cluster_size": 3,
             "created": "2025-02-10T20:10:20",
             "encrypted": true,
-            "engine": "mysql",
+            "engine": "postgresql",
             "hosts": {
                 "primary": "a225891-akamai-prod-1798333-default.g2a.akamaidb.net",
                 "standby": "replica-a225891-akamai-prod-1798333-default.g2a.akamaidb.net"
@@ -150,10 +150,10 @@ Create, read, and update a Linode MySQL database.
             "version": "8.0.35"
         }
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instance) for a list of returned fields
 
 
-- `ssl_cert` - The SSL CA certificate for an accessible Managed MySQL Database.
+- `ssl_cert` - The SSL CA certificate for an accessible Managed PostgreSQL Database.
 
     - Sample Response:
         ```json
@@ -161,10 +161,10 @@ Create, read, and update a Linode MySQL database.
           "ca_certificate": "LS0tLS1CRUdJ...=="
         }
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance-ssl) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgresql-instance-ssl) for a list of returned fields
 
 
-- `credentials` - The root username and password for an accessible Managed MySQL Database.
+- `credentials` - The root username and password for an accessible Managed PostgreSQL Database.
 
     - Sample Response:
         ```json
@@ -173,6 +173,6 @@ Create, read, and update a Linode MySQL database.
           "username": "akmadmin"
         }
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance-credentials) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instance-credentials) for a list of returned fields
 
 

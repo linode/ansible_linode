@@ -77,11 +77,9 @@ SPEC_UPDATE_WINDOW_V2 = {
     ),
     "frequency": SpecField(
         type=FieldType.string,
-        choices=["weekly", "monthly"],
+        choices=["weekly"],
         default="weekly",
-        description=[
-            "Whether maintenance occurs on a weekly or monthly basis."
-        ],
+        description=["The frequency at which maintenance occurs."],
     ),
     "hour_of_day": SpecField(
         type=FieldType.integer,
