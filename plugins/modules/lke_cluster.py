@@ -246,10 +246,12 @@ linode_lke_cluster_spec = {
     ),
     "apl_enabled": SpecField(
         type=FieldType.bool,
-        description=["Whether this cluster should use APL. "
-                     "NOTE: This endpoint is in beta."],
+        description=[
+            "Whether this cluster should use APL. "
+            "NOTE: This endpoint is in beta."
+        ],
         default=False,
-    )
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -722,7 +724,6 @@ class LinodeLKECluster(LinodeModuleBase):
 
         self._populate_kubeconfig_poll(cluster)
         self._populate_dashboard_url_poll(cluster)
-
 
     def _handle_present(self) -> None:
         params = self.module.params

@@ -194,7 +194,6 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
             self.results["dashboard_url"] = "Dashboard URL not yet available..."
 
-
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for LKE cluster info module"""
 
