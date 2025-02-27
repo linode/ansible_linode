@@ -243,6 +243,14 @@ linode_lke_cluster_spec = {
         choices=["present", "absent"],
         required=True,
     ),
+    "apl_enabled": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Whether this cluster should use APL. "
+            "NOTE: This endpoint is in beta."
+        ],
+        default=False,
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -292,6 +300,7 @@ CREATE_FIELDS: Set[str] = {
     "node_pools",
     "control_plane",
     "high_availability",
+    "apl_enabled",
 }
 
 DOCUMENTATION = r"""
@@ -692,6 +701,11 @@ class LinodeLKECluster(LinodeModuleBase):
         # because it is not returned from the cluster GET endpoint
         cluster_json["control_plane"]["acl"] = safe_get_cluster_acl(cluster)
 
+        # Inject the APL URLs if APL is enabled
+        if cluster.apl_enabled:
+            cluster_json["apl_console_url"] = cluster.apl_console_url
+            cluster_json["apl_health_check_url"] = cluster.apl_health_check_url
+
         self.results["cluster"] = cluster_json
 
         self.results["node_pools"] = [
@@ -722,7 +736,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
         cluster = self._get_cluster_by_name(label)
 
-        # Create the domain if it does not already exist
+        # Create the LKE cluster if it does not already exist
         if cluster is None:
             cluster = self._create_cluster()
 
