@@ -158,6 +158,11 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
         # because it is not returned from the cluster GET endopint
         cluster_json["control_plane"]["acl"] = safe_get_cluster_acl(cluster)
 
+        # Inject the APL URLs if APL is enabled
+        if cluster.apl_enabled:
+            cluster_json["apl_console_url"] = cluster.apl_console_url
+            cluster_json["apl_health_check_url"] = cluster.apl_health_check_url
+
         self.results["cluster"] = cluster_json
 
         self.results["node_pools"] = [
@@ -189,10 +194,6 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
 
             self.results["dashboard_url"] = "Dashboard URL not yet available..."
 
-        # Inject the APL URLs if APL is enabled
-        if cluster.apl_enabled:
-            self.results["cluster"]["apl_console_url"] = cluster.apl_console_url
-            self.results["cluster"]["apl_health_check_url"] = cluster.apl_health_check_url
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for LKE cluster info module"""
