@@ -186,6 +186,8 @@ SPECDOC_META = SpecDocMeta(
     },
     deprecated=DeprecationInfo(
         alternative="This module has been deprecated in favor of `database_postgresql_v2`.",
+        why="This module has been deprecated because it relies on deprecated API endpoints.",
+        removed_in="0.36.0",
     ),
 )
 

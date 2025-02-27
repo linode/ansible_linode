@@ -174,6 +174,8 @@ SPECDOC_META = SpecDocMeta(
     },
     deprecated=DeprecationInfo(
         alternative="This module has been deprecated in favor of `database_mysql_v2`.",
+        why="This module has been deprecated because it relies on deprecated API endpoints.",
+        removed_in="0.35.0",
     ),
 )
 
