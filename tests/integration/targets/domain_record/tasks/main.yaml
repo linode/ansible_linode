@@ -233,6 +233,38 @@
           - record_fqdn_delete.record.name == 'fqdn'
           - record_fqdn_delete.changed
 
+    - name: Create a CNAME record with a '.'-suffixed target
+      linode.cloud.domain_record:
+        domain: '{{ domain_create.domain.domain }}'
+        name: 'cname.{{ domain_create.domain.domain }}'
+        type: CNAME
+        target: 'foo.{{ domain_create.domain.domain }}.'
+        state: present
+      register: record_cname
+
+    - name: Assert the CNAME record was successfully created
+      assert:
+        that:
+          - record_cname.changed
+          - record_cname.record.name == 'cname'
+          - record_cname.record.type == 'CNAME'
+          - record_cname.record.target == 'foo.' + domain_create.domain.domain
+
+    - name: Delete the CNAME record
+      linode.cloud.domain_record:
+        domain: '{{ domain_create.domain.domain }}'
+        name: 'cname.{{ domain_create.domain.domain }}'
+        type: CNAME
+        target: 'foo.{{ domain_create.domain.domain }}.'
+        state: absent
+      register: record_cname_delete
+
+    - name: Assert the CNAME record was deleted
+      assert:
+        that:
+          - record_cname_delete.record.name == 'cname'
+          - record_cname_delete.changed
+
   always:
     - ignore_errors: yes
       block:
