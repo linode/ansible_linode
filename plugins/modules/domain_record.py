@@ -191,14 +191,15 @@ class LinodeDomainRecord(LinodeModuleBase):
         self, domain: Domain, name: str, rtype: str, target: str
     ) -> Optional[DomainRecord]:
         # We should strip the FQDN from the user-defined record name if defined.
-        suffix = "." + domain.domain
-        search_name = name
-        if search_name.endswith(suffix):
-            search_name = search_name[: -len(suffix)]
+        name = name.removesuffix("." + domain.domain)
+
+        # The Linode API will implicitly strip the `.` suffix from returned targets
+        target = target.removesuffix(".")
+
         try:
             for record in domain.records:
                 if (
-                    record.name == search_name
+                    record.name == name
                     and record.type == rtype
                     and record.target == target
                 ):
