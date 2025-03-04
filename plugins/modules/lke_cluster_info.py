@@ -158,6 +158,11 @@ class LinodeLKEClusterInfo(LinodeModuleBase):
         # because it is not returned from the cluster GET endopint
         cluster_json["control_plane"]["acl"] = safe_get_cluster_acl(cluster)
 
+        # Inject the APL URLs if APL is enabled
+        if cluster.apl_enabled:
+            cluster_json["apl_console_url"] = cluster.apl_console_url
+            cluster_json["apl_health_check_url"] = cluster.apl_health_check_url
+
         self.results["cluster"] = cluster_json
 
         self.results["node_pools"] = [
