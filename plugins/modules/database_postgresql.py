@@ -1,7 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module contains all of the functionality for Linode PostgreSQL Database Clusters."""
+"""
+This module contains all of the functionality for Linode PostgreSQL Database Clusters.
+Deprecated in favor of database_postgresql_v2.
+"""
 
 from __future__ import absolute_import, division, print_function
 
@@ -31,6 +34,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     poll_condition,
 )
 from ansible_specdoc.objects import (
+    DeprecationInfo,
     FieldType,
     SpecDocMeta,
     SpecField,
@@ -180,6 +184,11 @@ SPECDOC_META = SpecDocMeta(
             sample=docs.result_credentials_samples,
         ),
     },
+    deprecated=DeprecationInfo(
+        alternative="This module has been deprecated in favor of `database_postgresql_v2`.",
+        why="This module has been deprecated because it relies on deprecated API endpoints.",
+        removed_in="0.36.0",
+    ),
 )
 
 MUTABLE_FIELDS = {"allow_list", "updates"}
