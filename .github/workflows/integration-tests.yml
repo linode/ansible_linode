@@ -216,7 +216,7 @@ jobs:
               - type: section
                 text:
                   type: mrkdwn
-                  text: ":rocket: *${{ github.workflow }} Completed in: ${{ github.repository }}* ${{ needs.integration-tests.result == 'success' && ':white_check_mark:' || ':failed:' }}""
+                  text: ":rocket: *${{ github.workflow }} Completed in: ${{ github.repository }}* ${{ needs.integration-tests.result == 'success' && ':white_check_mark:' || ':failed:' }}"
               - type: divider
               - type: section
                 fields:
