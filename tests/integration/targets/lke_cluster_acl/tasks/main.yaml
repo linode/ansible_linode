@@ -66,8 +66,7 @@
           - update_cluster.cluster.region == "us-mia"
           - update_cluster.cluster.control_plane.acl.enabled
           - update_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.5/32"
-          - update_cluster.cluster.control_plane.acl.addresses.ipv6 == None
-
+          - update_cluster.cluster.control_plane.acl.addresses.ipv6 == []
 
     - name: Don't change the cluster
       linode.cloud.lke_cluster:
@@ -93,8 +92,7 @@
           - not unchanged_cluster.changed
           - unchanged_cluster.cluster.control_plane.acl.enabled
           - unchanged_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.5/32"
-          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv6 == None
-
+          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv6 == []
 
     - name: Disable ACLs on the cluster
       linode.cloud.lke_cluster:
@@ -118,6 +116,8 @@
         that:
           - acl_disabled_cluster.changed
           - not acl_disabled_cluster.cluster.control_plane.acl.enabled
+          - acl_disabled_cluster.cluster.control_plane.acl.addresses.ipv4 == []
+          - acl_disabled_cluster.cluster.control_plane.acl.addresses.ipv6 == []
   always:
     - ignore_errors: yes
       block:
