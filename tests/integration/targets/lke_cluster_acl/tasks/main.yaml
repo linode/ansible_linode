@@ -53,8 +53,7 @@
           addresses:
             ipv4:
               - 10.0.0.5/32
-            ipv6:
-              - 2001:db8:1234:abcd::/64
+            ipv6: []
         skip_polling: true
         state: present
       register: update_cluster
@@ -66,9 +65,7 @@
           - update_cluster.cluster.k8s_version == kube_version
           - update_cluster.cluster.region == "us-mia"
           - update_cluster.cluster.control_plane.acl.enabled
-          - update_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.5/32"
-          - update_cluster.cluster.control_plane.acl.addresses.ipv6[0] == "2001:db8:1234:abcd::/64"
-          - update_cluster.cluster.control_plane.acl.addresses.ipv6 | length == 1
+          - update_cluster.cluster.control_plane.acl.addresses.ipv6 == []
 
     - name: Don't change the cluster
       linode.cloud.lke_cluster:
@@ -83,8 +80,7 @@
           addresses:
             ipv4:
               - 10.0.0.5/32
-            ipv6:
-              - 2001:db8:1234:abcd::/64
+            ipv6: []
         skip_polling: true
         state: present
       register: unchanged_cluster
@@ -94,9 +90,7 @@
         that:
           - not unchanged_cluster.changed
           - unchanged_cluster.cluster.control_plane.acl.enabled
-          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.5/32"
-          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv6[0] == "2001:db8:1234:abcd::/64"
-          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv6 | length == 1
+          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv6 == []
 
     - name: Disable ACLs on the cluster
       linode.cloud.lke_cluster:
@@ -120,6 +114,8 @@
         that:
           - acl_disabled_cluster.changed
           - not acl_disabled_cluster.cluster.control_plane.acl.enabled
+          - acl_disabled_cluster.cluster.control_plane.acl.addresses.ipv4 == []
+          - acl_disabled_cluster.cluster.control_plane.acl.addresses.ipv6 == []
   always:
     - ignore_errors: yes
       block:
