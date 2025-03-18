@@ -59,10 +59,6 @@
         state: present
       register: update_cluster
 
-    - name: Debug update_cluster values
-      debug:
-        var: update_cluster
-
     - name: Assert LKE cluster is updated
       assert:
         that:
@@ -73,7 +69,6 @@
           - update_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.5/32"
           - update_cluster.cluster.control_plane.acl.addresses.ipv6[0] == "2001:db8:1234:abcd::/64"
           - update_cluster.cluster.control_plane.acl.addresses.ipv6 | length == 1
-
 
     - name: Don't change the cluster
       linode.cloud.lke_cluster:
@@ -94,10 +89,6 @@
         state: present
       register: unchanged_cluster
 
-    - name: Debug unchanged_cluster values
-      debug:
-        var: unchanged_cluster
-
     - name: Assert LKE cluster is unchanged
       assert:
         that:
@@ -106,7 +97,6 @@
           - unchanged_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.5/32"
           - update_cluster.cluster.control_plane.acl.addresses.ipv6[0] == "2001:db8:1234:abcd::/64"
           - update_cluster.cluster.control_plane.acl.addresses.ipv6 | length == 1
-
 
     - name: Disable ACLs on the cluster
       linode.cloud.lke_cluster:
