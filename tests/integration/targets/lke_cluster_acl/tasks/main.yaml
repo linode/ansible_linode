@@ -53,10 +53,15 @@
           addresses:
             ipv4:
               - 10.0.0.5/32
-            ipv6: []
+            ipv6:
+              - 2001:db8:1234:abcd::/64
         skip_polling: true
         state: present
       register: update_cluster
+
+    - name: Debug update_cluster values
+      debug:
+        var: update_cluster
 
     - name: Assert LKE cluster is updated
       assert:
@@ -66,7 +71,8 @@
           - update_cluster.cluster.region == "us-mia"
           - update_cluster.cluster.control_plane.acl.enabled
           - update_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.5/32"
-          - update_cluster.cluster.control_plane.acl.addresses.ipv6 == None
+          - update_cluster.cluster.control_plane.acl.addresses.ipv6[0] == "2001:db8:1234:abcd::/64"
+          - update_cluster.cluster.control_plane.acl.addresses.ipv6 | length == 1
 
 
     - name: Don't change the cluster
@@ -82,10 +88,15 @@
           addresses:
             ipv4:
               - 10.0.0.5/32
-            ipv6: []
+            ipv6:
+              - 2001:db8:1234:abcd::/64
         skip_polling: true
         state: present
       register: unchanged_cluster
+
+    - name: Debug unchanged_cluster values
+      debug:
+        var: unchanged_cluster
 
     - name: Assert LKE cluster is unchanged
       assert:
@@ -93,7 +104,8 @@
           - not unchanged_cluster.changed
           - unchanged_cluster.cluster.control_plane.acl.enabled
           - unchanged_cluster.cluster.control_plane.acl.addresses.ipv4[0] == "10.0.0.5/32"
-          - unchanged_cluster.cluster.control_plane.acl.addresses.ipv6 == None
+          - update_cluster.cluster.control_plane.acl.addresses.ipv6[0] == "2001:db8:1234:abcd::/64"
+          - update_cluster.cluster.control_plane.acl.addresses.ipv6 | length == 1
 
 
     - name: Disable ACLs on the cluster
