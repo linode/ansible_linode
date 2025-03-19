@@ -15,17 +15,18 @@ Get info about a Linode LKE Version.
 ## Examples
 
 ```yaml
-- name: Get info about an LKE version by ID
-  linode.cloud.lke_cluster_info:
-    id: '1.31' 
+    - name: Get info about an LKE version by ID
+      linode.cloud.lke_cluster_info:
+        id: '1.31'
+    
 ```
 
 ```yaml
-- name: Get info about an LKE version by tier and ID
-  linode.cloud.lke_cluster_info:
-    tier: 'standard'
-    id: '1.31'
-
+    - name: Get info about an LKE version by tier and ID
+      linode.cloud.lke_cluster_info:
+        tier: 'standard'
+        id: '1.31'
+    
 ```
 
 
@@ -43,17 +44,18 @@ Get info about a Linode LKE Version.
     - Sample Response:
         ```json
         
-        # Result getting a Kubernetes version without specifying tier
-        {
-          "id": "1.31"
-        }
+            {
+              "id": "1.31"
+            }
+            
+        ```
+        ```json
         
-        # Result getting a Kubernetes version with specifying tier
-        {
-          "id": "1.31",
-          "tier": "standard"
-        }
-        
+            {
+              "id": "1.31",
+              "tier": "standard"
+            }
+            
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-version) for a list of returned fields
 
