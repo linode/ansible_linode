@@ -17,6 +17,10 @@ List and filter on LKE Versions.
 ```yaml
 - name: List all Kubernetes versions available for deployment to a Kubernetes cluster
   linode.cloud.lke_version_list: {}
+  
+- name: List all enterprise-tier Kubernetes versions available for deployment to a Kubernetes cluster
+  linode.cloud.lke_version_list: {tier: "enterprise"}
+
 ```
 
 
@@ -28,6 +32,7 @@ List and filter on LKE Versions.
 | `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order LKE Versions by.   |
 | [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting LKE Versions.   |
 | `count` | <center>`int`</center> | <center>Optional</center> | The number of LKE Versions to return. If undefined, all results will be returned.   |
+| `tier` | <center>`str`</center> | <center>Optional</center> | Specifies the service tier for retrieving LKE version details.  **(Choices: `standard`, `enterprise`)** |
 
 ### filters
 
@@ -42,11 +47,27 @@ List and filter on LKE Versions.
 
     - Sample Response:
         ```json
+        
+        # Result for listing all Kubernetes versions
         [
             {
-              "id": "1.25"
+                "id": "1.32"
+            },
+            {
+                "id": "1.31"
+            },
+            {
+                "id": "1.30"
             }
         ]
+        # Result for listing all enterprise-tier Kubernetes versions
+        [
+            {
+                "id": "v1.31.1+lke1",
+                "tier": "enterprise"
+            }
+        ]
+        
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-versions) for a list of returned fields
 

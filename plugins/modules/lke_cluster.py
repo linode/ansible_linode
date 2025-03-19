@@ -251,6 +251,13 @@ linode_lke_cluster_spec = {
         ],
         default=False,
     ),
+    "tier": SpecField(
+        type=FieldType.string,
+        description=["The desired tier of the LKE Cluster."],
+        editable=False,
+        choices=["standard", "enterprise"],
+        default="standard",
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(

@@ -67,6 +67,7 @@ Manage Linode LKE clusters.
 | `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the cluster to be ready.  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The period to wait for the cluster to be ready in seconds.  **(Default: `600`)** |
 | `apl_enabled` | <center>`bool`</center> | <center>Optional</center> | Whether this cluster should use APL. NOTE: This endpoint is in beta.  **(Default: `False`)** |
+| `tier` | <center>`str`</center> | <center>Optional</center> | The desired tier of the LKE Cluster.  **(Choices: `standard`, `enterprise`; Default: `standard`)** |
 
 ### acl
 
