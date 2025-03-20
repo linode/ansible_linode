@@ -46,6 +46,8 @@ module = ListModule(
             choices=["standard", "enterprise"],
             description=[
                 "Specifies the service tier for retrieving LKE version details.",
+                "NOTE: LKE Enterprise may not currently be available to all users ",
+                "and can only be used with v4beta.",
             ],
             required=False,
         ),

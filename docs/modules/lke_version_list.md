@@ -36,7 +36,7 @@ List and filter on LKE Versions.
 | `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order LKE Versions by.   |
 | [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting LKE Versions.   |
 | `count` | <center>`int`</center> | <center>Optional</center> | The number of LKE Versions to return. If undefined, all results will be returned.   |
-| `tier` | <center>`str`</center> | <center>Optional</center> | Specifies the service tier for retrieving LKE version details.  **(Choices: `standard`, `enterprise`)** |
+| `tier` | <center>`str`</center> | <center>Optional</center> | Specifies the service tier for retrieving LKE version details. NOTE: LKE Enterprise may not currently be available to all users  and can only be used with v4beta.  **(Choices: `standard`, `enterprise`)** |
 
 ### filters
 

@@ -35,7 +35,7 @@ Get info about a Linode LKE Version.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `id` | <center>`str`</center> | <center>**Required**</center> | The ID of the LKE Version to resolve.   |
-| `tier` | <center>`str`</center> | <center>Optional</center> | Specifies the service tier for retrieving LKE version details.  **(Choices: `standard`, `enterprise`)** |
+| `tier` | <center>`str`</center> | <center>Optional</center> | Specifies the service tier for retrieving LKE version details. NOTE: LKE Enterprise may not currently be available to all users and  can only be used with v4beta.  **(Choices: `standard`, `enterprise`)** |
 
 ## Return Values
 
