@@ -258,6 +258,7 @@ linode_lke_cluster_spec = {
             "and can only be used with v4beta.",
         ],
         editable=False,
+        required=False,
         choices=["standard", "enterprise"],
         default="standard",
     ),
@@ -311,6 +312,7 @@ CREATE_FIELDS: Set[str] = {
     "control_plane",
     "high_availability",
     "apl_enabled",
+    "tier"
 }
 
 DOCUMENTATION = r"""

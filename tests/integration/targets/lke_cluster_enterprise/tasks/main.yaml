@@ -20,7 +20,7 @@
       register: all_regions
 
     - set_fact:
-        lke_e_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Disk Encryption") | selectattr("capabilities", "search", "Kubernetes Enterprise") | list)[0].id }}'
+        lke_e_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Disk Encryption") | selectattr("capabilities", "search", "Kubernetes Enterprise") | list)[1].id }}'
 
     - name: Create a Linode LKE Enterprise cluster
       linode.cloud.lke_cluster:
@@ -29,6 +29,7 @@
         label: 'ansible-test-{{ r }}'
         region: '{{ lke_e_region }}'
         k8s_version: '{{ kube_version }}'
+        high_availability: true
         node_pools:
           - type: g6-standard-1
             count: 3
@@ -52,7 +53,6 @@
           linode.cloud.lke_cluster:
             label: '{{ create_enterprise_cluster.cluster.label }}'
             state: absent
-
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
