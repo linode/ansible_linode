@@ -1,0 +1,44 @@
+- name: lke_version_info
+  block:
+    - name: Get an LKE Version without specifying tier
+      linode.cloud.lke_version_info:
+        id: '1.31'
+      register: lke_version_no_tier
+
+    - name: Assert lke_version_no_tier
+      assert:
+        that:
+          - lke_version_no_tier.lke_version.id == '1.31'
+
+    - name: Get a standard LKE Version
+      linode.cloud.lke_version_info:
+        api_version: v4beta
+        id: '1.31'
+        tier: 'standard'
+      register: lke_version_standard
+
+    - name: Assert lke_version_standard
+      assert:
+        that:
+          - lke_version_standard.lke_version.id == '1.31'
+          - lke_version_standard.lke_version.tier == 'standard'
+
+    - name: Get an enterprise LKE Version
+      linode.cloud.lke_version_info:
+        api_version: v4beta
+        id: 'v1.31.1+lke1'
+        tier: 'enterprise'
+      register: lke_version_enterprise
+
+    - name: Assert lke_version_enterprise
+      assert:
+        that:
+          - lke_version_enterprise.lke_version.id == 'v1.31.1+lke1'
+          - lke_version_enterprise.lke_version.tier == 'enterprise'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
