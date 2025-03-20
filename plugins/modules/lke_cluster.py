@@ -429,8 +429,8 @@ class LinodeLKECluster(LinodeModuleBase):
             ipv4 = configured_addresses.get("ipv4")
             ipv6 = configured_addresses.get("ipv6")
 
-            configured_acl["addresses"]["ipv4"] = None if ipv4 == [] else ipv4
-            configured_acl["addresses"]["ipv6"] = None if ipv6 == [] else ipv6
+            configured_acl["addresses"]["ipv4"] = [] if not ipv4 else ipv4
+            configured_acl["addresses"]["ipv6"] = [] if not ipv6 else ipv6
 
         user_defined_keys = set(linode_lke_cluster_acl.keys())
         current_acl = control_plane_acl if control_plane_acl is not None else {}
