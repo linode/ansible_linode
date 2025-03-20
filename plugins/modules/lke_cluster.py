@@ -312,7 +312,7 @@ CREATE_FIELDS: Set[str] = {
     "control_plane",
     "high_availability",
     "apl_enabled",
-    "tier"
+    "tier",
 }
 
 DOCUMENTATION = r"""
