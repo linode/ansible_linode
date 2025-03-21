@@ -72,6 +72,7 @@ Name | Description |
 [linode.cloud.ip_info](./docs/modules/ip_info.md)|Get info about a Linode IP.|
 [linode.cloud.ipv6_range_info](./docs/modules/ipv6_range_info.md)|Get info about a Linode IPv6 range.|
 [linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|Get info about a Linode LKE cluster.|
+[linode.cloud.lke_version_info](./docs/modules/lke_version_info.md)|Get info about a Linode LKE Version.|
 [linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode Node Balancer.|
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.placement_group_info](./docs/modules/placement_group_info.md)|Get info about a Linode Placement Group.|

@@ -71,7 +71,6 @@ linode_lke_cluster_acl = {
     ),
 }
 
-
 linode_lke_cluster_autoscaler = {
     "enabled": SpecField(
         type=FieldType.bool,
@@ -251,6 +250,18 @@ linode_lke_cluster_spec = {
         ],
         default=False,
     ),
+    "tier": SpecField(
+        type=FieldType.string,
+        description=[
+            "The desired tier of the LKE Cluster.",
+            "NOTE: LKE Enterprise may not currently be available to all users ",
+            "and can only be used with v4beta.",
+        ],
+        editable=False,
+        required=False,
+        choices=["standard", "enterprise"],
+        default="standard",
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -301,6 +312,7 @@ CREATE_FIELDS: Set[str] = {
     "control_plane",
     "high_availability",
     "apl_enabled",
+    "tier",
 }
 
 DOCUMENTATION = r"""

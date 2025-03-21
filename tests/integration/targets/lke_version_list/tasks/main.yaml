@@ -9,10 +9,31 @@
         that:
           - no_filter.lke_versions | length >= 1
 
+    - name: List lke_version_list with standard tier
+      linode.cloud.lke_version_list:
+        api_version: v4beta
+        tier: "standard"
+      register: tier_standard
+
+    - name: Assert lke_version_list with standard tier
+      assert:
+        that:
+          - tier_standard.lke_versions | length >= 1
+
+    - name: List lke_version_list with enterprise tier
+      linode.cloud.lke_version_list:
+        api_version: v4beta
+        tier: "enterprise"
+      register: tier_enterprise
+
+    - name: Assert lke_version_list with enterprise tier
+      assert:
+        that:
+          - tier_enterprise.lke_versions | length >= 1
+
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
     LINODE_API_TOKEN: '{{ api_token }}'
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file or "" }}'
-
