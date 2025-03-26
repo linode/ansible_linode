@@ -205,7 +205,6 @@ linode_lke_cluster_spec = {
             "Defines whether High Availability is enabled for the "
             "Control Plane Components of the cluster. "
         ],
-        default=False,
     ),
     "acl": SpecField(
         type=FieldType.dict,
@@ -383,9 +382,18 @@ class LinodeLKECluster(LinodeModuleBase):
 
         label = params.pop("label")
 
+        # Determine high_availability based on tier
+        tier = params.get("tier")
+        high_availability = tier not in (
+            "standard",
+            None,
+        )  # False if "standard", True otherwise
+
         params["control_plane"] = filter_null_values(
             {
-                "high_availability": params.pop("high_availability", False),
+                "high_availability": params.pop(
+                    "high_availability", high_availability
+                ),
                 "acl": params.pop("acl", None),
             }
         )
@@ -474,7 +482,7 @@ class LinodeLKECluster(LinodeModuleBase):
         high_avail = self.module.params.get("high_availability")
         current_ha = cluster.control_plane.high_availability
 
-        if current_ha != high_avail:
+        if high_avail is not None and current_ha != high_avail:
             if not high_avail:
                 self.fail("Clusters cannot be downgraded from ha")
 
@@ -499,7 +507,15 @@ class LinodeLKECluster(LinodeModuleBase):
 
         # These are handled separately
         new_params.pop("k8s_version")
-        new_params.pop("high_availability")
+
+        # Determine high_availability from tier
+        tier = self.module.params.get("tier")
+        high_avail = tier != "standard"
+
+        if high_avail is not None:
+            new_params["high_availability"] = (
+                high_avail  # Only include if explicitly set
+            )
 
         handle_updates(
             cluster, new_params, MUTABLE_FIELDS, self.register_action

@@ -29,7 +29,6 @@
         label: 'ansible-test-{{ r }}'
         region: '{{ lke_e_region }}'
         k8s_version: '{{ kube_version }}'
-        high_availability: true
         node_pools:
           - type: g6-standard-1
             count: 3

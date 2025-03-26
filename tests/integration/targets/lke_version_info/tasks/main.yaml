@@ -26,14 +26,14 @@
     - name: Get an enterprise LKE Version
       linode.cloud.lke_version_info:
         api_version: v4beta
-        id: 'v1.31.1+lke1'
+        id: 'v1.31.1+lke4'
         tier: 'enterprise'
       register: lke_version_enterprise
 
     - name: Assert lke_version_enterprise
       assert:
         that:
-          - lke_version_enterprise.lke_version.id == 'v1.31.1+lke1'
+          - lke_version_enterprise.lke_version.id == 'v1.31.1+lke4'
           - lke_version_enterprise.lke_version.tier == 'enterprise'
 
   environment:
