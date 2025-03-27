@@ -15,12 +15,12 @@
     - set_fact:
         kube_version: '{{ lke_versions[0].id }}'
 
-    - name: List regions that support Disk Encryption
+    - name: List regions that support LKE Enterprise
       linode.cloud.region_list:
       register: all_regions
 
     - set_fact:
-        lke_e_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Disk Encryption") | selectattr("capabilities", "search", "Kubernetes Enterprise") | list)[1].id }}'
+        lke_e_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Kubernetes Enterprise") | list)[1].id }}'
 
     - name: Create a Linode LKE Enterprise cluster
       linode.cloud.lke_cluster:

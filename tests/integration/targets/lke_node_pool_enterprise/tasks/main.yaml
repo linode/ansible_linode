@@ -1,0 +1,106 @@
+- name: lke_cluster_enterprise
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Resolve the latest enterprise K8s version
+      linode.cloud.lke_version_list:
+        api_version: v4beta
+        tier: 'enterprise'
+      register: lke_versions_enterprise
+
+    - set_fact:
+        kube_version: '{{ lke_versions_enterprise.lke_versions[0].id }}'
+
+    - name: List regions that support LKE Enterprise
+      linode.cloud.region_list:
+      register: all_regions
+
+    - set_fact:
+        lke_e_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Kubernetes Enterprise") | list)[1].id }}'
+
+    - name: Create a Linode LKE Enterprise cluster
+      linode.cloud.lke_cluster:
+        api_version: v4beta
+        tier: 'enterprise'
+        label: 'ansible-test-{{ r }}'
+        region: '{{ lke_e_region }}'
+        k8s_version: '{{ kube_version }}'
+        node_pools:
+          - type: g6-standard-1
+            count: 1
+        skip_polling: true
+        state: present
+      register: create_enterprise_cluster
+
+    - name: Assert LKE  Enterprise cluster is created
+      assert:
+        that:
+          - create_enterprise_cluster.cluster.k8s_version == kube_version
+          - create_enterprise_cluster.cluster.region == lke_e_region
+          - create_enterprise_cluster.node_pools[0].type == 'g6-standard-1'
+          - create_enterprise_cluster.node_pools[0].count == 1
+          - create_enterprise_cluster.cluster.tier == 'enterprise'
+
+    - name: Add an enterprise node pool to the cluster
+      linode.cloud.lke_node_pool:
+        cluster_id: '{{ create_enterprise_cluster.cluster.id }}'
+        tags: [ 'my-pool' ]
+        type: g6-standard-1
+        count: 2
+        k8s_version: '{{ kube_version }}'
+        update_strategy: 'rolling_update'
+        skip_polling: false
+        state: present
+      register: new_pool
+
+    - name: Assert node pool is added to cluster
+      assert:
+        that:
+          - new_pool.node_pool.count == 2
+          - new_pool.node_pool.type == 'g6-standard-1'
+          - new_pool.node_pool.nodes[0].status == 'ready'
+          - new_pool.node_pool.nodes[1].status == 'ready'
+          - new_pool.node_pool.k8s_version == kube_version
+          - new_pool.node_pool.update_strategy == 'rolling_update'
+
+    - name: Update the enterprise node pool
+      linode.cloud.lke_node_pool:
+        cluster_id: '{{ create_enterprise_cluster.cluster.id }}'
+        tags: [ 'my-pool' ]
+        type: g6-standard-1
+        count: 2
+        k8s_version: '{{ kube_version }}'
+        update_strategy: 'on_recycle'
+        state: present
+      register: updated_pool
+
+    - name: Assert node pool is updated
+      assert:
+        that:
+          - new_pool.node_pool.count == 2
+          - new_pool.node_pool.type == 'g6-standard-1'
+          - new_pool.node_pool.nodes[0].status == 'ready'
+          - new_pool.node_pool.nodes[1].status == 'ready'
+          - new_pool.node_pool.k8s_version == kube_version
+          - new_pool.node_pool.update_strategy == 'on_recycle'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the LKE cluster node pool
+          linode.cloud.lke_node_pool:
+            cluster_id: '{{ create_enterprise_cluster.cluster.id }}'
+            tags: [ 'my-pool' ]
+            state: absent
+        - name: Delete the LKE cluster
+          linode.cloud.lke_cluster:
+            label: '{{ create_enterprise_cluster.cluster.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

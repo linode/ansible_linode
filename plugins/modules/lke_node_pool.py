@@ -178,6 +178,27 @@ MODULE_SPEC = {
         ],
         suboptions=linode_lke_pool_taint,
     ),
+    "k8s_version": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[
+            "The desired Kubernetes version for this Kubernetes ",
+            "Node Pool in the format of <major>.<minor>, and the ",
+            "latest supported patch version.",
+            "NOTE: Only available for LKE Enterprise to support node pool upgrades. ",
+            "This field may not currently be available to all users and is under v4beta.",
+        ],
+    ),
+    "update_strategy": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[
+            "Upgrade strategy describes the available upgrade strategies.",
+            "NOTE: Only available for LKE Enterprise to support node pool upgrades. ",
+            "This field may not currently be available to all users and is under v4beta.",
+        ],
+        choices=["rolling_update", "on_recycle"],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -291,6 +312,14 @@ class LinodeLKENodePool(LinodeModuleBase):
         new_count = params.pop("count")
         new_taints = params.pop("taints") if "taints" in params else None
         new_labels = params.pop("labels") if "labels" in params else None
+        new_k8s_version = (
+            params.pop("k8s_version") if "k8s_version" in params else None
+        )
+        new_update_strategy = (
+            params.pop("update_strategy")
+            if "update_strategy" in params
+            else None
+        )
 
         try:
             handle_updates(pool, params, set(), self.register_action)
@@ -324,6 +353,19 @@ class LinodeLKENodePool(LinodeModuleBase):
         if new_labels is not None and pool.labels != new_labels:
             self.register_action("Updated labels for Node Pool")
             pool.labels = new_labels
+            should_update = True
+
+        if new_k8s_version is not None and pool.k8s_version != new_k8s_version:
+            self.register_action("Updated k8s version for Node Pool")
+            pool.k8s_version = new_k8s_version
+            should_update = True
+
+        if (
+            new_update_strategy is not None
+            and pool.update_strategy != new_update_strategy
+        ):
+            self.register_action("Updated update strategy for Node Pool")
+            pool.update_strategy = new_update_strategy
             should_update = True
 
         if should_update:
