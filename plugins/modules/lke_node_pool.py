@@ -265,6 +265,13 @@ class LinodeLKENodePool(LinodeModuleBase):
         self, pool: LKENodePool, timeout: int
     ) -> None:
         def _check_pool_nodes_ready() -> bool:
+            # Enterprise node pools take longer than usual to provision nodes, so the API
+            # initially returns an empty list of nodes. This is never possible, so we can
+            # wait for the nodes list to no longer be empty before proceeding to checking on
+            # the nodes' statuses.
+            if len(pool.nodes) == 0:
+                return False
+
             for node in pool.nodes:
                 if node.status != "ready":
                     return False

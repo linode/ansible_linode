@@ -78,12 +78,12 @@
     - name: Assert node pool is updated
       assert:
         that:
-          - new_pool.node_pool.count == 2
-          - new_pool.node_pool.type == 'g6-standard-1'
-          - new_pool.node_pool.nodes[0].status == 'ready'
-          - new_pool.node_pool.nodes[1].status == 'ready'
-          - new_pool.node_pool.k8s_version == kube_version
-          - new_pool.node_pool.update_strategy == 'on_recycle'
+          - updated_pool.node_pool.count == 2
+          - updated_pool.node_pool.type == 'g6-standard-1'
+          - updated_pool.node_pool.nodes[0].status == 'ready'
+          - updated_pool.node_pool.nodes[1].status == 'ready'
+          - updated_pool.node_pool.k8s_version == kube_version
+          - updated_pool.node_pool.update_strategy == 'on_recycle'
 
   always:
     - ignore_errors: yes
