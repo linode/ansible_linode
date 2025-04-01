@@ -259,7 +259,6 @@ linode_lke_cluster_spec = {
         editable=False,
         required=False,
         choices=["standard", "enterprise"],
-        default="standard",
     ),
 }
 
@@ -382,7 +381,8 @@ class LinodeLKECluster(LinodeModuleBase):
 
         label = params.pop("label")
 
-        # Determine high_availability based on tier
+        # We must determine the default value of high_availability here because
+        # the default value is False if the tier is standard, and True if the tier is enterprise
         tier = params.get("tier")
         high_availability = tier not in (
             "standard",
@@ -505,17 +505,8 @@ class LinodeLKECluster(LinodeModuleBase):
 
         pools = new_params.pop("node_pools")
 
-        # These are handled separately
+        # This is handled separately
         new_params.pop("k8s_version")
-
-        # Determine high_availability from tier
-        tier = self.module.params.get("tier")
-        high_avail = tier != "standard"
-
-        if high_avail is not None:
-            new_params["high_availability"] = (
-                high_avail  # Only include if explicitly set
-            )
 
         handle_updates(
             cluster, new_params, MUTABLE_FIELDS, self.register_action
