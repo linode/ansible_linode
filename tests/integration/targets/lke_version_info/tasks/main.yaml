@@ -1,39 +1,55 @@
 - name: lke_version_info
   block:
+    - name: List lke_version_list with out specifying tier
+      linode.cloud.lke_version_list:
+      register: lke_version_list_no_tier
+
     - name: Get an LKE Version without specifying tier
       linode.cloud.lke_version_info:
-        id: '1.31'
+        id: '{{ lke_version_list_no_tier.lke_versions[0].id }}'
       register: lke_version_no_tier
 
     - name: Assert lke_version_no_tier
       assert:
         that:
-          - lke_version_no_tier.lke_version.id == '1.31'
+          - lke_version_no_tier.lke_version.id == lke_version_list_no_tier.lke_versions[0].id
+
+    - name: List lke_version_list with standard tier
+      linode.cloud.lke_version_list:
+        api_version: v4beta
+        tier: "standard"
+      register: lke_version_list_standard_tier
 
     - name: Get a standard LKE Version
       linode.cloud.lke_version_info:
         api_version: v4beta
-        id: '1.31'
+        id: '{{ lke_version_list_standard_tier.lke_versions[0].id }}'
         tier: 'standard'
       register: lke_version_standard
 
     - name: Assert lke_version_standard
       assert:
         that:
-          - lke_version_standard.lke_version.id == '1.31'
+          - lke_version_standard.lke_version.id == lke_version_list_standard_tier.lke_versions[0].id
           - lke_version_standard.lke_version.tier == 'standard'
+
+    - name: List lke_version_list with enterprise tier
+      linode.cloud.lke_version_list:
+        api_version: v4beta
+        tier: "enterprise"
+      register: lke_version_list_enterprise_tier
 
     - name: Get an enterprise LKE Version
       linode.cloud.lke_version_info:
         api_version: v4beta
-        id: 'v1.31.1+lke4'
+        id: '{{ lke_version_list_enterprise_tier.lke_versions[0].id }}'
         tier: 'enterprise'
       register: lke_version_enterprise
 
     - name: Assert lke_version_enterprise
       assert:
         that:
-          - lke_version_enterprise.lke_version.id == 'v1.31.1+lke4'
+          - lke_version_enterprise.lke_version.id == lke_version_list_enterprise_tier.lke_versions[0].id
           - lke_version_enterprise.lke_version.tier == 'enterprise'
 
   environment:
