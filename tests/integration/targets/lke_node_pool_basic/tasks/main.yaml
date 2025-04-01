@@ -54,10 +54,6 @@
         state: present
       register: new_pool
 
-    - name: Output the nodes in the new pool
-      debug:
-        var: new_pool.node_pool.nodes
-
     - name: Assert node pool is added to cluster
       assert:
         that:
