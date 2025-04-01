@@ -324,12 +324,46 @@ class Module(LinodeModuleBase):
 
             self.register_action(f"Deleted PostgreSQL database {database.id}")
 
+    def _handle_suspend(self) -> None:
+        params = self.module.params
+
+        database = safe_find(
+            self.client.database.mysql_instances,
+            PostgreSQLDatabase.label == params.get("label"),
+        )
+
+        if database is not None:
+            self._populate_results(database)
+
+            database.suspend()
+
+            self.register_action(f"Suspended PostgreSQL database {database.id}")
+
+    def _handle_resume(self) -> None:
+        params = self.module.params
+
+        database = safe_find(
+            self.client.database.mysql_instances,
+            PostgreSQLDatabase.label == params.get("label"),
+        )
+
+        if database is not None:
+            self._populate_results(database)
+
+            database.resume()
+
+            self.register_action(f"Resumed PostgreSQL database {database.id}")
+
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for token module"""
         state = kwargs.get("state")
 
         if state == "absent":
             self._handle_absent()
+        if state == "suspend":
+            self._handle_suspend()
+        if state == "resume":
+            self._handle_resume()
         else:
             self._handle_present()
 

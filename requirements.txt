@@ -1,3 +1,4 @@
-linode-api4>=5.24.0
+# linode-api4>=5.24.0
+/Users/jriddle/dev/repos/linode_api4-python/
 polling==0.3.2
 ansible-specdoc>=0.0.18
