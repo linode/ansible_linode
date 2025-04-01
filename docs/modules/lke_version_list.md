@@ -15,8 +15,16 @@ List and filter on LKE Versions.
 ## Examples
 
 ```yaml
-- name: List all Kubernetes versions available for deployment to a Kubernetes cluster
-  linode.cloud.lke_version_list: {}
+    - name: List all Kubernetes versions available for deployment to a Kubernetes cluster
+      linode.cloud.lke_version_list:
+    
+```
+
+```yaml
+    - name: List all enterprise-tier Kubernetes versions available for deployment to a Kubernetes cluster
+      linode.cloud.lke_version_list:
+        tier: "enterprise"
+    
 ```
 
 
@@ -28,6 +36,7 @@ List and filter on LKE Versions.
 | `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order LKE Versions by.   |
 | [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting LKE Versions.   |
 | `count` | <center>`int`</center> | <center>Optional</center> | The number of LKE Versions to return. If undefined, all results will be returned.   |
+| `tier` | <center>`str`</center> | <center>Optional</center> | Specifies the service tier for retrieving LKE version details. NOTE: LKE Enterprise may not currently be available to all users  and can only be used with v4beta.  **(Choices: `standard`, `enterprise`)** |
 
 ### filters
 
@@ -42,11 +51,29 @@ List and filter on LKE Versions.
 
     - Sample Response:
         ```json
-        [
-            {
-              "id": "1.25"
-            }
-        ]
+        
+            [
+                {
+                    "id": "1.32"
+                },
+                {
+                    "id": "1.31"
+                },
+                {
+                    "id": "1.30"
+                }
+            ]
+            
+        ```
+        ```json
+        
+            [
+                {
+                    "id": "v1.31.1+lke1",
+                    "tier": "enterprise"
+                }
+            ]
+            
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lke-versions) for a list of returned fields
 

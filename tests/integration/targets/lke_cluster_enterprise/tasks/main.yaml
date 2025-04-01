@@ -1,0 +1,61 @@
+- name: lke_cluster_enterprise
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Resolve an enterprise K8s version
+      linode.cloud.lke_version_list:
+        api_version: v4beta
+        tier: "enterprise"
+      register: get_lke_versions_enterprise
+
+    - set_fact:
+        lke_versions: '{{ get_lke_versions_enterprise.lke_versions|sort(attribute="id") }}'
+
+    - set_fact:
+        kube_version: '{{ lke_versions[0].id }}'
+
+    - name: List regions that support LKE Enterprise
+      linode.cloud.region_list:
+      register: all_regions
+
+    - set_fact:
+        lke_e_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Kubernetes Enterprise") | list)[1].id }}'
+
+    - name: Create a Linode LKE Enterprise cluster
+      linode.cloud.lke_cluster:
+        api_version: v4beta
+        tier: 'enterprise'
+        label: 'ansible-test-{{ r }}'
+        region: '{{ lke_e_region }}'
+        k8s_version: '{{ kube_version }}'
+        node_pools:
+          - type: g6-standard-1
+            count: 3
+          - type: g6-standard-4
+            count: 1
+        skip_polling: true
+        state: present
+      register: create_enterprise_cluster
+
+    - name: Assert LKE cluster is created
+      assert:
+        that:
+          - create_enterprise_cluster.cluster.k8s_version == kube_version
+          - create_enterprise_cluster.cluster.region == lke_e_region
+          - create_enterprise_cluster.cluster.tier == 'enterprise'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the LKE cluster
+          linode.cloud.lke_cluster:
+            label: '{{ create_enterprise_cluster.cluster.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

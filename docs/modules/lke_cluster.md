@@ -61,12 +61,13 @@ Manage Linode LKE clusters.
 | `k8s_version` | <center>`str`</center> | <center>Optional</center> | The desired Kubernetes version for this Kubernetes cluster in the format of <major>.<minor>, and the latest supported patch version will be deployed. A version upgrade requires that you manually recycle the nodes in your cluster.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>Optional</center> | This Kubernetes cluster’s location.   |
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to the Kubernetes cluster.   |
-| `high_availability` | <center>`bool`</center> | <center>Optional</center> | Defines whether High Availability is enabled for the Control Plane Components of the cluster.   **(Default: `False`; Updatable)** |
+| `high_availability` | <center>`bool`</center> | <center>Optional</center> | Defines whether High Availability is enabled for the Control Plane Components of the cluster.   **(Updatable)** |
 | [`acl` (sub-options)](#acl) | <center>`dict`</center> | <center>Optional</center> | The ACL configuration for this cluster's control plane.  **(Updatable)** |
 | [`node_pools` (sub-options)](#node_pools) | <center>`list`</center> | <center>Optional</center> | A list of node pools to configure the cluster with  **(Updatable)** |
 | `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the cluster to be ready.  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The period to wait for the cluster to be ready in seconds.  **(Default: `600`)** |
 | `apl_enabled` | <center>`bool`</center> | <center>Optional</center> | Whether this cluster should use APL. NOTE: This endpoint is in beta.  **(Default: `False`)** |
+| `tier` | <center>`str`</center> | <center>Optional</center> | The desired tier of the LKE Cluster. NOTE: LKE Enterprise may not currently be available to all users  and can only be used with v4beta.  **(Choices: `standard`, `enterprise`)** |
 
 ### acl
 
