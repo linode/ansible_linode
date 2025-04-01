@@ -7,10 +7,7 @@ name: Run Unit test
 
 jobs:
   run-tests:
-
-    # TODO:
-    # Upgrade back to ubuntu-latest when the permission issue fixed
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [ '3.9','3.10','3.11', '3.12' ]
