@@ -100,7 +100,7 @@
         state: suspend
       register: db_suspend
 
-    - name: Assert database is unchanged
+    - name: Assert database is suspended
       assert:
         that:
           - db_suspend.changed == True
@@ -111,7 +111,7 @@
         state: resume
       register: db_resume
 
-    - name: Assert database is unchanged
+    - name: Assert database is resumed
       assert:
         that:
           - db_resume.changed == True
