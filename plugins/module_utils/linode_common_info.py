@@ -126,6 +126,7 @@ class InfoModule(LinodeModuleBase):
         requires_beta: bool = False,
         deprecated: bool = False,
         deprecation_message: Optional[str] = None,
+        custom_options: Optional[Dict[str, SpecField]] = None,
     ) -> None:
         self.primary_result = primary_result
         self.secondary_results = secondary_results or []
@@ -144,6 +145,9 @@ class InfoModule(LinodeModuleBase):
         # to the module's description.
         if self.deprecated:
             self.description.insert(0, f"**NOTE: {self.deprecation_message}**")
+
+        # Store custom options if provided
+        self.custom_options = custom_options or {}
 
         # Singular params should be translated into groups
         self.param_groups = [
@@ -219,6 +223,8 @@ class InfoModule(LinodeModuleBase):
         """
 
         options = {}
+
+        options.update(self.custom_options)
 
         # Add params to spec
         for group in self.param_groups:
