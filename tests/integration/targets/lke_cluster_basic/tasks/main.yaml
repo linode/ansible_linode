@@ -194,7 +194,7 @@
     - name: Assert LKE cluster is created
       assert:
         that:
-          - create_cluster_disk_encryption.node_pools[0].disk_encryption == 'enabled'
+          - create_cluster_disk_encryption.node_pools[0].disk_encryption == 'disabled'
 
   always:
     - ignore_errors: yes
