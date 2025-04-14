@@ -57,10 +57,10 @@
       linode.cloud.object_keys:
         label: 'test-ansible-key-access-{{ r }}'
         access:
-          - cluster: us-ord-1
+          - region: us-ord
             bucket_name: '{{ create_bucket.name }}'
             permissions: read_write
-          - cluster: us-ord-1
+          - region: us-ord
             bucket_name: '{{ create_bucket.name }}'
             permissions: read_only
         state: present
