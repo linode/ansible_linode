@@ -40,7 +40,7 @@ from linode_api4 import MySQLDatabase
 SPEC = {
     "state": SpecField(
         type=FieldType.string,
-        choices=["present", "absent"],
+        choices=["resume", "suspend", "present", "absent"],
         required=True,
         description=["The desired state of the Managed Database."],
     ),
@@ -326,12 +326,46 @@ class Module(LinodeModuleBase):
 
             self.register_action(f"Deleted MySQL database {database.id}")
 
+    def _handle_suspend(self) -> None:
+        params = self.module.params
+
+        database = safe_find(
+            self.client.database.mysql_instances,
+            MySQLDatabase.label == params.get("label"),
+        )
+
+        if database is not None:
+            self._populate_results(database)
+
+            database.suspend()
+
+            self.register_action(f"Suspended MySQL database {database.id}")
+
+    def _handle_resume(self) -> None:
+        params = self.module.params
+
+        database = safe_find(
+            self.client.database.mysql_instances,
+            MySQLDatabase.label == params.get("label"),
+        )
+
+        if database is not None:
+            self._populate_results(database)
+
+            database.resume()
+
+            self.register_action(f"Resumed MySQL database {database.id}")
+
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for token module"""
         state = kwargs.get("state")
 
         if state == "absent":
             self._handle_absent()
+        if state == "suspend":
+            self._handle_suspend()
+        if state == "resume":
+            self._handle_resume()
         else:
             self._handle_present()
 
