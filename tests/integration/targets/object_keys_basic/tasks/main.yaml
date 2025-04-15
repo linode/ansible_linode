@@ -53,8 +53,9 @@
       assert:
         that:
           - update.changed
-          - update.key.regions | length == 1
+          - update.key.regions | length == 2
           - update.key.regions[0].id == "us-ord"
+          - update.key.regions[1].id == "us-ord"
 
     - name: Create an S3 bucket using the key
       amazon.aws.s3_bucket:
