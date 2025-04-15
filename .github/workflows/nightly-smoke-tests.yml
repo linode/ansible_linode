@@ -1,0 +1,85 @@
+name: Nightly Smoke Tests
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Commit SHA to test'
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  smoke_tests:
+    if: github.repository == 'linode/ansible_linode' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      EXIT_STATUS: 0
+    defaults:
+      run:
+        working-directory: .ansible/collections/ansible_collections/linode/cloud
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          path: .ansible/collections/ansible_collections/linode/cloud
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      - name: Setup Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.run-eol-python-version == 'true' && env.EOL_PYTHON_VERSION || inputs.python-version || env.DEFAULT_PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: make deps
+
+      - name: Install ansible dependencies
+        run: ansible-galaxy collection install amazon.aws:==9.1.0
+
+      - name: Install Collection
+        run: make install
+
+      - name: Replace Existing Keys
+        run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
+
+      - name: Run smoke tests
+        id: smoke_tests
+        run: |
+          make test-smoke
+        env:
+          LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
+
+      - name: Notify Slack
+        if: (success() || failure()) && github.repository == 'linode/ansible_linode'
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          method: chat.postMessage
+          token: ${{ secrets.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ secrets.SLACK_CHANNEL_ID }}
+            blocks:
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: ":rocket: *${{ github.workflow }} Completed in: ${{ github.repository }}* :white_check_mark:"
+              - type: divider
+              - type: section
+                fields:
+                  - type: mrkdwn
+                    text: "*Build Result:*\n${{ steps.smoke_tests.outcome == 'success' && ':large_green_circle: Build Passed' || ':red_circle: Build Failed' }}"
+                  - type: mrkdwn
+                    text: "*Branch:*\n`${{ github.ref_name }}`"
+              - type: section
+                fields:
+                  - type: mrkdwn
+                    text: "*Commit Hash:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>"
+                  - type: mrkdwn
+                    text: "*Run URL:*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Run Details>"
+              - type: divider
+              - type: context
+                elements:
+                  - type: mrkdwn
+                    text: "Triggered by: :bust_in_silhouette: `${{ github.actor }}`"

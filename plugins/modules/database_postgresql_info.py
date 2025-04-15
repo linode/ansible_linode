@@ -1,7 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module allows users to retrieve information about a Linode PostgreSQL Managed Database."""
+"""
+This module allows users to retrieve information about a Linode PostgreSQL Managed Database.
+NOTE: This module is compatible with Aiven-backed clusters.
+"""
 
 from __future__ import absolute_import, division, print_function
 

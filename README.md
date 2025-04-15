@@ -23,13 +23,16 @@ Name | Description |
 --- | ------------ |
 [linode.cloud.api_request](./docs/modules/api_request.md)|Make an arbitrary Linode API request.|
 [linode.cloud.database_mysql](./docs/modules/database_mysql.md)|Manage a Linode MySQL database.|
+[linode.cloud.database_mysql_v2](./docs/modules/database_mysql_v2.md)|Create, read, and update a Linode MySQL database.|
 [linode.cloud.database_postgresql](./docs/modules/database_postgresql.md)|Manage a Linode PostgreSQL database.|
+[linode.cloud.database_postgresql_v2](./docs/modules/database_postgresql_v2.md)|Create, read, and update a Linode PostgreSQL database.|
 [linode.cloud.domain](./docs/modules/domain.md)|Manage Linode Domains.|
 [linode.cloud.domain_record](./docs/modules/domain_record.md)|Manage Linode Domain Records.|
 [linode.cloud.firewall](./docs/modules/firewall.md)|Manage Linode Firewalls.|
 [linode.cloud.firewall_device](./docs/modules/firewall_device.md)|Manage Linode Firewall Devices.|
 [linode.cloud.image](./docs/modules/image.md)|Manage a Linode Image.|
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
+[linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account. The Linode must be configured to support additional addresses - please Open a support ticket requesting additional addresses before attempting allocation.|
 [linode.cloud.ip_assign](./docs/modules/ip_assign.md)|Assign IPs to Linodes in a given Region.|
 [linode.cloud.ip_rdns](./docs/modules/ip_rdns.md)|Manage a Linode IP address's rDNS.|
 [linode.cloud.ip_share](./docs/modules/ip_share.md)|Manage the Linode shared IPs.|
@@ -69,6 +72,7 @@ Name | Description |
 [linode.cloud.ip_info](./docs/modules/ip_info.md)|Get info about a Linode IP.|
 [linode.cloud.ipv6_range_info](./docs/modules/ipv6_range_info.md)|Get info about a Linode IPv6 range.|
 [linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|Get info about a Linode LKE cluster.|
+[linode.cloud.lke_version_info](./docs/modules/lke_version_info.md)|Get info about a Linode LKE Version.|
 [linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode Node Balancer.|
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.placement_group_info](./docs/modules/placement_group_info.md)|Get info about a Linode Placement Group.|
@@ -107,6 +111,7 @@ Name | Description |
 [linode.cloud.nodebalancer_list](./docs/modules/nodebalancer_list.md)|List and filter on Node Balancers.|
 [linode.cloud.nodebalancer_type_list](./docs/modules/nodebalancer_type_list.md)|List and filter on Node Balancer Types.|
 [linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
+[linode.cloud.object_storage_endpoint_list](./docs/modules/object_storage_endpoint_list.md)|List and filter on Object Storage Endpoints.|
 [linode.cloud.placement_group_list](./docs/modules/placement_group_list.md)|List and filter on Placement Groups.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH Keys.|

@@ -1,0 +1,187 @@
+- name: database_mysql_v2_complex
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        target_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Databases") | list)[0]["id"] }}'
+
+    - name: Get an available MySQL engine
+      linode.cloud.database_engine_list:
+        filters:
+          - name: engine
+            values: mysql
+      register: available_engines
+
+    - name: Assert available database_engine_list
+      assert:
+        that:
+          - available_engines.database_engines | length >= 1
+
+    - set_fact:
+        engine_id: "{{ available_engines.database_engines[0]['id'] }}"
+        engine_version: "{{ available_engines.database_engines[0]['version'] }}"
+
+    - name: Create a database
+      linode.cloud.database_mysql_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: g6-nanode-1
+        cluster_size: 1
+        allow_list:
+          - 0.0.0.0/0
+        updates:
+          duration: 4
+          frequency: weekly
+          hour_of_day: 22
+          day_of_week: 3
+        state: present
+      register: db_create
+
+    - name: Assert database is created
+      assert:
+        that:
+          - db_create.changed
+          - db_create.database.status == 'active'
+          - db_create.database.allow_list | length == 1
+          - db_create.database.allow_list[0] == '0.0.0.0/0'
+          - db_create.database.cluster_size == 1
+          - db_create.database.engine == 'mysql'
+          - (db_create.database.version | split('.'))[0] == engine_version
+          - db_create.database.region == target_region
+          - db_create.database.type == 'g6-nanode-1'
+          - db_create.database.updates.duration == 4
+          - db_create.database.updates.frequency == 'weekly'
+          - db_create.database.updates.hour_of_day == 22
+          - db_create.database.updates.day_of_week == 3
+
+    - name: Update the database
+      linode.cloud.database_mysql_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: g6-nanode-1
+        allow_list:
+          - 10.0.0.3/32
+        updates:
+          duration: 4
+          frequency: weekly
+          hour_of_day: 16
+          day_of_week: 4
+        state: present
+      register: db_update
+
+    - name: Assert database is updated
+      assert:
+        that:
+          - db_update.changed
+          - db_update.database.status == 'active'
+          - db_update.database.allow_list | length == 1
+          - db_update.database.allow_list[0] == '10.0.0.3/32'
+          - db_update.database.cluster_size == 1
+          - db_update.database.engine == 'mysql'
+          - (db_update.database.version | split('.'))[0] == engine_version
+          - db_update.database.region == target_region
+          - db_update.database.type == 'g6-nanode-1'
+          - db_update.database.updates.duration == 4
+          - db_update.database.updates.frequency == 'weekly'
+          - db_update.database.updates.hour_of_day == 16
+          - db_update.database.updates.day_of_week == 4
+
+    - name: Resize the database
+      linode.cloud.database_mysql_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: g6-standard-1
+        cluster_size: 3
+        allow_list:
+          - 10.0.0.3/32
+        updates:
+          duration: 4
+          frequency: weekly
+          hour_of_day: 16
+          day_of_week: 4
+        state: present
+      register: db_resize
+
+    - name: Assert database is resized
+      assert:
+        that:
+          - db_resize.changed
+          - db_resize.database.status == 'active'
+          - db_resize.database.allow_list | length == 1
+          - db_resize.database.allow_list[0] == '10.0.0.3/32'
+          - db_resize.database.cluster_size == 3
+          - db_resize.database.engine == 'mysql'
+          - (db_resize.database.version | split('.'))[0] == engine_version
+          - db_resize.database.region == target_region
+          - db_resize.database.type == 'g6-standard-1'
+          - db_resize.database.updates.duration == 4
+          - db_resize.database.updates.frequency == 'weekly'
+          - db_resize.database.updates.hour_of_day == 16
+          - db_resize.database.updates.day_of_week == 4
+
+    - name: Refresh the database
+      linode.cloud.database_mysql_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: g6-standard-1
+        cluster_size: 3
+        allow_list:
+          - 10.0.0.3/32
+        updates:
+          duration: 4
+          frequency: weekly
+          hour_of_day: 16
+          day_of_week: 4
+        state: present
+      register: db_refresh
+
+    - name: Assert database is unchanged
+      assert:
+        that:
+          - db_refresh.changed == False
+
+    - name: Fork the database
+      linode.cloud.database_mysql_v2:
+        label: "ansible-test-{{ r }}-forked"
+        region: us-mia
+        engine: mysql/8
+        type: g6-nanode-1
+        fork:
+          source: "{{ db_refresh.database.id }}"
+        state: present
+      register: db_forked
+
+    - name: Assert a new forked database has been created
+      assert:
+        that:
+          - db_forked.changed == True
+          - db_forked.database.fork.source == db_refresh.database.id
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete the forked database
+          linode.cloud.database_mysql_v2:
+            label: '{{ db_forked.database.label }}'
+            state: absent
+
+        - name: Delete the original database
+          linode.cloud.database_mysql_v2:
+            label: '{{ db_create.database.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

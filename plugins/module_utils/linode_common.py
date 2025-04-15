@@ -24,7 +24,10 @@ from ansible.module_utils.basic import (
 )
 
 try:
-    from linode_api4 import VPC, ApiError
+    from linode_api4 import (
+        VPC,
+        ApiError,
+    )
     from linode_api4 import Base as LinodeAPIType
     from linode_api4 import (
         Image,
