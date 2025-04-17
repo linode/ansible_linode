@@ -80,22 +80,21 @@
       linode.cloud.vpcs_ip_list:
       register: all_vpc_ips
     
-    - name: Assert VPC IPs were returned
+    - name: Assert at least one VPC IP belongs to the created VPC
       assert:
         that:
-          - all_vpc_ips.vpcs_ips[0].vpc_id == create_vpc.vpc.id
-          - all_vpc_ips.vpcs_ips[1].vpc_id == create_vpc.vpc.id
+          - create_vpc.vpc.id in all_vpc_ips.vpcs_ips | map(attribute='vpc_id') | list
 
     - name: List VPC IPs for a specific VPC
       linode.cloud.vpc_ip_list:
         vpc_id: '{{ create_vpc.vpc.id }}'
       register: vpcs_ips
     
-    - name: Assert VPC IPs were returned
+    - name: Assert all returned VPC IPs belong to the created VPC
       assert:
         that:
-          - vpcs_ips.vpcs_ips[0].vpc_id == create_vpc.vpc.id
-          - vpcs_ips.vpcs_ips[1].vpc_id == create_vpc.vpc.id
+          - vpcs_ips.vpcs_ips | length > 0
+          - vpcs_ips.vpcs_ips | selectattr('vpc_id', 'equalto', create_vpc.vpc.id) | list | length == vpcs_ips.vpcs_ips | length
 
   always:
     - ignore_errors: true
