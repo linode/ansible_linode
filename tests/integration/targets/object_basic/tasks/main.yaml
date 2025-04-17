@@ -57,10 +57,10 @@
       linode.cloud.object_keys:
         label: 'test-ansible-key-access-{{ r }}'
         access:
-          - cluster: us-ord-1
+          - region: us-ord
             bucket_name: '{{ create_bucket.name }}'
             permissions: read_write
-          - cluster: us-ord-1
+          - region: us-ord
             bucket_name: '{{ create_bucket.name }}'
             permissions: read_only
         state: present
@@ -73,10 +73,9 @@
           - 'not "REDACTED" in create_access.key.secret_key'
           - create_access.key.bucket_access[0].cluster == 'us-ord-1'
           - create_access.key.bucket_access[0].bucket_name == create_bucket.name
-          - create_access.key.bucket_access[0].permissions == 'read_write'
           - create_access.key.bucket_access[1].cluster == 'us-ord-1'
           - create_access.key.bucket_access[1].bucket_name == create_bucket.name
-          - create_access.key.bucket_access[1].permissions == 'read_only'
+          - "['read_only', 'read_write'] | sort == (create_access.key.bucket_access | map(attribute='permissions') | sort)"
 
   always:
     - ignore_errors: true
