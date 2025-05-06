@@ -1,0 +1,272 @@
+- name: database_mysql_v2_engine_config
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        target_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Databases") | list)[0]["id"] }}'
+
+    - name: Get an available MySQL engine
+      linode.cloud.database_engine_list:
+        filters:
+          - name: engine
+            values: mysql
+      register: available_engines
+
+    - name: Assert available database_engine_list
+      assert:
+        that:
+          - available_engines.database_engines | length >= 1
+
+    - set_fact:
+        engine_id: "{{ available_engines.database_engines[0]['id'] }}"
+
+    - name: Create a database with an explicit engine_config
+      linode.cloud.database_mysql_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: g6-nanode-1
+        cluster_size: 1
+        engine_config:
+          binlog_retention_period: 600
+          mysql:
+            connect_timeout: 20
+            default_time_zone: "+00:00"
+            group_concat_max_len: 1024
+            information_schema_stats_expiry: 900
+            innodb_change_buffer_max_size: 25
+            innodb_flush_neighbors: 1
+            innodb_ft_min_token_size: 3
+            innodb_ft_server_stopword_table: "db_name/table_name"
+            innodb_lock_wait_timeout: 50
+            innodb_log_buffer_size: 16777216
+            innodb_online_alter_log_max_size: 134217728
+            innodb_read_io_threads: 4
+            innodb_rollback_on_timeout: True
+            innodb_thread_concurrency: 8
+            innodb_write_io_threads: 4
+            interactive_timeout: 300
+            internal_tmp_mem_storage_engine: "TempTable"
+            max_allowed_packet: 67108864
+            max_heap_table_size: 16777216
+            net_buffer_length: 16384
+            net_read_timeout: 30
+            net_write_timeout: 60
+            sort_buffer_size: 262144
+            sql_mode: "TRADITIONAL"
+            sql_require_primary_key: False
+            tmp_table_size: 16777216
+            wait_timeout: 28800
+        state: present
+      register: db_create
+
+    - name: Assert database is created
+      assert:
+        that:
+          - db_create.changed
+          - db_create.database.status == 'active'
+          - db_create.database.cluster_size == 1
+          - db_create.database.engine == 'mysql'
+          - db_create.database.region == target_region
+          - db_create.database.engine_config.binlog_retention_period == 600
+          - db_create.database.engine_config.mysql.connect_timeout == 20
+          - db_create.database.engine_config.mysql.default_time_zone == "+00:00"
+          - db_create.database.engine_config.mysql.group_concat_max_len == 1024
+          - db_create.database.engine_config.mysql.information_schema_stats_expiry == 900
+          - db_create.database.engine_config.mysql.innodb_change_buffer_max_size == 25
+          - db_create.database.engine_config.mysql.innodb_flush_neighbors == 1
+          - db_create.database.engine_config.mysql.innodb_ft_min_token_size == 3
+          - db_create.database.engine_config.mysql.innodb_ft_server_stopword_table == "db_name/table_name"
+          - db_create.database.engine_config.mysql.innodb_lock_wait_timeout == 50
+          - db_create.database.engine_config.mysql.innodb_log_buffer_size == 16777216
+          - db_create.database.engine_config.mysql.innodb_online_alter_log_max_size == 134217728
+          - db_create.database.engine_config.mysql.innodb_read_io_threads == 4
+          - db_create.database.engine_config.mysql.innodb_rollback_on_timeout == True
+          - db_create.database.engine_config.mysql.innodb_thread_concurrency == 8
+          - db_create.database.engine_config.mysql.innodb_write_io_threads == 4
+          - db_create.database.engine_config.mysql.interactive_timeout == 300
+          - db_create.database.engine_config.mysql.internal_tmp_mem_storage_engine == "TempTable"
+          - db_create.database.engine_config.mysql.max_allowed_packet == 67108864
+          - db_create.database.engine_config.mysql.max_heap_table_size == 16777216
+          - db_create.database.engine_config.mysql.net_buffer_length == 16384
+          - db_create.database.engine_config.mysql.net_read_timeout == 30
+          - db_create.database.engine_config.mysql.net_write_timeout == 60
+          - db_create.database.engine_config.mysql.sort_buffer_size == 262144
+          - db_create.database.engine_config.mysql.sql_mode == "TRADITIONAL"
+          - db_create.database.engine_config.mysql.sql_require_primary_key == False
+          - db_create.database.engine_config.mysql.tmp_table_size == 16777216
+          - db_create.database.engine_config.mysql.wait_timeout == 28800
+
+    - name: Update the database's engine_config
+      linode.cloud.database_mysql_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: g6-nanode-1
+        engine_config:
+          binlog_retention_period: 601
+          mysql:
+            connect_timeout: 21
+            default_time_zone: "+01:00"
+            group_concat_max_len: 1023
+            information_schema_stats_expiry: 901
+            innodb_change_buffer_max_size: 26
+            innodb_flush_neighbors: 2
+            innodb_ft_min_token_size: 4
+            innodb_ft_server_stopword_table: "db_name/table_name"
+            innodb_lock_wait_timeout: 51
+            innodb_log_buffer_size: 16777215
+            innodb_online_alter_log_max_size: 134217721
+            innodb_read_io_threads: 3
+            innodb_rollback_on_timeout: False
+            innodb_thread_concurrency: 6
+            innodb_write_io_threads: 5
+            interactive_timeout: 299
+            internal_tmp_mem_storage_engine: "MEMORY"
+            max_allowed_packet: 67108863
+            max_heap_table_size: 16777211
+            net_buffer_length: 8192
+            net_read_timeout: 29
+            net_write_timeout: 59
+            sort_buffer_size: 262141
+            sql_mode: "TRADITIONAL"
+            sql_require_primary_key: True
+            tmp_table_size: 16777215
+            wait_timeout: 28799
+        state: present
+      register: db_update
+
+    - name: Assert database is updated
+      assert:
+        that:
+          - db_update.changed
+          - db_update.database.status == 'active'
+          - db_update.database.cluster_size == 1
+          - db_update.database.engine == 'mysql'
+          - db_update.database.region == target_region
+          - db_update.database.type == 'g6-nanode-1'
+          - db_update.database.engine_config.binlog_retention_period == 601
+          - db_update.database.engine_config.mysql.connect_timeout == 21
+          - db_update.database.engine_config.mysql.default_time_zone == "+01:00"
+          - db_update.database.engine_config.mysql.group_concat_max_len == 1023
+          - db_update.database.engine_config.mysql.information_schema_stats_expiry == 901
+          - db_update.database.engine_config.mysql.innodb_change_buffer_max_size == 26
+          - db_update.database.engine_config.mysql.innodb_flush_neighbors == 2
+          - db_update.database.engine_config.mysql.innodb_ft_min_token_size == 4
+          - db_update.database.engine_config.mysql.innodb_ft_server_stopword_table == "db_name/table_name"
+          - db_update.database.engine_config.mysql.innodb_lock_wait_timeout == 51
+          - db_update.database.engine_config.mysql.innodb_log_buffer_size == 16777215
+          - db_update.database.engine_config.mysql.innodb_online_alter_log_max_size == 134217721
+          - db_update.database.engine_config.mysql.innodb_read_io_threads == 3
+          - db_update.database.engine_config.mysql.innodb_rollback_on_timeout == False
+          - db_update.database.engine_config.mysql.innodb_thread_concurrency == 6
+          - db_update.database.engine_config.mysql.innodb_write_io_threads == 5
+          - db_update.database.engine_config.mysql.interactive_timeout == 299
+          - db_update.database.engine_config.mysql.internal_tmp_mem_storage_engine == "MEMORY"
+          - db_update.database.engine_config.mysql.max_allowed_packet == 67108863
+          - db_update.database.engine_config.mysql.max_heap_table_size == 16777211
+          - db_update.database.engine_config.mysql.net_buffer_length == 8192
+          - db_update.database.engine_config.mysql.net_read_timeout == 29
+          - db_update.database.engine_config.mysql.net_write_timeout == 59
+          - db_update.database.engine_config.mysql.sort_buffer_size == 262141
+          - db_update.database.engine_config.mysql.sql_mode == "TRADITIONAL"
+          - db_update.database.engine_config.mysql.sql_require_primary_key == True
+          - db_update.database.engine_config.mysql.tmp_table_size == 16777215
+          - db_update.database.engine_config.mysql.wait_timeout == 28799
+
+    - name: Refresh the database
+      linode.cloud.database_mysql_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: g6-nanode-1
+        engine_config:
+          binlog_retention_period: 601
+          mysql:
+            connect_timeout: 21
+            default_time_zone: "+01:00"
+            group_concat_max_len: 1023
+            information_schema_stats_expiry: 901
+            innodb_change_buffer_max_size: 26
+            innodb_flush_neighbors: 2
+            innodb_ft_min_token_size: 4
+            innodb_ft_server_stopword_table: "db_name/table_name"
+            innodb_lock_wait_timeout: 51
+            innodb_log_buffer_size: 16777215
+            innodb_online_alter_log_max_size: 134217721
+            innodb_read_io_threads: 3
+            innodb_rollback_on_timeout: False
+            innodb_thread_concurrency: 6
+            innodb_write_io_threads: 5
+            interactive_timeout: 299
+            internal_tmp_mem_storage_engine: "MEMORY"
+            max_allowed_packet: 67108863
+            max_heap_table_size: 16777211
+            net_buffer_length: 8192
+            net_read_timeout: 29
+            net_write_timeout: 59
+            sort_buffer_size: 262141
+            sql_mode: "TRADITIONAL"
+            sql_require_primary_key: True
+            tmp_table_size: 16777215
+            wait_timeout: 28799
+        state: present
+      register: db_refresh
+
+    - name: Assert database is unchanged
+      assert:
+        that:
+          - not db_refresh.changed
+          - db_refresh.database.status == 'active'
+          - db_refresh.database.cluster_size == 1
+          - db_refresh.database.engine == 'mysql'
+          - db_refresh.database.region == target_region
+          - db_refresh.database.type == 'g6-nanode-1'
+          - db_refresh.database.engine_config.binlog_retention_period == 601
+          - db_refresh.database.engine_config.mysql.connect_timeout == 21
+          - db_refresh.database.engine_config.mysql.default_time_zone == "+01:00"
+          - db_refresh.database.engine_config.mysql.group_concat_max_len == 1023
+          - db_refresh.database.engine_config.mysql.information_schema_stats_expiry == 901
+          - db_refresh.database.engine_config.mysql.innodb_change_buffer_max_size == 26
+          - db_refresh.database.engine_config.mysql.innodb_flush_neighbors == 2
+          - db_refresh.database.engine_config.mysql.innodb_ft_min_token_size == 4
+          - db_refresh.database.engine_config.mysql.innodb_ft_server_stopword_table == "db_name/table_name"
+          - db_refresh.database.engine_config.mysql.innodb_lock_wait_timeout == 51
+          - db_refresh.database.engine_config.mysql.innodb_log_buffer_size == 16777215
+          - db_refresh.database.engine_config.mysql.innodb_online_alter_log_max_size == 134217721
+          - db_refresh.database.engine_config.mysql.innodb_read_io_threads == 3
+          - db_refresh.database.engine_config.mysql.innodb_rollback_on_timeout == False
+          - db_refresh.database.engine_config.mysql.innodb_thread_concurrency == 6
+          - db_refresh.database.engine_config.mysql.innodb_write_io_threads == 5
+          - db_refresh.database.engine_config.mysql.interactive_timeout == 299
+          - db_refresh.database.engine_config.mysql.internal_tmp_mem_storage_engine == "MEMORY"
+          - db_refresh.database.engine_config.mysql.max_allowed_packet == 67108863
+          - db_refresh.database.engine_config.mysql.max_heap_table_size == 16777211
+          - db_refresh.database.engine_config.mysql.net_buffer_length == 8192
+          - db_refresh.database.engine_config.mysql.net_read_timeout == 29
+          - db_refresh.database.engine_config.mysql.net_write_timeout == 59
+          - db_refresh.database.engine_config.mysql.sort_buffer_size == 262141
+          - db_refresh.database.engine_config.mysql.sql_mode == "TRADITIONAL"
+          - db_refresh.database.engine_config.mysql.sql_require_primary_key == True
+          - db_refresh.database.engine_config.mysql.tmp_table_size == 16777215
+          - db_refresh.database.engine_config.mysql.wait_timeout == 28799
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete the original database
+          linode.cloud.database_mysql_v2:
+            label: '{{ db_create.database.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

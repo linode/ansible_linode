@@ -39,6 +39,357 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import PostgreSQLDatabase
 
+SPEC_ENGINE_CONFIG_PG = {
+    "autovacuum_analyze_scale_factor": SpecField(
+        type=FieldType.float,
+        description=[
+            "Specifies a fraction of the table size to add to "
+            + "autovacuum_analyze_threshold when deciding "
+            + "whether to trigger an ANALYZE.",
+            "The default is 0.2 (20% of table size).",
+        ],
+    ),
+    "autovacuum_analyze_threshold": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Specifies the minimum number of inserted, updated or deleted "
+            + "tuples needed to trigger "
+            "an ANALYZE in any one table.",
+            "The default is 50 tuples.",
+        ],
+    ),
+    "autovacuum_max_workers": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Specifies the maximum number of autovacuum processes "
+            + "(other than the autovacuum launcher) "
+            + "that may be running at any one time.",
+            "The default is three.",
+            "This parameter can only be set at server start.",
+        ],
+    ),
+    "autovacuum_naptime": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Specifies the minimum delay between autovacuum runs on any given database.",
+            "The delay is measured in seconds, and the default is one minute.",
+        ],
+    ),
+    "autovacuum_vacuum_cost_delay": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Specifies the cost delay value that will be used in automatic VACUUM operations.",
+            "If -1 is specified, the regular vacuum_cost_delay value will be used.",
+            "The default value is 20 milliseconds.",
+        ],
+    ),
+    "autovacuum_vacuum_cost_limit": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Specifies the cost limit value that will be used in automatic VACUUM operations.",
+            "If -1 is specified (which is the default), the regular "
+            + "vacuum_cost_limit value will be used.",
+        ],
+    ),
+    "autovacuum_vacuum_scale_factor": SpecField(
+        type=FieldType.float,
+        description=[
+            "Specifies a fraction of the table size to add to "
+            + "autovacuum_vacuum_threshold when deciding "
+            + "whether to trigger a VACUUM.",
+            "The default is 0.2 (20% of table size).",
+        ],
+    ),
+    "autovacuum_vacuum_threshold": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Specifies the minimum number of updated or deleted tuples needed to "
+            + "trigger a VACUUM in any one table.",
+            "The default is 50 tuples.",
+        ],
+    ),
+    "bgwriter_delay": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Specifies the delay between activity rounds for the "
+            + "background writer in milliseconds.",
+            "Default is 200.",
+        ],
+    ),
+    "bgwriter_flush_after": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Whenever more than bgwriter_flush_after bytes have been "
+            + "written by the background writer, attempt to "
+            + "force the OS to issue these writes to the underlying storage.",
+            "Specified in kilobytes, default is 512.",
+            "Setting of 0 disables forced writeback.",
+        ],
+    ),
+    "bgwriter_lru_maxpages": SpecField(
+        type=FieldType.integer,
+        description=[
+            "In each round, no more than this many buffers will be "
+            + "written by the background writer.",
+            "Setting this to zero disables background writing.",
+            "Default is 100.",
+        ],
+    ),
+    "bgwriter_lru_multiplier": SpecField(
+        type=FieldType.float,
+        description=[
+            "The average recent need for new buffers is multiplied by "
+            + "bgwriter_lru_multiplier to arrive at an estimate of the number "
+            + "that will be needed during the next round, (up to bgwriter_lru_maxpages).",
+            "1.0 represents a “just in time” policy of writing exactly the number of "
+            + "buffers predicted to be needed.",
+            "Larger values provide some cushion against spikes in demand, "
+            + "while smaller values intentionally leave writes "
+            "to be done by server processes.",
+            "The default is 2.0.",
+        ],
+    ),
+    "deadlock_timeout": SpecField(
+        type=FieldType.integer,
+        description=[
+            "This is the amount of time, in milliseconds, to wait on a lock "
+            + "before checking to see if there is a deadlock condition."
+        ],
+    ),
+    "default_toast_compression": SpecField(
+        type=FieldType.string,
+        description=[
+            "Specifies the default TOAST compression method for values of "
+            + "compressible columns (the default is lz4)."
+        ],
+        choices=["pglz", "lz4"],
+    ),
+    "idle_in_transaction_session_timeout": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Time out sessions with open transactions after this number of milliseconds."
+        ],
+    ),
+    "jit": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Controls system-wide use of Just-in-Time Compilation (JIT)."
+        ],
+    ),
+    "max_files_per_process": SpecField(
+        type=FieldType.integer,
+        description=[
+            "PostgreSQL maximum number of files that can be open per process."
+        ],
+    ),
+    "max_locks_per_transaction": SpecField(
+        type=FieldType.integer,
+        description=["PostgreSQL maximum locks per transaction."],
+    ),
+    "max_logical_replication_workers": SpecField(
+        type=FieldType.integer,
+        description=[
+            "PostgreSQL maximum logical replication workers "
+            + "(taken from the pool of max_parallel_workers)."
+        ],
+    ),
+    "max_parallel_workers": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Sets the maximum number of workers that the system "
+            + "can support for parallel queries."
+        ],
+    ),
+    "max_parallel_workers_per_gather": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Sets the maximum number of workers that can be started "
+            + "by a single Gather or Gather Merge node."
+        ],
+    ),
+    "max_pred_locks_per_transaction": SpecField(
+        type=FieldType.integer,
+        description=["PostgreSQL maximum predicate locks per transaction."],
+    ),
+    "max_replication_slots": SpecField(
+        type=FieldType.integer,
+        description=["PostgreSQL maximum replication slots."],
+    ),
+    "max_slot_wal_keep_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "PostgreSQL maximum WAL size (MB) reserved for replication slots.",
+            "Default is -1 (unlimited).",
+            "wal_keep_size minimum WAL size setting takes precedence over this.",
+        ],
+    ),
+    "max_stack_depth": SpecField(
+        type=FieldType.integer,
+        description=["Maximum depth of the stack in bytes."],
+    ),
+    "max_standby_archive_delay": SpecField(
+        type=FieldType.integer,
+        description=["Max standby archive delay in milliseconds."],
+    ),
+    "max_standby_streaming_delay": SpecField(
+        type=FieldType.integer,
+        description=["Max standby streaming delay in milliseconds."],
+    ),
+    "max_wal_senders": SpecField(
+        type=FieldType.integer,
+        description=["PostgreSQL maximum WAL senders."],
+    ),
+    "max_worker_processes": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Sets the maximum number of background processes that the system can support."
+        ],
+    ),
+    "password_encryption": SpecField(
+        type=FieldType.string,
+        description=["Chooses the algorithm for encrypting passwords."],
+        choices=["md5", "scram-sha-256"],
+    ),
+    "pg_partman_bgw.interval": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Sets the time interval to run pg_partman's scheduled tasks."
+        ],
+    ),
+    "pg_partman_bgw.role": SpecField(
+        type=FieldType.string,
+        description=[
+            "Controls which role to use for pg_partman's scheduled background tasks."
+        ],
+    ),
+    "pg_stat_monitor.pgsm_enable_query_plan": SpecField(
+        type=FieldType.bool,
+        description=["Enables or disables query plan monitoring."],
+    ),
+    "pg_stat_monitor.pgsm_max_buckets": SpecField(
+        type=FieldType.integer,
+        description=["Sets the maximum number of buckets."],
+    ),
+    "pg_stat_statements.track": SpecField(
+        type=FieldType.string,
+        description=[
+            "Controls which statements are counted.",
+            "Specify 'top' to track top-level statements (those issued directly by clients), "
+            + "'all' to also track nested statements (such as statements "
+            + "invoked within functions), or 'none' to disable statement statistics collection.",
+            "The default value is 'top'.",
+        ],
+        choices=["top", "all", "none"],
+    ),
+    "temp_file_limit": SpecField(
+        type=FieldType.integer,
+        description=[
+            "PostgreSQL temporary file limit in KiB, -1 for unlimited."
+        ],
+    ),
+    "timezone": SpecField(
+        type=FieldType.string,
+        description=["PostgreSQL service timezone."],
+    ),
+    "track_activity_query_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Specifies the number of bytes reserved to track the currently "
+            + "executing command for each active session."
+        ],
+    ),
+    "track_commit_timestamp": SpecField(
+        type=FieldType.string,
+        description=["Record commit time of transactions."],
+        choices=["on", "off"],
+    ),
+    "track_functions": SpecField(
+        type=FieldType.string,
+        description=["Enables tracking of function call counts and time used."],
+        choices=["none", "pl", "all"],
+    ),
+    "track_io_timing": SpecField(
+        type=FieldType.string,
+        description=[
+            "Enables timing of database I/O calls.",
+            "This parameter is off by default, because it will repeatedly "
+            + "query the operating system for the current time, which may "
+            "cause significant overhead on some platforms.",
+        ],
+    ),
+    "wal_sender_timeout": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Terminate replication connections that are inactive for "
+            + "longer than this amount of time, in milliseconds.",
+            "Setting this value to zero disables the timeout.",
+        ],
+    ),
+    "wal_writer_delay": SpecField(
+        type=FieldType.integer,
+        description=[
+            "WAL flush interval in milliseconds.",
+            "Note that setting this value to lower than the default 200ms "
+            + "may negatively impact performance.",
+        ],
+    ),
+}
+
+SPEC_ENGINE_CONFIG_PGLOOKOUT = {
+    "max_failover_replication_time_lag": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Number of seconds of master unavailability before "
+            + "triggering database failover to standby."
+        ],
+    )
+}
+
+SPEC_ENGINE_CONFIG = {
+    "pg": SpecField(
+        type=FieldType.dict,
+        suboptions=SPEC_ENGINE_CONFIG_PG,
+        description=[
+            "The configuration for PostgreSQL.",
+            "Contains settings and controls for database behavior.",
+        ],
+    ),
+    "pglookout": SpecField(
+        type=FieldType.dict,
+        suboptions=SPEC_ENGINE_CONFIG_PGLOOKOUT,
+        description=[
+            "The configuration for pglookout.",
+            "Contains controls for failover and replication settings.",
+        ],
+    ),
+    "pg_stat_monitor_enable": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Enable the pg_stat_monitor extension.",
+            "Enabling this extension will cause the cluster to be restarted.",
+            "When this extension is enabled, pg_stat_statements results "
+            + "for utility commands are unreliable.",
+        ],
+    ),
+    "shared_buffers_percentage": SpecField(
+        type=FieldType.float,
+        description=[
+            "Percentage of total RAM that the database server uses for shared memory buffers.",
+            "Valid range is 20-60 (float), which corresponds to 20% - 60%.",
+            "This setting adjusts the shared_buffers configuration value.",
+        ],
+    ),
+    "work_mem": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Sets the maximum amount of memory to be used by a "
+            + "query operation (such as a sort or hash table) "
+            + "before writing to temporary disk files, in MB.",
+            "Default is 1MB + 0.075% of total RAM (up to 32MB).",
+        ],
+    ),
+}
+
 SPEC = {
     "state": SpecField(
         type=FieldType.string,
@@ -64,6 +415,16 @@ SPEC = {
     "engine": SpecField(
         type=FieldType.string,
         description=["The Managed Database engine in engine/version format."],
+        editable=True,
+    ),
+    "engine_config": SpecField(
+        type=FieldType.dict,
+        suboptions=SPEC_ENGINE_CONFIG,
+        description=[
+            "Various parameters used to configure this database's underlying engine.",
+            "NOTE: If a configuration parameter is not current accepted by this field, "
+            + "configure using the linode.cloud.api_request module.",
+        ],
         editable=True,
     ),
     "label": SpecField(
@@ -174,6 +535,7 @@ class Module(LinodeModuleBase):
                     "allow_list",
                     "cluster_size",
                     "engine",
+                    "engine_config",
                     "fork",
                     "label",
                     "region",
@@ -250,6 +612,7 @@ class Module(LinodeModuleBase):
                 "label",
                 "allow_list",
                 "cluster_size",
+                "engine_config",
                 "updates",
                 "type",
                 "version",

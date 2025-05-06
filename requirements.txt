@@ -1,3 +1,10 @@
-linode-api4>=5.29.0
+# TODO (Configurable DB Params): Uncomment after feature released in Python SDK
+# linode-api4>=5.29.0
+
+# Temporarily commented out while waiting for merge of https://github.com/linode/linode_api4-python/pull/542
+# git+https://github.com/linode/linode_api4-python.git@proj/configurable-db-params
+
+git+https://github.com/lgarber-akamai/linode_api4-python.git@fix/config-request-url
+
 polling==0.3.2
 ansible-specdoc>=0.0.19

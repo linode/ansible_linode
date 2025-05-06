@@ -1,0 +1,34 @@
+- name: database_config_info
+  block:
+    - name: Get all available configuration fields for MySQL databases
+      linode.cloud.database_config_info:
+        engine: mysql
+      register: get_database_config_mysql
+
+    - name: Assert the returned MySQL configuration fields match the expected schema
+      assert:
+        that:
+          - get_database_config_mysql.config.binlog_retention_period.type == "integer"
+          - get_database_config_mysql.config.binlog_retention_period.description != None
+          - get_database_config_mysql.config.mysql.innodb_flush_neighbors.type == "integer"
+          - get_database_config_mysql.config.mysql.innodb_flush_neighbors.description != None
+
+    - name: Get all available configuration fields for PostgreSQL databases
+      linode.cloud.database_config_info:
+        engine: postgresql
+      register: get_database_config_postgresql
+
+    - name: Assert the returned PostgreSQL configuration fields match the expected schema
+      assert:
+        that:
+          - get_database_config_postgresql.config.pg.bgwriter_lru_multiplier.type == "number"
+          - get_database_config_postgresql.config.pg.bgwriter_lru_multiplier.description != None
+          - get_database_config_postgresql.config.pglookout.max_failover_replication_time_lag.type == "integer"
+          - get_database_config_postgresql.config.pglookout.max_failover_replication_time_lag.description != None
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
