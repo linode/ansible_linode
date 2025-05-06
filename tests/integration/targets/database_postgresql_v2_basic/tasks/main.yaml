@@ -95,7 +95,7 @@
           - db_refresh.changed == False
 
     - name: Suspend the database
-      linode.cloud.database_mysql_v2:
+      linode.cloud.database_postgresql_v2:
         label: "ansible-test-{{ r }}"
         state: suspend
       register: db_suspend
@@ -106,7 +106,7 @@
           - db_suspend.changed == True
 
     - name: Resume the database
-      linode.cloud.database_mysql_v2:
+      linode.cloud.database_postgresql_v2:
         label: "ansible-test-{{ r }}"
         state: resume
       register: db_resume
