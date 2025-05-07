@@ -188,6 +188,12 @@ Create, read, and update a Linode PostgreSQL database.
           "created": "2025-02-10T20:10:20",
           "encrypted": true,
           "engine": "postgresql",
+          "engine_config": {
+            "pg": {
+              "autovacuum_analyze_scale_factor": 0.2
+            },
+            "work_mem": 1023
+          },
           "hosts": {
             "primary": "a225891-akamai-prod-1798333-default.g2a.akamaidb.net",
             "standby": "replica-a225891-akamai-prod-1798333-default.g2a.akamaidb.net"
@@ -208,12 +214,6 @@ Create, read, and update a Linode PostgreSQL database.
           "total_disk_size_gb": 30,
           "type": "g6-standard-1",
           "updated": "2025-02-10T20:25:55",
-          "engine_config": {
-            "pg": {
-              "autovacuum_analyze_scale_factor": 0.2
-            },
-            "work_mem": 1023
-          },
           "updates": {
             "day_of_week": 4,
             "duration": 4,
