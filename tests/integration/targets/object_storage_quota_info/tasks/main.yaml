@@ -1,0 +1,30 @@
+- name: object_storage_quota_info
+  block:
+    - name: List Object Storage Quotas
+      linode.cloud.object_storage_quota_list:
+        api_version: v4beta
+      register: obj_quota_list
+
+    - name: Assert at least one quota returned for the following test
+      assert:
+        that:
+          - obj_quota_list.object_storage_quotas | length > 0
+
+    - name: Get info about an Object Storage Quota
+      linode.cloud.object_storage_quota_info:
+        quota_id: '{{ obj_quota_list.object_storage_quotas[0].quota_id }}'
+        api_version: v4beta
+      register: obj_quota
+
+    - name: Assert GET Object Storage quota response
+      assert:
+        that:
+          - obj_quota.object_storage_quota.quota_id == obj_quota_list.object_storage_quotas[0].quota_id
+          - obj_quota.quota_usage.quota_limit
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
