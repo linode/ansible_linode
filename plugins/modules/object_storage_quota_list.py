@@ -20,6 +20,13 @@ def custom_api_filter_constructor(params: Dict[str, Any]) -> Dict[str, Any]:
     Customize a filter string for listing Object Storage Quota,
     because only a single basic filterable parameter can be supported currently by API.
     """
+    if params.get("order_by") is not None or params.get("order") is not None:
+        module.warn(
+            "order or order_by is currently not supported in listing object_storage_quotas, "
+            "and will be ignored if provided. "
+            "Please refer to the API documentation for more information."
+        )
+
     filters = params.get("filters")
 
     if filters is not None:
@@ -31,10 +38,6 @@ def custom_api_filter_constructor(params: Dict[str, Any]) -> Dict[str, Any]:
             "The filterable fields are limited. "
             "Please refer to the API documentation for more information."
         )
-
-    if params.get("order_by") is not None or params.get("order") is not None:
-        module.warn("[warning] order or order_by is currently not supported. "
-                    "Please refer to the API documentation for more information.")
 
     return {}
 
