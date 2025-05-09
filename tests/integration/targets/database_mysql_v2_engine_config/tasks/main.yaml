@@ -42,7 +42,7 @@
             innodb_change_buffer_max_size: 25
             innodb_flush_neighbors: 1
             innodb_ft_min_token_size: 3
-            innodb_ft_server_stopword_table: "db_name/table_name"
+            innodb_ft_server_stopword_table: # check if this value can be null
             innodb_lock_wait_timeout: 50
             innodb_log_buffer_size: 16777216
             innodb_online_alter_log_max_size: 134217728
@@ -81,7 +81,7 @@
           - db_create.database.engine_config.mysql.innodb_change_buffer_max_size == 25
           - db_create.database.engine_config.mysql.innodb_flush_neighbors == 1
           - db_create.database.engine_config.mysql.innodb_ft_min_token_size == 3
-          - db_create.database.engine_config.mysql.innodb_ft_server_stopword_table == "db_name/table_name"
+          - db_create.database.engine_config.mysql.get('innodb_ft_server_stopword_table', None) is none
           - db_create.database.engine_config.mysql.innodb_lock_wait_timeout == 50
           - db_create.database.engine_config.mysql.innodb_log_buffer_size == 16777216
           - db_create.database.engine_config.mysql.innodb_online_alter_log_max_size == 134217728
@@ -101,6 +101,11 @@
           - db_create.database.engine_config.mysql.sql_require_primary_key == False
           - db_create.database.engine_config.mysql.tmp_table_size == 16777216
           - db_create.database.engine_config.mysql.wait_timeout == 28800
+
+    - name: Assert nullable field safely returns null
+      assert:
+        that:
+          - db_create.database.engine_config.mysql.get('innodb_ft_server_stopword_table', None) is none
 
     - name: Update the database's engine_config
       linode.cloud.database_mysql_v2:

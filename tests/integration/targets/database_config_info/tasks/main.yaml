@@ -13,6 +13,34 @@
           - get_database_config_mysql.config.mysql.innodb_flush_neighbors.type == "integer"
           - get_database_config_mysql.config.mysql.innodb_flush_neighbors.description != None
 
+    - name: Assert MySQL config structure and types
+      assert:
+        that:
+          - get_database_config_mysql.config.mysql.connect_timeout.type == "integer"
+          - get_database_config_mysql.config.mysql.default_time_zone.type == "string"
+          - get_database_config_mysql.config.mysql.group_concat_max_len.type == "integer"
+          - get_database_config_mysql.config.mysql.information_schema_stats_expiry.type == "integer"
+          - get_database_config_mysql.config.mysql.innodb_change_buffer_max_size.type == "integer"
+          - get_database_config_mysql.config.mysql.innodb_flush_neighbors.type == "integer"
+          - get_database_config_mysql.config.mysql.innodb_ft_min_token_size.type == "integer"
+          - get_database_config_mysql.config.mysql.innodb_lock_wait_timeout.type == "integer"
+          - get_database_config_mysql.config.mysql.innodb_log_buffer_size.type == "integer"
+          - get_database_config_mysql.config.mysql.innodb_online_alter_log_max_size.type == "integer"
+          - get_database_config_mysql.config.mysql.innodb_read_io_threads.type == "integer"
+          - get_database_config_mysql.config.mysql.innodb_rollback_on_timeout.type == "boolean"
+          - get_database_config_mysql.config.mysql.innodb_thread_concurrency.type == "integer"
+          - get_database_config_mysql.config.mysql.innodb_write_io_threads.type == "integer"
+          - get_database_config_mysql.config.mysql.interactive_timeout.type == "integer"
+          - get_database_config_mysql.config.mysql.max_allowed_packet.type == "integer"
+          - get_database_config_mysql.config.mysql.max_heap_table_size.type == "integer"
+          - get_database_config_mysql.config.mysql.net_buffer_length.type == "integer"
+          - get_database_config_mysql.config.mysql.net_read_timeout.type == "integer"
+          - get_database_config_mysql.config.mysql.net_write_timeout.type == "integer"
+          - get_database_config_mysql.config.mysql.sql_mode.type == "string"
+          - get_database_config_mysql.config.mysql.sql_require_primary_key.type == "boolean"
+          - get_database_config_mysql.config.mysql.tmp_table_size.type == "integer"
+          - get_database_config_mysql.config.mysql.wait_timeout.type == "integer"
+
     - name: Get all available configuration fields for PostgreSQL databases
       linode.cloud.database_config_info:
         engine: postgresql
@@ -25,6 +53,40 @@
           - get_database_config_postgresql.config.pg.bgwriter_lru_multiplier.description != None
           - get_database_config_postgresql.config.pglookout.max_failover_replication_time_lag.type == "integer"
           - get_database_config_postgresql.config.pglookout.max_failover_replication_time_lag.description != None
+
+    - name: Assert types of PostgreSQL config values
+      assert:
+        that:
+          - get_database_config_postgresql.config.pg.autovacuum_analyze_scale_factor.type == "number"
+          - get_database_config_postgresql.config.pg.autovacuum_analyze_threshold.type == "integer"
+          - get_database_config_postgresql.config.pg.autovacuum_max_workers.type == "integer"
+          - get_database_config_postgresql.config.pg.autovacuum_naptime.type == "integer"
+          - get_database_config_postgresql.config.pg.autovacuum_vacuum_cost_delay.type == "integer"
+          - get_database_config_postgresql.config.pg.autovacuum_vacuum_cost_limit.type == "integer"
+          - get_database_config_postgresql.config.pg.autovacuum_vacuum_scale_factor.type == "number"
+          - get_database_config_postgresql.config.pg.autovacuum_vacuum_threshold.type == "integer"
+          - get_database_config_postgresql.config.pg.bgwriter_delay.type == "integer"
+          - get_database_config_postgresql.config.pg.bgwriter_flush_after.type == "integer"
+          - get_database_config_postgresql.config.pg.bgwriter_lru_maxpages.type == "integer"
+          - get_database_config_postgresql.config.pg.bgwriter_lru_multiplier.type == "number"
+          - get_database_config_postgresql.config.pg.deadlock_timeout.type == "integer"
+          - get_database_config_postgresql.config.pg.default_toast_compression.type == "string"
+          - get_database_config_postgresql.config.pg.idle_in_transaction_session_timeout.type == "integer"
+          - get_database_config_postgresql.config.pg.jit.type == "boolean"
+          - get_database_config_postgresql.config.pg.max_files_per_process.type == "integer"
+          - get_database_config_postgresql.config.pg.max_locks_per_transaction.type == "integer"
+          - get_database_config_postgresql.config.pg.max_logical_replication_workers.type == "integer"
+          - get_database_config_postgresql.config.pg.max_parallel_workers.type == "integer"
+          - get_database_config_postgresql.config.pg.max_parallel_workers_per_gather.type == "integer"
+          - get_database_config_postgresql.config.pg.max_pred_locks_per_transaction.type == "integer"
+          - get_database_config_postgresql.config.pg.max_replication_slots.type == "integer"
+          - get_database_config_postgresql.config.pg.max_slot_wal_keep_size.type == "integer"
+          - get_database_config_postgresql.config.pg.max_stack_depth.type == "integer"
+          - get_database_config_postgresql.config.pg.max_standby_archive_delay.type == "integer"
+          - get_database_config_postgresql.config.pg.max_standby_streaming_delay.type == "integer"
+          - get_database_config_postgresql.config.pg.max_wal_senders.type == "integer"
+          - get_database_config_postgresql.config.pg.max_worker_processes.type == "integer"
+          - get_database_config_postgresql.config.pg.password_encryption.default == "md5"
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
