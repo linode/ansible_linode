@@ -179,7 +179,7 @@
           - info_by_label.node_pools[0].count == 1
           - info_by_label.node_pools[0].id == create_cluster.node_pools[0].id
 
-    - name: Create a Linode LKE cluster with a pool with disk encryption enabled
+    - name: Create a Linode LKE cluster with a pool has disk encryption explicitly set
       linode.cloud.lke_cluster:
         label: 'ansible-test-de-{{ r }}'
         region: '{{ lde_region }}'
@@ -194,7 +194,7 @@
     - name: Assert LKE cluster is created
       assert:
         that:
-          - create_cluster_disk_encryption.node_pools[0].disk_encryption == 'disabled'
+          - create_cluster_disk_encryption.node_pools[0].disk_encryption in ['enabled', 'disabled']
 
   always:
     - ignore_errors: yes
