@@ -122,9 +122,9 @@ else
 	exit 1;
 endif
 	@echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)
-	@echo "api_url: $(TEST_API_URL)" >> $(INTEGRATION_CONFIG)
-	@echo "api_version: $(TEST_API_VERSION)" >> $(INTEGRATION_CONFIG)
-	@echo "ca_file: $(TEST_API_CA)" >> $(INTEGRATION_CONFIG)
+	@echo "api_url: $${LINODE_API_URL:-$${TEST_API_URL:-https://api.linode.com/}}" >> $(INTEGRATION_CONFIG)
+	@echo "api_version: $${LINODE_API_VERSION:-$${TEST_API_VERSION:-v4beta}}" >> $(INTEGRATION_CONFIG)
+	@echo "ca_file: $${LINODE_CA:-$${TEST_API_CA}}" >> $(INTEGRATION_CONFIG)
 
 inject:
 	@echo "Injecting documentation into source files"
