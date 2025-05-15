@@ -61,6 +61,7 @@ class ListModule(
         deprecation_message: Optional[str] = None,
         custom_options: Optional[Dict[str, SpecField]] = None,
         custom_field_resolver: Optional[callable] = None,
+        custom_api_filter_constructor: Optional[callable] = None,
     ) -> None:
         self.result_display_name = result_display_name
         self.result_field_name = result_field_name
@@ -68,6 +69,9 @@ class ListModule(
 
         # Store the custom field resolver, if provided
         self.custom_field_resolver = custom_field_resolver
+
+        # Store the custom api filter constructor, if provided
+        self.custom_api_filter_constructor = custom_api_filter_constructor
 
         self.result_docs_url = (
             result_docs_url
@@ -102,7 +106,12 @@ class ListModule(
         if self.deprecated:
             self.warn(self.deprecation_message)
 
-        filter_dict = construct_api_filter(self.module.params)
+        # Use custom API filter constructor if provided
+        filter_dict = (
+            self.custom_api_filter_constructor(self.module.params)
+            if self.custom_api_filter_constructor
+            else construct_api_filter(self.module.params)
+        )
 
         # Dynamically resolve fields if custom logic is provided
         if self.custom_field_resolver:
