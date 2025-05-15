@@ -45,6 +45,7 @@ class ListModule(
 ):  # pylint: disable=too-many-instance-attributes
     """A common module for listing API resources given a set of filters."""
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         result_display_name: str,
@@ -58,10 +59,19 @@ class ListModule(
         requires_beta: bool = False,
         deprecated: bool = False,
         deprecation_message: Optional[str] = None,
+        custom_options: Optional[Dict[str, SpecField]] = None,
+        custom_field_resolver: Optional[callable] = None,
+        custom_api_filter_constructor: Optional[callable] = None,
     ) -> None:
         self.result_display_name = result_display_name
         self.result_field_name = result_field_name
         self.endpoint_template = endpoint_template
+
+        # Store the custom field resolver, if provided
+        self.custom_field_resolver = custom_field_resolver
+
+        # Store the custom api filter constructor, if provided
+        self.custom_api_filter_constructor = custom_api_filter_constructor
 
         self.result_docs_url = (
             result_docs_url
@@ -79,6 +89,9 @@ class ListModule(
             deprecation_message or "This module has been deprecated."
         )
 
+        # Store custom options if provided
+        self.custom_options = custom_options or {}
+
         self.module_arg_spec = self.spec.ansible_spec
         self.results: Dict[str, Any] = {self.result_field_name: []}
 
@@ -93,7 +106,17 @@ class ListModule(
         if self.deprecated:
             self.warn(self.deprecation_message)
 
-        filter_dict = construct_api_filter(self.module.params)
+        # Use custom API filter constructor if provided
+        filter_dict = (
+            self.custom_api_filter_constructor(self.module.params)
+            if self.custom_api_filter_constructor
+            else construct_api_filter(self.module.params)
+        )
+
+        # Dynamically resolve fields if custom logic is provided
+        if self.custom_field_resolver:
+            docs = self.custom_field_resolver(self.module.params)
+            self.endpoint_template = docs["endpoint_template"]
 
         self.results[self.result_field_name] = get_all_paginated(
             self.client,
@@ -159,6 +182,8 @@ class ListModule(
                 ],
             ),
         }
+
+        options.update(self.custom_options)
 
         # Add the parent fields to the spec
         for param in self.params:

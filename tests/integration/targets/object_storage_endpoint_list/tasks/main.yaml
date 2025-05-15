@@ -1,0 +1,22 @@
+- name: object_storage_endpoint_list
+  block:
+    - name: List all Object Storage endpoints
+      linode.cloud.object_storage_endpoint_list: {}
+      register: all
+
+    - assert:
+        that:
+          - all.endpoints | length > 0
+          - all.endpoints[0].endpoint_type != None
+          - all.endpoints[0].region != None
+          - all.endpoints[0].s3_endpoint != None
+
+    # NOTE: The /object-storage/endpoints endpoint does not support filtering at this time.
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

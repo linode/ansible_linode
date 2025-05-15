@@ -1,0 +1,63 @@
+- name: lke_cluster_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Resolve the latest K8s version
+      linode.cloud.lke_version_list: {}
+      register: get_lke_versions
+
+    - set_fact:
+        kube_version: "{{ get_lke_versions.lke_versions[0].id }}"
+
+    - name: Create a Linode LKE cluster meets minimum APL-compatible
+      linode.cloud.lke_cluster:
+        label: "ansible-test-{{ r }}"
+        region: us-mia
+        k8s_version: "{{ kube_version }}"
+        node_pools:
+          - type: g6-dedicated-4
+            count: 3
+        high_availability: true
+        apl_enabled: true
+        skip_polling: true
+        state: present
+      register: create_cluster
+
+    - set_fact:
+        apl_console_url: "https://console.lke{{ create_cluster.cluster.id }}.akamai-apl.net"
+        apl_health_check_url: "https://auth.lke{{ create_cluster.cluster.id }}.akamai-apl.net/ready"
+
+    - name: Assert LKE cluster is created with APL enabled
+      assert:
+        that:
+          - create_cluster.cluster.apl_enabled
+          - create_cluster.cluster.apl_console_url == apl_console_url
+          - create_cluster.cluster.apl_health_check_url == apl_health_check_url
+
+    - name: Attempt to get the clster info
+      linode.cloud.lke_cluster_info:
+        label: '{{ create_cluster.cluster.label }}'
+      register: cluster_info
+
+    - name: Assert LKE cluster info has APL enabled
+      assert:
+        that:
+          - cluster_info.cluster.apl_enabled
+          - cluster_info.cluster.apl_console_url == apl_console_url
+          - cluster_info.cluster.apl_health_check_url == apl_health_check_url
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the LKE cluster
+          linode.cloud.lke_cluster:
+            label: "{{ create_cluster.cluster.label }}"
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: "{{ ua_prefix }}"
+    LINODE_API_TOKEN: "{{ api_token }}"
+    LINODE_API_URL: "{{ api_url }}"
+    LINODE_API_VERSION: "{{ api_version }}"
+    LINODE_CA: "{{ ca_file or '' }}"
