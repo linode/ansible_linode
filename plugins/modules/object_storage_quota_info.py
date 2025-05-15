@@ -50,7 +50,6 @@ module = InfoModule(
             )._raw_json,
         ),
     ],
-    requires_beta=True,
 )
 
 SPECDOC_META = module.spec

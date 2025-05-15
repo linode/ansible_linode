@@ -49,7 +49,6 @@ module = ListModule(
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-object-storage-quotas",
     result_samples=docs.result_object_storage_quotas_samples,
     examples=docs.specdoc_examples,
-    requires_beta=True,
     custom_api_filter_constructor=custom_api_filter_constructor,
 )
 

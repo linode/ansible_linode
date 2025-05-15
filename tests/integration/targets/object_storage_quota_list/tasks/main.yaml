@@ -2,7 +2,6 @@
   block:
     - name: List and filter Object Storage Quotas by s3_endpoint
       linode.cloud.object_storage_quota_list:
-        api_version: v4beta
         filters:
           - name: s3_endpoint
             values:

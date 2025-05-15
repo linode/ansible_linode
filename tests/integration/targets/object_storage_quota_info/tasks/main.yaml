@@ -2,7 +2,6 @@
   block:
     - name: List Object Storage Quotas
       linode.cloud.object_storage_quota_list:
-        api_version: v4beta
       register: obj_quota_list
 
     - name: Assert at least one quota returned for the following test
@@ -13,7 +12,6 @@
     - name: Get info about an Object Storage Quota
       linode.cloud.object_storage_quota_info:
         quota_id: '{{ obj_quota_list.object_storage_quotas[0].quota_id }}'
-        api_version: v4beta
       register: obj_quota
 
     - name: Assert GET Object Storage quota response

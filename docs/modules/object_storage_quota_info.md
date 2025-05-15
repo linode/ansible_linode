@@ -2,8 +2,6 @@
 
 Get info about a Linode Object Storage Quota.
 
-WARNING! This module makes use of beta endpoints and requires the C(api_version) field be explicitly set to C(v4beta).
-
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -20,7 +18,6 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
 - name: Get info about an Object Storage quota
   linode.cloud.object_storage_quota_info: 
     quota_id: obj-buckets-us-sea-1.linodeobjects.com
-
 ```
 
 

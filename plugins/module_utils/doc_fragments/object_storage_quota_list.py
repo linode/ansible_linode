@@ -3,12 +3,10 @@
 specdoc_examples = ['''
 - name: List all of Object Storage Quotas for the current account
   linode.cloud.object_storage_quotas:
-    api_version: v4beta
     filters:
       - name: s3_endpoint
         values:
-          - es-mad-1.linodeobjects.com 
-''']
+          - es-mad-1.linodeobjects.com''']
 
 result_object_storage_quotas_samples = ['''[
         {

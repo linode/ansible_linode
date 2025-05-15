@@ -2,8 +2,6 @@
 
 List and filter on Object Storage Quotas.
 
-WARNING! This module makes use of beta endpoints and requires the C(api_version) field be explicitly set to C(v4beta).
-
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -19,12 +17,10 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
 ```yaml
 - name: List all of Object Storage Quotas for the current account
   linode.cloud.object_storage_quotas:
-    api_version: v4beta
     filters:
       - name: s3_endpoint
         values:
-          - es-mad-1.linodeobjects.com 
-
+          - es-mad-1.linodeobjects.com
 ```
 
 

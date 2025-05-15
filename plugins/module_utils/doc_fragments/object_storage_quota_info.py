@@ -19,5 +19,4 @@ result_object_storage_quota_usage_samples = ['''{
 specdoc_examples = ['''
 - name: Get info about an Object Storage quota
   linode.cloud.object_storage_quota_info: 
-    quota_id: obj-buckets-us-sea-1.linodeobjects.com
-''']
+    quota_id: obj-buckets-us-sea-1.linodeobjects.com''']
