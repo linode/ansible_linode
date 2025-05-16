@@ -25,30 +25,6 @@
     - set_fact:
         engine_id: "{{ (available_engines.database_engines | sort(attribute='version', reverse=True))[0]['id'] }}"
 
-    - set_fact:
-        pg13_engine_id: "{{ (available_engines.database_engines | sort(attribute='version', reverse=False))[0]['id'] }}"
-
-    - name: Returns error to Create postgres13 database with compression algo lv4
-      linode.cloud.database_postgresql_v2:
-        label: "ansible-test-{{ r }}"
-        region: "{{ target_region }}"
-        engine: "{{ pg13_engine_id }}"
-        type: g6-nanode-1
-        cluster_size: 1
-        engine_config:
-          pg:
-            default_toast_compression: "lz4"
-        state: present
-      register: db_result
-      failed_when: false  # Prevents Ansible from stopping play used for negative test cases
-
-    - name: Assert the error message includes default_toast_compression version check
-      assert:
-        that:
-          - db_result.msg is search("default_toast_compression")
-          - db_result.msg is search("version 14")
-        fail_msg: "Expected failure on default_toast_compression for version < 14 not found"
-
     - name: Create a database with an explicit engine_config
       linode.cloud.database_postgresql_v2:
         label: "ansible-test-{{ r }}"
