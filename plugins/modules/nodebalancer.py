@@ -76,7 +76,7 @@ linode_configs_spec = {
             "What algorithm this NodeBalancer should use "
             "for routing traffic to backends."
         ],
-        choices=["roundrobin", "leastconn", "source"],
+        choices=["roundrobin", "leastconn", "source", "ring_hash"],
     ),
     "check": SpecField(
         type=FieldType.string,
@@ -143,15 +143,23 @@ linode_configs_spec = {
             "failed."
         ],
     ),
+    "udp_check_port": SpecField(
+        type=FieldType.integer,
+        required=False,
+        editable=True,
+        description=[
+            "Specifies the port on the backend node used for active health checks, which "
+            "may differ from the port serving traffic."
+        ],
+    ),
     "cipher_suite": SpecField(
         type=FieldType.string,
         required=False,
-        default="recommended",
         editable=True,
         description=[
             "What ciphers to use for SSL connections served by this NodeBalancer."
         ],
-        choices=["recommended", "legacy"],
+        choices=["recommended", "legacy", "none"],
     ),
     "port": SpecField(
         type=FieldType.integer,
@@ -164,7 +172,7 @@ linode_configs_spec = {
         required=False,
         editable=True,
         description=["The protocol this port is configured to serve."],
-        choices=["http", "https", "tcp"],
+        choices=["http", "https", "tcp", "udp"],
     ),
     "proxy_protocol": SpecField(
         type=FieldType.string,
@@ -211,7 +219,7 @@ linode_configs_spec = {
         description=[
             "Controls how session stickiness is handled on this port."
         ],
-        choices=["none", "table", "http_cookie"],
+        choices=["none", "table", "http_cookie", "session", "source_ip"],
     ),
     "nodes": SpecField(
         type=FieldType.list,
@@ -237,6 +245,14 @@ linode_nodebalancer_spec = {
         editable=True,
         description=[
             "Throttle connections per second.",
+            "Set to 0 (zero) to disable throttling.",
+        ],
+    ),
+    "client_udp_sess_throttle": SpecField(
+        type=FieldType.integer,
+        editable=True,
+        description=[
+            "Throttle UDP sessions per second (0-20).",
             "Set to 0 (zero) to disable throttling.",
         ],
     ),
@@ -305,7 +321,11 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-MUTABLE_FIELDS: Set[str] = {"client_conn_throttle", "tags"}
+MUTABLE_FIELDS: Set[str] = {
+    "client_conn_throttle",
+    "tags",
+    "client_udp_sess_throttle",
+}
 
 DOCUMENTATION = r"""
 """
@@ -372,7 +392,14 @@ class LinodeNodeBalancer(LinodeModuleBase):
         params = {
             k: v
             for k, v in self.module.params.items()
-            if k in {"client_conn_throttle", "label", "firewall_id", "tags"}
+            if k
+            in {
+                "client_udp_sess_throttle",
+                "client_conn_throttle",
+                "label",
+                "firewall_id",
+                "tags",
+            }
         }
 
         try:

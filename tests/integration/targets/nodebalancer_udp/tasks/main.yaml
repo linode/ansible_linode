@@ -1,0 +1,95 @@
+- name: nodebalancer_udp
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: create nodebalancer
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-{{ r }}'
+        region: ap-northeast
+        client_udp_sess_throttle: 3
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: create_nodebalancer
+
+    - name: Assert NodeBalancer is created
+      assert:
+        that:
+          - create_nodebalancer.changed
+          - create_nodebalancer.configs|length == 0
+          - create_nodebalancer.node_balancer.client_udp_sess_throttle == 3
+
+    - name: Add NodeBalancer config
+      linode.cloud.nodebalancer:
+        label: '{{ create_nodebalancer.node_balancer.label }}'
+        region: ap-northeast
+        client_udp_sess_throttle: 3
+        state: present
+        configs:
+          - port: 80
+            protocol: udp
+            algorithm: roundrobin
+            udp_check_port: 12345
+      register: create_config
+
+    - name: Assert nb config is added
+      assert:
+        that:
+          - create_config.configs|length == 1
+          - create_config.configs[0].port == 80
+          - create_config.configs[0].udp_check_port == 12345
+
+    - name: Update NodeBalancer config
+      linode.cloud.nodebalancer:
+        label: '{{ create_nodebalancer.node_balancer.label }}'
+        region: ap-northeast
+        client_udp_sess_throttle: 3
+        state: present
+        configs:
+          - port: 80
+            protocol: udp
+            algorithm: roundrobin
+            udp_check_port: 1234
+      register: update_config
+
+    - name: Assert nb config is updated
+      assert:
+        that:
+          - update_config.configs|length == 1
+          - update_config.configs[0].udp_check_port == 1234
+          - update_config.changed
+
+    - name: Get nodebalancer_info
+      linode.cloud.nodebalancer_info:
+        label: '{{ create_nodebalancer.node_balancer.label }}'
+      register: nb_info
+
+    - name: Assert nb info
+      assert:
+        that:
+          - nb_info.node_balancer.id == create_nodebalancer.node_balancer.id
+          - nb_info.configs[0].udp_check_port == 1234
+          - nb_info.configs[0].udp_session_timeout == 16
+          - nb_info.node_balancer.client_udp_sess_throttle == 3
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the NodeBalancer
+          linode.cloud.nodebalancer:
+            label: '{{ create_nodebalancer.node_balancer.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert NodeBalancer delete
+          assert:
+            that:
+              - delete.changed
+              - delete.node_balancer.id == create_nodebalancer.node_balancer.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
