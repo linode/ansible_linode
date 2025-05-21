@@ -3,6 +3,10 @@
 
 """
 Implementation of linode.cloud.database_config_info module.
+
+More information is available here:
+    https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-config
+    https://techdocs.akamai.com/linode-api/reference/get-databases-postgresql-config
 """
 
 from __future__ import absolute_import, division, print_function
