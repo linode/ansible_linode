@@ -40,7 +40,7 @@ from linode_api4 import MySQLDatabase
 SPEC = {
     "state": SpecField(
         type=FieldType.string,
-        choices=["present", "absent"],
+        choices=["resume", "suspend", "present", "absent"],
         required=True,
         description=["The desired state of the Managed Database."],
     ),
@@ -311,7 +311,7 @@ class Module(LinodeModuleBase):
 
         self._populate_results(result)
 
-    def _handle_absent(self) -> None:
+    def _handle_else(self, state: str) -> None:
         params = self.module.params
 
         database = safe_find(
@@ -322,18 +322,33 @@ class Module(LinodeModuleBase):
         if database is not None:
             self._populate_results(database)
 
-            database.delete()
+            if state == "suspend":
+                self._handle_suspend(database)
+            elif state == "resume":
+                self._handle_resume(database)
+            else:
+                self._handle_absent(database)
 
-            self.register_action(f"Deleted MySQL database {database.id}")
+    def _handle_absent(self, database: MySQLDatabase) -> None:
+        database.delete()
+        self.register_action(f"Deleted MySQL database {database.id}")
+
+    def _handle_suspend(self, database: MySQLDatabase) -> None:
+        database.suspend()
+        self.register_action(f"Suspended MySQL database {database.id}")
+
+    def _handle_resume(self, database: MySQLDatabase) -> None:
+        database.resume()
+        self.register_action(f"Resumed MySQL database {database.id}")
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for token module"""
         state = kwargs.get("state")
 
-        if state == "absent":
-            self._handle_absent()
-        else:
+        if state == "present":
             self._handle_present()
+        else:
+            self._handle_else(state)
 
         return self.results
 
