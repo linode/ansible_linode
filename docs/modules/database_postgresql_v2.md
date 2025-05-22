@@ -82,7 +82,7 @@ Create, read, and update a Linode PostgreSQL database.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the Managed Database.  **(Choices: `present`, `absent`)** |
+| `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the Managed Database.  **(Choices: `resume`, `suspend`, `present`, `absent`)** |
 | `allow_list` | <center>`list`</center> | <center>Optional</center> | A list of IP addresses and CIDR ranges that can access the Managed Database.  **(Updatable)** |
 | `cluster_size` | <center>`int`</center> | <center>Optional</center> | The number of Linode instance nodes deployed to the Managed Database.  **(Updatable)** |
 | `engine` | <center>`str`</center> | <center>Optional</center> | The Managed Database engine in engine/version format.  **(Updatable)** |

@@ -94,6 +94,28 @@
         that:
           - db_refresh.changed == False
 
+    - name: Suspend the database
+      linode.cloud.database_mysql_v2:
+        label: "ansible-test-{{ r }}"
+        state: suspend
+      register: db_suspend
+
+    - name: Assert database is suspended
+      assert:
+        that:
+          - db_suspend.changed == True
+
+    - name: Resume the database
+      linode.cloud.database_mysql_v2:
+        label: "ansible-test-{{ r }}"
+        state: resume
+      register: db_resume
+
+    - name: Assert database is resumed
+      assert:
+        that:
+          - db_resume.changed == True
+
   always:
     - ignore_errors: true
       block:

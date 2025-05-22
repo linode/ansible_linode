@@ -76,6 +76,7 @@ Name | Description |
 [linode.cloud.lke_version_info](./docs/modules/lke_version_info.md)|Get info about a Linode LKE Version.|
 [linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode Node Balancer.|
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
+[linode.cloud.object_storage_quota_info](./docs/modules/object_storage_quota_info.md)|Get info about a Linode Object Storage Quota.|
 [linode.cloud.placement_group_info](./docs/modules/placement_group_info.md)|Get info about a Linode Placement Group.|
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
 [linode.cloud.region_info](./docs/modules/region_info.md)|Get info about a Linode Region.|
@@ -113,6 +114,7 @@ Name | Description |
 [linode.cloud.nodebalancer_type_list](./docs/modules/nodebalancer_type_list.md)|List and filter on Node Balancer Types.|
 [linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.object_storage_endpoint_list](./docs/modules/object_storage_endpoint_list.md)|List and filter on Object Storage Endpoints.|
+[linode.cloud.object_storage_quota_list](./docs/modules/object_storage_quota_list.md)|List and filter on Object Storage Quotas.|
 [linode.cloud.placement_group_list](./docs/modules/placement_group_list.md)|List and filter on Placement Groups.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH Keys.|
