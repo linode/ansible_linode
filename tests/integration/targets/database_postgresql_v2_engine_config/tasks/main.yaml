@@ -1,0 +1,379 @@
+- name: database_postgresql_v2_engine_config
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        target_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Databases") | list)[0]["id"] }}'
+
+    - name: Get an available PostgreSQL engine
+      linode.cloud.database_engine_list:
+        filters:
+          - name: engine
+            values: postgresql
+      register: available_engines
+
+    - name: Assert available database_engine_list
+      assert:
+        that:
+          - available_engines.database_engines | length >= 1
+
+    - set_fact:
+        engine_id: "{{ (available_engines.database_engines | sort(attribute='version', reverse=True))[0]['id'] }}"
+
+    - name: Create a database with an explicit engine_config
+      linode.cloud.database_postgresql_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: g6-nanode-1
+        cluster_size: 1
+        engine_config:
+          pg:
+            autovacuum_analyze_scale_factor: 0.1
+            autovacuum_analyze_threshold: 50
+            autovacuum_max_workers: 3
+            autovacuum_naptime: 60
+            autovacuum_vacuum_cost_delay: 20
+            autovacuum_vacuum_cost_limit: 200
+            autovacuum_vacuum_scale_factor: 0.2
+            autovacuum_vacuum_threshold: 50
+            bgwriter_delay: 200
+            bgwriter_flush_after: 64
+            bgwriter_lru_maxpages: 100
+            bgwriter_lru_multiplier: 2.0
+            deadlock_timeout: 1000
+            default_toast_compression: "lz4"
+            idle_in_transaction_session_timeout: 600000
+            jit: true
+            max_files_per_process: 1000
+            max_locks_per_transaction: 64
+            max_logical_replication_workers: 4
+            max_parallel_workers: 4
+            max_parallel_workers_per_gather: 2
+            max_pred_locks_per_transaction: 64
+            max_replication_slots: 10
+            max_slot_wal_keep_size: 2048
+            max_stack_depth: 6291456
+            max_standby_archive_delay: 30000
+            max_standby_streaming_delay: 30000
+            max_wal_senders: 20
+            max_worker_processes: 8
+            password_encryption: "scram-sha-256"
+            temp_file_limit: 1
+            timezone: "UTC"
+            track_activity_query_size: 2048
+            track_functions: "all"
+            wal_sender_timeout: 60000
+            wal_writer_delay: 200
+            pg_partman_bgw.interval: 3600
+            pg_partman_bgw.role: "myrolename"
+            pg_stat_monitor.pgsm_enable_query_plan: true
+            pg_stat_monitor.pgsm_max_buckets: 2
+            pg_stat_statements.track: "top"
+          pglookout:
+            max_failover_replication_time_lag: 10
+          pg_stat_monitor_enable: true
+          shared_buffers_percentage: 25.0
+          work_mem: 1024
+        state: present
+      register: db_create
+
+    - name: Assert database is created
+      assert:
+        that:
+          - db_create.changed
+          - db_create.database.status == 'active'
+          - db_create.database.cluster_size == 1
+          - db_create.database.engine == 'postgresql'
+          - db_create.database.region == target_region
+          - db_create.database.engine_config.pg.autovacuum_analyze_scale_factor == 0.1
+          - db_create.database.engine_config.pg.autovacuum_analyze_threshold == 50
+          - db_create.database.engine_config.pg.autovacuum_max_workers == 3
+          - db_create.database.engine_config.pg.autovacuum_naptime == 60
+          - db_create.database.engine_config.pg.autovacuum_vacuum_cost_delay == 20
+          - db_create.database.engine_config.pg.autovacuum_vacuum_cost_limit == 200
+          - db_create.database.engine_config.pg.autovacuum_vacuum_scale_factor == 0.2
+          - db_create.database.engine_config.pg.autovacuum_vacuum_threshold == 50
+          - db_create.database.engine_config.pg.bgwriter_delay == 200
+          - db_create.database.engine_config.pg.bgwriter_flush_after == 64
+          - db_create.database.engine_config.pg.bgwriter_lru_maxpages == 100
+          - db_create.database.engine_config.pg.bgwriter_lru_multiplier == 2.0
+          - db_create.database.engine_config.pg.deadlock_timeout == 1000
+          - db_create.database.engine_config.pg.default_toast_compression == "lz4"
+          - db_create.database.engine_config.pg.idle_in_transaction_session_timeout == 600000
+          - db_create.database.engine_config.pg.jit == true
+          - db_create.database.engine_config.pg.max_files_per_process == 1000
+          - db_create.database.engine_config.pg.max_locks_per_transaction == 64
+          - db_create.database.engine_config.pg.max_logical_replication_workers == 4
+          - db_create.database.engine_config.pg.max_parallel_workers == 4
+          - db_create.database.engine_config.pg.max_parallel_workers_per_gather == 2
+          - db_create.database.engine_config.pg.max_pred_locks_per_transaction == 64
+          - db_create.database.engine_config.pg.max_replication_slots == 10
+          - db_create.database.engine_config.pg.max_slot_wal_keep_size == 2048
+          - db_create.database.engine_config.pg.max_stack_depth == 6291456
+          - db_create.database.engine_config.pg.max_standby_archive_delay == 30000
+          - db_create.database.engine_config.pg.max_standby_streaming_delay == 30000
+          - db_create.database.engine_config.pg.max_wal_senders == 20
+          - db_create.database.engine_config.pg.max_worker_processes == 8
+          - db_create.database.engine_config.pg.password_encryption == "scram-sha-256"
+          - db_create.database.engine_config.pg.temp_file_limit == 1
+          - db_create.database.engine_config.pg.timezone == "UTC"
+          - db_create.database.engine_config.pg.track_activity_query_size == 2048
+          - db_create.database.engine_config.pg.track_functions == "all"
+          - db_create.database.engine_config.pg.wal_sender_timeout == 60000
+          - db_create.database.engine_config.pg.wal_writer_delay == 200
+          - db_create.database.engine_config.pg["pg_partman_bgw.interval"] == 3600
+          - db_create.database.engine_config.pg["pg_partman_bgw.role"] == "myrolename"
+          - db_create.database.engine_config.pg["pg_stat_monitor.pgsm_enable_query_plan"] == true
+          - db_create.database.engine_config.pg["pg_stat_monitor.pgsm_max_buckets"] == 2
+          - db_create.database.engine_config.pg["pg_stat_statements.track"] == "top"
+          - db_create.database.engine_config.pglookout.max_failover_replication_time_lag == 10
+          - db_create.database.engine_config.pg_stat_monitor_enable == true
+          - db_create.database.engine_config.shared_buffers_percentage == 25.0
+          - db_create.database.engine_config.work_mem == 1024
+
+    - name: Update the database's engine_config
+      linode.cloud.database_postgresql_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: g6-nanode-1
+        cluster_size: 1
+        engine_config:
+          pg:
+            autovacuum_analyze_scale_factor: 0.2
+            autovacuum_analyze_threshold: 51
+            autovacuum_max_workers: 2
+            autovacuum_naptime: 61
+            autovacuum_vacuum_cost_delay: 21
+            autovacuum_vacuum_cost_limit: 201
+            autovacuum_vacuum_scale_factor: 0.3
+            autovacuum_vacuum_threshold: 51
+            bgwriter_delay: 201
+            bgwriter_flush_after: 63
+            bgwriter_lru_maxpages: 99
+            bgwriter_lru_multiplier: 1.0
+            deadlock_timeout: 999
+            default_toast_compression: "lz4"
+            idle_in_transaction_session_timeout: 600001
+            jit: false
+            max_files_per_process: 1001
+            max_locks_per_transaction: 65
+            max_logical_replication_workers: 6
+            max_parallel_workers: 3
+            max_parallel_workers_per_gather: 4
+            max_pred_locks_per_transaction: 67
+            max_replication_slots: 9
+            max_slot_wal_keep_size: 1024
+            max_stack_depth: 6291455
+            max_standby_archive_delay: 30001
+            max_standby_streaming_delay: 30001
+            max_wal_senders: 21
+            max_worker_processes: 10
+            password_encryption: "md5"
+            temp_file_limit: 2
+            timezone: "America/New_York"
+            track_activity_query_size: 1024
+            track_functions: "pl"
+            wal_sender_timeout: 60001
+            wal_writer_delay: 199
+            pg_partman_bgw.interval: 3601
+            pg_partman_bgw.role: "myupdatedrolename"
+            pg_stat_monitor.pgsm_enable_query_plan: false
+            pg_stat_monitor.pgsm_max_buckets: 3
+            pg_stat_statements.track: "none"
+          pglookout:
+            max_failover_replication_time_lag: 13
+          pg_stat_monitor_enable: false
+          shared_buffers_percentage: 24.0
+          work_mem: 1023
+        state: present
+      register: db_update
+
+    - name: Assert database is updated
+      assert:
+        that:
+          - db_update.database.cluster_size == 1
+          - db_update.database.engine == 'postgresql'
+          - db_update.database.region == target_region
+          - db_update.database.status == 'active'
+          - db_update.database.engine_config.pg.autovacuum_analyze_scale_factor == 0.2
+          - db_update.database.engine_config.pg.autovacuum_analyze_threshold == 51
+          - db_update.database.engine_config.pg.autovacuum_max_workers == 2
+          - db_update.database.engine_config.pg.autovacuum_naptime == 61
+          - db_update.database.engine_config.pg.autovacuum_vacuum_cost_delay == 21
+          - db_update.database.engine_config.pg.autovacuum_vacuum_cost_limit == 201
+          - db_update.database.engine_config.pg.autovacuum_vacuum_scale_factor == 0.3
+          - db_update.database.engine_config.pg.autovacuum_vacuum_threshold == 51
+          - db_update.database.engine_config.pg.bgwriter_delay == 201
+          - db_update.database.engine_config.pg.bgwriter_flush_after == 63
+          - db_update.database.engine_config.pg.bgwriter_lru_maxpages == 99
+          - db_update.database.engine_config.pg.bgwriter_lru_multiplier == 1.0
+          - db_update.database.engine_config.pg.deadlock_timeout == 999
+          - db_update.database.engine_config.pg.default_toast_compression == "lz4"
+          - db_update.database.engine_config.pg.idle_in_transaction_session_timeout == 600001
+          - db_update.database.engine_config.pg.jit == false
+          - db_update.database.engine_config.pg.max_files_per_process == 1001
+          - db_update.database.engine_config.pg.max_locks_per_transaction == 65
+          - db_update.database.engine_config.pg.max_logical_replication_workers == 6
+          - db_update.database.engine_config.pg.max_parallel_workers == 3
+          - db_update.database.engine_config.pg.max_parallel_workers_per_gather == 4
+          - db_update.database.engine_config.pg.max_pred_locks_per_transaction == 67
+          - db_update.database.engine_config.pg.max_replication_slots == 9
+          - db_update.database.engine_config.pg.max_slot_wal_keep_size == 1024
+          - db_update.database.engine_config.pg.max_stack_depth == 6291455
+          - db_update.database.engine_config.pg.max_standby_archive_delay == 30001
+          - db_update.database.engine_config.pg.max_standby_streaming_delay == 30001
+          - db_update.database.engine_config.pg.max_wal_senders == 21
+          - db_update.database.engine_config.pg.max_worker_processes == 10
+          - db_update.database.engine_config.pg.password_encryption == "md5"
+          - db_update.database.engine_config.pg.temp_file_limit == 2
+          - db_update.database.engine_config.pg.timezone == "America/New_York"
+          - db_update.database.engine_config.pg.track_activity_query_size == 1024
+          - db_update.database.engine_config.pg.track_functions == "pl"
+          - db_update.database.engine_config.pg.wal_sender_timeout == 60001
+          - db_update.database.engine_config.pg.wal_writer_delay == 199
+          - db_update.database.engine_config.pg["pg_partman_bgw.interval"] == 3601
+          - db_update.database.engine_config.pg["pg_partman_bgw.role"] == "myupdatedrolename"
+          - db_update.database.engine_config.pg["pg_stat_monitor.pgsm_enable_query_plan"] == false
+          - db_update.database.engine_config.pg["pg_stat_monitor.pgsm_max_buckets"] == 3
+          - db_update.database.engine_config.pg["pg_stat_statements.track"] == "none"
+          - db_update.database.engine_config.pglookout.max_failover_replication_time_lag == 13
+          - db_update.database.engine_config.pg_stat_monitor_enable == false
+          - db_update.database.engine_config.shared_buffers_percentage == 24.0
+          - db_update.database.engine_config.work_mem == 1023
+
+    - name: Refresh the database
+      linode.cloud.database_postgresql_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: g6-nanode-1
+        cluster_size: 1
+        engine_config:
+          pg:
+            autovacuum_analyze_scale_factor: 0.2
+            autovacuum_analyze_threshold: 51
+            autovacuum_max_workers: 2
+            autovacuum_naptime: 61
+            autovacuum_vacuum_cost_delay: 21
+            autovacuum_vacuum_cost_limit: 201
+            autovacuum_vacuum_scale_factor: 0.3
+            autovacuum_vacuum_threshold: 51
+            bgwriter_delay: 201
+            bgwriter_flush_after: 63
+            bgwriter_lru_maxpages: 99
+            bgwriter_lru_multiplier: 1.0
+            deadlock_timeout: 999
+            default_toast_compression: "lz4"
+            idle_in_transaction_session_timeout: 600001
+            jit: false
+            max_files_per_process: 1001
+            max_locks_per_transaction: 65
+            max_logical_replication_workers: 6
+            max_parallel_workers: 3
+            max_parallel_workers_per_gather: 4
+            max_pred_locks_per_transaction: 67
+            max_replication_slots: 9
+            max_slot_wal_keep_size: 1024
+            max_stack_depth: 6291455
+            max_standby_archive_delay: 30001
+            max_standby_streaming_delay: 30001
+            max_wal_senders: 21
+            max_worker_processes: 10
+            password_encryption: "md5"
+            temp_file_limit: 2
+            timezone: "America/New_York"
+            track_activity_query_size: 1024
+            track_functions: "pl"
+            wal_sender_timeout: 60001
+            wal_writer_delay: 199
+            pg_partman_bgw.interval: 3601
+            pg_partman_bgw.role: "myupdatedrolename"
+            pg_stat_monitor.pgsm_enable_query_plan: false
+            pg_stat_monitor.pgsm_max_buckets: 3
+            pg_stat_statements.track: "none"
+          pglookout:
+            max_failover_replication_time_lag: 13
+          pg_stat_monitor_enable: false
+          shared_buffers_percentage: 24.0
+          work_mem: 1023
+        state: present
+      register: db_refresh
+
+    - name: Assert database is refreshed
+      assert:
+        that:
+          - not db_refresh.changed
+          - db_refresh.database.cluster_size == 1
+          - db_refresh.database.engine == 'postgresql'
+          - db_refresh.database.region == target_region
+          - db_refresh.database.status == 'active'
+          - db_refresh.database.engine_config.pg.autovacuum_analyze_scale_factor == 0.2
+          - db_refresh.database.engine_config.pg.autovacuum_analyze_threshold == 51
+          - db_refresh.database.engine_config.pg.autovacuum_max_workers == 2
+          - db_refresh.database.engine_config.pg.autovacuum_naptime == 61
+          - db_refresh.database.engine_config.pg.autovacuum_vacuum_cost_delay == 21
+          - db_refresh.database.engine_config.pg.autovacuum_vacuum_cost_limit == 201
+          - db_refresh.database.engine_config.pg.autovacuum_vacuum_scale_factor == 0.3
+          - db_refresh.database.engine_config.pg.autovacuum_vacuum_threshold == 51
+          - db_refresh.database.engine_config.pg.bgwriter_delay == 201
+          - db_refresh.database.engine_config.pg.bgwriter_flush_after == 63
+          - db_refresh.database.engine_config.pg.bgwriter_lru_maxpages == 99
+          - db_refresh.database.engine_config.pg.bgwriter_lru_multiplier == 1.0
+          - db_refresh.database.engine_config.pg.deadlock_timeout == 999
+          - db_refresh.database.engine_config.pg.default_toast_compression == "lz4"
+          - db_refresh.database.engine_config.pg.idle_in_transaction_session_timeout == 600001
+          - db_refresh.database.engine_config.pg.jit == false
+          - db_refresh.database.engine_config.pg.max_files_per_process == 1001
+          - db_refresh.database.engine_config.pg.max_locks_per_transaction == 65
+          - db_refresh.database.engine_config.pg.max_logical_replication_workers == 6
+          - db_refresh.database.engine_config.pg.max_parallel_workers == 3
+          - db_refresh.database.engine_config.pg.max_parallel_workers_per_gather == 4
+          - db_refresh.database.engine_config.pg.max_pred_locks_per_transaction == 67
+          - db_refresh.database.engine_config.pg.max_replication_slots == 9
+          - db_refresh.database.engine_config.pg.max_slot_wal_keep_size == 1024
+          - db_refresh.database.engine_config.pg.max_stack_depth == 6291455
+          - db_refresh.database.engine_config.pg.max_standby_archive_delay == 30001
+          - db_refresh.database.engine_config.pg.max_standby_streaming_delay == 30001
+          - db_refresh.database.engine_config.pg.max_wal_senders == 21
+          - db_refresh.database.engine_config.pg.max_worker_processes == 10
+          - db_refresh.database.engine_config.pg.password_encryption == "md5"
+          - db_refresh.database.engine_config.pg.temp_file_limit == 2
+          - db_refresh.database.engine_config.pg.timezone == "America/New_York"
+          - db_refresh.database.engine_config.pg.track_activity_query_size == 1024
+          - db_refresh.database.engine_config.pg.track_functions == "pl"
+          - db_refresh.database.engine_config.pg.wal_sender_timeout == 60001
+          - db_refresh.database.engine_config.pg.wal_writer_delay == 199
+          - db_refresh.database.engine_config.pg["pg_partman_bgw.interval"] == 3601
+          - db_refresh.database.engine_config.pg["pg_partman_bgw.role"] == "myupdatedrolename"
+          - db_refresh.database.engine_config.pg["pg_stat_monitor.pgsm_enable_query_plan"] == false
+          - db_refresh.database.engine_config.pg["pg_stat_monitor.pgsm_max_buckets"] == 3
+          - db_refresh.database.engine_config.pg["pg_stat_statements.track"] == "none"
+          - db_refresh.database.engine_config.pglookout.max_failover_replication_time_lag == 13
+          - db_refresh.database.engine_config.pg_stat_monitor_enable == false
+          - db_refresh.database.engine_config.shared_buffers_percentage == 24.0
+          - db_refresh.database.engine_config.work_mem == 1023
+
+
+
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete the original database
+          linode.cloud.database_postgresql_v2:
+            label: '{{ db_create.database.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

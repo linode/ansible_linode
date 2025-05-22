@@ -5,6 +5,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, cast
 import linode_api4
 import polling
 from linode_api4 import (
+    JSONObject,
     LinodeClient,
     LKENodePool,
     LKENodePoolNode,
@@ -189,6 +190,9 @@ def parse_linode_types(value: Any) -> Any:
 
     if isinstance(value, dict):
         return {k: parse_linode_types(elem) for k, elem in value.items()}
+
+    if issubclass(type(value), JSONObject):
+        return parse_linode_types(value.dict)
 
     if type(value) in {
         linode_api4.objects.linode.Type,
