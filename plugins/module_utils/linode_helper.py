@@ -206,9 +206,6 @@ def parse_linode_types(value: Any) -> Any:
     if isinstance(value, MappedObject):
         return mapping_to_dict(value)
 
-    if isinstance(value, linode_api4.JSONObject):
-        return value._serialize()
-
     return value
 
 
