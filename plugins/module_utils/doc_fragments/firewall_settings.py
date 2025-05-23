@@ -1,3 +1,5 @@
+"""Documentation fragments for the firewall_settings module"""
+
 specdoc_examples = ['''
 - name: Update the default firewall settings
   linode.cloud.firewall_settings:
