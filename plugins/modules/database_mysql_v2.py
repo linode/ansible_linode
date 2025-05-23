@@ -37,10 +37,210 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import MySQLDatabase
 
+SPEC_ENGINE_CONFIG_MYSQL = {
+    "connect_timeout": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The number of seconds that the mysqld server waits for a connect packet "
+            + "before responding with Bad handshake."
+        ],
+    ),
+    "default_time_zone": SpecField(
+        type=FieldType.string,
+        description=[
+            "Default server time zone as an offset from UTC (from -12:00 to +12:00), "
+            + "a time zone name, or 'SYSTEM' to use the MySQL server default."
+        ],
+    ),
+    "group_concat_max_len": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The maximum permitted result length in bytes for the GROUP_CONCAT() function."
+        ],
+    ),
+    "information_schema_stats_expiry": SpecField(
+        type=FieldType.integer,
+        description=["The time, in seconds, before cached statistics expire."],
+    ),
+    "innodb_change_buffer_max_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Maximum size for the InnoDB change buffer, "
+            + "as a percentage of the total size of the buffer pool."
+        ],
+    ),
+    "innodb_flush_neighbors": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Specifies whether flushing a page from the InnoDB buffer pool also "
+            + "flushes other dirty pages in the same extent."
+        ],
+    ),
+    "innodb_ft_min_token_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Minimum length of words that are stored in an InnoDB FULLTEXT index."
+        ],
+    ),
+    "innodb_ft_server_stopword_table": SpecField(
+        type=FieldType.string,
+        description=[
+            "This option is used to specify your own InnoDB FULLTEXT "
+            + "index stopword list for all InnoDB tables."
+        ],
+    ),
+    "innodb_lock_wait_timeout": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The length of time in seconds an InnoDB transaction waits "
+            + "for a row lock before giving up."
+        ],
+    ),
+    "innodb_log_buffer_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The size in bytes of the buffer that InnoDB uses to write to the log files on disk."
+        ],
+    ),
+    "innodb_online_alter_log_max_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The upper limit in bytes on the size of the temporary log files "
+            + "used during online DDL operations for InnoDB tables."
+        ],
+    ),
+    "innodb_read_io_threads": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The number of I/O threads for read operations in InnoDB."
+        ],
+    ),
+    "innodb_rollback_on_timeout": SpecField(
+        type=FieldType.bool,
+        description=[
+            "When enabled a transaction timeout causes InnoDB to "
+            + "abort and roll back the entire transaction."
+        ],
+    ),
+    "innodb_thread_concurrency": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Defines the maximum number of threads permitted inside of InnoDB."
+        ],
+    ),
+    "innodb_write_io_threads": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The number of I/O threads for write operations in InnoDB."
+        ],
+    ),
+    "interactive_timeout": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The number of seconds the server waits for activity on an "
+            + "interactive connection before closing it."
+        ],
+    ),
+    "internal_tmp_mem_storage_engine": SpecField(
+        type=FieldType.string,
+        description=[
+            "The storage engine for in-memory internal temporary tables."
+        ],
+        choices=["TempTable", "MEMORY"],
+    ),
+    "max_allowed_packet": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Size of the largest message in bytes that can be received by the server.",
+            "Default is 67108864 (64M).",
+        ],
+    ),
+    "max_heap_table_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Limits the size of internal in-memory tables.",
+            "Also set tmp_table_size.",
+            "Default is 16777216 (16M).",
+        ],
+    ),
+    "net_buffer_length": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Start sizes of connection buffer and result buffer.",
+            "Default is 16384 (16K).",
+        ],
+    ),
+    "net_read_timeout": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The number of seconds to wait for more data from a connection "
+            + "before aborting the read."
+        ],
+    ),
+    "net_write_timeout": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The number of seconds to wait for a block to be written "
+            + "to a connection before aborting the write."
+        ],
+    ),
+    "sort_buffer_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Sort buffer size in bytes for ORDER BY optimization.",
+            "Default is 262144 (256K).",
+        ],
+    ),
+    "sql_mode": SpecField(
+        type=FieldType.string,
+        description=[
+            "Global SQL mode.",
+            "Set to empty to use MySQL server defaults.",
+        ],
+    ),
+    "sql_require_primary_key": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Require primary key to be defined for new tables or old tables modified "
+            + "with ALTER TABLE and fail if missing."
+        ],
+    ),
+    "tmp_table_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "Limits the size of internal in-memory tables.",
+            "Also sets max_heap_table_size.",
+            "Default is 16777216 (16M).",
+        ],
+    ),
+    "wait_timeout": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The number of seconds the server waits for activity on a "
+            + "noninteractive connection before closing it."
+        ],
+    ),
+}
+
+SPEC_ENGINE_CONFIG = {
+    "mysql": SpecField(
+        type=FieldType.dict,
+        suboptions=SPEC_ENGINE_CONFIG_MYSQL,
+        description=["MySQL specific configuration fields."],
+    ),
+    "binlog_retention_period": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The minimum amount of time in seconds to keep binlog entries before deletion.",
+            "This may be extended for use cases like MySQL Debezium Kafka connector.",
+        ],
+    ),
+}
+
 SPEC = {
     "state": SpecField(
         type=FieldType.string,
-        choices=["present", "absent"],
+        choices=["resume", "suspend", "present", "absent"],
         required=True,
         description=["The desired state of the Managed Database."],
     ),
@@ -62,6 +262,16 @@ SPEC = {
     "engine": SpecField(
         type=FieldType.string,
         description=["The Managed Database engine in engine/version format."],
+        editable=True,
+    ),
+    "engine_config": SpecField(
+        type=FieldType.dict,
+        suboptions=SPEC_ENGINE_CONFIG,
+        description=[
+            "Various parameters used to configure this database's underlying engine.",
+            "NOTE: If a configuration parameter is not current accepted by this field, "
+            + "configure using the linode.cloud.api_request module.",
+        ],
         editable=True,
     ),
     "label": SpecField(
@@ -172,6 +382,7 @@ class Module(LinodeModuleBase):
                     "allow_list",
                     "cluster_size",
                     "engine",
+                    "engine_config",
                     "fork",
                     "label",
                     "region",
@@ -254,6 +465,7 @@ class Module(LinodeModuleBase):
                 "label",
                 "allow_list",
                 "cluster_size",
+                "engine_config",
                 "updates",
                 "type",
                 "version",
@@ -311,7 +523,7 @@ class Module(LinodeModuleBase):
 
         self._populate_results(result)
 
-    def _handle_absent(self) -> None:
+    def _handle_else(self, state: str) -> None:
         params = self.module.params
 
         database = safe_find(
@@ -322,18 +534,33 @@ class Module(LinodeModuleBase):
         if database is not None:
             self._populate_results(database)
 
-            database.delete()
+            if state == "suspend":
+                self._handle_suspend(database)
+            elif state == "resume":
+                self._handle_resume(database)
+            else:
+                self._handle_absent(database)
 
-            self.register_action(f"Deleted MySQL database {database.id}")
+    def _handle_absent(self, database: MySQLDatabase) -> None:
+        database.delete()
+        self.register_action(f"Deleted MySQL database {database.id}")
+
+    def _handle_suspend(self, database: MySQLDatabase) -> None:
+        database.suspend()
+        self.register_action(f"Suspended MySQL database {database.id}")
+
+    def _handle_resume(self, database: MySQLDatabase) -> None:
+        database.resume()
+        self.register_action(f"Resumed MySQL database {database.id}")
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for token module"""
         state = kwargs.get("state")
 
-        if state == "absent":
-            self._handle_absent()
-        else:
+        if state == "present":
             self._handle_present()
+        else:
+            self._handle_else(state)
 
         return self.results
 

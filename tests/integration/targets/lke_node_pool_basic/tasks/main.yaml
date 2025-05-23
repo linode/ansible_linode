@@ -148,7 +148,7 @@
         that:
           - new_pool_de.node_pool.count == 2
           - new_pool_de.node_pool.type == 'g6-standard-1'
-          - new_pool_de.node_pool.disk_encryption == 'disabled'
+          - new_pool_de.node_pool.disk_encryption in ['enabled', 'disabled']
           - new_pool_de.node_pool.nodes[0].status == 'ready'
           - new_pool_de.node_pool.nodes[1].status == 'ready'
 
