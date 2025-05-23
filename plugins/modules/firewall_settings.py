@@ -51,7 +51,11 @@ default_firewall_ids_spec: dict = {
     ),
 }
 
-DEFAULT_FIREWALL_SETTING_DESCRIPTION = "The default firewall ID for a `linode`, `nodebalancer`, `public_interface`, or `vpc_interface`. Default firewalls can't be deleted or disabled."
+DEFAULT_FIREWALL_SETTING_DESCRIPTION = (
+    "The default firewall ID for a `linode`, `nodebalancer`, "
+    "`public_interface`, or `vpc_interface`. Default firewalls "
+    "can't be deleted or disabled."
+)
 
 firewall_settings_spec: dict = {
     "default_firewall_ids": SpecField(
@@ -64,7 +68,9 @@ firewall_settings_spec: dict = {
         type=FieldType.string,
         description=["The desired state of the target."],
         choices=["present"],
-        required=False,  # Firewall settings cannot be removed. So marking `state` field as optional here.
+        # Firewall settings cannot be removed.
+        # Thus marking `state` field as optional here.
+        required=False,
     ),
 }
 
