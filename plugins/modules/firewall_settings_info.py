@@ -5,8 +5,12 @@
 
 from __future__ import absolute_import, division, print_function
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall_settings as docs_parent
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall_settings_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    firewall_settings as docs_parent,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    firewall_settings_info as docs,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
     InfoModule,
     InfoModuleResult,
