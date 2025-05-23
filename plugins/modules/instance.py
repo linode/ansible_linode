@@ -1089,7 +1089,8 @@ class LinodeInstance(LinodeModuleBase):
             if key == "interfaces":
                 old_value = filter_null_values_recursive(
                     [
-                        drop_empty_strings(v._serialize(), recursive=True)
+                        # v is implicitly flattened to a dict in parse_linode_types(...)
+                        drop_empty_strings(v, recursive=True)
                         for v in old_value
                     ]
                 )
