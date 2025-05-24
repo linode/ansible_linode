@@ -2,7 +2,7 @@
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
-
+    # TODO: Add a test for the interface entity type before merging into dev
     - name: Create a Linode Instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
