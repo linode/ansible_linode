@@ -114,7 +114,7 @@ def handle_updates(
     obj: linode_api4.Base,
     params: dict,
     mutable_fields: set,
-    register_func: Any,
+    register_func: Callable,
     ignore_keys: Set[str] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
@@ -181,7 +181,7 @@ def handle_updates(
     return result
 
 
-def parse_linode_types(value: any) -> any:
+def parse_linode_types(value: Any) -> Any:
     """Helper function for handle_updates.
     Parses Linode Object types into collections of strings."""
 
