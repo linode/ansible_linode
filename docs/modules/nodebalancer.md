@@ -2,6 +2,8 @@
 
 Manage a Linode NodeBalancer.
 
+NOTE: UDP NodeBalancer may not currently be available to all users.
+
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
