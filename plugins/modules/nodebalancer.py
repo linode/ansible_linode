@@ -289,7 +289,7 @@ linode_nodebalancer_spec = {
 SPECDOC_META = SpecDocMeta(
     description=[
         "Manage a Linode NodeBalancer.",
-        "NOTE: UDP NodeBalancer may not currently be available to all users."
+        "NOTE: UDP NodeBalancer may not currently be available to all users.",
     ],
     requirements=global_requirements,
     author=global_authors,
