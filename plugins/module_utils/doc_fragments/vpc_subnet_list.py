@@ -21,7 +21,13 @@ result_vpc_samples = ['''[
         "linodes": [
             {
                 "id": 1234567,
-                "interfaces": [{"active": false, "id": 654321}]
+                "interfaces": [
+                  {
+                    "active": true,
+                    "config_id": 123456,
+                    "id": 123456
+                  }
+                ]
             }
         ],
         "updated": "2023-08-31T18:53:04"
