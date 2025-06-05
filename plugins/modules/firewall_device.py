@@ -39,7 +39,7 @@ MODULE_SPEC = {
         type=FieldType.string,
         required=True,
         description=[
-            "The type of Linode Entity. Currently only supports linode and nodebalancer."
+            "The type of Linode Entity. Currently only supports linode, nodebalancer, and interface."
         ],
         choices=["linode", "nodebalancer", "interface"],
     ),
