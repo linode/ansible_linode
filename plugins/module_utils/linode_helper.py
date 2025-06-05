@@ -5,6 +5,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, cast
 import linode_api4
 import polling
 from linode_api4 import (
+    JSONObject,
     LinodeClient,
     LKENodePool,
     LKENodePoolNode,
@@ -113,7 +114,7 @@ def handle_updates(
     obj: linode_api4.Base,
     params: dict,
     mutable_fields: set,
-    register_func: Any,
+    register_func: Callable,
     ignore_keys: Set[str] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
@@ -180,7 +181,7 @@ def handle_updates(
     return result
 
 
-def parse_linode_types(value: any) -> any:
+def parse_linode_types(value: Any) -> Any:
     """Helper function for handle_updates.
     Parses Linode Object types into collections of strings."""
 
@@ -189,6 +190,9 @@ def parse_linode_types(value: any) -> any:
 
     if isinstance(value, dict):
         return {k: parse_linode_types(elem) for k, elem in value.items()}
+
+    if issubclass(type(value), JSONObject):
+        return parse_linode_types(value.dict)
 
     if type(value) in {
         linode_api4.objects.linode.Type,

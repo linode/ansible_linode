@@ -30,6 +30,7 @@ Name | Description |
 [linode.cloud.domain_record](./docs/modules/domain_record.md)|Manage Linode Domain Records.|
 [linode.cloud.firewall](./docs/modules/firewall.md)|Manage Linode Firewalls.|
 [linode.cloud.firewall_device](./docs/modules/firewall_device.md)|Manage Linode Firewall Devices.|
+[linode.cloud.firewall_settings](./docs/modules/firewall_settings.md)|Configure the firewall settings for the account.|
 [linode.cloud.image](./docs/modules/image.md)|Manage a Linode Image.|
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
 [linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account. The Linode must be configured to support additional addresses - please Open a support ticket requesting additional addresses before attempting allocation.|
@@ -62,11 +63,13 @@ Name | Description |
 [linode.cloud.account_availability_info](./docs/modules/account_availability_info.md)|Get info about a Linode Account Availability.|
 [linode.cloud.account_info](./docs/modules/account_info.md)|Get info about a Linode Account.|
 [linode.cloud.child_account_info](./docs/modules/child_account_info.md)|Get info about a Linode Child Account.|
+[linode.cloud.database_config_info](./docs/modules/database_config_info.md)|Get info about a Linode Configuration.|
 [linode.cloud.database_mysql_info](./docs/modules/database_mysql_info.md)|Get info about a Linode MySQL Managed Database.|
 [linode.cloud.database_postgresql_info](./docs/modules/database_postgresql_info.md)|Get info about a Linode PostgreSQL Managed Database.|
 [linode.cloud.domain_info](./docs/modules/domain_info.md)|Get info about a Linode Domain.|
 [linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|Get info about a Linode Domain Records.|
 [linode.cloud.firewall_info](./docs/modules/firewall_info.md)|Get info about a Linode Firewall.|
+[linode.cloud.firewall_settings_info](./docs/modules/firewall_settings_info.md)|Get info about a Linode Firewall Settings.|
 [linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
 [linode.cloud.instance_info](./docs/modules/instance_info.md)|Get info about a Linode Instance.|
 [linode.cloud.ip_info](./docs/modules/ip_info.md)|Get info about a Linode IP.|
