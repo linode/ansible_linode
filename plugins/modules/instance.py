@@ -238,6 +238,101 @@ linode_instance_interface_spec = {
     ),
 }
 
+linode_instance_linode_interface_default_route_spec = {
+    "ipv4": SpecField(
+        type=FieldType.bool,
+        description=[
+            "If set to true, the interface is used for the IPv4 default_route.",
+            "Only one interface per Linode can be set as the IPv4 default route.",
+        ],
+    ),
+    "ipv6": SpecField(
+        type=FieldType.bool,
+        description=[
+            "If set to true, the interface is used for the IPv6 default_route.",
+            "Only one interface per Linode can be set as the IPv6 default route.",
+        ],
+    ),
+}
+
+linode_instance_linode_interface_public_spec = {
+    "ipv4": SpecField(
+        type=FieldType.dict,
+        description=[
+            "IPv4 address settings for this public interface.",
+            "If omitted, a public IPv4 address is automatically allocated.",
+        ],
+        suboptions={
+            "addresses": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                description=[
+                    "List of IPv4 addresses to assign to this interface."
+                    "Setting any to auto allocates a public IPv4 address."
+                ],
+                suboptions={
+                    "address": SpecField(
+                        type=FieldType.string,
+                        description=[
+                            "The public IPv4 address to assign to this interface."
+                        ],
+                        default="auto",
+                    ),
+                    "primary": SpecField(
+                        type=FieldType.bool,
+                        description=[
+                            "Configures the source address for routes within the Linode on the corresponding network interface."
+                        ],
+                        default=False,
+                    ),
+                },
+            )
+        },
+    ),
+    "ipv6": SpecField(
+        type=FieldType.dict,
+        description=[
+            "IPv6 address ranges to assign to this interface.",
+            "If omitted, no ranges are assigned.",
+        ],
+        suboptions={
+            "ranges": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                description=[
+                    "IPv6 address ranges to assign to this interface."
+                ],
+                suboptions={
+                    "range": SpecField(
+                        type=FieldType.string,
+                        required=True,
+                        description=[
+                            "Your assigned IPv6 range in CIDR notation (2001:0db8::1/64) or prefix (/64)."
+                        ],
+                    )
+                },
+            )
+        },
+    ),
+}
+
+
+linode_instance_linode_interface_spec = {
+    "firewall_id": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The enabled firewall to secure a VPC or public interface."
+        ],
+    ),
+    "default_route": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_default_route_spec,
+        description=[
+            "Indicates if the interface serves as the default route when multiple interfaces are eligible for this role."
+        ],
+    ),
+}
+
 linode_instance_config_spec = {
     "comments": SpecField(
         type=FieldType.string,
@@ -447,6 +542,16 @@ linode_instance_spec = {
             "A list of network interfaces to apply to the Linode.",
             "See the [Linode API documentation]"
             "(https://techdocs.akamai.com/linode-api/reference/post-linode-instance).",
+        ],
+    ),
+    "linode_interfaces": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_spec,
+        description=[
+            "A list of Linode interfaces to apply to the Linode.",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/post-linode-interface).",
         ],
     ),
     "booted": SpecField(
