@@ -238,6 +238,233 @@ linode_instance_interface_spec = {
     ),
 }
 
+linode_instance_linode_interface_default_route_spec = {
+    "ipv4": SpecField(
+        type=FieldType.bool,
+        description=[
+            "If set to true, the interface is used for the IPv4 default_route.",
+            "Only one interface per Linode can be set as the IPv4 default route.",
+        ],
+    ),
+    "ipv6": SpecField(
+        type=FieldType.bool,
+        description=[
+            "If set to true, the interface is used for the IPv6 default_route.",
+            "Only one interface per Linode can be set as the IPv6 default route.",
+        ],
+    ),
+}
+
+linode_instance_linode_interface_public_spec = {
+    "ipv4": SpecField(
+        type=FieldType.dict,
+        description=[
+            "IPv4 address settings for this public interface.",
+            "If omitted, a public IPv4 address is automatically allocated.",
+        ],
+        suboptions={
+            "addresses": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                description=[
+                    "List of IPv4 addresses to assign to this interface."
+                    "Setting any to auto allocates a public IPv4 address."
+                ],
+                suboptions={
+                    "address": SpecField(
+                        type=FieldType.string,
+                        description=[
+                            "The public IPv4 address to assign to this interface."
+                        ],
+                        default="auto",
+                    ),
+                    "primary": SpecField(
+                        type=FieldType.bool,
+                        description=[
+                            "Configures the source address for routes within the Linode on the corresponding network interface."
+                        ],
+                        default=False,
+                    ),
+                },
+            )
+        },
+    ),
+    "ipv6": SpecField(
+        type=FieldType.dict,
+        description=[
+            "IPv6 address ranges to assign to this interface.",
+            "If omitted, no ranges are assigned.",
+        ],
+        suboptions={
+            "ranges": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                description=[
+                    "IPv6 address ranges to assign to this interface."
+                ],
+                suboptions={
+                    "range": SpecField(
+                        type=FieldType.string,
+                        required=True,
+                        description=[
+                            "Your assigned IPv6 range in CIDR notation (2001:0db8::1/64) or prefix (/64)."
+                        ],
+                    )
+                },
+            )
+        },
+    ),
+}
+
+
+linode_instance_linode_interface_vlan_spec = {
+    "vlan_label": SpecField(
+        type=FieldType.string,
+        description=[
+            "The VLAN's unique label."
+            "VLAN interfaces on the same Linode must have a unique vlan_label.",
+        ],
+    ),
+    "ipam_address": SpecField(
+        type=FieldType.string,
+        description=[
+            "This VLAN interface's private IPv4 address in classless inter-domain routing (CIDR) notation."
+        ],
+    ),
+}
+
+linode_instance_linode_interface_vpc_spec = {
+    "subnet_id": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The VPC subnet identifier for this interface."
+            "Your subnet’s VPC must be in the same data center (region) as the Linode."
+        ],
+    ),
+    "ipv4": SpecField(
+        type=FieldType.dict,
+        description=[
+            "Interfaces can be configured with IPv4 addresses or ranges"
+        ],
+        suboptions={
+            "addresses": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                suboptions={
+                    "address": SpecField(
+                        type=FieldType.string,
+                        default="auto",
+                        description=[
+                            "Specifies which IPv4 address to use in the VPC subnet."
+                        ],
+                    ),
+                    "nat_1_1_address": SpecField(
+                        type=FieldType.string,
+                        description=[
+                            "The 1:1 NAT IPv4 address used to associate a public IPv4 address "
+                            "with the interface's VPC subnet IPv4 address."
+                        ],
+                    ),
+                    "primary": SpecField(
+                        type=FieldType.bool,
+                        description=[
+                            "This IPv4 primary address is used to configure the source address for "
+                            "routes within the Linode on the corresponding network interface."
+                        ],
+                        default=False,
+                    ),
+                },
+            ),
+            "ranges": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                description=["A list of VPC IPv4 ranges."],
+                suboptions={
+                    "range": SpecField(
+                        type=FieldType.string,
+                        description=[
+                            "CIDR notation of a range (1.2.3.4/24) or prefix only (/24)."
+                        ],
+                    )
+                },
+            ),
+        },
+    ),
+}
+
+linode_instance_linode_interface_spec = {
+    "firewall_id": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The enabled firewall to secure a VPC or public interface."
+        ],
+    ),
+    "default_route": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_default_route_spec,
+        description=[
+            "Indicates if the interface serves as the default route when multiple interfaces are eligible for this role."
+        ],
+    ),
+    "public": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_public_spec,
+        description=[
+            "Defines a Linode public interface.",
+            "Any other type must either be omitted or set to null.",
+        ],
+    ),
+    "vlan": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_vlan_spec,
+        description=[
+            "VLAN interface settings.",
+            "A Linode can have up to three VLAN interfaces, with a unique vlan_label for each.",
+        ],
+    ),
+    "vpc": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_vpc_spec,
+        description=[
+            "VPC interface settings.",
+            "A Linode can have one VPC interface.",
+            "The maximum number of interfaces allowed on a Linode is three.",
+        ],
+    ),
+}
+
+linode_instance_linode_interface_settings_spec = {
+    "network_helper": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Enables the Network Helper feature.",
+            "The default value is determined by the network_helper setting in the account settings.",
+            "Power off the Linode before disabling or enabling Network Helper.",
+        ],
+    ),
+    "default_route": SpecField(
+        type=FieldType.dict,
+        description=[
+            "Interfaces used for the IPv4 default_route and IPv6 default_route when "
+            "multiple interfaces are eligible for the role."
+        ],
+        suboptions={
+            "ipv4_interface_id": SpecField(
+                type=FieldType.integer,
+                description=[
+                    "The VPC or public interface ID assigned as the IPv4 default_route."
+                ],
+            ),
+            "ipv6_interface_id": SpecField(
+                type=FieldType.integer,
+                description=[
+                    "The VPC or public interface ID assigned as the IPv6 default_route."
+                ],
+            ),
+        },
+    ),
+}
+
 linode_instance_config_spec = {
     "comments": SpecField(
         type=FieldType.string,
@@ -449,6 +676,26 @@ linode_instance_spec = {
             "(https://techdocs.akamai.com/linode-api/reference/post-linode-instance).",
         ],
     ),
+    "linode_interfaces": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_spec,
+        description=[
+            "A list of Linode interfaces to apply to the Linode.",
+            "See the [Linode API documentation]"
+            "(https://techdocs.akamai.com/linode-api/reference/post-linode-interface).",
+            "NOTE: To upgrade from config (legacy) interfaces, consider using the "
+            "linode.cloud.api_request module to make a request to the "
+            "(POST linode/instances/{linode_id}/upgrade-interfaces endpoint).",
+        ],
+    ),
+    "linode_interface_settings": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_settings_spec,
+        description=[
+            "Network Helper and default route settings for the Linode."
+        ],
+    ),
     "booted": SpecField(
         type=FieldType.bool,
         description=[
@@ -584,6 +831,12 @@ SPECDOC_META = SpecDocMeta(
         "networking": SpecReturnValue(
             description="Networking information about this Linode Instance.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-ips",
+            type=FieldType.dict,
+            sample=docs.result_networking_samples,
+        ),
+        "linode_interfaces": SpecReturnValue(
+            description="A list of interfaces tied to this Linode Instance.",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-interfaces",
             type=FieldType.dict,
             sample=docs.result_networking_samples,
         ),
