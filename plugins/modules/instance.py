@@ -433,6 +433,38 @@ linode_instance_linode_interface_spec = {
     ),
 }
 
+linode_instance_linode_interface_settings_spec = {
+    "network_helper": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Enables the Network Helper feature.",
+            "The default value is determined by the network_helper setting in the account settings.",
+            "Power off the Linode before disabling or enabling Network Helper.",
+        ],
+    ),
+    "default_route": SpecField(
+        type=FieldType.dict,
+        description=[
+            "Interfaces used for the IPv4 default_route and IPv6 default_route when "
+            "multiple interfaces are eligible for the role."
+        ],
+        suboptions={
+            "ipv4_interface_id": SpecField(
+                type=FieldType.integer,
+                description=[
+                    "The VPC or public interface ID assigned as the IPv4 default_route."
+                ],
+            ),
+            "ipv6_interface_id": SpecField(
+                type=FieldType.integer,
+                description=[
+                    "The VPC or public interface ID assigned as the IPv6 default_route."
+                ],
+            ),
+        },
+    ),
+}
+
 linode_instance_config_spec = {
     "comments": SpecField(
         type=FieldType.string,
@@ -655,6 +687,13 @@ linode_instance_spec = {
             "NOTE: To upgrade from config (legacy) interfaces, consider using the "
             "linode.cloud.api_request module to make a request to the "
             "(POST linode/instances/{linode_id}/upgrade-interfaces endpoint).",
+        ],
+    ),
+    "linode_interface_settings": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_settings_spec,
+        description=[
+            "Network Helper and default route settings for the Linode."
         ],
     ),
     "booted": SpecField(
