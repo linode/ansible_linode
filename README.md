@@ -70,6 +70,7 @@ Name | Description |
 [linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|Get info about a Linode Domain Records.|
 [linode.cloud.firewall_info](./docs/modules/firewall_info.md)|Get info about a Linode Firewall.|
 [linode.cloud.firewall_settings_info](./docs/modules/firewall_settings_info.md)|Get info about a Linode Firewall Settings.|
+[linode.cloud.firewall_template_info](./docs/modules/firewall_template_info.md)|Get info about a Linode Firewall Template.|
 [linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
 [linode.cloud.instance_info](./docs/modules/instance_info.md)|Get info about a Linode Instance.|
 [linode.cloud.ip_info](./docs/modules/ip_info.md)|Get info about a Linode IP.|
@@ -106,6 +107,7 @@ Name | Description |
 [linode.cloud.domain_list](./docs/modules/domain_list.md)|List and filter on Domains.|
 [linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Events.|
 [linode.cloud.firewall_list](./docs/modules/firewall_list.md)|List and filter on Firewalls.|
+[linode.cloud.firewall_template_list](./docs/modules/firewall_template_list.md)|List and filter on Firewall Templates.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Images.|
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Instances.|
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|**NOTE: This module has been deprecated in favor of `type_list`.**|
