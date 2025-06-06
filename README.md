@@ -107,6 +107,7 @@ Name | Description |
 [linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Events.|
 [linode.cloud.firewall_list](./docs/modules/firewall_list.md)|List and filter on Firewalls.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Images.|
+[linode.cloud.instance_interface_firewall_list](./docs/modules/instance_interface_firewall_list.md)|List and filter on Linode Interface Firewalls.|
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Instances.|
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|**NOTE: This module has been deprecated in favor of `type_list`.**|
 [linode.cloud.lke_type_list](./docs/modules/lke_type_list.md)|List and filter on LKE Types.|

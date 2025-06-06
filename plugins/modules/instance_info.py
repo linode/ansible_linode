@@ -60,9 +60,9 @@ module = InfoModule(
             ),
         ),
         InfoModuleResult(
-            field_name="interfaces",
+            field_name="linode_interfaces",
             field_type=FieldType.list,
-            display_name="Interfaces",
+            display_name="Linode Interfaces",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-interfaces",
             samples=docs_parent.result_interfaces_samples,
             get=lambda client, instance, params: client.get(

@@ -308,59 +308,6 @@ result_interfaces_samples = ['''
     "ipv4": true,
     "ipv6": true
   },
-  "firewalls": [
-    {
-      "created": "2025-01-01T00:01:01",
-      "id": 123,
-      "label": "firewall123",
-      "rules": {
-        "inbound": [
-          {
-            "action": "ACCEPT",
-            "addresses": {
-              "ipv4": [
-                "192.0.2.0/24",
-                "192.0.2.148/24"
-              ],
-              "ipv6": [
-                "2001:DB8::/128"
-              ]
-            },
-            "description": "An example firewall rule description.",
-            "label": "firewallrule123",
-            "ports": "22-24, 80, 443",
-            "protocol": "TCP"
-          }
-        ],
-        "inbound_policy": "DROP",
-        "outbound": [
-          {
-            "action": "ACCEPT",
-            "addresses": {
-              "ipv4": [
-                "192.0.2.0/24",
-                "192.0.2.156/24"
-              ],
-              "ipv6": [
-                "2001:DB8::/128"
-              ]
-            },
-            "description": "An example firewall rule description.",
-            "label": "firewallrule123",
-            "ports": "22-24, 80, 443",
-            "protocol": "TCP"
-          }
-        ],
-        "outbound_policy": "DROP"
-      },
-      "status": "enabled",
-      "tags": [
-        "example tag",
-        "another example"
-      ],
-      "updated": "2025-01-02T00:01:01"
-    }
-  ],
   "id": 1234,
   "mac_address": "22:00:AB:CD:EF:01",
   "public": {
@@ -428,59 +375,6 @@ result_interfaces_samples = ['''
   "default_route": {
     "ipv4": true
   },
-  "firewalls": [
-    {
-      "created": "2025-01-01T00:01:01",
-      "id": 123,
-      "label": "firewall123",
-      "rules": {
-        "inbound": [
-          {
-            "action": "ACCEPT",
-            "addresses": {
-              "ipv4": [
-                "192.0.2.0/24",
-                "192.0.2.148/24"
-              ],
-              "ipv6": [
-                "2001:DB8::/128"
-              ]
-            },
-            "description": "An example firewall rule description.",
-            "label": "firewallrule123",
-            "ports": "22-24, 80, 443",
-            "protocol": "TCP"
-          }
-        ],
-        "inbound_policy": "DROP",
-        "outbound": [
-          {
-            "action": "ACCEPT",
-            "addresses": {
-              "ipv4": [
-                "192.0.2.0/24",
-                "192.0.2.156/24"
-              ],
-              "ipv6": [
-                "2001:DB8::/128"
-              ]
-            },
-            "description": "An example firewall rule description.",
-            "label": "firewallrule123",
-            "ports": "22-24, 80, 443",
-            "protocol": "TCP"
-          }
-        ],
-        "outbound_policy": "DROP"
-      },
-      "status": "enabled",
-      "tags": [
-        "example tag",
-        "another example"
-      ],
-      "updated": "2025-01-02T00:01:01"
-    }
-  ],
   "id": 1234,
   "mac_address": "22:00:AB:CD:EF:01",
   "public": null,
