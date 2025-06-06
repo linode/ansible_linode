@@ -652,6 +652,9 @@ linode_instance_spec = {
             "A list of Linode interfaces to apply to the Linode.",
             "See the [Linode API documentation]"
             "(https://techdocs.akamai.com/linode-api/reference/post-linode-interface).",
+            "NOTE: To upgrade from config (legacy) interfaces, consider using the "
+            "linode.cloud.api_request module to make a request to the "
+            "(POST linode/instances/{linode_id}/upgrade-interfaces endpoint).",
         ],
     ),
     "booted": SpecField(
@@ -789,6 +792,12 @@ SPECDOC_META = SpecDocMeta(
         "networking": SpecReturnValue(
             description="Networking information about this Linode Instance.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-ips",
+            type=FieldType.dict,
+            sample=docs.result_networking_samples,
+        ),
+        "linode_interfaces": SpecReturnValue(
+            description="A list of interfaces tied to this Linode Instance.",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-interfaces",
             type=FieldType.dict,
             sample=docs.result_networking_samples,
         ),
