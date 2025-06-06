@@ -317,6 +317,81 @@ linode_instance_linode_interface_public_spec = {
 }
 
 
+linode_instance_linode_interface_vlan_spec = {
+    "vlan_label": SpecField(
+        type=FieldType.string,
+        description=[
+            "The VLAN's unique label."
+            "VLAN interfaces on the same Linode must have a unique vlan_label.",
+        ],
+    ),
+    "ipam_address": SpecField(
+        type=FieldType.string,
+        description=[
+            "This VLAN interface's private IPv4 address in classless inter-domain routing (CIDR) notation."
+        ],
+    ),
+}
+
+linode_instance_linode_interface_vpc_spec = {
+    "subnet_id": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The VPC subnet identifier for this interface."
+            "Your subnet’s VPC must be in the same data center (region) as the Linode."
+        ],
+    ),
+    "ipv4": SpecField(
+        type=FieldType.dict,
+        description=[
+            "Interfaces can be configured with IPv4 addresses or ranges"
+        ],
+        suboptions={
+            "addresses": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                suboptions={
+                    "address": SpecField(
+                        type=FieldType.string,
+                        default="auto",
+                        description=[
+                            "Specifies which IPv4 address to use in the VPC subnet."
+                        ],
+                    ),
+                    "nat_1_1_address": SpecField(
+                        type=FieldType.string,
+                        description=[
+                            "The 1:1 NAT IPv4 address used to associate a public IPv4 address "
+                            "with the interface's VPC subnet IPv4 address."
+                        ],
+                    ),
+                    "primary": SpecField(
+                        type=FieldType.bool,
+                        description=[
+                            "This IPv4 primary address is used to configure the source address for "
+                            "routes within the Linode on the corresponding network interface."
+                        ],
+                        default=False,
+                    ),
+                },
+            ),
+            "ranges": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                description=["A list of VPC IPv4 ranges."],
+                suboptions={
+                    "range": SpecField(
+                        type=FieldType.string,
+                        description=[
+                            "CIDR notation of a range (1.2.3.4/24) or prefix only (/24)."
+                        ],
+                    )
+                },
+            ),
+        },
+    ),
+}
+
 linode_instance_linode_interface_spec = {
     "firewall_id": SpecField(
         type=FieldType.integer,
@@ -329,6 +404,31 @@ linode_instance_linode_interface_spec = {
         suboptions=linode_instance_linode_interface_default_route_spec,
         description=[
             "Indicates if the interface serves as the default route when multiple interfaces are eligible for this role."
+        ],
+    ),
+    "public": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_public_spec,
+        description=[
+            "Defines a Linode public interface.",
+            "Any other type must either be omitted or set to null.",
+        ],
+    ),
+    "vlan": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_vlan_spec,
+        description=[
+            "VLAN interface settings.",
+            "A Linode can have up to three VLAN interfaces, with a unique vlan_label for each.",
+        ],
+    ),
+    "vpc": SpecField(
+        type=FieldType.dict,
+        suboptions=linode_instance_linode_interface_vpc_spec,
+        description=[
+            "VPC interface settings.",
+            "A Linode can have one VPC interface.",
+            "The maximum number of interfaces allowed on a Linode is three.",
         ],
     ),
 }
