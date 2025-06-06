@@ -138,6 +138,9 @@ Manage Linode Instances, Configs, and Disks.
 | [`configs` (sub-options)](#configs) | <center>`list`</center> | <center>Optional</center> | A list of Instance configs to apply to the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#configuration-profile-create).  **(Updatable; Conflicts With: `image`,`interfaces`)** |
 | [`disks` (sub-options)](#disks) | <center>`list`</center> | <center>Optional</center> | A list of Disks to create on the Linode. See the [Linode API documentation](https://www.linode.com/docs/api/linode-instances/#disk-create).  **(Updatable; Conflicts With: `image`,`interfaces`)** |
 | [`interfaces` (sub-options)](#interfaces) | <center>`list`</center> | <center>Optional</center> | A list of network interfaces to apply to the Linode. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/post-linode-instance).  **(Conflicts With: `disks`,`configs`)** |
+| `interface_generation` | <center>`str`</center> | <center>Optional</center> | Specifies the interface type for the Linode. The default value is determined by the interfaces_for_new_linodes setting in the account settings.  **(Choices: `legacy_config`, `linode`)** |
+| [`linode_interfaces` (sub-options)](#linode_interfaces) | <center>`list`</center> | <center>Optional</center> | A list of Linode interfaces to apply to the Linode. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/post-linode-interface). NOTE: To upgrade from config (legacy) interfaces, consider using the linode.cloud.api_request module to make a request to the (POST linode/instances/{linode_id}/upgrade-interfaces endpoint).  **(Updatable)** |
+| `allow_implicit_reboots` | <center>`bool`</center> | <center>Optional</center> | Whether the Linode should be implicitly rebooted during operations that require a certain power status.  **(Default: `False`)** |
 | `booted` | <center>`bool`</center> | <center>Optional</center> | Whether the new Instance should be booted. This will default to True if the Instance is deployed from an Image or Backup.   |
 | `backup_id` | <center>`int`</center> | <center>Optional</center> | The id of the Backup to restore to the new Instance. May not be provided if "image" is given.   |
 | [`metadata` (sub-options)](#metadata) | <center>`dict`</center> | <center>Optional</center> | Fields relating to the Linode Metadata service.   |
@@ -282,6 +285,71 @@ Manage Linode Instances, Configs, and Disks.
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The root user’s password on the newly-created Linode.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
+
+### linode_interfaces
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `firewall_id` | <center>`int`</center> | <center>Optional</center> | The enabled firewall to secure a VPC or public interface.   |
+| [`default_route` (sub-options)](#default_route) | <center>`dict`</center> | <center>Optional</center> | Indicates if the interface serves as the default route when multiple interfaces are eligible for this role.  **(Updatable)** |
+| [`public` (sub-options)](#public) | <center>`dict`</center> | <center>Optional</center> | Defines a Linode public interface. Any other type must either be omitted or set to null.  **(Updatable)** |
+| [`vlan` (sub-options)](#vlan) | <center>`dict`</center> | <center>Optional</center> | VLAN interface settings. A Linode can have up to three VLAN interfaces, with a unique vlan_label for each.  **(Updatable)** |
+| [`vpc` (sub-options)](#vpc) | <center>`dict`</center> | <center>Optional</center> | VPC interface settings. A Linode can have one VPC interface. The maximum number of interfaces allowed on a Linode is three.  **(Updatable)** |
+
+### default_route
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `ipv4` | <center>`bool`</center> | <center>Optional</center> | If set to true, the interface is used for the IPv4 default_route. Only one interface per Linode can be set as the IPv4 default route.  **(Updatable)** |
+| `ipv6` | <center>`bool`</center> | <center>Optional</center> | If set to true, the interface is used for the IPv6 default_route. Only one interface per Linode can be set as the IPv6 default route.  **(Updatable)** |
+
+### public
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| [`ipv4` (sub-options)](#ipv4) | <center>`dict`</center> | <center>Optional</center> | IPv4 address settings for this public interface. If omitted, a public IPv4 address is automatically allocated.  **(Updatable)** |
+| [`ipv6` (sub-options)](#ipv6) | <center>`dict`</center> | <center>Optional</center> | IPv6 address ranges to assign to this interface. If omitted, no ranges are assigned.  **(Updatable)** |
+
+### ipv4
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| [`addresses` (sub-options)](#addresses) | <center>`list`</center> | <center>Optional</center> |   **(Updatable)** |
+| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | A list of VPC IPv4 ranges.   |
+
+### addresses
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `address` | <center>`str`</center> | <center>Optional</center> | Specifies which IPv4 address to use in the VPC subnet.  **(Default: `auto`; Updatable)** |
+| `nat_1_1_address` | <center>`str`</center> | <center>Optional</center> | The 1:1 NAT IPv4 address used to associate a public IPv4 address with the interface's VPC subnet IPv4 address.  **(Updatable)** |
+| `primary` | <center>`bool`</center> | <center>Optional</center> | This IPv4 primary address is used to configure the source address for routes within the Linode on the corresponding network interface.  **(Default: `False`; Updatable)** |
+
+### ipv6
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | IPv6 address ranges to assign to this interface.  **(Updatable)** |
+
+### ranges
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `range` | <center>`str`</center> | <center>Optional</center> | CIDR notation of a range (1.2.3.4/24) or prefix only (/24).  **(Updatable)** |
+
+### vlan
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `vlan_label` | <center>`str`</center> | <center>Optional</center> | The VLAN's unique label.VLAN interfaces on the same Linode must have a unique vlan_label.   |
+| `ipam_address` | <center>`str`</center> | <center>Optional</center> | This VLAN interface's private IPv4 address in classless inter-domain routing (CIDR) notation.   |
+
+### vpc
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `subnet_id` | <center>`int`</center> | <center>Optional</center> | The VPC subnet identifier for this interface.Your subnet’s VPC must be in the same data center (region) as the Linode.   |
+| [`ipv4` (sub-options)](#ipv4) | <center>`dict`</center> | <center>Optional</center> | Interfaces can be configured with IPv4 addresses or ranges  **(Updatable)** |
 
 ### metadata
 
@@ -546,5 +614,122 @@ Manage Linode Instances, Configs, and Disks.
         }
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-ips) for a list of returned fields
+
+
+- `linode_interfaces` - A list of Linode interfaces tied to this Linode Instance.
+
+    - Sample Response:
+        ```json
+        
+        {
+          "created": "2025-01-01T00:01:01",
+          "default_route": {
+            "ipv4": true,
+            "ipv6": true
+          },
+          "id": 1234,
+          "mac_address": "22:00:AB:CD:EF:01",
+          "public": {
+            "ipv4": {
+              "addresses": [
+                {
+                  "address": "172.30.0.50",
+                  "primary": true
+                }
+              ],
+              "shared": [
+                {
+                  "address": "172.30.0.51",
+                  "linode_id": 12345
+                }
+              ]
+            },
+            "ipv6": {
+              "ranges": [
+                {
+                  "range": "2600:3c09:e001:59::/64",
+                  "route_target": "2600:3c09::ff:feab:cdef"
+                },
+                {
+                  "range": "2600:3c09:e001:5a::/64",
+                  "route_target": "2600:3c09::ff:feab:cdef"
+                }
+              ],
+              "shared": [
+                {
+                  "range": "2600:3c09:e001:2a::/64",
+                  "route_target": null
+                }
+              ],
+              "slaac": [
+                {
+                  "address": "2600:3c09::ff:feab:cdef",
+                  "prefix": 64
+                }
+              ]
+            }
+          },
+          "updated": "2025-01-01T00:01:01",
+          "version": 1,
+          "vlan": null,
+          "vpc": null
+        }
+        
+        ```
+        ```json
+        
+        {
+          "created": "2025-01-01T00:01:01",
+          "default_route": {},
+          "id": 1234,
+          "mac_address": "22:00:AB:CD:EF:01",
+          "public": null,
+          "updated": "2025-01-01T00:01:01",
+          "version": 1,
+          "vlan": {
+            "ipam_address": "10.0.0.1/24",
+            "vlan_label": "my-vlan"
+          },
+          "vpc": null
+        }
+        
+        ```
+        ```json
+        
+        {
+          "created": "2025-01-01T00:01:01",
+          "default_route": {
+            "ipv4": true
+          },
+          "id": 1234,
+          "mac_address": "22:00:AB:CD:EF:01",
+          "public": null,
+          "updated": "2025-01-01T00:02:01",
+          "version": 1,
+          "vlan": null,
+          "vpc": {
+            "ipv4": {
+              "addresses": [
+                {
+                  "address": "192.168.22.3",
+                  "primary": true
+                }
+              ],
+              "ranges": [
+                {
+                  "range": "192.168.22.16/28"
+                },
+                {
+                  "range": "192.168.22.32/28"
+                }
+              ]
+            },
+            "subnet_id": 1234,
+            "vpc_id": 1234
+          }
+        }
+        
+        ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-interface) for a list of returned fields
 
 

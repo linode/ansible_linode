@@ -59,6 +59,16 @@ module = InfoModule(
                 "/linode/instances/{0}/ips".format(instance.get("id"))
             ),
         ),
+        InfoModuleResult(
+            field_name="linode_interfaces",
+            field_type=FieldType.list,
+            display_name="Linode Interfaces",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-interfaces",
+            samples=docs_parent.result_linode_interfaces_samples,
+            get=lambda client, instance, params: client.get(
+                "/linode/instances/{0}/interfaces".format(instance.get("id"))
+            ),
+        ),
     ],
     attributes=[
         InfoModuleAttr(
