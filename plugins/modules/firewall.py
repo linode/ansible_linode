@@ -228,7 +228,7 @@ class LinodeFirewall(LinodeModuleBase):
                 msg="failed to get firewall {0}: {1}".format(label, exception)
             )
 
-    def _create_firewall(self) -> dict:
+    def _create_firewall(self) -> Optional[Firewall]:
         params = self.module.params
 
         label = params.get("label")
