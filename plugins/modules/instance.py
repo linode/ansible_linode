@@ -268,7 +268,7 @@ linode_instance_linode_interface_public_spec = {
                 element_type=FieldType.dict,
                 description=[
                     "List of IPv4 addresses to assign to this interface."
-                    "Setting any to auto allocates a public IPv4 address."
+                    "Setting to auto allocates a public IPv4 address."
                 ],
                 suboptions={
                     "address": SpecField(
@@ -676,6 +676,9 @@ linode_instance_spec = {
             "(https://techdocs.akamai.com/linode-api/reference/post-linode-instance).",
         ],
     ),
+    "interface_generation": SpecField(
+        type=FieldType.string,
+    ),
     "linode_interfaces": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
@@ -1055,6 +1058,13 @@ class LinodeInstance(LinodeModuleBase):
                 encode_user_data=not metadata.get("user_data_encoded"),
             )
 
+        # The API accepts either the `interfaces` or `linode_interfaces` schema
+        # depending on the interfaces `interfaces_for_new_linodes` acccount setting
+        # and the `interface_generation` instance POST field.
+        linode_interfaces = params.pop("linode_interfaces")
+        if linode_interfaces is not None:
+            params["interfaces"] = linode_interfaces
+
         result = {"instance": None, "root_pass": ""}
 
         response = self.client.linode.instance_create(ltype, region, **params)
@@ -1156,7 +1166,7 @@ class LinodeInstance(LinodeModuleBase):
         self.register_action("Deleted disk {0}".format(disk.label))
         disk.delete()
 
-    def _update_interfaces(self) -> None:
+    def _update_config_interfaces(self) -> None:
         config = self._get_boot_config()
         param_interfaces: List[Any] = self.module.params.get("interfaces")
 
@@ -1543,7 +1553,7 @@ class LinodeInstance(LinodeModuleBase):
                 )
 
         # Update interfaces
-        self._update_interfaces()
+        self._update_config_interfaces()
 
         # Handle updating on the target Firewall ID
         self._update_firewall()
@@ -1698,6 +1708,9 @@ class LinodeInstance(LinodeModuleBase):
         self.results["configs"] = paginated_list_to_json(self._instance.configs)
         self.results["disks"] = paginated_list_to_json(self._instance.disks)
         self.results["networking"] = self._get_networking()
+        self.results["linode_interfaces"] = paginated_list_to_json(
+            self._instance.interfaces
+        )
 
     def _handle_absent(self) -> None:
         """Destroys the instance defined in kwargs"""

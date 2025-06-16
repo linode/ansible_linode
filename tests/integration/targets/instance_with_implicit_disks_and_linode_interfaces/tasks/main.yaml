@@ -1,0 +1,113 @@
+- name: instance_with_implicit_disks_and_linode_interfaces
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        description: test description
+        state: present
+      register: create_vpc
+
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        state: present
+      register: create_subnet
+
+    - name: Create an instance with an implicit image and dedicated Linode interfaces
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv6: true
+            firewall_id: '{{ firewall_id }}'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+          - vlan:
+              vlan_label: ansible-test-vlan
+              ipam_address: 10.0.0.5/32
+
+          - default_route:
+              ipv4: true
+            firewall_id: '{{ firewall_id }}'
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: auto
+                    nat_1_1_address: auto
+                    primary: true
+                ranges:
+                  - range: /32
+        state: present
+      register: create
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create.changed
+          - create.instance.status == 'running'
+
+          # The second public IPv4 addresses is implicitly allocated
+          # by the public interface
+          - create.instance.ipv4|length == 2
+
+          - create.linode_interfaces | length == 3
+
+          # Public interface
+          - create.linode_interfaces[0].default_route.ipv6 == True
+          - create.linode_interfaces[0].public.ipv4.addresses[0].address | length > 4
+          - create.linode_interfaces[0].public.ipv4.addresses[0].primary == True
+          - create.linode_interfaces[0].public.ipv6.ranges[0].range | length > 4
+
+          # VLAN interface
+          - create.linode_interfaces[1].vlan.vlan_label == 'ansible-test-vlan'
+          - create.linode_interfaces[1].vlan.ipam_address == '10.0.0.5/32'
+
+          # VPC interface
+          - create.linode_interfaces[2].default_route.ipv4 == True
+          - create.linode_interfaces[2].vpc.subnet_id == create_subnet.subnet.id
+          - create.linode_interfaces[2].vpc.ipv4.addresses[0].address | length > 4
+          - create.linode_interfaces[2].vpc.ipv4.addresses[0].nat_1_1_address | length > 4
+          - create.linode_interfaces[2].vpc.ipv4.addresses[0].primary == True
+          - create.linode_interfaces[2].vpc.ipv4.ranges[0].range | length > 4
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.instance.id == create.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+
