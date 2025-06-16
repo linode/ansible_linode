@@ -65,7 +65,7 @@
           - create.changed
           - create.instance.status == 'running'
 
-          # The second public IPv4 addresses is implicitly allocated
+          # The second public IPv4 address is implicitly allocated
           # by the public interface
           - create.instance.ipv4|length == 2
 
@@ -89,6 +89,49 @@
           - create.linode_interfaces[2].vpc.ipv4.addresses[0].primary == True
           - create.linode_interfaces[2].vpc.ipv4.ranges[0].range | length > 4
 
+    - name: Update the instance's interfaces
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: '{{ firewall_id }}'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: false
+              ipv6:
+                ranges:
+                  - range: /64
+                  - range: /64
+          - vlan:
+              vlan_label: ansible-test-vlan-2
+              ipam_address: 10.0.0.6/32
+
+          - firewall_id: '{{ firewall_id }}'
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: false
+                  - address: auto
+                    nat_1_1_address: null
+                    primary: false
+                ranges:
+                  - range: /32
+                  - range: /32
+        state: present
+      register: create
+
   always:
     - ignore_errors: yes
       block:
@@ -103,6 +146,18 @@
             that:
               - delete.changed
               - delete.instance.id == create.instance.id
+
+        - name: Delete the VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.id }}'
+            state: absent
+          register: delete_vpc
+
+        - name: Assert VPC delete succeeded
+          assert:
+            that:
+              - delete_vpc.changed
+              - delete_vpc.vpc.id == create_vpc.vpc.id
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'

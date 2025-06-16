@@ -985,7 +985,7 @@ class LinodeInstance(LinodeModuleBase):
         )
 
     @staticmethod
-    def _normalize_local_interface(
+    def _normalize_local_config_interface(
         local_interface: Dict[str, Any], remote_interface: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
@@ -1018,7 +1018,7 @@ class LinodeInstance(LinodeModuleBase):
         return result
 
     @staticmethod
-    def _compare_interfaces(
+    def _compare_config_interfaces(
         local_interfaces: List[Dict[str, Any]],
         remote_interfaces: List[Dict[str, Any]],
     ) -> bool:
@@ -1032,10 +1032,137 @@ class LinodeInstance(LinodeModuleBase):
         for i, local_interface in enumerate(local_interfaces):
             remote_interface = remote_interfaces[i]
             if (
-                LinodeInstance._normalize_local_interface(
+                LinodeInstance._normalize_local_config_interface(
                     local_interface, remote_interface
                 )
                 != remote_interfaces[i]
+            ):
+                return False
+
+        return True
+
+    @staticmethod
+    def _normalize_local_linode_interface_public(
+        local_public: Dict[str, Any], remote_public: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        result = copy.deepcopy(local_public)
+
+        if local_public is None or remote_public is None:
+            return result
+
+        def __normalize_ipv4() -> Dict[str, Any]:
+            local_ipv4 = local_public.get("ipv4")
+            remote_ipv4 = remote_public.get("ivp4")
+
+            result = copy.deepcopy(local_ipv4)
+
+            if local_ipv4 is None or remote_ipv4 is None:
+                return result
+
+            local_ipv4_addresses = local_ipv4.get("addresses")
+            remote_ipv4_addresses = remote_ipv4.get("addresses")
+
+            if local_ipv4_addresses is None or remote_ipv4_addresses is None:
+                return result
+
+            for i, local_ipv4_address in enumerate(local_ipv4_addresses):
+                if len(remote_ipv4_addresses) <= i:
+                    # This range doesn't exist on the remote,
+                    # so there's nothing to normalize
+                    continue
+
+                remote_ipv4_address = remote_ipv4_addresses[i]
+
+                if local_ipv4_address.trim() != "auto":
+                    continue
+
+                # Assume unchanged
+                local_ipv4_address["address"] = remote_ipv4_address["range"]
+
+            return result
+
+        def __normalize_ipv6() -> Dict[str, Any]:
+            local_ipv6 = local_public.get("ipv6")
+            remote_ipv6 = remote_public.get("ipv6")
+
+            result = copy.deepcopy(local_ipv6)
+
+            if local_ipv6 is None or remote_ipv6 is None:
+                return result
+
+
+            local_ipv6_ranges = local_ipv6.get("ranges")
+            remote_ipv6_ranges = remote_ipv6.get("ranges")
+
+            if local_ipv6_ranges is None or remote_ipv6_ranges is None:
+                return result
+
+            for i, local_ipv6_range in enumerate(local_ipv6_ranges):
+                if len(remote_ipv6_ranges) <= i:
+                    # This range doesn't exist on the remote,
+                    # so there's nothing to normalize
+                    continue
+
+                remote_ipv6_range = remote_ipv6_ranges[i]
+
+                local_range_range_split = local_ipv6_range.get("range").split("/")
+
+                # If this range is a dynamic allocation, assume unchanged
+                if len(local_range_range_split) == 2 and len(local_range_range_split[0].trim()) < 1:
+                    local_ipv6_range["range"] = remote_ipv6_range["range"]
+
+            return result
+
+        result["ipv4"] = __normalize_ipv4()
+        result["ipv6"] = __normalize_ipv6()
+
+        return result
+
+    @staticmethod
+    def _normalize_local_linode_interface(
+        local_interface: Dict[str, Any], remote_interface: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Normalizes the given param interface to the remote interface
+        for direct comparison.
+        """
+        result = copy.deepcopy(local_interface)
+
+        # `firewall_id` validation
+        local_firewall_id = local_interface.get("firewall_id", None)
+        remote_firewall_id = remote_interface.get("firewall_id", None)
+
+        if local_firewall_id is not None and local_firewall_id != remote_firewall_id:
+            raise ValueError(
+                "Cannot change the firewall_id of an existing Linode interface"
+            )
+
+        # `public` normalization
+        result["public"] = LinodeInstance._normalize_local_linode_interface_public(
+            local_interface.get("public", None), remote_interface.get("public", None)
+        )
+
+        return result
+
+    @staticmethod
+    def _compare_linode_interfaces(
+            local_interfaces: List[Dict[str, Any]],
+            remote_interfaces: List[Dict[str, Any]],
+    ) -> bool:
+        """
+        Returns whether the two interface lists match
+        """
+        # Lengths are different, return immediately
+        if len(local_interfaces) != len(remote_interfaces):
+            return False
+
+        for i, local_interface in enumerate(local_interfaces):
+            remote_interface = remote_interfaces[i]
+            if (
+                    LinodeInstance._normalize_local_config_interface(
+                        local_interface, remote_interface
+                    )
+                    != remote_interfaces[i]
             ):
                 return False
 
@@ -1182,10 +1309,41 @@ class LinodeInstance(LinodeModuleBase):
             for v in config.interfaces
         ]
 
-        if self._compare_interfaces(param_interfaces, remote_interfaces):
+        if self._compare_config_interfaces(param_interfaces, remote_interfaces):
             return
 
         config.interfaces = [ConfigInterface(**v) for v in param_interfaces]
+
+        config.save()
+
+        self.register_action(
+            "Updated interfaces for instance {0} config {1}".format(
+                self._instance.label, config.id
+            )
+        )
+
+
+    def _update_linode_interfaces(self) -> None:
+        param_interfaces: List[Any] = self.module.params.get("linode_interfaces")
+
+        if param_interfaces is None:
+            return
+
+        param_interfaces = [
+            drop_empty_strings(v, recursive=True) for v in param_interfaces
+        ]
+
+        remote_interface_models = self._instance.interfaces
+
+        remote_interfaces = [
+            drop_empty_strings(v._serialize(), recursive=True)
+            for v in remote_interface_models
+        ]
+
+        if self._compare_config_interfaces(param_interfaces, remote_interfaces):
+            return
+
+        interfaces = []
 
         config.save()
 
@@ -1361,7 +1519,7 @@ class LinodeInstance(LinodeModuleBase):
                     [drop_empty_strings(v, recursive=True) for v in new_value]
                 )
 
-                if not self._compare_interfaces(new_value, old_value):
+                if not self._compare_config_interfaces(new_value, old_value):
                     should_update = True
                     config.interfaces = new_value
                     self.register_action(
