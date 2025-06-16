@@ -107,6 +107,8 @@
               ipv4:
                 addresses:
                   - address: auto
+                    primary: true
+                  - address: auto
                     primary: false
               ipv6:
                 ranges:
