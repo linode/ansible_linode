@@ -108,15 +108,13 @@
                 addresses:
                   - address: auto
                     primary: true
-                  - address: auto
-                    primary: false
               ipv6:
                 ranges:
                   - range: /64
                   - range: /64
           - vlan:
-              vlan_label: ansible-test-vlan-2
-              ipam_address: 10.0.0.6/32
+              vlan_label: ansible-test-vlan
+              ipam_address: 10.0.0.5/32
 
           - firewall_id: '{{ firewall_id }}'
             vpc:
@@ -124,10 +122,7 @@
               ipv4:
                 addresses:
                   - address: auto
-                    primary: false
-                  - address: auto
-                    nat_1_1_address: null
-                    primary: false
+                    primary: true
                 ranges:
                   - range: /32
                   - range: /32
@@ -156,7 +151,7 @@
 
           # VLAN interface
           - update.linode_interfaces[1].vlan.vlan_label == 'ansible-test-vlan2'
-          - update.linode_interfaces[1].vlan.ipam_address == '10.0.0.6/32'
+          - update.linode_interfaces[1].vlan.ipam_address == '10.0.0.5/32'
 
           # VPC interface
 #          - update.linode_interfaces[2].default_route.ipv4 == True
