@@ -700,6 +700,14 @@ linode_instance_spec = {
             "Network Helper and default route settings for the Linode."
         ],
     ),
+    "allow_implicit_reboots": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Whether the Linode should be implicitly rebooted during operations "
+            "that require a certain power status."
+        ],
+        default=False,
+    ),
     "booted": SpecField(
         type=FieldType.bool,
         description=[
@@ -1050,7 +1058,7 @@ class LinodeInstance(LinodeModuleBase):
 
         def __normalize_ipv4() -> Dict[str, Any]:
             local_ipv4 = local_public.get("ipv4")
-            remote_ipv4 = remote_public.get("ivp4")
+            remote_ipv4 = remote_public.ipv4
 
             result = copy.deepcopy(local_ipv4)
 
@@ -1058,7 +1066,7 @@ class LinodeInstance(LinodeModuleBase):
                 return result
 
             local_ipv4_addresses = local_ipv4.get("addresses")
-            remote_ipv4_addresses = remote_ipv4.get("addresses")
+            remote_ipv4_addresses = remote_ipv4.addresses
 
             if local_ipv4_addresses is None or remote_ipv4_addresses is None:
                 return result
@@ -1071,17 +1079,17 @@ class LinodeInstance(LinodeModuleBase):
 
                 remote_ipv4_address = remote_ipv4_addresses[i]
 
-                if local_ipv4_address.trim() != "auto":
+                if local_ipv4_address.get("address").strip() != "auto":
                     continue
 
                 # Assume unchanged
-                local_ipv4_address["address"] = remote_ipv4_address["range"]
+                local_ipv4_address["address"] = remote_ipv4_address.address
 
             return result
 
         def __normalize_ipv6() -> Dict[str, Any]:
             local_ipv6 = local_public.get("ipv6")
-            remote_ipv6 = remote_public.get("ipv6")
+            remote_ipv6 = remote_public.ipv6
 
             result = copy.deepcopy(local_ipv6)
 
@@ -1089,7 +1097,7 @@ class LinodeInstance(LinodeModuleBase):
                 return result
 
             local_ipv6_ranges = local_ipv6.get("ranges")
-            remote_ipv6_ranges = remote_ipv6.get("ranges")
+            remote_ipv6_ranges = remote_ipv6.ranges
 
             if local_ipv6_ranges is None or remote_ipv6_ranges is None:
                 return result
@@ -1109,14 +1117,84 @@ class LinodeInstance(LinodeModuleBase):
                 # If this range is a dynamic allocation, assume unchanged
                 if (
                     len(local_range_range_split) == 2
-                    and len(local_range_range_split[0].trim()) < 1
+                    and len(local_range_range_split[0].strip()) < 1
                 ):
-                    local_ipv6_range["range"] = remote_ipv6_range["range"]
+                    local_ipv6_range["range"] = remote_ipv6_range.range
 
             return result
 
         result["ipv4"] = __normalize_ipv4()
         result["ipv6"] = __normalize_ipv6()
+
+        return result
+
+    @staticmethod
+    def _normalize_local_linode_interface_vpc(
+        local_vpc: Dict[str, Any], remote_vpc: LinodeInterface
+    ) -> Dict[str, Any]:
+        result = copy.deepcopy(local_vpc)
+
+        def __normalize_ipv4() -> Dict[str, Any]:
+            local_ipv4 = local_vpc.get("ipv4")
+            remote_ipv4 = remote_vpc.ipv4
+
+            result = copy.deepcopy(local_ipv4)
+
+            if local_ipv4 is None or remote_ipv4 is None:
+                return result
+
+            local_ipv4_addresses = local_ipv4.get("addresses")
+            remote_ipv4_addresses = remote_ipv4.addresses
+
+            if (
+                local_ipv4_addresses is not None
+                and remote_ipv4_addresses is not None
+            ):
+                for i, local_ipv4_address in enumerate(local_ipv4_addresses):
+                    if len(remote_ipv4_addresses) <= i:
+                        # This address doesn't exist on the remote
+                        continue
+
+                    remote_ipv4_address = remote_ipv4_addresses[i]
+
+                    if local_ipv4_address.get("address").strip() == "auto":
+                        local_ipv4_address["address"] = (
+                            remote_ipv4_address.address
+                        )
+
+                    if (
+                        local_ipv4_address.get("nat_1_1_address").strip()
+                        == "auto"
+                    ):
+                        local_ipv4_address["nat_1_1_address"] = (
+                            remote_ipv4_address.nat_1_1_address
+                        )
+
+            local_ipv4_ranges = local_ipv4.get("ranges")
+            remote_ipv4_ranges = remote_ipv4.ranges
+
+            if local_ipv4_ranges is not None and remote_ipv4_ranges is not None:
+                for i, local_ipv4_range in enumerate(local_ipv4_ranges):
+                    if len(remote_ipv4_ranges) <= i:
+                        # This range doesn't exist on the remote
+                        continue
+
+                    remote_ipv4_range = remote_ipv4_ranges[i]
+
+                    local_range_range_split = local_ipv4_range.get(
+                        "range"
+                    ).split("/")
+
+                    # If this range is a dynamic allocation, assume unchanged
+                    if (
+                        len(local_range_range_split) == 2
+                        and len(local_range_range_split[0].strip()) < 1
+                    ):
+                        local_ipv4_range["range"] = remote_ipv4_range.range
+
+            return result
+
+        result["ipv4"] = __normalize_ipv4()
 
         return result
 
@@ -1156,7 +1234,7 @@ class LinodeInstance(LinodeModuleBase):
                 # If the interface types match, assume this is a match
                 if (
                     local_interface.get(field) is None
-                    or remote_interface.get(field) is None
+                    or getattr(remote_interface, field) is None
                 ):
                     continue
 
@@ -1169,6 +1247,8 @@ class LinodeInstance(LinodeModuleBase):
         Updates the interfaces for the current Linode Instance,
         creating, deleting, and updating interfaces as needed.
         """
+
+        # TODO(Linode Interfaces): allow_implicit_reboots logic
 
         local_interfaces = self.module.params.get("linode_interfaces", None)
         if local_interfaces is None:
@@ -1188,7 +1268,7 @@ class LinodeInstance(LinodeModuleBase):
                 new_interface = self._instance.interface_create(
                     **local_interface,
                 )
-                handled_interface_ids.add(new_interface)
+                handled_interface_ids.add(new_interface.id)
                 self.register_action(f"Created interface {new_interface.id}")
                 continue
 
@@ -1200,9 +1280,9 @@ class LinodeInstance(LinodeModuleBase):
             handle_updates(
                 related_interface,
                 normalized_local_interface,
-                self.module,
-                self.register_action,
-                {"firewall_id"},
+                {"default_route", "public", "vlan", "vpc"},
+                register_func=self.register_action,
+                ignore_keys={"firewall_id"},
             )
 
             handled_interface_ids.add(related_interface.id)
@@ -1728,8 +1808,11 @@ class LinodeInstance(LinodeModuleBase):
                     "specified in the instance creation."
                 )
 
-        # Update interfaces
+        # Update config interfaces
         self._update_config_interfaces()
+
+        # Update Linode interfaces
+        self._update_linode_interfaces()
 
         # Handle updating on the target Firewall ID
         self._update_firewall()

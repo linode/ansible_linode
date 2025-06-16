@@ -26,7 +26,7 @@
         type: g6-standard-1
         image: linode/ubuntu22.04
         root_pass: Fn$$oobar123
-        booted: true
+        booted: false
         interface_generation: linode
         linode_interfaces:
           - default_route:
@@ -63,7 +63,7 @@
       assert:
         that:
           - create.changed
-          - create.instance.status == 'running'
+          - create.instance.status == 'offline'
 
           # The second public IPv4 address is implicitly allocated
           # by the public interface
@@ -96,7 +96,7 @@
         type: g6-standard-1
         image: linode/ubuntu22.04
         root_pass: Fn$$oobar123
-        booted: true
+        booted: false
         interface_generation: linode
         linode_interfaces:
           - default_route:
@@ -130,7 +130,39 @@
                   - range: /32
                   - range: /32
         state: present
-      register: create
+      register: update
+
+    - name: Assert instance updated
+      assert:
+        that:
+          - update.changed
+          - update.instance.status == 'offline'
+
+          # The second public IPv4 address is implicitly allocated
+          # by the public interface
+          - update.instance.ipv4|length == 2
+
+          - update.linode_interfaces | length == 3
+
+          # Public interface
+          - update.linode_interfaces[0].default_route.ipv4 == True
+          - update.linode_interfaces[0].default_route.ipv6 == True
+          - update.linode_interfaces[0].public.ipv4.addresses[0].address == create.linode_interfaces[0].public.ipv4.addresses[0].address
+          - update.linode_interfaces[0].public.ipv4.addresses[0].primary == False
+          - update.linode_interfaces[0].public.ipv6.ranges[0].range == create.linode_interfaces[0].public.ipv4.ranges[0].range
+          - update.linode_interfaces[0].public.ipv6.ranges[1].range | length > 4
+
+          # VLAN interface
+          - update.linode_interfaces[1].vlan.vlan_label == 'ansible-test-vlan2'
+          - update.linode_interfaces[1].vlan.ipam_address == '10.0.0.6/32'
+
+          # VPC interface
+#          - update.linode_interfaces[2].default_route.ipv4 == True
+#          - update.linode_interfaces[2].vpc.subnet_id == create_subnet.subnet.id
+#          - update.linode_interfaces[2].vpc.ipv4.addresses[0].address | length > 4
+#          - update.linode_interfaces[2].vpc.ipv4.addresses[0].nat_1_1_address | length > 4
+#          - update.linode_interfaces[2].vpc.ipv4.addresses[0].primary == True
+#          - update.linode_interfaces[2].vpc.ipv4.ranges[0].range | length > 4
 
   always:
     - ignore_errors: yes
