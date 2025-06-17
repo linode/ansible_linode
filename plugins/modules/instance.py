@@ -7,11 +7,14 @@ from __future__ import absolute_import, division, print_function
 
 import copy
 import json
-from typing import Any, Dict, List, Optional, Set, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
 import linode_api4
 import polling
+from ansible_collections.linode.cloud.plugins.module_utils.instance import (
+    linode_interfaces,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
@@ -43,7 +46,6 @@ try:
         Disk,
         Firewall,
         Instance,
-        LinodeInterface,
         StackScript,
         Volume,
     )
@@ -1050,253 +1052,6 @@ class LinodeInstance(LinodeModuleBase):
 
         return True
 
-    @staticmethod
-    def _normalize_local_linode_interface_public(
-        local_public: Dict[str, Any], remote_public: LinodeInterface
-    ) -> Dict[str, Any]:
-        result = copy.deepcopy(local_public)
-
-        def __normalize_ipv4() -> Dict[str, Any]:
-            local_ipv4 = local_public.get("ipv4")
-            remote_ipv4 = remote_public.ipv4
-
-            result = copy.deepcopy(local_ipv4)
-
-            if local_ipv4 is None or remote_ipv4 is None:
-                return result
-
-            local_ipv4_addresses = local_ipv4.get("addresses")
-            remote_ipv4_addresses = remote_ipv4.addresses
-
-            if local_ipv4_addresses is None or remote_ipv4_addresses is None:
-                return result
-
-            for i, local_ipv4_address in enumerate(local_ipv4_addresses):
-                if len(remote_ipv4_addresses) <= i:
-                    # This range doesn't exist on the remote,
-                    # so there's nothing to normalize with
-                    continue
-
-                remote_ipv4_address = remote_ipv4_addresses[i]
-
-                if local_ipv4_address.get("address").strip() != "auto":
-                    continue
-
-                # Assume unchanged
-                local_ipv4_address["address"] = remote_ipv4_address.address
-
-            return result
-
-        def __normalize_ipv6() -> Dict[str, Any]:
-            local_ipv6 = local_public.get("ipv6")
-            remote_ipv6 = remote_public.ipv6
-
-            result = copy.deepcopy(local_ipv6)
-
-            if local_ipv6 is None or remote_ipv6 is None:
-                return result
-
-            local_ipv6_ranges = local_ipv6.get("ranges")
-            remote_ipv6_ranges = remote_ipv6.ranges
-
-            if local_ipv6_ranges is None or remote_ipv6_ranges is None:
-                return result
-
-            for i, local_ipv6_range in enumerate(local_ipv6_ranges):
-                if len(remote_ipv6_ranges) <= i:
-                    # This range doesn't exist on the remote,
-                    # so there's nothing to normalize
-                    continue
-
-                remote_ipv6_range = remote_ipv6_ranges[i]
-
-                local_range_range_split = local_ipv6_range.get("range").split(
-                    "/"
-                )
-
-                # If this range is a dynamic allocation, assume unchanged
-                if (
-                    len(local_range_range_split) == 2
-                    and len(local_range_range_split[0].strip()) < 1
-                ):
-                    local_ipv6_range["range"] = remote_ipv6_range.range
-
-            return result
-
-        result["ipv4"] = __normalize_ipv4()
-        result["ipv6"] = __normalize_ipv6()
-
-        return result
-
-    @staticmethod
-    def _normalize_local_linode_interface_vpc(
-        local_vpc: Dict[str, Any], remote_vpc: LinodeInterface
-    ) -> Dict[str, Any]:
-        result = copy.deepcopy(local_vpc)
-
-        def __normalize_ipv4() -> Dict[str, Any]:
-            local_ipv4 = local_vpc.get("ipv4")
-            remote_ipv4 = remote_vpc.ipv4
-
-            result = copy.deepcopy(local_ipv4)
-
-            if local_ipv4 is None or remote_ipv4 is None:
-                return result
-
-            local_ipv4_addresses = local_ipv4.get("addresses")
-            remote_ipv4_addresses = remote_ipv4.addresses
-
-            if (
-                local_ipv4_addresses is not None
-                and remote_ipv4_addresses is not None
-            ):
-                for i, local_ipv4_address in enumerate(local_ipv4_addresses):
-                    if len(remote_ipv4_addresses) <= i:
-                        # This address doesn't exist on the remote
-                        continue
-
-                    remote_ipv4_address = remote_ipv4_addresses[i]
-
-                    if local_ipv4_address.get("address").strip() == "auto":
-                        local_ipv4_address["address"] = (
-                            remote_ipv4_address.address
-                        )
-
-                    if (
-                        local_ipv4_address.get("nat_1_1_address").strip()
-                        == "auto"
-                    ):
-                        local_ipv4_address["nat_1_1_address"] = (
-                            remote_ipv4_address.nat_1_1_address
-                        )
-
-            local_ipv4_ranges = local_ipv4.get("ranges")
-            remote_ipv4_ranges = remote_ipv4.ranges
-
-            if local_ipv4_ranges is not None and remote_ipv4_ranges is not None:
-                for i, local_ipv4_range in enumerate(local_ipv4_ranges):
-                    if len(remote_ipv4_ranges) <= i:
-                        # This range doesn't exist on the remote
-                        continue
-
-                    remote_ipv4_range = remote_ipv4_ranges[i]
-
-                    local_range_range_split = local_ipv4_range.get(
-                        "range"
-                    ).split("/")
-
-                    # If this range is a dynamic allocation, assume unchanged
-                    if (
-                        len(local_range_range_split) == 2
-                        and len(local_range_range_split[0].strip()) < 1
-                    ):
-                        local_ipv4_range["range"] = remote_ipv4_range.range
-
-            return result
-
-        result["ipv4"] = __normalize_ipv4()
-
-        return result
-
-    @staticmethod
-    def _normalize_local_linode_interface(
-        local_interface: Dict[str, Any], remote_interface: LinodeInterface
-    ) -> Dict[str, Any]:
-        """
-        Normalizes the given param interface to the remote interface
-        for direct comparison.
-        """
-        result = copy.deepcopy(local_interface)
-
-        # `public` normalization
-        local_public = local_interface.get("public")
-        remote_public = remote_interface.public
-        if local_public is not None and remote_public is not None:
-            result["public"] = (
-                LinodeInstance._normalize_local_linode_interface_public(
-                    local_public, remote_interface.public
-                )
-            )
-
-        return result
-
-    @staticmethod
-    def __find_matching_interface(
-        local_interface: Dict[str, Any],
-        remote_interfaces: List[LinodeInterface],
-        exclude_ids: Set[int],
-    ) -> Optional[LinodeInterface]:
-        for remote_interface in remote_interfaces:
-            if remote_interface.id in exclude_ids:
-                continue
-
-            for field in ["public", "vlan", "vpc"]:
-                # If the interface types match, assume this is a match
-                if (
-                    local_interface.get(field) is None
-                    or getattr(remote_interface, field) is None
-                ):
-                    continue
-
-                return remote_interface
-
-        return None
-
-    def _update_linode_interfaces(self) -> None:
-        """
-        Updates the interfaces for the current Linode Instance,
-        creating, deleting, and updating interfaces as needed.
-        """
-
-        # TODO(Linode Interfaces): allow_implicit_reboots logic
-
-        local_interfaces = self.module.params.get("linode_interfaces", None)
-        if local_interfaces is None:
-            return
-
-        remote_interfaces = self._instance.interfaces
-
-        handled_interface_ids = set()
-
-        for local_interface in local_interfaces:
-            related_interface = self.__find_matching_interface(
-                local_interface, remote_interfaces, handled_interface_ids
-            )
-
-            if related_interface is None:
-                # Create an interface
-                new_interface = self._instance.interface_create(
-                    **local_interface,
-                )
-                handled_interface_ids.add(new_interface.id)
-                self.register_action(f"Created interface {new_interface.id}")
-                continue
-
-            # Update an interface
-            normalized_local_interface = self._normalize_local_linode_interface(
-                local_interface, related_interface
-            )
-
-            handle_updates(
-                related_interface,
-                normalized_local_interface,
-                {"default_route", "public", "vlan", "vpc"},
-                register_func=self.register_action,
-                ignore_keys={"firewall_id"},
-            )
-
-            handled_interface_ids.add(related_interface.id)
-
-        # Delete remaining interface
-        for remote_interface in remote_interfaces:
-            if remote_interface.id in handled_interface_ids:
-                continue
-
-            self.register_action(f"Deleted interface {remote_interface.id}")
-            remote_interface.delete()
-
-        return
-
     def _create_instance(self) -> dict:
         """Creates a Linode instance"""
         params = copy.deepcopy(self.module.params)
@@ -1812,7 +1567,7 @@ class LinodeInstance(LinodeModuleBase):
         self._update_config_interfaces()
 
         # Update Linode interfaces
-        self._update_linode_interfaces()
+        linode_interfaces.update_linode_interfaces(self, self._instance)
 
         # Handle updating on the target Firewall ID
         self._update_firewall()

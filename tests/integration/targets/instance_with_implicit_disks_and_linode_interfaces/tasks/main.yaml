@@ -135,9 +135,7 @@
           - update.changed
           - update.instance.status == 'offline'
 
-          # The second public IPv4 address is implicitly allocated
-          # by the public interface
-          - update.instance.ipv4|length == 2
+          - update.instance.ipv4|length == 1
 
           - update.linode_interfaces | length == 3
 
@@ -145,12 +143,12 @@
           - update.linode_interfaces[0].default_route.ipv4 == True
           - update.linode_interfaces[0].default_route.ipv6 == True
           - update.linode_interfaces[0].public.ipv4.addresses[0].address == create.linode_interfaces[0].public.ipv4.addresses[0].address
-          - update.linode_interfaces[0].public.ipv4.addresses[0].primary == False
-          - update.linode_interfaces[0].public.ipv6.ranges[0].range == create.linode_interfaces[0].public.ipv4.ranges[0].range
+          - update.linode_interfaces[0].public.ipv4.addresses[0].primary == True
+          - update.linode_interfaces[0].public.ipv6.ranges[1].range == create.linode_interfaces[0].public.ipv6.ranges[0].range
           - update.linode_interfaces[0].public.ipv6.ranges[1].range | length > 4
 
           # VLAN interface
-          - update.linode_interfaces[1].vlan.vlan_label == 'ansible-test-vlan2'
+          - update.linode_interfaces[1].vlan.vlan_label == 'ansible-test-vlan'
           - update.linode_interfaces[1].vlan.ipam_address == '10.0.0.5/32'
 
           # VPC interface
@@ -178,7 +176,7 @@
 
         - name: Delete the VPC
           linode.cloud.vpc:
-            label: '{{ create_vpc.vpc.id }}'
+            label: '{{ create_vpc.vpc.label }}'
             state: absent
           register: delete_vpc
 
