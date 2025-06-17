@@ -29,6 +29,22 @@ def __normalize_lists(
     passthrough_keys: Set[str],
     is_explicit: Callable[[str], bool] = __ip_is_explicit,
 ) -> List[Dict[str, Any]]:
+    """
+    Returns a modified version of local_list that has been normalized to
+    match the given remote_list for diffing. This includes replacing
+    implicit (auth, /PREFIX) addresses with its API-returned counterpart.
+    """
+
+    local_list = sorted(
+        local_list,
+        key=lambda entry: tuple(entry.get(key) for key in passthrough_keys)
+    )
+
+    remote_list = sorted(
+        remote_list,
+        key=lambda entry: tuple(getattr(entry, key) for key in passthrough_keys)
+    )
+
     result = copy.deepcopy(local_list)
 
     for i, (local_entry, remote_entry) in enumerate(
@@ -43,10 +59,6 @@ def __normalize_lists(
                 continue
 
             result[i][passthrough_key] = getattr(remote_entry, passthrough_key)
-
-    result.sort(
-        key=lambda entry: tuple(entry.get(key) for key in passthrough_keys)
-    )
 
     return result
 
