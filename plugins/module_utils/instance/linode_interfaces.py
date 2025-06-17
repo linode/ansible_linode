@@ -1,6 +1,7 @@
 import copy
-from typing import Any, Dict, List, Optional, Set, TypeVar
+from typing import Any, Callable, Dict, List, Optional, Set, Union
 
+import linode_api4
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
@@ -9,22 +10,40 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 )
 from linode_api4 import Instance, LinodeInterface
 
-T = TypeVar("T")
-T2 = TypeVar("T2")
 
+def __ip_is_explicit(value: Optional[str]) -> bool:
+    """
+    Returns whether the given IP address is explicitly set or is implicit (auto, /PREFIX).
+    """
 
-def __is_explicit(value: str) -> bool:
+    if value is None:
+        return False
+
     value = value.strip()
     return value != "auto" and len(value.split("/")[0].strip()) < 1
 
 
-def __passthrough_implicit(
-    local_value: str, remote_value: Optional[str]
-) -> str:
-    if __is_explicit(local_value):
-        return local_value
+def __normalize_lists(
+    local_list: List[Dict[str, Any]],
+    remote_list: List[Union[linode_api4.JSONObject, linode_api4.Base]],
+    passthrough_keys: Set[str],
+    is_explicit: Callable[[str], bool] = __ip_is_explicit,
+) -> List[Dict[str, Any]]:
+    result = copy.deepcopy(local_list)
 
-    return remote_value
+    for i, (local_entry, remote_entry) in enumerate(
+        zip(local_list, remote_list)
+    ):
+        for passthrough_key in passthrough_keys:
+            if passthrough_key not in local_entry:
+                continue
+
+            if not is_explicit(passthrough_key):
+                continue
+
+            result[i][passthrough_key] = remote_entry.get(passthrough_key)
+
+    return result
 
 
 def __normalize_local_linode_interface_public(
@@ -41,18 +60,11 @@ def __normalize_local_linode_interface_public(
         if local_ipv4 is None or remote_ipv4 is None:
             return result
 
-        local_ipv4_addresses = local_ipv4.get("addresses")
-        remote_ipv4_addresses = remote_ipv4.addresses
-
-        if local_ipv4_addresses is None or remote_ipv4_addresses is None:
-            return result
-
-        for local_address, remote_address in zip(
-            local_ipv4_addresses, remote_ipv4_addresses
-        ):
-            local_address["address"] = __passthrough_implicit(
-                local_address.get("address"), remote_address.address
-            )
+        result["addresses"] = __normalize_lists(
+            local_ipv4.get("addresses"),
+            remote_ipv4.addresses,
+            {"address"},
+        )
 
         return result
 
@@ -65,18 +77,11 @@ def __normalize_local_linode_interface_public(
         if local_ipv6 is None or remote_ipv6 is None:
             return result
 
-        local_ipv6_ranges = local_ipv6.get("ranges")
-        remote_ipv6_ranges = remote_ipv6.ranges
-
-        if local_ipv6_ranges is None or remote_ipv6_ranges is None:
-            return result
-
-        for local_range, remote_range in zip(
-            local_ipv6_ranges, remote_ipv6_ranges
-        ):
-            local_range["range"] = __passthrough_implicit(
-                local_range.get("range"), remote_range.range
-            )
+        result["ranges"] = __normalize_lists(
+            local_ipv6.get("ranges"),
+            remote_ipv6.ranges,
+            {"range"},
+        )
 
         return result
 
@@ -100,30 +105,17 @@ def __normalize_local_linode_interface_vpc(
         if local_ipv4 is None or remote_ipv4 is None:
             return result
 
-        local_ipv4_addresses = local_ipv4.get("addresses")
-        remote_ipv4_addresses = remote_ipv4.addresses
+        result["addresses"] = __normalize_lists(
+            local_ipv4.get("addresses"),
+            remote_ipv4.addresses,
+            {"address", "nat_1_1_address"},
+        )
 
-        for local_address, remote_address in zip(
-            local_ipv4_addresses, remote_ipv4_addresses
-        ):
-            local_address["address"] = __passthrough_implicit(
-                local_address.get("address"), remote_address.address
-            )
-
-            local_address["nat_1_1_address"] = __passthrough_implicit(
-                local_address.get("nat_1_1_address"),
-                remote_address.nat_1_1_address,
-            )
-
-        local_ipv4_ranges = local_ipv4.get("ranges")
-        remote_ipv4_ranges = remote_ipv4.ranges
-
-        for local_range, remote_range in zip(
-            local_ipv4_ranges, remote_ipv4_ranges
-        ):
-            local_range["range"] = __passthrough_implicit(
-                local_range.get("range"), remote_range.range
-            )
+        result["ranges"] = __normalize_lists(
+            local_ipv4.get("ranges"),
+            remote_ipv4.addresses,
+            {"range"},
+        )
 
         return result
 
@@ -165,6 +157,13 @@ def __find_matching_interface(
     remote_interfaces: List[LinodeInterface],
     exclude_ids: Set[int],
 ) -> Optional[LinodeInterface]:
+    """
+    Returns a single entry from remote_interfaces that roughly matches
+    the given local_interface.
+
+    Entries of remote_interfaces with ids in the exclude_ids set will be
+    ignored.
+    """
     for remote_interface in remote_interfaces:
         if remote_interface.id in exclude_ids:
             continue
@@ -199,6 +198,7 @@ def update_linode_interfaces(
 
     remote_interfaces = instance.interfaces
 
+    # Reconcile create/read/delete operations
     handled_interface_ids = set()
 
     for local_interface in local_interfaces:
@@ -216,6 +216,9 @@ def update_linode_interfaces(
             continue
 
         # Update an interface
+        import q
+
+        q.q("UPDATE", local_interface, related_interface)
         normalized_local_interface = __normalize_local_linode_interface(
             local_interface, related_interface
         )

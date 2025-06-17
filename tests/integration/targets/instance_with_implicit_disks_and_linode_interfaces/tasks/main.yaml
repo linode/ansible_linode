@@ -152,12 +152,15 @@
           - update.linode_interfaces[1].vlan.ipam_address == '10.0.0.5/32'
 
           # VPC interface
-#          - update.linode_interfaces[2].default_route.ipv4 == True
-#          - update.linode_interfaces[2].vpc.subnet_id == create_subnet.subnet.id
-#          - update.linode_interfaces[2].vpc.ipv4.addresses[0].address | length > 4
-#          - update.linode_interfaces[2].vpc.ipv4.addresses[0].nat_1_1_address | length > 4
-#          - update.linode_interfaces[2].vpc.ipv4.addresses[0].primary == True
-#          - update.linode_interfaces[2].vpc.ipv4.ranges[0].range | length > 4
+          - update.linode_interfaces[2].default_route.ipv4 == False
+          - update.linode_interfaces[2].vpc.subnet_id == create_subnet.subnet.id
+          - update.linode_interfaces[2].vpc.ipv4.addresses[0].address == create.linode_interfaces[2].vpc.ipv4.addresses[0].address
+          - update.linode_interfaces[2].vpc.ipv4.addresses[0].nat_1_1_address == create.linode_interfaces[2].vpc.ipv4.addresses[0].nat_1_1_address
+          - update.linode_interfaces[2].vpc.ipv4.addresses[0].primary == True
+
+          - update.linode_interfaces[2].vpc.ipv4.ranges | length == 2
+          - update.linode_interfaces[2].vpc.ipv4.ranges[0].range == create.linode_interfaces[2].vpc.ipv4.ranges[0].range
+          - update.linode_interfaces[2].vpc.ipv4.ranges[1].range | length > 4
 
   always:
     - ignore_errors: yes
