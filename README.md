@@ -21,6 +21,7 @@ Modules for managing Linode infrastructure.
 
 Name | Description |
 --- | ------------ |
+[linode.cloud.account_settings](./docs/modules/account_settings.md)|Returns information related to your Account settings.|
 [linode.cloud.api_request](./docs/modules/api_request.md)|Make an arbitrary Linode API request.|
 [linode.cloud.database_mysql](./docs/modules/database_mysql.md)|Manage a Linode MySQL database.|
 [linode.cloud.database_mysql_v2](./docs/modules/database_mysql_v2.md)|Create, read, and update a Linode MySQL database.|
