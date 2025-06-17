@@ -38,10 +38,15 @@ def __normalize_lists(
             if passthrough_key not in local_entry:
                 continue
 
-            if not is_explicit(passthrough_key):
+            if is_explicit(passthrough_key):
+                # Pass-through the explicit value
                 continue
 
-            result[i][passthrough_key] = remote_entry.get(passthrough_key)
+            result[i][passthrough_key] = getattr(remote_entry, passthrough_key)
+
+    result.sort(
+        key=lambda entry: tuple(entry.get(key) for key in passthrough_keys)
+    )
 
     return result
 
@@ -113,7 +118,7 @@ def __normalize_local_linode_interface_vpc(
 
         result["ranges"] = __normalize_lists(
             local_ipv4.get("ranges"),
-            remote_ipv4.addresses,
+            remote_ipv4.ranges,
             {"range"},
         )
 
@@ -138,7 +143,7 @@ def __normalize_local_linode_interface(
     remote_public = remote_interface.public
     if local_public is not None and remote_public is not None:
         result["public"] = __normalize_local_linode_interface_public(
-            local_public, remote_interface.public
+            local_public, remote_public
         )
 
     # `vpc` normalization
@@ -216,9 +221,6 @@ def update_linode_interfaces(
             continue
 
         # Update an interface
-        import q
-
-        q.q("UPDATE", local_interface, related_interface)
         normalized_local_interface = __normalize_local_linode_interface(
             local_interface, related_interface
         )

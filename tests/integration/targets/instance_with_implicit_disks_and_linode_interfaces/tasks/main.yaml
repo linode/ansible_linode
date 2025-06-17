@@ -135,7 +135,7 @@
           - update.changed
           - update.instance.status == 'offline'
 
-          - update.instance.ipv4|length == 1
+          - update.instance.ipv4|length == 2
 
           - update.linode_interfaces | length == 3
 
@@ -144,7 +144,7 @@
           - update.linode_interfaces[0].default_route.ipv6 == True
           - update.linode_interfaces[0].public.ipv4.addresses[0].address == create.linode_interfaces[0].public.ipv4.addresses[0].address
           - update.linode_interfaces[0].public.ipv4.addresses[0].primary == True
-          - update.linode_interfaces[0].public.ipv6.ranges[1].range == create.linode_interfaces[0].public.ipv6.ranges[0].range
+          - update.linode_interfaces[0].public.ipv6.ranges[0].range == create.linode_interfaces[0].public.ipv6.ranges[0].range
           - update.linode_interfaces[0].public.ipv6.ranges[1].range | length > 4
 
           # VLAN interface
