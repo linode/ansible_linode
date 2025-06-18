@@ -37,12 +37,14 @@ def __normalize_lists(
 
     local_list = sorted(
         local_list,
-        key=lambda entry: tuple(entry.get(key) for key in passthrough_keys)
+        key=lambda entry: tuple(entry.get(key) for key in passthrough_keys),
     )
 
     remote_list = sorted(
         remote_list,
-        key=lambda entry: tuple(getattr(entry, key) for key in passthrough_keys)
+        key=lambda entry: tuple(
+            getattr(entry, key) for key in passthrough_keys
+        ),
     )
 
     result = copy.deepcopy(local_list)

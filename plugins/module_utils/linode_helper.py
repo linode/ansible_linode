@@ -381,3 +381,53 @@ def safe_find(
         return None
     except Exception as exception:
         raise Exception(f"failed to get resource: {exception}") from exception
+
+
+def normalize_params_recursive(
+    local_data: Dict[str, Any],
+    remote_data: Union[linode_api4.JSONObject, linode_api4.Base],
+    normalization_handlers: Dict[Tuple[str, ...], Callable[[Any, Any], Any]],
+) -> Dict[str, Any]:
+    """
+    Modifies the given local data to match the given remote data,
+    running the given normalization handlers for each path.
+    """
+
+    def __inner(
+        local_entry: Any,
+        remote_entry: Any,
+        current_path: Tuple[str, ...],
+    ):
+        if local_entry is None or remote_entry is None:
+            return local_entry
+
+        if isinstance(local_entry, dict):
+            # Recurse through each key in the local entry dict
+            for key, local_value in local_entry.items():
+                local_entry[key] = __inner(
+                    local_value,
+                    getattr(remote_entry, key, None),
+                    current_path + tuple([key]),
+                )
+
+        elif isinstance(local_entry, list):
+            # Recurse through pairs of local and remote list entries
+            for index, (local_value, remote_value) in enumerate(
+                zip(local_entry, remote_entry)
+            ):
+                # NOTE: We don't extend the path here since indices aren't supported
+                # in normalization handler paths.
+                local_entry[index] = __inner(
+                    local_value, remote_value, current_path
+                )
+
+        elif current_path in normalization_handlers:
+            # This field has a specified normalization handler
+            return normalization_handlers[current_path](
+                local_entry, remote_entry
+            )
+
+        # Nothing to change
+        return local_entry
+
+    return __inner(local_data, remote_data, tuple())

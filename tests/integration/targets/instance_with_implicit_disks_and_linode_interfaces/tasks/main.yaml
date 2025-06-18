@@ -129,6 +129,14 @@
         state: present
       register: update
 
+    - name: Prepare data for assertions
+      set_fact:
+        create_public_ipv6_ranges_sorted: '{{ create.linode_interfaces[0].public.ipv6.ranges | sort(attribute="range") }}'
+        update_public_ipv6_ranges_sorted: '{{ update.linode_interfaces[0].public.ipv6.ranges | sort(attribute="range") }}'
+
+        create_vpc_ipv4_ranges_sorted: '{{ create.linode_interfaces[2].vpc.ipv4.ranges | sort(attribute="range") }}'
+        update_vpc_ipv4_ranges_sorted: '{{ update.linode_interfaces[2].vpc.ipv4.ranges | sort(attribute="range") }}'
+
     - name: Assert instance updated
       assert:
         that:
@@ -142,10 +150,12 @@
           # Public interface
           - update.linode_interfaces[0].default_route.ipv4 == True
           - update.linode_interfaces[0].default_route.ipv6 == True
+
           - update.linode_interfaces[0].public.ipv4.addresses[0].address == create.linode_interfaces[0].public.ipv4.addresses[0].address
           - update.linode_interfaces[0].public.ipv4.addresses[0].primary == True
-          - update.linode_interfaces[0].public.ipv6.ranges[0].range == create.linode_interfaces[0].public.ipv6.ranges[0].range
-          - update.linode_interfaces[0].public.ipv6.ranges[1].range | length > 4
+
+          - update_public_ipv6_ranges_sorted[0].range == create_public_ipv6_ranges_sorted[0].range
+          - update_public_ipv6_ranges_sorted[0].range | length > 4
 
           # VLAN interface
           - update.linode_interfaces[1].vlan.vlan_label == 'ansible-test-vlan'
@@ -159,8 +169,8 @@
           - update.linode_interfaces[2].vpc.ipv4.addresses[0].primary == True
 
           - update.linode_interfaces[2].vpc.ipv4.ranges | length == 2
-          - update.linode_interfaces[2].vpc.ipv4.ranges[0].range == create.linode_interfaces[2].vpc.ipv4.ranges[0].range
-          - update.linode_interfaces[2].vpc.ipv4.ranges[1].range | length > 4
+          - update_vpc_ipv4_ranges_sorted[0].range == create_vpc_ipv4_ranges_sorted[0].range
+          - update_vpc_ipv4_ranges_sorted[0].range | length > 4
 
   always:
     - ignore_errors: yes
