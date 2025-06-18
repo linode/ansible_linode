@@ -1,6 +1,19 @@
 """This module contains helper functions for various Linode modules."""
+
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import linode_api4
 import polling
@@ -33,6 +46,60 @@ def dict_select_matching(d_1: dict, d_2: dict) -> Tuple[dict, dict]:
     new_d2 = {key: d_2.get(key) for key in d_1.keys() if key in d_2.keys()}
 
     return new_d1, new_d2
+
+
+def dict_select_matching_recursive(
+    *dicts: Dict[str, Any]
+) -> Tuple[Dict[str, Any], ...]:
+    """Returns copies of the given dictionaries with all non-shared keys removed"""
+
+    result = tuple({} for _ in range(len(dicts)))
+
+    mutual_keys = dicts[0].keys()
+    for d in dicts[1:]:
+        mutual_keys &= d.keys()
+
+    for key in mutual_keys:
+        # Matching key handler
+        dict_values = tuple(d.get(key) for d in dicts)
+
+        if all(isinstance(v, dict) for v in dict_values):
+            dict_values = dict_select_matching_recursive(*dict_values)
+        elif all(isinstance(v, list) for v in dict_values):
+            list_values = [[] for _ in range(len(dict_values))]
+            longest_list_length = max(len(v) for v in dict_values)
+
+            for list_index in range(longest_list_length):
+                # Aggregate a list of (dict_index, dict_value) pairs
+                # for dicts with entries for list_index.
+                #
+                # Pairing is necessary to preserve the index when writing back
+                # to the result below.
+                relevant_dict_value_pairs = [
+                    (i, dict_value[list_index])
+                    for i, dict_value in enumerate(dict_values)
+                    if list_index < len(dict_value)
+                ]
+
+                # We only want to compare entries of dicts with other entries of the same index
+                entry_match_result = dict_select_matching_recursive(
+                    *[dict_value for _, dict_value in relevant_dict_value_pairs]
+                )
+
+                for result_index, (dict_index, _) in enumerate(
+                    relevant_dict_value_pairs
+                ):
+                    # Append an entry to the dict value's corresponding list
+                    list_values[dict_index].append(
+                        entry_match_result[result_index]
+                    )
+
+            dict_values = list_values
+
+        for i, value in enumerate(dict_values):
+            result[i][key] = value
+
+    return result
 
 
 def filter_null_values(input_dict: dict) -> dict:
@@ -116,8 +183,16 @@ def handle_updates(
     mutable_fields: set,
     register_func: Callable,
     ignore_keys: Set[str] = None,
+    match_recursive: bool = False,
+    dry_run: bool = False,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
+
+    match_func = (
+        dict_select_matching_recursive
+        if match_recursive
+        else dict_select_matching
+    )
 
     ignore_keys = ignore_keys or set()
 
@@ -141,7 +216,7 @@ def handle_updates(
         if isinstance(new_value, dict):
             # If this field is a dict, we only want to compare values that are
             # specified by the user
-            old_value, new_value = dict_select_matching(
+            old_value, new_value = match_func(
                 filter_null_values_recursive(old_value),
                 filter_null_values_recursive(new_value),
             )
@@ -175,7 +250,7 @@ def handle_updates(
                 " field".format(old_value, new_value, key)
             )
 
-    if len(put_request.keys()) > 0:
+    if len(put_request.keys()) > 0 and not dry_run:
         obj._client.put(type(obj).api_endpoint, model=obj, data=put_request)
 
     return result
@@ -382,46 +457,55 @@ def safe_find(
     except Exception as exception:
         raise Exception(f"failed to get resource: {exception}") from exception
 
+
+APIModelType = TypeVar("APIModelType", bound=linode_api4.Base)
+
+
 @dataclass
-class ReconcileSubEntityOperationsResult:
+class ReconcileSubEntityOperationsResult(Generic[APIModelType]):
     to_create: List[Dict[str, Any]] = field(default_factory=list)
-    to_update: List[Tuple[linode_api4.Base, Dict[str, Any]]] = field(default_factory=list)
-    to_delete: List[linode_api4.Base] = field(default_factory=list)
+    to_diff: List[Tuple[APIModelType, Dict[str, Any]]] = field(
+        default_factory=list
+    )
+    to_delete: List[APIModelType] = field(default_factory=list)
 
 
 def reconcile_sub_entity_operations(
     local_entities: List[Dict[str, Any]],
-    remote_entities: List[linode_api4.Base],
-    entity_matches_param: Callable[[linode_api4.Base, Dict[str, Any]], bool],
+    remote_entities: List[APIModelType],
+    entity_matches_param: Callable[[APIModelType, Dict[str, Any]], bool],
 ) -> ReconcileSubEntityOperationsResult:
     """
     Reconciles the necessary create, update, and delete operations to bring the
     given entities up to parity with the given user-configured entities.
     """
     result = ReconcileSubEntityOperationsResult()
-    unhandled_remote_entities = set(remote_entities)
+    unhandled_remote_entities = {
+        entity.id: entity for entity in remote_entities
+    }
 
     for local_entity in local_entities:
         remote_entity = next(
             (
                 v
-                for v in unhandled_remote_entities
+                for v in unhandled_remote_entities.values()
                 if entity_matches_param(v, local_entity)
             ),
-            None
+            None,
         )
 
         if remote_entity is None:
             result.to_create.append(local_entity)
             continue
 
-        unhandled_remote_entities.discard(remote_entity)
-        result.to_update.append((remote_entity, local_entity))
+        del unhandled_remote_entities[remote_entity.id]
+        result.to_diff.append((remote_entity, local_entity))
 
-    for remote_entity in remote_entities:
+    for remote_entity in unhandled_remote_entities.values():
         result.to_delete.append(remote_entity)
 
     return result
+
 
 def normalize_params_recursive(
     local_data: Dict[str, Any],

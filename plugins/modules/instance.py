@@ -12,9 +12,6 @@ from typing import Any, Dict, List, Optional, Union, cast
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.instance as docs
 import linode_api4
 import polling
-from ansible_collections.linode.cloud.plugins.module_utils.instance import (
-    linode_interfaces,
-)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
@@ -30,6 +27,15 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     paginated_list_to_json,
     parse_linode_types,
     poll_condition,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.modules.instance import (
+    linode_interfaces,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.modules.instance.linode_interfaces import (
+    SPEC_INTERFACE,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.modules.instance.util import (
+    resolve_terminal_status,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -237,201 +243,6 @@ linode_instance_interface_spec = {
         element_type=FieldType.string,
         description=[
             "Packets to these CIDR ranges are routed to the VPC network interface. (VPC only)"
-        ],
-    ),
-}
-
-linode_instance_linode_interface_default_route_spec = {
-    "ipv4": SpecField(
-        type=FieldType.bool,
-        description=[
-            "If set to true, the interface is used for the IPv4 default_route.",
-            "Only one interface per Linode can be set as the IPv4 default route.",
-        ],
-    ),
-    "ipv6": SpecField(
-        type=FieldType.bool,
-        description=[
-            "If set to true, the interface is used for the IPv6 default_route.",
-            "Only one interface per Linode can be set as the IPv6 default route.",
-        ],
-    ),
-}
-
-linode_instance_linode_interface_public_spec = {
-    "ipv4": SpecField(
-        type=FieldType.dict,
-        description=[
-            "IPv4 address settings for this public interface.",
-            "If omitted, a public IPv4 address is automatically allocated.",
-        ],
-        suboptions={
-            "addresses": SpecField(
-                type=FieldType.list,
-                element_type=FieldType.dict,
-                description=[
-                    "List of IPv4 addresses to assign to this interface."
-                    "Setting to auto allocates a public IPv4 address."
-                ],
-                suboptions={
-                    "address": SpecField(
-                        type=FieldType.string,
-                        description=[
-                            "The public IPv4 address to assign to this interface."
-                        ],
-                        default="auto",
-                    ),
-                    "primary": SpecField(
-                        type=FieldType.bool,
-                        description=[
-                            "Configures the source address for routes within the Linode on the corresponding network interface."
-                        ],
-                        default=False,
-                    ),
-                },
-            )
-        },
-    ),
-    "ipv6": SpecField(
-        type=FieldType.dict,
-        description=[
-            "IPv6 address ranges to assign to this interface.",
-            "If omitted, no ranges are assigned.",
-        ],
-        suboptions={
-            "ranges": SpecField(
-                type=FieldType.list,
-                element_type=FieldType.dict,
-                description=[
-                    "IPv6 address ranges to assign to this interface."
-                ],
-                suboptions={
-                    "range": SpecField(
-                        type=FieldType.string,
-                        required=True,
-                        description=[
-                            "Your assigned IPv6 range in CIDR notation (2001:0db8::1/64) or prefix (/64)."
-                        ],
-                    )
-                },
-            )
-        },
-    ),
-}
-
-
-linode_instance_linode_interface_vlan_spec = {
-    "vlan_label": SpecField(
-        type=FieldType.string,
-        description=[
-            "The VLAN's unique label."
-            "VLAN interfaces on the same Linode must have a unique vlan_label.",
-        ],
-    ),
-    "ipam_address": SpecField(
-        type=FieldType.string,
-        description=[
-            "This VLAN interface's private IPv4 address in classless inter-domain routing (CIDR) notation."
-        ],
-    ),
-}
-
-linode_instance_linode_interface_vpc_spec = {
-    "subnet_id": SpecField(
-        type=FieldType.integer,
-        description=[
-            "The VPC subnet identifier for this interface."
-            "Your subnet’s VPC must be in the same data center (region) as the Linode."
-        ],
-    ),
-    "ipv4": SpecField(
-        type=FieldType.dict,
-        description=[
-            "Interfaces can be configured with IPv4 addresses or ranges"
-        ],
-        suboptions={
-            "addresses": SpecField(
-                type=FieldType.list,
-                element_type=FieldType.dict,
-                suboptions={
-                    "address": SpecField(
-                        type=FieldType.string,
-                        default="auto",
-                        description=[
-                            "Specifies which IPv4 address to use in the VPC subnet."
-                        ],
-                    ),
-                    "nat_1_1_address": SpecField(
-                        type=FieldType.string,
-                        description=[
-                            "The 1:1 NAT IPv4 address used to associate a public IPv4 address "
-                            "with the interface's VPC subnet IPv4 address."
-                        ],
-                    ),
-                    "primary": SpecField(
-                        type=FieldType.bool,
-                        description=[
-                            "This IPv4 primary address is used to configure the source address for "
-                            "routes within the Linode on the corresponding network interface."
-                        ],
-                        default=False,
-                    ),
-                },
-            ),
-            "ranges": SpecField(
-                type=FieldType.list,
-                element_type=FieldType.dict,
-                description=["A list of VPC IPv4 ranges."],
-                suboptions={
-                    "range": SpecField(
-                        type=FieldType.string,
-                        description=[
-                            "CIDR notation of a range (1.2.3.4/24) or prefix only (/24)."
-                        ],
-                    )
-                },
-            ),
-        },
-    ),
-}
-
-linode_instance_linode_interface_spec = {
-    "firewall_id": SpecField(
-        type=FieldType.integer,
-        description=[
-            "The enabled firewall to secure a VPC or public interface."
-        ],
-    ),
-    "default_route": SpecField(
-        type=FieldType.dict,
-        suboptions=linode_instance_linode_interface_default_route_spec,
-        description=[
-            "Indicates if the interface serves as the default route when multiple interfaces are eligible for this role."
-        ],
-    ),
-    "public": SpecField(
-        type=FieldType.dict,
-        suboptions=linode_instance_linode_interface_public_spec,
-        description=[
-            "Defines a Linode public interface.",
-            "Any other type must either be omitted or set to null.",
-        ],
-    ),
-    "vlan": SpecField(
-        type=FieldType.dict,
-        suboptions=linode_instance_linode_interface_vlan_spec,
-        description=[
-            "VLAN interface settings.",
-            "A Linode can have up to three VLAN interfaces, with a unique vlan_label for each.",
-        ],
-    ),
-    "vpc": SpecField(
-        type=FieldType.dict,
-        suboptions=linode_instance_linode_interface_vpc_spec,
-        description=[
-            "VPC interface settings.",
-            "A Linode can have one VPC interface.",
-            "The maximum number of interfaces allowed on a Linode is three.",
         ],
     ),
 }
@@ -681,11 +492,18 @@ linode_instance_spec = {
     ),
     "interface_generation": SpecField(
         type=FieldType.string,
+        description=[
+            "Specifies the interface type for the Linode.",
+            "The default value is determined by the interfaces_for_new_linodes "
+            "setting in the account settings.",
+        ],
+        choices=["legacy_config", "linode"],
     ),
     "linode_interfaces": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
-        suboptions=linode_instance_linode_interface_spec,
+        suboptions=SPEC_INTERFACE,
+        editable=True,
         description=[
             "A list of Linode interfaces to apply to the Linode.",
             "See the [Linode API documentation]"
@@ -698,6 +516,7 @@ linode_instance_spec = {
     "linode_interface_settings": SpecField(
         type=FieldType.dict,
         suboptions=linode_instance_linode_interface_settings_spec,
+        editable=True,
         description=[
             "Network Helper and default route settings for the Linode."
         ],
@@ -901,6 +720,9 @@ class LinodeInstance(LinodeModuleBase):
 
         self._instance: Optional[Instance] = None
         self._root_pass: str = ""
+
+        self._original_boot_status: Optional[bool] = None
+        self._restore_boot_status: bool = False
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
@@ -1582,6 +1404,9 @@ class LinodeInstance(LinodeModuleBase):
         boot_status = self.module.params.get("booted")
         should_poll = self.module.params.get("wait")
 
+        if boot_status is None and self._restore_boot_status:
+            boot_status = self._original_boot_status
+
         # Wait for instance to not be busy
         self.client.polling.wait_for_entity_free(
             "linode",
@@ -1593,7 +1418,7 @@ class LinodeInstance(LinodeModuleBase):
 
         event_poller = None
 
-        if boot_status and self._instance.status != "running":
+        if boot_status and resolve_terminal_status(self._instance) != "running":
             event_poller = self.client.polling.event_poller_create(
                 "linode",
                 "linode_boot",
@@ -1605,7 +1430,10 @@ class LinodeInstance(LinodeModuleBase):
                 "Booted instance {0}".format(self.module.params.get("label"))
             )
 
-        if not boot_status and self._instance.status != "offline":
+        if (
+            not boot_status
+            and resolve_terminal_status(self._instance) != "offline"
+        ):
             event_poller = self.client.polling.event_poller_create(
                 "linode",
                 "linode_shutdown",
@@ -1629,6 +1457,10 @@ class LinodeInstance(LinodeModuleBase):
 
         should_poll = self.module.params.get("wait")
 
+        # We don't want to reboot if the Linode is already offline
+        if resolve_terminal_status(self._instance) != "running":
+            return
+
         # Wait for instance to not be busy
         self.client.polling.wait_for_entity_free(
             "linode",
@@ -1637,10 +1469,6 @@ class LinodeInstance(LinodeModuleBase):
         )
 
         self._instance._api_get()
-
-        # We don't want to reboot if the Linode is already offline
-        if self._instance.status != "running":
-            return
 
         reboot_poller = self.client.polling.event_poller_create(
             "linode", "linode_reboot", entity_id=self._instance.id
@@ -1689,7 +1517,14 @@ class LinodeInstance(LinodeModuleBase):
 
                 for ip_type in additional_ip_types:
                     self._instance.ip_allocate(public=ip_type["public"])
+
+            self._original_boot_status = (
+                resolve_terminal_status(self._instance) == "running"
+            )
         else:
+            self._original_boot_status = (
+                resolve_terminal_status(self._instance) == "running"
+            )
             self._update_instance()
 
         # Wait for Linode to not be busy if configs or disks need to be created
@@ -1711,11 +1546,15 @@ class LinodeInstance(LinodeModuleBase):
         if self.module.params.get("rebooted") is not None and already_exists:
             self._handle_instance_reboot()
 
-        if self.module.params.get("booted") is not None:
+        if (
+            self.module.params.get("booted") is not None
+            or self._restore_boot_status
+        ):
             self._handle_instance_boot()
 
         self._instance.invalidate()
         self._instance._api_get()
+
         inst_result = self._instance._raw_json
         inst_result["root_pass"] = self._root_pass
 
@@ -1740,6 +1579,9 @@ class LinodeInstance(LinodeModuleBase):
             )
             self.results["disks"] = paginated_list_to_json(self._instance.disks)
             self.results["networking"] = self._get_networking()
+            self.results["linode_interfaces"] = paginated_list_to_json(
+                self._instance.interfaces
+            )
             self.register_action("Deleted instance {0}".format(label))
             self._instance.delete()
 
