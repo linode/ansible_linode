@@ -1,5 +1,5 @@
 """This module contains helper functions for various Linode modules."""
-
+from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, cast
 
 import linode_api4
@@ -382,6 +382,46 @@ def safe_find(
     except Exception as exception:
         raise Exception(f"failed to get resource: {exception}") from exception
 
+@dataclass
+class ReconcileSubEntityOperationsResult:
+    to_create: List[Dict[str, Any]] = field(default_factory=list)
+    to_update: List[Tuple[linode_api4.Base, Dict[str, Any]]] = field(default_factory=list)
+    to_delete: List[linode_api4.Base] = field(default_factory=list)
+
+
+def reconcile_sub_entity_operations(
+    local_entities: List[Dict[str, Any]],
+    remote_entities: List[linode_api4.Base],
+    entity_matches_param: Callable[[linode_api4.Base, Dict[str, Any]], bool],
+) -> ReconcileSubEntityOperationsResult:
+    """
+    Reconciles the necessary create, update, and delete operations to bring the
+    given entities up to parity with the given user-configured entities.
+    """
+    result = ReconcileSubEntityOperationsResult()
+    unhandled_remote_entities = set(remote_entities)
+
+    for local_entity in local_entities:
+        remote_entity = next(
+            (
+                v
+                for v in unhandled_remote_entities
+                if entity_matches_param(v, local_entity)
+            ),
+            None
+        )
+
+        if remote_entity is None:
+            result.to_create.append(local_entity)
+            continue
+
+        unhandled_remote_entities.discard(remote_entity)
+        result.to_update.append((remote_entity, local_entity))
+
+    for remote_entity in remote_entities:
+        result.to_delete.append(remote_entity)
+
+    return result
 
 def normalize_params_recursive(
     local_data: Dict[str, Any],
