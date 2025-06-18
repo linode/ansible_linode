@@ -6,7 +6,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     handle_updates,
-    normalize_params_recursive, filter_null_values_recursive,
+    normalize_params_recursive,
 )
 from linode_api4 import Instance, LinodeInterface
 
@@ -20,7 +20,12 @@ def __explicit_address(
 def __explicit_range(
     local: Optional[str], remote: Optional[str]
 ) -> Optional[str]:
-    return remote if local is not None and len(local.split("/")[0].strip()) < 1 else local
+    return (
+        remote
+        if local is not None and len(local.split("/")[0].strip()) < 1
+        else local
+    )
+
 
 __interface_normalization_handlers = {
     ("public", "ipv4", "addresses", "address"): __explicit_address,
@@ -98,24 +103,22 @@ def update_linode_interfaces(
 
         # Normalize the interface, passing through the remote values
         # if using auto or prefix-only values.
-        import q; q.q("BEFORE NORMALIZATION", local_interface, vars(related_interface))
         normalized_local_interface = normalize_params_recursive(
             copy.deepcopy(local_interface),
             related_interface,
             normalization_handlers=__interface_normalization_handlers,
         )
-        import q; q.q("AFTER NORMALIZATION", normalized_local_interface)
 
         handle_updates(
             related_interface,
-            filter_null_values_recursive(normalized_local_interface),
+            normalized_local_interface,
             {"default_route", "public", "vlan", "vpc"},
             register_func=module.register_action,
+            # TODO: firewall_id change error or device update logic?
             ignore_keys={"firewall_id"},
         )
 
         handled_interface_ids.add(related_interface.id)
-
         related_interface._api_get()
 
     # Delete the remaining interfaces

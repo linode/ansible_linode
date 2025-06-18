@@ -1714,6 +1714,7 @@ class LinodeInstance(LinodeModuleBase):
         if self.module.params.get("booted") is not None:
             self._handle_instance_boot()
 
+        self._instance.invalidate()
         self._instance._api_get()
         inst_result = self._instance._raw_json
         inst_result["root_pass"] = self._root_pass

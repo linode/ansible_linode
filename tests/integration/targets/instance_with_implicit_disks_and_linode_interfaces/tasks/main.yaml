@@ -151,7 +151,7 @@
           - update.linode_interfaces[1].default_route.ipv4 == False
           - update.linode_interfaces[1].vpc.subnet_id == create_subnet.subnet.id
           - update.linode_interfaces[1].vpc.ipv4.addresses[0].address == create.linode_interfaces[2].vpc.ipv4.addresses[0].address
-          - update.linode_interfaces[1].vpc.ipv4.addresses[0].nat_1_1_address == create.linode_interfaces[2].vpc.ipv4.addresses[0].nat_1_1_address
+          - update.linode_interfaces[1].vpc.ipv4.addresses[0].nat_1_1_address == None
           - update.linode_interfaces[1].vpc.ipv4.addresses[0].primary == True
 
           - update.linode_interfaces[1].vpc.ipv4.ranges | length == 2
@@ -198,7 +198,7 @@
         state: present
       register: add_vlan_interface
 
-    - name: Assert instance updated
+    - name: Assert VLAN interface appended
       assert:
         that:
           - add_vlan_interface.changed
