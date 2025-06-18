@@ -1,146 +1,29 @@
 import copy
-from typing import Any, Callable, Dict, List, Optional, Set, Union
+from typing import Any, Dict, List, Optional, Set
 
-import linode_api4
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     handle_updates,
+    normalize_params_recursive,
 )
 from linode_api4 import Instance, LinodeInterface
 
 
-def __ip_is_explicit(value: Optional[str]) -> bool:
-    """
-    Returns whether the given IP address is explicitly set or is implicit (auto, /PREFIX).
-    """
-
-    if value is None:
-        return False
-
-    value = value.strip()
-    return value != "auto" and len(value.split("/")[0].strip()) < 1
+def __explicit_address(
+    local: Optional[str], remote: Optional[str]
+) -> Optional[str]:
+    return local if local != "auto" else remote
 
 
-def __normalize_lists(
-    local_list: List[Dict[str, Any]],
-    remote_list: List[Union[linode_api4.JSONObject, linode_api4.Base]],
-    passthrough_keys: Set[str],
-    is_explicit: Callable[[str], bool] = __ip_is_explicit,
-) -> List[Dict[str, Any]]:
-    """
-    Returns a modified version of local_list that has been normalized to
-    match the given remote_list for diffing. This includes replacing
-    implicit (auth, /PREFIX) addresses with its API-returned counterpart.
-    """
+def __explicit_range(
+    local: Optional[str], remote: Optional[str]
+) -> Optional[str]:
+    if local is None:
+        return local
 
-    local_list = sorted(
-        local_list,
-        key=lambda entry: tuple(entry.get(key) for key in passthrough_keys),
-    )
-
-    remote_list = sorted(
-        remote_list,
-        key=lambda entry: tuple(
-            getattr(entry, key) for key in passthrough_keys
-        ),
-    )
-
-    result = copy.deepcopy(local_list)
-
-    for i, (local_entry, remote_entry) in enumerate(
-        zip(local_list, remote_list)
-    ):
-        for passthrough_key in passthrough_keys:
-            if passthrough_key not in local_entry:
-                continue
-
-            if is_explicit(passthrough_key):
-                # Pass-through the explicit value
-                continue
-
-            result[i][passthrough_key] = getattr(remote_entry, passthrough_key)
-
-    return result
-
-
-def __normalize_local_linode_interface_public(
-    local_public: Dict[str, Any], remote_public: LinodeInterface
-) -> Dict[str, Any]:
-    result = copy.deepcopy(local_public)
-
-    def __normalize_ipv4() -> Dict[str, Any]:
-        local_ipv4 = local_public.get("ipv4")
-        remote_ipv4 = remote_public.ipv4
-
-        result = copy.deepcopy(local_ipv4)
-
-        if local_ipv4 is None or remote_ipv4 is None:
-            return result
-
-        result["addresses"] = __normalize_lists(
-            local_ipv4.get("addresses"),
-            remote_ipv4.addresses,
-            {"address"},
-        )
-
-        return result
-
-    def __normalize_ipv6() -> Dict[str, Any]:
-        local_ipv6 = local_public.get("ipv6")
-        remote_ipv6 = remote_public.ipv6
-
-        result = copy.deepcopy(local_ipv6)
-
-        if local_ipv6 is None or remote_ipv6 is None:
-            return result
-
-        result["ranges"] = __normalize_lists(
-            local_ipv6.get("ranges"),
-            remote_ipv6.ranges,
-            {"range"},
-        )
-
-        return result
-
-    result["ipv4"] = __normalize_ipv4()
-    result["ipv6"] = __normalize_ipv6()
-
-    return result
-
-
-def __normalize_local_linode_interface_vpc(
-    local_vpc: Dict[str, Any], remote_vpc: LinodeInterface
-) -> Dict[str, Any]:
-    result = copy.deepcopy(local_vpc)
-
-    def __normalize_ipv4() -> Dict[str, Any]:
-        local_ipv4 = local_vpc.get("ipv4")
-        remote_ipv4 = remote_vpc.ipv4
-
-        result = copy.deepcopy(local_ipv4)
-
-        if local_ipv4 is None or remote_ipv4 is None:
-            return result
-
-        result["addresses"] = __normalize_lists(
-            local_ipv4.get("addresses"),
-            remote_ipv4.addresses,
-            {"address", "nat_1_1_address"},
-        )
-
-        result["ranges"] = __normalize_lists(
-            local_ipv4.get("ranges"),
-            remote_ipv4.ranges,
-            {"range"},
-        )
-
-        return result
-
-    result["ipv4"] = __normalize_ipv4()
-
-    return result
+    return remote if len(local.split("/")[0].strip()) < 1 else local
 
 
 def __normalize_local_linode_interface(
@@ -152,23 +35,16 @@ def __normalize_local_linode_interface(
     """
     result = copy.deepcopy(local_interface)
 
-    # `public` normalization
-    local_public = local_interface.get("public")
-    remote_public = remote_interface.public
-    if local_public is not None and remote_public is not None:
-        result["public"] = __normalize_local_linode_interface_public(
-            local_public, remote_public
-        )
-
-    # `vpc` normalization
-    local_vpc = local_interface.get("vpc")
-    remote_vpc = remote_interface.vpc
-    if local_vpc is not None and remote_vpc is not None:
-        result["vpc"] = __normalize_local_linode_interface_vpc(
-            local_vpc, remote_vpc
-        )
-
     return result
+
+
+__interface_normalization_handlers = {
+    ("public", "ipv4", "addresses", "address"): __explicit_address,
+    ("public", "ipv6", "ranges", "range"): __explicit_range,
+    ("vpc", "ipv4", "addresses", "address"): __explicit_address,
+    ("vpc", "ipv4", "addresses", "nat_1_1_address"): __explicit_address,
+    ("vpc", "ipv6", "ranges", "range"): __explicit_range,
+}
 
 
 def __find_matching_interface(
@@ -234,9 +110,14 @@ def update_linode_interfaces(
             module.register_action(f"Created interface {new_interface.id}")
             continue
 
-        # Update an interface
-        normalized_local_interface = __normalize_local_linode_interface(
-            local_interface, related_interface
+        # Update the interface
+
+        # Normalize the interface, passing through the remote values
+        # if using auto or prefix-only values.
+        normalized_local_interface = normalize_params_recursive(
+            copy.deepcopy(local_interface),
+            related_interface,
+            normalization_handlers=__interface_normalization_handlers,
         )
 
         handle_updates(
