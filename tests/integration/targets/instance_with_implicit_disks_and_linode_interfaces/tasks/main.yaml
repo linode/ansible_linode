@@ -40,6 +40,7 @@
               ipv6:
                 ranges:
                   - range: /64
+
           - vlan:
               vlan_label: ansible-test-vlan
               ipam_address: 10.0.0.5/32
@@ -65,8 +66,6 @@
           - create.changed
           - create.instance.status == 'offline'
 
-          # The second public IPv4 address is implicitly allocated
-          # by the public interface
           - create.instance.ipv4|length == 2
 
           - create.linode_interfaces | length == 3
@@ -112,9 +111,8 @@
                 ranges:
                   - range: /64
                   - range: /64
-          - vlan:
-              vlan_label: ansible-test-vlan
-              ipam_address: 10.0.0.5/32
+
+          # NOTE: VLAN interface was dropped here
 
           - firewall_id: '{{ firewall_id }}'
             vpc:
@@ -129,23 +127,15 @@
         state: present
       register: update
 
-    - name: Prepare data for assertions
-      set_fact:
-        create_public_ipv6_ranges_sorted: '{{ create.linode_interfaces[0].public.ipv6.ranges | sort(attribute="range") }}'
-        update_public_ipv6_ranges_sorted: '{{ update.linode_interfaces[0].public.ipv6.ranges | sort(attribute="range") }}'
-
-        create_vpc_ipv4_ranges_sorted: '{{ create.linode_interfaces[2].vpc.ipv4.ranges | sort(attribute="range") }}'
-        update_vpc_ipv4_ranges_sorted: '{{ update.linode_interfaces[2].vpc.ipv4.ranges | sort(attribute="range") }}'
-
     - name: Assert instance updated
       assert:
         that:
           - update.changed
           - update.instance.status == 'offline'
 
-          - update.instance.ipv4|length == 2
+          - update.instance.ipv4|length == 1
 
-          - update.linode_interfaces | length == 3
+          - update.linode_interfaces | length == 2
 
           # Public interface
           - update.linode_interfaces[0].default_route.ipv4 == True
@@ -154,23 +144,72 @@
           - update.linode_interfaces[0].public.ipv4.addresses[0].address == create.linode_interfaces[0].public.ipv4.addresses[0].address
           - update.linode_interfaces[0].public.ipv4.addresses[0].primary == True
 
-          - update_public_ipv6_ranges_sorted[0].range == create_public_ipv6_ranges_sorted[0].range
-          - update_public_ipv6_ranges_sorted[0].range | length > 4
-
-          # VLAN interface
-          - update.linode_interfaces[1].vlan.vlan_label == 'ansible-test-vlan'
-          - update.linode_interfaces[1].vlan.ipam_address == '10.0.0.5/32'
+          - update.linode_interfaces[0].public.ipv6.ranges | length == 2
+          - update.linode_interfaces[0].public.ipv6.ranges | selectattr("range", "equalto", create.linode_interfaces[0].public.ipv6.ranges[0].range) | length == 1
 
           # VPC interface
-          - update.linode_interfaces[2].default_route.ipv4 == False
-          - update.linode_interfaces[2].vpc.subnet_id == create_subnet.subnet.id
-          - update.linode_interfaces[2].vpc.ipv4.addresses[0].address == create.linode_interfaces[2].vpc.ipv4.addresses[0].address
-          - update.linode_interfaces[2].vpc.ipv4.addresses[0].nat_1_1_address == create.linode_interfaces[2].vpc.ipv4.addresses[0].nat_1_1_address
-          - update.linode_interfaces[2].vpc.ipv4.addresses[0].primary == True
+          - update.linode_interfaces[1].default_route.ipv4 == False
+          - update.linode_interfaces[1].vpc.subnet_id == create_subnet.subnet.id
+          - update.linode_interfaces[1].vpc.ipv4.addresses[0].address == create.linode_interfaces[2].vpc.ipv4.addresses[0].address
+          - update.linode_interfaces[1].vpc.ipv4.addresses[0].nat_1_1_address == create.linode_interfaces[2].vpc.ipv4.addresses[0].nat_1_1_address
+          - update.linode_interfaces[1].vpc.ipv4.addresses[0].primary == True
 
-          - update.linode_interfaces[2].vpc.ipv4.ranges | length == 2
-          - update_vpc_ipv4_ranges_sorted[0].range == create_vpc_ipv4_ranges_sorted[0].range
-          - update_vpc_ipv4_ranges_sorted[0].range | length > 4
+          - update.linode_interfaces[1].vpc.ipv4.ranges | length == 2
+          - update.linode_interfaces[1].vpc.ipv4.ranges | selectattr("range", "equalto", create.linode_interfaces[2].vpc.ipv4.ranges[0].range) | length == 1
+
+    - name: Add a VLAN interface
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: false
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: '{{ firewall_id }}'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+                  - range: /64
+
+          - vlan:
+              vlan_label: ansible-test-vlan-2
+              ipam_address: 10.0.0.6/32
+
+          - firewall_id: '{{ firewall_id }}'
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+                ranges:
+                  - range: /32
+                  - range: /32
+        state: present
+      register: add_vlan_interface
+
+    - name: Assert instance updated
+      assert:
+        that:
+          - add_vlan_interface.changed
+          - add_vlan_interface.instance.status == 'offline'
+
+          - update.instance.ipv4|length == 1
+
+          - update.linode_interfaces | length == 3
+
+          - create.linode_interfaces[2].vlan.vlan_label == 'ansible-test-vlan-2'
+          - create.linode_interfaces[2].vlan.ipam_address == '10.0.0.6/32'
 
   always:
     - ignore_errors: yes

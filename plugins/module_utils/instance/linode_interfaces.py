@@ -6,7 +6,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     handle_updates,
-    normalize_params_recursive,
+    normalize_params_recursive, filter_null_values_recursive,
 )
 from linode_api4 import Instance, LinodeInterface
 
@@ -20,23 +20,7 @@ def __explicit_address(
 def __explicit_range(
     local: Optional[str], remote: Optional[str]
 ) -> Optional[str]:
-    if local is None:
-        return local
-
-    return remote if len(local.split("/")[0].strip()) < 1 else local
-
-
-def __normalize_local_linode_interface(
-    local_interface: Dict[str, Any], remote_interface: LinodeInterface
-) -> Dict[str, Any]:
-    """
-    Normalizes the given param interface to the remote interface
-    for direct comparison.
-    """
-    result = copy.deepcopy(local_interface)
-
-    return result
-
+    return remote if local is not None and len(local.split("/")[0].strip()) < 1 else local
 
 __interface_normalization_handlers = {
     ("public", "ipv4", "addresses", "address"): __explicit_address,
@@ -114,15 +98,17 @@ def update_linode_interfaces(
 
         # Normalize the interface, passing through the remote values
         # if using auto or prefix-only values.
+        import q; q.q("BEFORE NORMALIZATION", local_interface, vars(related_interface))
         normalized_local_interface = normalize_params_recursive(
             copy.deepcopy(local_interface),
             related_interface,
             normalization_handlers=__interface_normalization_handlers,
         )
+        import q; q.q("AFTER NORMALIZATION", normalized_local_interface)
 
         handle_updates(
             related_interface,
-            normalized_local_interface,
+            filter_null_values_recursive(normalized_local_interface),
             {"default_route", "public", "vlan", "vpc"},
             register_func=module.register_action,
             ignore_keys={"firewall_id"},
@@ -132,7 +118,7 @@ def update_linode_interfaces(
 
         related_interface._api_get()
 
-    # Delete remaining interface
+    # Delete the remaining interfaces
     for remote_interface in remote_interfaces:
         if remote_interface.id in handled_interface_ids:
             continue
