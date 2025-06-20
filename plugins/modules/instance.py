@@ -34,6 +34,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.modules.instance impo
 from ansible_collections.linode.cloud.plugins.module_utils.modules.instance.linode_interfaces import (
     SPEC_INTERFACE,
 )
+from ansible_collections.linode.cloud.plugins.module_utils.modules.instance.linode_interfaces_settings import (
+    SPEC_INTERFACES_SETTINGS,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.modules.instance.util import (
     resolve_terminal_status,
 )
@@ -247,37 +250,6 @@ linode_instance_interface_spec = {
     ),
 }
 
-linode_instance_linode_interface_settings_spec = {
-    "network_helper": SpecField(
-        type=FieldType.bool,
-        description=[
-            "Enables the Network Helper feature.",
-            "The default value is determined by the network_helper setting in the account settings.",
-            "Power off the Linode before disabling or enabling Network Helper.",
-        ],
-    ),
-    "default_route": SpecField(
-        type=FieldType.dict,
-        description=[
-            "Interfaces used for the IPv4 default_route and IPv6 default_route when "
-            "multiple interfaces are eligible for the role."
-        ],
-        suboptions={
-            "ipv4_interface_id": SpecField(
-                type=FieldType.integer,
-                description=[
-                    "The VPC or public interface ID assigned as the IPv4 default_route."
-                ],
-            ),
-            "ipv6_interface_id": SpecField(
-                type=FieldType.integer,
-                description=[
-                    "The VPC or public interface ID assigned as the IPv6 default_route."
-                ],
-            ),
-        },
-    ),
-}
 
 linode_instance_config_spec = {
     "comments": SpecField(
@@ -515,7 +487,7 @@ linode_instance_spec = {
     ),
     "linode_interface_settings": SpecField(
         type=FieldType.dict,
-        suboptions=linode_instance_linode_interface_settings_spec,
+        suboptions=SPEC_INTERFACES_SETTINGS,
         editable=True,
         description=[
             "Network Helper and default route settings for the Linode."
@@ -670,6 +642,12 @@ SPECDOC_META = SpecDocMeta(
         "linode_interfaces": SpecReturnValue(
             description="A list of interfaces tied to this Linode Instance.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-interfaces",
+            type=FieldType.list,
+            sample=docs.result_networking_samples,
+        ),
+        "linode_interface_settings": SpecReturnValue(
+            description="Network Helper and default route settings for this Linode Instance.",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-interface-settings",
             type=FieldType.dict,
             sample=docs.result_networking_samples,
         ),
