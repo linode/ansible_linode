@@ -1,4 +1,4 @@
-- name: instance_with_implicit_disks_and_linode_interfaces
+- name: instance_with_linode_interfaces
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -351,7 +351,7 @@
         state: present
       register: unchanged
 
-    - name: Asset instance unchanged
+    - name: Assert instance unchanged
       assert:
         that:
           - unchanged.changed == False

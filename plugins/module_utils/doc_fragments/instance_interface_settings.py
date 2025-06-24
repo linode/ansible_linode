@@ -3,7 +3,7 @@
 specdoc_examples = ['''
 - name: Configure the interface settings of a Linode Instance
   linode.cloud.instance_interface_settings:
-    instance_id: 123
+    linode_id: 123
     network_helper: true
     default_route:
         ipv4_interface_id: 123

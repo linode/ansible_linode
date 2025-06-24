@@ -34,9 +34,9 @@ specdoc_examples = ['''
     group: app
     tags:
       - env=prod
-    state: present
     additional_ipv4:
-      - public: true''', '''
+      - public: true
+    state: present''', '''
 - name: Create a Linode Instance with explicit configs and disks.
   linode.cloud.instance:
     label: 'my-complex-instance'
@@ -94,7 +94,7 @@ specdoc_examples = ['''
       - default_route:
           ipv6: true
           ipv4: true
-        firewall_id: 12345
+        firewall_id: null
         public:
           ipv4:
             addresses:

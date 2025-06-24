@@ -17,7 +17,7 @@ from ansible_specdoc.objects import FieldType
 module = ListModule(
     result_display_name="Linode Interface Firewalls",
     result_field_name="firewalls",
-    endpoint_template="/linode/interfaces/{linode_id}/interfaces/{interface_id}/firewalls",
+    endpoint_template="/linode/instances/{linode_id}/interfaces/{interface_id}/firewalls",
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/"
     + "get-linode-interface-firewalls",
     result_samples=docs.result_firewalls_samples,

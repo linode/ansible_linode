@@ -1513,9 +1513,6 @@ class LinodeInstance(LinodeModuleBase):
         self._instance.invalidate()
         self._instance._api_get()
 
-        interfaces_settings = self._instance.interfaces_settings
-        interfaces_settings._api_get()
-
         inst_result = self._instance._raw_json
         inst_result["root_pass"] = self._root_pass
 
@@ -1524,9 +1521,6 @@ class LinodeInstance(LinodeModuleBase):
         self.results["disks"] = paginated_list_to_json(self._instance.disks)
         self.results["networking"] = self._get_networking()
 
-        self.results["linode_interfaces_settings"] = (
-            interfaces_settings._raw_json
-        )
         self.results["linode_interfaces"] = paginated_list_to_json(
             self._instance.interfaces
         )
@@ -1538,9 +1532,6 @@ class LinodeInstance(LinodeModuleBase):
         self._instance = self._get_instance_by_label(label)
 
         if self._instance is not None:
-            interfaces_settings = self._instance.interfaces_settings
-            interfaces_settings._api_get()
-
             self.results["instance"] = self._instance._raw_json
             self.results["configs"] = paginated_list_to_json(
                 self._instance.configs
@@ -1550,9 +1541,6 @@ class LinodeInstance(LinodeModuleBase):
 
             self.results["linode_interfaces"] = paginated_list_to_json(
                 self._instance.interfaces
-            )
-            self.results["linode_interfaces_settings"] = (
-                interfaces_settings._raw_json
             )
 
             self.register_action("Deleted instance {0}".format(label))

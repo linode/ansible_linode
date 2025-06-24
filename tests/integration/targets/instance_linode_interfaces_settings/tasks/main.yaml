@@ -59,8 +59,6 @@
           - create.changed
           - create.instance.status == 'running'
 
-
-
   always:
     - ignore_errors: yes
       block:
