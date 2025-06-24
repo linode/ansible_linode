@@ -51,9 +51,9 @@ Manage Linode Instances, Configs, and Disks.
     group: app
     tags:
       - env=prod
-    state: present
     additional_ipv4:
       - public: true
+    state: present
 ```
 
 ```yaml
@@ -123,7 +123,7 @@ Manage Linode Instances, Configs, and Disks.
       - default_route:
           ipv6: true
           ipv4: true
-        firewall_id: 12345
+        firewall_id: null
         public:
           ipv4:
             addresses:
