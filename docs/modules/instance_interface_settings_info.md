@@ -1,6 +1,6 @@
 # instance_interface_settings_info
 
-Get info about a Linode settings.
+Get the interface settings for a Linode instance.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -31,8 +31,8 @@ Get info about a Linode settings.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the settings to resolve.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the settings to resolve.  **(Conflicts With: `id`)** |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the instance to retrieve the interface settings for.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the instance to retrieve the interface settings for.  **(Conflicts With: `id`)** |
 
 ## Return Values
 

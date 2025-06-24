@@ -73,7 +73,7 @@ Name | Description |
 [linode.cloud.firewall_settings_info](./docs/modules/firewall_settings_info.md)|Get info about a Linode Firewall Settings.|
 [linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
 [linode.cloud.instance_info](./docs/modules/instance_info.md)|Get info about a Linode Instance.|
-[linode.cloud.instance_interface_settings_info](./docs/modules/instance_interface_settings_info.md)|Get info about a Linode settings.|
+[linode.cloud.instance_interface_settings_info](./docs/modules/instance_interface_settings_info.md)|Get the interface settings for a Linode instance.|
 [linode.cloud.ip_info](./docs/modules/ip_info.md)|Get info about a Linode IP.|
 [linode.cloud.ipv6_range_info](./docs/modules/ipv6_range_info.md)|Get info about a Linode IPv6 range.|
 [linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|Get info about a Linode LKE cluster.|

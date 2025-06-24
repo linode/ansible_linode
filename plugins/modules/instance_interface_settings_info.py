@@ -23,6 +23,9 @@ from ansible_specdoc.objects import FieldType
 from linode_api4 import Instance
 
 module = InfoModule(
+    description=[
+        "Get the interface settings for a Linode instance.",
+    ],
     primary_result=InfoModuleResult(
         field_name="settings",
         field_type=FieldType.dict,
@@ -39,6 +42,7 @@ module = InfoModule(
                 Instance,
                 params.get("id"),
             ).interfaces_settings._raw_json,
+            description="The ID of the instance to retrieve the interface settings for.",
         ),
         InfoModuleAttr(
             display_name="label",
@@ -49,6 +53,7 @@ module = InfoModule(
                 Instance.label == params.get("label"),
                 raise_not_found=True,
             ).interfaces_settings._raw_json,
+            description="The label of the instance to retrieve the interface settings for.",
         ),
     ],
     examples=docs.specdoc_examples,
