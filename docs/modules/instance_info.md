@@ -337,13 +337,13 @@ Get info about a Linode Instance.
           "vlan": null,
           "vpc": null
         }
+        
         ```
         ```json
         
         {
           "created": "2025-01-01T00:01:01",
           "default_route": {},
-          "firewalls": [],
           "id": 1234,
           "mac_address": "22:00:AB:CD:EF:01",
           "public": null,
@@ -355,6 +355,7 @@ Get info about a Linode Instance.
           },
           "vpc": null
         }
+        
         ```
         ```json
         
@@ -390,6 +391,7 @@ Get info about a Linode Instance.
             "vpc_id": 1234
           }
         }
+        
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-interfaces) for a list of returned fields
 
