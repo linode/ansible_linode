@@ -1,4 +1,4 @@
-- name: instance_with_linode_interfaces
+- name: instance_linode_interfaces
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
