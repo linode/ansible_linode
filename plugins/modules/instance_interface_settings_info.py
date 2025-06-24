@@ -5,8 +5,12 @@
 
 from __future__ import absolute_import, division, print_function
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vpc as docs_parent
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vpc_info as docs
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    instance_interface_settings as docs_parent,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    instance_interface_settings_info as docs,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
     InfoModule,
     InfoModuleAttr,
@@ -24,7 +28,7 @@ module = InfoModule(
         field_type=FieldType.dict,
         display_name="settings",
         docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-interface-settings",
-        samples=docs_parent.result_vpc_samples,
+        samples=docs_parent.result_samples,
     ),
     attributes=[
         InfoModuleAttr(

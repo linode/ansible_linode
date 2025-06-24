@@ -15,14 +15,14 @@ Get info about a Linode settings.
 ## Examples
 
 ```yaml
-- name: Get info about a VPC by label
-  linode.cloud.vpc_info:
-    label: my-vpc
+- name: Get the interface settings for an instance by label
+  linode.cloud.instance_interface_settings_info:
+    label: my-instance
 ```
 
 ```yaml
-- name: Get info about a VPC by ID
-  linode.cloud.vpc_info:
+- name: Get the interface settings for an instance by ID
+  linode.cloud.instance_interface_settings_info:
     id: 12345
 ```
 
@@ -40,15 +40,22 @@ Get info about a Linode settings.
 
     - Sample Response:
         ```json
+        
         {
-            "created": "2023-08-31T18:35:01",
-            "description": "A description of this VPC",
-            "id": 344,
-            "label": "my-vpc",
-            "region": "us-east",
-            "subnets": [],
-            "updated": "2023-08-31T18:35:03"
+          "default_route": {
+            "ipv4_eligible_interface_ids": [
+              123,
+              456
+            ],
+            "ipv4_interface_id": 456,
+            "ipv6_eligible_interface_ids": [
+              123
+            ],
+            "ipv6_interface_id": 123
+          },
+          "network_helper": true
         }
+        
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-interface-settings) for a list of returned fields
 
