@@ -81,6 +81,41 @@ specdoc_examples = ['''
       id: 123
       compliant_only: false
     state: present''', '''
+- name: Create a new Linode instance with explicit public and VPC Linode interfaces.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-mia
+    image: linode/ubuntu24.04
+    authorized_keys:
+      - "ssh-rsa ..."
+    interface_generation: linode
+    linode_interfaces:
+      - default_route:
+          ipv6: true
+          ipv4: true
+        firewall_id: 12345
+        public:
+          ipv4:
+            addresses:
+              - address: auto
+                primary: true
+          ipv6:
+            ranges:
+              - range: /64
+
+      - firewall_id: 12345
+        vpc:
+          subnet_id: 456
+          ipv4:
+            addresses:
+              - address: auto
+                nat_1_1_address: auto
+                primary: true
+            ranges:
+              - range: /32
+    state: present
+''','''
 - name: Delete a Linode instance.
   linode.cloud.instance:
     label: my-linode
