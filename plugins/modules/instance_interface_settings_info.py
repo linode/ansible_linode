@@ -35,22 +35,22 @@ module = InfoModule(
     ),
     attributes=[
         InfoModuleAttr(
-            display_name="ID",
-            name="id",
+            display_name="Linode ID",
+            name="linode_id",
             type=FieldType.integer,
             get=lambda client, params: client.load(
                 Instance,
-                params.get("id"),
+                params.get("linode_id"),
             ).interfaces_settings._raw_json,
             description="The ID of the instance to retrieve the interface settings for.",
         ),
         InfoModuleAttr(
-            display_name="label",
-            name="label",
+            display_name="linode_label",
+            name="linode_label",
             type=FieldType.string,
             get=lambda client, params: safe_find(
                 client.linode.instances,
-                Instance.label == params.get("label"),
+                Instance.label == params.get("linode_label"),
                 raise_not_found=True,
             ).interfaces_settings._raw_json,
             description="The label of the instance to retrieve the interface settings for.",

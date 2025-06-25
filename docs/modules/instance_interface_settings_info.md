@@ -31,8 +31,8 @@ Get the interface settings for a Linode instance.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the instance to retrieve the interface settings for.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the instance to retrieve the interface settings for.  **(Conflicts With: `id`)** |
+| `linode_id` | <center>`int`</center> | <center>Optional</center> | The ID of the instance to retrieve the interface settings for.  **(Conflicts With: `linode_label`)** |
+| `linode_label` | <center>`str`</center> | <center>Optional</center> | The label of the instance to retrieve the interface settings for.  **(Conflicts With: `linode_id`)** |
 
 ## Return Values
 

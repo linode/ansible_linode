@@ -106,7 +106,7 @@
 
     - name: Get info about the instance's interface settings by label
       linode.cloud.instance_interface_settings_info:
-        label: "{{ create.instance.label }}"
+        linode_label: "{{ create.instance.label }}"
       register: settings_info_label
 
     - name: Ensure the returned settings are correct
@@ -120,7 +120,7 @@
 
     - name: Get info about the instance's interface settings by ID
       linode.cloud.instance_interface_settings_info:
-        id: "{{ create.instance.id }}"
+        linode_id: "{{ create.instance.id }}"
       register: settings_info_id
 
     - name: Ensure the returned settings are correct
