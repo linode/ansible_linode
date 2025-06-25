@@ -34,9 +34,9 @@ specdoc_examples = ['''
     group: app
     tags:
       - env=prod
-    state: present
     additional_ipv4:
-      - public: true''', '''
+      - public: true
+    state: present''', '''
 - name: Create a Linode Instance with explicit configs and disks.
   linode.cloud.instance:
     label: 'my-complex-instance'
@@ -81,6 +81,41 @@ specdoc_examples = ['''
       id: 123
       compliant_only: false
     state: present''', '''
+- name: Create a new Linode instance with explicit public and VPC Linode interfaces.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-mia
+    image: linode/ubuntu24.04
+    authorized_keys:
+      - "ssh-rsa ..."
+    interface_generation: linode
+    linode_interfaces:
+      - default_route:
+          ipv6: true
+          ipv4: true
+        firewall_id: null
+        public:
+          ipv4:
+            addresses:
+              - address: auto
+                primary: true
+          ipv6:
+            ranges:
+              - range: /64
+
+      - firewall_id: 12345
+        vpc:
+          subnet_id: 456
+          ipv4:
+            addresses:
+              - address: auto
+                nat_1_1_address: auto
+                primary: true
+            ranges:
+              - range: /32
+    state: present
+''','''
 - name: Delete a Linode instance.
   linode.cloud.instance:
     label: my-linode
@@ -300,3 +335,107 @@ result_networking_samples = ['''
     }
   }
 }''']
+
+result_linode_interfaces_samples = ['''
+{
+  "created": "2025-01-01T00:01:01",
+  "default_route": {
+    "ipv4": true,
+    "ipv6": true
+  },
+  "id": 1234,
+  "mac_address": "22:00:AB:CD:EF:01",
+  "public": {
+    "ipv4": {
+      "addresses": [
+        {
+          "address": "172.30.0.50",
+          "primary": true
+        }
+      ],
+      "shared": [
+        {
+          "address": "172.30.0.51",
+          "linode_id": 12345
+        }
+      ]
+    },
+    "ipv6": {
+      "ranges": [
+        {
+          "range": "2600:3c09:e001:59::/64",
+          "route_target": "2600:3c09::ff:feab:cdef"
+        },
+        {
+          "range": "2600:3c09:e001:5a::/64",
+          "route_target": "2600:3c09::ff:feab:cdef"
+        }
+      ],
+      "shared": [
+        {
+          "range": "2600:3c09:e001:2a::/64",
+          "route_target": null
+        }
+      ],
+      "slaac": [
+        {
+          "address": "2600:3c09::ff:feab:cdef",
+          "prefix": 64
+        }
+      ]
+    }
+  },
+  "updated": "2025-01-01T00:01:01",
+  "version": 1,
+  "vlan": null,
+  "vpc": null
+}
+''', '''
+{
+  "created": "2025-01-01T00:01:01",
+  "default_route": {},
+  "id": 1234,
+  "mac_address": "22:00:AB:CD:EF:01",
+  "public": null,
+  "updated": "2025-01-01T00:01:01",
+  "version": 1,
+  "vlan": {
+    "ipam_address": "10.0.0.1/24",
+    "vlan_label": "my-vlan"
+  },
+  "vpc": null
+}
+''', '''
+{
+  "created": "2025-01-01T00:01:01",
+  "default_route": {
+    "ipv4": true
+  },
+  "id": 1234,
+  "mac_address": "22:00:AB:CD:EF:01",
+  "public": null,
+  "updated": "2025-01-01T00:02:01",
+  "version": 1,
+  "vlan": null,
+  "vpc": {
+    "ipv4": {
+      "addresses": [
+        {
+          "address": "192.168.22.3",
+          "primary": true
+        }
+      ],
+      "ranges": [
+        {
+          "range": "192.168.22.16/28"
+        },
+        {
+          "range": "192.168.22.32/28"
+        }
+      ]
+    },
+    "subnet_id": 1234,
+    "vpc_id": 1234
+  }
+}
+''']
