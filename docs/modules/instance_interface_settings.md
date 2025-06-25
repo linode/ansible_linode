@@ -30,7 +30,7 @@ Create, read, and update the interface settings for a Linode instance.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `instance_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the instance to configure the interface settngs for.   |
+| `linode_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the instance to configure the interface settngs for.   |
 | `network_helper` | <center>`bool`</center> | <center>Optional</center> | Enables the Network Helper feature. The default value is determined by the network_helper setting in the account settings. Power off the Linode before disabling or enabling Network Helper.   |
 | [`default_route` (sub-options)](#default_route) | <center>`dict`</center> | <center>Optional</center> | Interfaces used for the IPv4 default_route and IPv6 default_route when multiple interfaces are eligible for the role.   |
 

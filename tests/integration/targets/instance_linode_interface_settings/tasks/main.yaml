@@ -64,7 +64,7 @@
 
     - name: Update the instance's interface settings
       linode.cloud.instance_interface_settings:
-        instance_id: "{{ create.instance.id }}"
+        linode_id: "{{ create.instance.id }}"
         network_helper: false
         default_route:
           ipv4_interface_id: "{{ create.linode_interfaces[0].id }}"
@@ -85,7 +85,7 @@
 
     - name: Refresh the instance's interface settings
       linode.cloud.instance_interface_settings:
-        instance_id: "{{ create.instance.id }}"
+        linode_id: "{{ create.instance.id }}"
         network_helper: false
         default_route:
           ipv4_interface_id: "{{ create.linode_interfaces[0].id }}"

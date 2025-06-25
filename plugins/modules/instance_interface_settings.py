@@ -29,7 +29,7 @@ from ansible_specdoc.objects import (
 from linode_api4 import Instance
 
 SPEC = {
-    "instance_id": SpecField(
+    "linode_id": SpecField(
         type=FieldType.integer,
         required=True,
         description=[
@@ -112,7 +112,7 @@ class Module(LinodeModuleBase):
         params = self.module.params
 
         settings = self._get_resource_by_id(
-            Instance, self.module.params.get("instance_id")
+            Instance, self.module.params.get("linode_id")
         ).interfaces_settings
 
         handle_updates(
