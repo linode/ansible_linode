@@ -1,0 +1,42 @@
+- name: account_settings
+  block:
+    - set_fact:
+          r: "{{ 1000000000 | random }}"
+
+    - name: Get account_settings
+      linode.cloud.account_settings:
+        state: 'present'
+      register: info
+
+    - name: Assert account_settings response
+      assert:
+        that:
+          - info.account_settings.longview_subscription is none
+          - info.account_settings.managed == false
+          - info.account_settings.object_storage == 'active'
+
+    - name: Update account_settings
+      linode.cloud.account_settings:
+        state: 'present'
+        interfaces_for_new_linodes: 'legacy_config_only'
+      register: update
+
+    - name: Assert account_settings updates
+      assert:
+        that:
+          - update.account_settings.interfaces_for_new_linodes == 'legacy_config_only'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Change account_settings back
+          linode.cloud.account_settings:
+            state: 'present'
+            interfaces_for_new_linodes: 'linode_only'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
