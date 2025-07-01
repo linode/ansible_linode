@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module contains all of the functionality for Linode Firewalls Settings."""
+"""This module allows users to retrieve info about Linode Firewalls Settings for the account."""
 
 from __future__ import absolute_import, division, print_function
 
