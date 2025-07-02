@@ -300,6 +300,16 @@ def __update_interface(
     Updates the given interface using the given params.
     """
 
+    if "firewall_id" in local:
+        remote_firewall_id = next(
+            (v.id for v in remote.firewalls() if v is not None), None
+        )
+
+        if remote_firewall_id != local["firewall_id"]:
+            raise Exception(
+                f"{remote}: firewall_id cannot be updated on an existing interface"
+            )
+
     # Normalize the interface, passing through the remote values
     # if using auto or prefix-only values.
     local_normalized = normalize_params_recursive(
@@ -313,8 +323,6 @@ def __update_interface(
         filter_null_values_recursive(local_normalized),
         {"default_route", "public", "vlan", "vpc"},
         register_func=module.register_action,
-        # TODO: firewall_id change error or device update logic?
-        ignore_keys={"firewall_id"},
         match_recursive=True,
         dry_run=dry_run,
     )

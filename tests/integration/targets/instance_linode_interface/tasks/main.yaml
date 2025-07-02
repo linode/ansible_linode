@@ -356,6 +356,35 @@
         that:
           - unchanged.changed == False
 
+    - name: Attempt to change an interface's firewall ID and expect and error
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: false
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: '123'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+                  - range: /64
+
+        state: present
+      register: attempt_update_firewall_id
+      failed_when: '"firewall_id cannot be updated on an existing interface" not in attempt_update_firewall_id.msg'
+
   always:
     - ignore_errors: yes
       block:
