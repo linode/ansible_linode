@@ -54,7 +54,6 @@
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
         region: '{{ pg_region }}'
-        group: funny
         type: g6-standard-2
         image: linode/ubuntu22.04
         private_ip: true
@@ -67,7 +66,6 @@
       linode.cloud.instance:
         label: '!!Invalid!!'
         region: '{{ pg_region }}'
-        group: funny
         type: g6-standard-2
         image: linode/ubuntu22.04
         private_ip: true
@@ -109,7 +107,6 @@
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
         region: '{{ pg_region }}'
-        group: funny
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
