@@ -103,9 +103,12 @@
       failed_when:
         - "'additional_ipv4' not in invalid_update_remove_ips.msg"
 
+    - set_fact:
+        updated_label: '{{ create.instance.label }}-updated'
+
     - name: Update the instance
       linode.cloud.instance:
-        label: '{{ create.instance.label }}'
+        label: '{{ updated_label }}'
         region: '{{ pg_region }}'
         type: g6-standard-1
         image: linode/ubuntu22.04
@@ -116,7 +119,7 @@
     - name: Assert update
       assert:
         that:
-          - update.instance.group == 'funny'
+          - update.instance.label == updated_label
 
     - name: Get info about the instance by id
       linode.cloud.instance_info:
@@ -134,7 +137,7 @@
 
     - name: Get info about the instance by label
       linode.cloud.instance_info:
-        label: '{{ create.instance.label }}'
+        label: '{{ updated_label }}'
       register: info_label
 
     - name: Assert instance info
@@ -170,7 +173,7 @@
           instance_pg.instance.placement_group.id == pg_created.placement_group.id
 
   always:
-    - ignore_errors: yes
+    - ignore_errors: true
       block:
         - name: Delete a Linode instance
           linode.cloud.instance:
