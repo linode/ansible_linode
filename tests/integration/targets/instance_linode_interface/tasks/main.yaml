@@ -383,7 +383,7 @@
 
         state: present
       register: attempt_update_firewall_id
-      failed_when: '"firewall_id cannot be updated on an existing interface" not in attempt_update_firewall_id.msg'
+      failed_when: '"firewall_id cannot be updated on an existing interface" not in attempt_update_firewall_id.module_stderr'
 
   always:
     - ignore_errors: yes
