@@ -74,12 +74,17 @@ class InfoModuleAttr:
         display_name (str): The formatted name of this attribute for documentation purposes.
         type (FieldType): The type of this field.
         get (Callable): A function to retrieve a resource from this attribute.
+
+        description (Optional[str]): An optional description of this attribute.
+                                     If not specified, a description will be generated.
     """
 
     name: str
     display_name: str
     type: FieldType
     get: Callable[[LinodeClient, Dict[str, Any]], Any]
+
+    description: Optional[str] = None
 
 
 @dataclass
@@ -251,7 +256,8 @@ class InfoModule(LinodeModuleBase):
                 conflicts_with=[
                     v.name for v in self.attributes if v.name != attr.name
                 ],
-                description=f"The {attr.display_name} of the "
+                description=attr.description
+                or f"The {attr.display_name} of the "
                 f"{self.primary_result.display_name} to resolve.",
             )
 

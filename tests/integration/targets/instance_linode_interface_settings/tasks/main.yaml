@@ -1,0 +1,168 @@
+- name: instance_interface_settings
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        description: test description
+        state: present
+      register: create_vpc
+
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        state: present
+      register: create_subnet
+
+    - name: Create an instance with a public and VPC interface
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: false
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv6: true
+            firewall_id: '{{ firewall_id }}'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+
+          - default_route:
+              ipv4: true
+            firewall_id: '{{ firewall_id }}'
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: auto
+                    nat_1_1_address: auto
+                    primary: true
+                ranges:
+                  - range: /32
+        state: present
+      register: create
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create.changed
+
+    - name: Update the instance's interface settings
+      linode.cloud.instance_interface_settings:
+        linode_id: "{{ create.instance.id }}"
+        network_helper: false
+        default_route:
+          ipv4_interface_id: "{{ create.linode_interfaces[0].id }}"
+          ipv6_interface_id: "{{ create.linode_interfaces[0].id }}"
+      register: settings_update
+
+    - name: Assert the settings update
+      assert:
+        that:
+          - settings_update.changed
+          - settings_update.settings.network_helper == False
+          - settings_update.settings.default_route.ipv4_interface_id == create.linode_interfaces[0].id
+          - settings_update.settings.default_route.ipv6_interface_id == create.linode_interfaces[0].id
+
+          - settings_update.settings.default_route.ipv4_eligible_interface_ids[0] == create.linode_interfaces[0].id
+          - settings_update.settings.default_route.ipv4_eligible_interface_ids[1] == create.linode_interfaces[1].id
+
+
+    - name: Refresh the instance's interface settings
+      linode.cloud.instance_interface_settings:
+        linode_id: "{{ create.instance.id }}"
+        network_helper: false
+        default_route:
+          ipv4_interface_id: "{{ create.linode_interfaces[0].id }}"
+          ipv6_interface_id: "{{ create.linode_interfaces[0].id }}"
+      register: settings_unchanged
+
+    - name: Assert the settings are unchanged
+      assert:
+        that:
+          - not settings_unchanged.changed
+          - settings_unchanged.settings.network_helper == False
+          - settings_unchanged.settings.default_route.ipv4_interface_id == create.linode_interfaces[0].id
+          - settings_unchanged.settings.default_route.ipv6_interface_id == create.linode_interfaces[0].id
+
+          - settings_unchanged.settings.default_route.ipv4_eligible_interface_ids[0] == create.linode_interfaces[0].id
+          - settings_unchanged.settings.default_route.ipv4_eligible_interface_ids[1] == create.linode_interfaces[1].id
+
+
+    - name: Get info about the instance's interface settings by label
+      linode.cloud.instance_interface_settings_info:
+        linode_label: "{{ create.instance.label }}"
+      register: settings_info_label
+
+    - name: Ensure the returned settings are correct
+      assert:
+        that:
+          - settings_info_label.settings.network_helper == False
+          - settings_info_label.settings.default_route.ipv4_interface_id == create.linode_interfaces[0].id
+          - settings_info_label.settings.default_route.ipv6_interface_id == create.linode_interfaces[0].id
+          - settings_info_label.settings.default_route.ipv4_eligible_interface_ids[0] == create.linode_interfaces[0].id
+          - settings_info_label.settings.default_route.ipv4_eligible_interface_ids[1] == create.linode_interfaces[1].id
+
+    - name: Get info about the instance's interface settings by ID
+      linode.cloud.instance_interface_settings_info:
+        linode_id: "{{ create.instance.id }}"
+      register: settings_info_id
+
+    - name: Ensure the returned settings are correct
+      assert:
+        that:
+          - settings_info_id.settings.network_helper == False
+          - settings_info_id.settings.default_route.ipv4_interface_id == create.linode_interfaces[0].id
+          - settings_info_id.settings.default_route.ipv6_interface_id == create.linode_interfaces[0].id
+          - settings_info_id.settings.default_route.ipv4_eligible_interface_ids[0] == create.linode_interfaces[0].id
+          - settings_info_id.settings.default_route.ipv4_eligible_interface_ids[1] == create.linode_interfaces[1].id
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the Linode instance
+          linode.cloud.instance:
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.instance.id == create.instance.id
+
+        - name: Delete the VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+        - name: Assert VPC delete succeeded
+          assert:
+            that:
+              - delete_vpc.changed
+              - delete_vpc.vpc.id == create_vpc.vpc.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

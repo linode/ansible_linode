@@ -33,6 +33,7 @@ Name | Description |
 [linode.cloud.firewall_settings](./docs/modules/firewall_settings.md)|Configure the firewall settings for the account.|
 [linode.cloud.image](./docs/modules/image.md)|Manage a Linode Image.|
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
+[linode.cloud.instance_interface_settings](./docs/modules/instance_interface_settings.md)|Create, read, and update the interface settings for a Linode instance.|
 [linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account. The Linode must be configured to support additional addresses - please Open a support ticket requesting additional addresses before attempting allocation.|
 [linode.cloud.ip_assign](./docs/modules/ip_assign.md)|Assign IPs to Linodes in a given Region.|
 [linode.cloud.ip_rdns](./docs/modules/ip_rdns.md)|Manage a Linode IP address's rDNS.|
@@ -73,6 +74,7 @@ Name | Description |
 [linode.cloud.firewall_template_info](./docs/modules/firewall_template_info.md)|Get info about a Linode Firewall Template.|
 [linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
 [linode.cloud.instance_info](./docs/modules/instance_info.md)|Get info about a Linode Instance.|
+[linode.cloud.instance_interface_settings_info](./docs/modules/instance_interface_settings_info.md)|Get the interface settings for a Linode instance.|
 [linode.cloud.ip_info](./docs/modules/ip_info.md)|Get info about a Linode IP.|
 [linode.cloud.ipv6_range_info](./docs/modules/ipv6_range_info.md)|Get info about a Linode IPv6 range.|
 [linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|Get info about a Linode LKE cluster.|
@@ -109,6 +111,7 @@ Name | Description |
 [linode.cloud.firewall_list](./docs/modules/firewall_list.md)|List and filter on Firewalls.|
 [linode.cloud.firewall_template_list](./docs/modules/firewall_template_list.md)|List and filter on Firewall Templates.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Images.|
+[linode.cloud.instance_interface_firewall_list](./docs/modules/instance_interface_firewall_list.md)|List and filter on Linode Interface Firewalls.|
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Instances.|
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|**NOTE: This module has been deprecated in favor of `type_list`.**|
 [linode.cloud.lke_type_list](./docs/modules/lke_type_list.md)|List and filter on LKE Types.|
