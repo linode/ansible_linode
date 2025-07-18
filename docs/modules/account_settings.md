@@ -28,9 +28,7 @@ Returns information related to your Account settings.
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of Account Settings.  **(Choices: `present`)** |
 | `backups_enabled` | <center>`bool`</center> | <center>Optional</center> | Account-wide backups default. If true, all Linodes created will automatically be enrolled in the Backups service. If false, Linodes will not be enrolled by default, but may still be enrolled on creation or later.   |
 | `longview_subscription` | <center>`str`</center> | <center>Optional</center> | The Longview Pro tier you are currently subscribed to. The value must be a Longview subscription ID or null for Longview Free.   |
-| `managed` | <center>`bool`</center> | <center>Optional</center> | Our 24/7 incident response service. This robust, multi-homed monitoring system distributes monitoring checks to ensure that your servers remain online and available at all times. Linode Managed can monitor any service or software stack reachable over TCP or HTTP. Once you add a service to Linode Managed, we'll monitor it for connectivity, response, and total request time.   |
 | `network_helper` | <center>`bool`</center> | <center>Optional</center> | Enables network helper across all users by default for new Linodes and Linode Configs.   |
-| `object_storage` | <center>`str`</center> | <center>Optional</center> | A string describing the status of this account's Object Storage service enrollment.   |
 
 ## Return Values
 

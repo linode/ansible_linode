@@ -50,29 +50,11 @@ SPEC = {
             "The value must be a Longview subscription ID or null for Longview Free."
         ],
     ),
-    "managed": SpecField(
-        type=FieldType.bool,
-        description=[
-            "Our 24/7 incident response service. This robust, multi-homed "
-            "monitoring system distributes monitoring checks to ensure that "
-            "your servers remain online and available at all times. "
-            "Linode Managed can monitor any service or software stack "
-            "reachable over TCP or HTTP. Once you add a service to Linode Managed, "
-            "we'll monitor it for connectivity, response, and total request time."
-        ],
-    ),
     "network_helper": SpecField(
         type=FieldType.bool,
         description=[
             "Enables network helper across all users by default "
             "for new Linodes and Linode Configs."
-        ],
-    ),
-    "object_storage": SpecField(
-        type=FieldType.string,
-        description=[
-            "A string describing the status of this account's "
-            "Object Storage service enrollment."
         ],
     ),
 }
