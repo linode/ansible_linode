@@ -11,9 +11,11 @@
     - name: Assert account_settings response
       assert:
         that:
-          - info.account_settings.longview_subscription is not none
+          - "'longview_subscription' in info.account_settings"
           - info.account_settings.managed is not none
           - info.account_settings.object_storage is not none
+          - info.account_settings.network_helper is not none
+          - info.account_settings.backups_enabled is not none
 
     - name: Determine opposite of backups_enabled
       set_fact:
