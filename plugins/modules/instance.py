@@ -356,6 +356,13 @@ linode_instance_spec = {
         element_type=FieldType.string,
         description=["A list of usernames."],
     ),
+    "maintenance_policy": SpecField(
+        type=FieldType.string,
+        description=[
+            "The Slug of the maintenance policy to apply during maintenance."
+        ],
+        choices=["linode/migrate", "linode/power_off_on"],
+    ),
     "root_pass": SpecField(
         type=FieldType.string,
         no_log=True,
@@ -591,7 +598,7 @@ SPECDOC_META = SpecDocMeta(
 )
 
 # Fields that can be updated on an existing instance
-MUTABLE_FIELDS = {"group", "tags"}
+MUTABLE_FIELDS = {"group", "tags", "maintenance_policy"}
 
 linode_instance_config_mutable = {
     "comments",

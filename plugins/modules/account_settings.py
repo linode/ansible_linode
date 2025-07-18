@@ -62,8 +62,8 @@ SPEC = {
         description=[
             "The Slug of the maintenance policy associated with the account."
         ],
-        choices=["linode/migrate", "linode/power_off_on"]
-    )
+        choices=["linode/migrate", "linode/power_off_on"],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
