@@ -359,7 +359,7 @@ linode_instance_spec = {
     "maintenance_policy": SpecField(
         type=FieldType.string,
         description=[
-            "The Slug of the maintenance policy to apply during maintenance."
+            "The slug of the maintenance policy to apply during maintenance."
         ],
         choices=["linode/migrate", "linode/power_off_on"],
     ),

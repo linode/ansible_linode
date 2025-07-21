@@ -131,7 +131,7 @@ result_instance_samples = ['''{
   "watchdog_enabled": true,
   "disk_encryption": "enabled",
   "lke_cluster_id": null,
-  "maintenance_policy": "linode/migrate,
+  "maintenance_policy": "linode/migrate",
   "placement_group": {
     "id": 123,
     "label": "test",
