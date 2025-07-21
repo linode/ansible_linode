@@ -1,0 +1,17 @@
+- name: maintenance_policy_list
+  block:
+    - name: List Linode Maintenance Policies
+      linode.cloud.maintenance_policy_list:
+      register: policies
+
+    - name: Assert maintenance_policy_list
+      assert:
+        that:
+          - policies.maintenance_policies | length >= 1
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
