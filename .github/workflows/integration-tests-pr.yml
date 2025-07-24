@@ -44,11 +44,8 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: install dependencies
-        run: make deps
-
       - name: install ansible dependencies
-        run: ansible-galaxy collection install amazon.aws:==9.1.0
+        run: ansible-galaxy collection install amazon.aws:==9.5.0
 
       - name: install collection
         run: make install
