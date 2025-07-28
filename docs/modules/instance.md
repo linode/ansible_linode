@@ -28,7 +28,6 @@ Manage Linode Instances, Configs, and Disks.
     stackscript_id: 1337
     stackscript_data:
       variable: value
-    group: app
     tags:
       - env=prod
     state: present
@@ -48,7 +47,6 @@ Manage Linode Instances, Configs, and Disks.
     stackscript_id: 1337
     stackscript_data:
       variable: value
-    group: app
     tags:
       - env=prod
     state: present
