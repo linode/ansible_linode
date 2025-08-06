@@ -31,7 +31,6 @@
       linode.cloud.instance:
         label: '{{ create_interface.instance.label }}'
         region: us-ord
-        group: funny
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
@@ -54,7 +53,6 @@
       linode.cloud.instance:
         label: '{{ create_interface.instance.label }}'
         region: us-ord
-        group: funny
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
