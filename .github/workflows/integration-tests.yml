@@ -101,7 +101,7 @@ jobs:
         run: mkdir -p tests/output/junit
 
       - name: Download test report
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: xml-test-reports  # Specify the artifact name from the 'run-tests' job
           path: tests/output/junit
