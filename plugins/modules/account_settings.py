@@ -57,6 +57,14 @@ SPEC = {
             "for new Linodes and Linode Configs."
         ],
     ),
+    "maintenance_policy": SpecField(
+        type=FieldType.string,
+        description=[
+            "The Slug of the maintenance policy associated with the account.",
+            "NOTE: This field is under v4beta.",
+        ],
+        choices=["linode/migrate", "linode/power_off_on"],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -75,7 +83,7 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-MUTABLE_FIELDS = {"backups_enabled", "network_helper"}
+MUTABLE_FIELDS = {"backups_enabled", "network_helper", "maintenance_policy"}
 
 DOCUMENTATION = r"""
 """

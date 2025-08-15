@@ -1,0 +1,25 @@
+"""Documentation fragments for the maintenance_policy_list module"""
+
+specdoc_examples = ['''
+- name: List all of the Linode Maintenance Policies
+  linode.cloud.maintenance_policy_list: {}''', '''
+''']
+
+result_maintenance_policy_samples = ['''[
+    {
+      "slug": "linode/migrate",
+      "label": "Migrate",
+      "description": "Migrates the Linode to a new host while it remains fully operational. Recommended for maximizing availability.",
+      "type": "migrate",
+      "notification_period_sec": 300,
+      "is_default": true
+    },
+    {
+      "slug": "linode/power_off_on",
+      "label": "Power-off/on",
+      "description": "Powers off the Linode at the start of the maintenance event and reboots it once the maintenance finishes. Recommended for maximizing performance.",
+      "type": "power_off_on",
+      "notification_period_sec": 1800,
+      "is_default": false
+    }
+]''']

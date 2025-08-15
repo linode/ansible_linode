@@ -9,7 +9,7 @@ specdoc_examples = ['''
       - name: label
         values: myInstanceLabel''']
 
-result_images_samples = ['''[
+result_instances_samples = ['''[
    {
       "alerts": {
         "cpu": 180,
@@ -55,6 +55,7 @@ result_images_samples = ['''[
       "updated": "2018-01-01T00:01:01",
       "watchdog_enabled": true,
       "disk_encryption": "enabled",
-      "lke_cluster_id": null
+      "lke_cluster_id": null,
+      "maintenance_policy": "linode/migrate"
     }
 ]''']
