@@ -8,7 +8,7 @@
       register: all_regions
 
     - set_fact:
-        pg_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Placement Group") | list)[0].id }}'
+        pg_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Placement Group") | selectattr("capabilities", "search", "Maintenance Policy") | list)[0].id }}'
 
     - name: Get account_settings
       linode.cloud.account_settings:
