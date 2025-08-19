@@ -85,8 +85,9 @@ linode_instance_disk_spec = {
     ),
     "disk_encryption": SpecField(
         type=FieldType.string,
-        description="The disk encryption status of this disk."
-        + "NOTE: Disk encryption may not currently be available to all users.",
+        description="**READ ONLY** The disk encryption status of this disk."
+        + "NOTE: Disk encryption may not currently be available to all users "
+        + "and is set at the Linode Level.",
         choices=["enabled", "disabled"],
     ),
     "image": SpecField(

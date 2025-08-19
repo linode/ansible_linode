@@ -28,7 +28,6 @@ Manage Linode Instances, Configs, and Disks.
     stackscript_id: 1337
     stackscript_data:
       variable: value
-    group: app
     tags:
       - env=prod
     state: present
@@ -48,7 +47,6 @@ Manage Linode Instances, Configs, and Disks.
     stackscript_id: 1337
     stackscript_data:
       variable: value
-    group: app
     tags:
       - env=prod
     state: present
@@ -278,7 +276,7 @@ Manage Linode Instances, Configs, and Disks.
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
 | `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
 | `filesystem` | <center>`str`</center> | <center>Optional</center> | The filesystem to create this disk with.   |
-| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this disk.NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`)** |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | **READ ONLY** The disk encryption status of this disk.NOTE: Disk encryption may not currently be available to all users and is set at the Linode Level.  **(Choices: `enabled`, `disabled`)** |
 | `image` | <center>`str`</center> | <center>Optional</center> | An Image ID to deploy the Disk from.   |
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The root user’s password on the newly-created Linode.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
