@@ -1,6 +1,6 @@
-# vpc_subnet_info
+# instance_interface_settings_info
 
-Get info about a Linode VPC Subnet.
+Get the interface settings for a Linode instance.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -15,17 +15,15 @@ Get info about a Linode VPC Subnet.
 ## Examples
 
 ```yaml
-- name: Get info about a VPC Subnet by label
-  linode.cloud.vpc_subnet_info:
-    vpc_id: 12345
-    label: my-subnet
+- name: Get the interface settings for an instance by label
+  linode.cloud.instance_interface_settings_info:
+    label: my-instance
 ```
 
 ```yaml
-- name: Get info about a VPC Subnet by ID
-  linode.cloud.vpc_subnet_info:
-    vpc_id: 12345
-    id: 123
+- name: Get the interface settings for an instance by ID
+  linode.cloud.instance_interface_settings_info:
+    id: 12345
 ```
 
 
@@ -33,36 +31,32 @@ Get info about a Linode VPC Subnet.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the VPC for this resource.   |
-| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC Subnet to resolve.  **(Conflicts With: `label`)** |
-| `label` | <center>`str`</center> | <center>Optional</center> | The label of the VPC Subnet to resolve.  **(Conflicts With: `id`)** |
+| `linode_id` | <center>`int`</center> | <center>Optional</center> | The ID of the instance to retrieve the interface settings for.  **(Conflicts With: `linode_label`)** |
+| `linode_label` | <center>`str`</center> | <center>Optional</center> | The label of the instance to retrieve the interface settings for.  **(Conflicts With: `linode_id`)** |
 
 ## Return Values
 
-- `subnet` - The returned VPC Subnet.
+- `settings` - The returned settings.
 
     - Sample Response:
         ```json
+        
         {
-            "created": "2023-08-31T18:53:04",
-            "id": 271,
-            "ipv4": "10.0.0.0/24",
-            "label": "test-subnet",
-            "linodes": [
-                {
-                    "id": 1234567,
-                    "interfaces": [
-                      {
-                        "active": true,
-                        "config_id": 123456,
-                        "id": 123456
-                      }
-                    ]
-                }
+          "default_route": {
+            "ipv4_eligible_interface_ids": [
+              123,
+              456
             ],
-            "updated": "2023-08-31T18:53:04"
+            "ipv4_interface_id": 456,
+            "ipv6_eligible_interface_ids": [
+              123
+            ],
+            "ipv6_interface_id": 123
+          },
+          "network_helper": true
         }
+        
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-vpc-subnet) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-linode-interface-settings) for a list of returned fields
 
 
