@@ -32,7 +32,7 @@ jobs:
 
       # Check out merge commit
       - name: Checkout PR
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ inputs.sha }}
           path: .ansible/collections/ansible_collections/linode/cloud
@@ -44,11 +44,8 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: install dependencies
-        run: make deps
-
       - name: install ansible dependencies
-        run: ansible-galaxy collection install amazon.aws:==9.1.0
+        run: ansible-galaxy collection install amazon.aws:==9.5.0
 
       - name: install collection
         run: make install
@@ -121,7 +118,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: 'recursive'

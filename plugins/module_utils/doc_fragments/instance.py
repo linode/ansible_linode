@@ -14,7 +14,6 @@ specdoc_examples = ['''
     stackscript_id: 1337
     stackscript_data:
       variable: value
-    group: app
     tags:
       - env=prod
     state: present''', '''
@@ -31,7 +30,6 @@ specdoc_examples = ['''
     stackscript_id: 1337
     stackscript_data:
       variable: value
-    group: app
     tags:
       - env=prod
     additional_ipv4:

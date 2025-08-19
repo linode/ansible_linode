@@ -22,7 +22,7 @@ jobs:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: .ansible/collections/ansible_collections/linode/cloud
           fetch-depth: 0
@@ -54,7 +54,7 @@ jobs:
 
       - name: Notify Slack
         if: (success() || failure()) && github.repository == 'linode/ansible_linode'
-        uses: slackapi/slack-github-action@v2.1.0
+        uses: slackapi/slack-github-action@v2.1.1
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}

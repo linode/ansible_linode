@@ -86,7 +86,7 @@
           - get_database_config_postgresql.config.pg.max_standby_streaming_delay.type == "integer"
           - get_database_config_postgresql.config.pg.max_wal_senders.type == "integer"
           - get_database_config_postgresql.config.pg.max_worker_processes.type == "integer"
-          - get_database_config_postgresql.config.pg.password_encryption.default == "md5"
+          - get_database_config_postgresql.config.pg.password_encryption.type == "string"
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
