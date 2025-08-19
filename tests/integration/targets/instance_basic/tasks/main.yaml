@@ -10,6 +10,11 @@
     - set_fact:
         pg_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Placement Group") | list)[0].id }}'
 
+    - name: Get account_settings
+      linode.cloud.account_settings:
+        state: 'present'
+      register: account_info
+
     - name: Create a Linode instance without a root password
       linode.cloud.instance:
         label: 'ansible-test-nopass-{{ r }}'
@@ -28,6 +33,7 @@
           - create.changed
           - create.instance.ipv4|length > 1
           - create.networking.ipv4.public[0].address != None
+          - create.instance.maintenance_policy == account_info.account_settings.maintenance_policy
 
     - name: Create a Linode instance with additional ips and without a root password
       linode.cloud.instance:
@@ -105,6 +111,12 @@
       failed_when:
         - "'additional_ipv4' not in invalid_update_remove_ips.msg"
 
+    - name: Determine opposite of maintenance_policy
+      set_fact:
+        toggled_maintenance_policy: >-
+          {{ 'linode/power_off_on' if account_info.account_settings.maintenance_policy == 'linode/migrate'
+             else 'linode/migrate' }}
+
     - name: Update the instance
       linode.cloud.instance:
         label: '{{ create.instance.label }}'
@@ -113,6 +125,7 @@
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
+        maintenance_policy: '{{ toggled_maintenance_policy }}'
         state: present
       register: update
 
@@ -120,6 +133,7 @@
       assert:
         that:
           - update.instance.group == 'funny'
+          - update.instance.maintenance_policy == toggled_maintenance_policy
 
     - name: Get info about the instance by id
       linode.cloud.instance_info:
@@ -134,6 +148,7 @@
           - info_id.configs|length == 1
           - info_id.networking.ipv4.public[0].address != None
           - info_id.instance.capabilities == create.instance.capabilities
+          - info_id.instance.maintenance_policy == toggled_maintenance_policy
 
     - name: Get info about the instance by label
       linode.cloud.instance_info:
