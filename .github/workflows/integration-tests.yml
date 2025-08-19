@@ -34,7 +34,7 @@ jobs:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: .ansible/collections/ansible_collections/linode/cloud
           fetch-depth: 0
@@ -83,7 +83,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: 'recursive'
@@ -148,7 +148,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: 'recursive'
