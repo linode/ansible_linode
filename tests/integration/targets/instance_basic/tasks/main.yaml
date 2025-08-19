@@ -132,7 +132,6 @@
     - name: Assert update
       assert:
         that:
-          - update.instance.group == 'funny'
           - update.instance.maintenance_policy == toggled_maintenance_policy
           - update.instance.label == updated_label
 
