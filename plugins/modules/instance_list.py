@@ -15,7 +15,7 @@ module = ListModule(
     endpoint_template="/linode/instances",
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-instances",
     examples=docs.specdoc_examples,
-    result_samples=docs.result_images_samples,
+    result_samples=docs.result_instances_samples,
 )
 
 SPECDOC_META = module.spec
