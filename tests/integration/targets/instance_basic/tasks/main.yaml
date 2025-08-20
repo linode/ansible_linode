@@ -15,11 +15,6 @@
         state: 'present'
       register: account_info
 
-    - name: Get account_settings
-      linode.cloud.account_settings:
-        state: 'present'
-      register: account_info
-
     - name: Create a Linode instance without a root password
       linode.cloud.instance:
         label: 'ansible-test-nopass-{{ r }}'
