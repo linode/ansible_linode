@@ -148,7 +148,7 @@
           - info_id.configs|length == 1
           - info_id.networking.ipv4.public[0].address != None
           - info_id.instance.capabilities == create.instance.capabilities
-          - info_id.instance.maintenance_policy == toggled_maintenance_policy
+          - info_id.instance.maintenance_policy == account_info.account_settings.maintenance_policy
 
     - name: Get info about the instance by label
       linode.cloud.instance_info:
