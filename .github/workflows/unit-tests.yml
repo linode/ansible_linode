@@ -16,7 +16,7 @@ jobs:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: .ansible/collections/ansible_collections/linode/cloud
 
