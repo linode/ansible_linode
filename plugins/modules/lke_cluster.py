@@ -134,6 +134,12 @@ linode_lke_cluster_taint = {
 }
 
 linode_lke_cluster_node_pool_spec = {
+    "label": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=["A unique label for this Node Pool."],
+        required=False,
+    ),
     "count": SpecField(
         type=FieldType.integer,
         editable=True,
@@ -567,6 +573,16 @@ class LinodeLKECluster(LinodeModuleBase):
                         current_pool.labels = pool.get("labels")
                         current_pool.save()
 
+                    if "label" in pool and current_pool.label != pool["label"]:
+                        self.register_action(
+                            "Updated label for Node Pool {}".format(
+                                current_pool.id
+                            )
+                        )
+
+                        current_pool.label = pool.get("label")
+                        current_pool.save()
+
                     pools_handled[k] = True
                     should_keep[i] = True
                     break
@@ -633,6 +649,16 @@ class LinodeLKECluster(LinodeModuleBase):
                         )
 
                         existing_pool.labels = pool["labels"]
+                        should_update = True
+
+                    if "label" in pool and existing_pool.label != pool["label"]:
+                        self.register_action(
+                            "Updated label for Node Pool {}".format(
+                                existing_pool.id
+                            )
+                        )
+
+                        existing_pool.label = pool["label"]
                         should_update = True
 
                     if should_update:
