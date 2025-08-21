@@ -22,16 +22,25 @@
         original_backups_enabled: "{{ info.account_settings.backups_enabled }}"
         toggled_backups_enabled: "{{ not info.account_settings.backups_enabled }}"
 
+    - name: Determine opposite of maintenance_policy
+      set_fact:
+        original_maintenance_policy: "{{ info.account_settings.maintenance_policy }}"
+        toggled_maintenance_policy: >-
+          {{ 'linode/power_off_on' if info.account_settings.maintenance_policy == 'linode/migrate'
+             else 'linode/migrate' }}
+
     - name: Update account_settings
       linode.cloud.account_settings:
         state: 'present'
         backups_enabled: "{{ toggled_backups_enabled }}"
+        maintenance_policy: "{{ toggled_maintenance_policy }}"
       register: update
 
     - name: Assert account_settings was updated
       assert:
         that:
           - update.account_settings.backups_enabled == toggled_backups_enabled
+          - update.account_settings.maintenance_policy == toggled_maintenance_policy
 
   always:
     - ignore_errors: yes
@@ -40,6 +49,7 @@
           linode.cloud.account_settings:
             state: 'present'
             backups_enabled: "{{ original_backups_enabled }}"
+            maintenance_policy: "{{ original_maintenance_policy }}"
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
