@@ -573,11 +573,7 @@ class LinodeLKECluster(LinodeModuleBase):
                         current_pool.labels = pool.get("labels")
                         current_pool.save()
 
-
-                    if (
-                        "label" in pool
-                        and current_pool.label != pool["label"]
-                    ):
+                    if "label" in pool and current_pool.label != pool["label"]:
                         self.register_action(
                             "Updated label for Node Pool {}".format(
                                 current_pool.id
@@ -655,10 +651,7 @@ class LinodeLKECluster(LinodeModuleBase):
                         existing_pool.labels = pool["labels"]
                         should_update = True
 
-                    if (
-                        "label" in pool
-                        and existing_pool.label != pool["label"]
-                    ):
+                    if "label" in pool and existing_pool.label != pool["label"]:
                         self.register_action(
                             "Updated label for Node Pool {}".format(
                                 existing_pool.id
