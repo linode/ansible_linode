@@ -67,6 +67,10 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
             }
         ]
         ```
+<<<<<<< HEAD
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-maintenance-policies) for a list of returned fields
+=======
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-policies) for a list of returned fields
+>>>>>>> main
 
 
