@@ -39,7 +39,7 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-policies).   |
+| `name` | <center>`str`</center> | <center>**Required**</center> | The name of the field to filter on. Valid filterable fields can be found [here](https://techdocs.akamai.com/linode-api/reference/get-maintenance-policies).   |
 | `values` | <center>`list`</center> | <center>**Required**</center> | A list of values to allow for this field. Fields will pass this filter if at least one of these values matches.   |
 
 ## Return Values
@@ -67,6 +67,6 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
             }
         ]
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-policies) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-maintenance-policies) for a list of returned fields
 
 
