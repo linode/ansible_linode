@@ -56,7 +56,7 @@
           - create_cluster.cluster.region == 'us-southeast'
           - create_cluster.node_pools[0].type == 'g6-standard-1'
           - create_cluster.node_pools[0].count == 3
-          - create_cluster.node_pools[0].label == 'pool-with-autoscaler'
+          - create_cluster.node_pools[1].label == 'pool-with-autoscaler'
           - create_cluster.node_pools[0].labels['foo.example.com/test'] == 'bar'
           - create_cluster.node_pools[0].labels['foo.example.com/test2'] == 'foo'
           - create_cluster.node_pools[0].taints[0].key == 'foo.example.com/test2'
