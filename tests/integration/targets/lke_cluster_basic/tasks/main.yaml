@@ -40,6 +40,7 @@
                   effect: NoExecute
           - type: g6-standard-4
             count: 1
+            label: pool-with-autoscaler
             autoscaler:
               enabled: true
               min: 1
@@ -55,6 +56,7 @@
           - create_cluster.cluster.region == 'us-southeast'
           - create_cluster.node_pools[0].type == 'g6-standard-1'
           - create_cluster.node_pools[0].count == 3
+          - create_cluster.node_pools[1].label == 'pool-with-autoscaler'
           - create_cluster.node_pools[0].labels['foo.example.com/test'] == 'bar'
           - create_cluster.node_pools[0].labels['foo.example.com/test2'] == 'foo'
           - create_cluster.node_pools[0].taints[0].key == 'foo.example.com/test2'
@@ -73,6 +75,7 @@
         node_pools:
           - type: g6-standard-1
             count: 2
+            label: updated-pool-label
             labels:
               foo.example.com/update: updated
               foo.example.com/test2: foo
@@ -97,6 +100,7 @@
 
           - update_pools.node_pools[0].type == 'g6-standard-1'
           - update_pools.node_pools[0].count == 2
+          - update_pools.node_pools[0].label == 'updated-pool-label'
           - update_pools.node_pools[0].id == create_cluster.node_pools[0].id
 
           - update_pools.node_pools[0].labels['foo.example.com/update'] == 'updated'

@@ -97,6 +97,7 @@ except ImportError:
     HAS_LINODE = False
 
 
+# pylint: disable=too-many-ancestors
 class InventoryModule(BaseInventoryPlugin, Constructable):
     """Linode instance inventory plugin"""
 
