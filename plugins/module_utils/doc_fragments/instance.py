@@ -78,7 +78,41 @@ specdoc_examples = ['''
     placement_group:
       id: 123
       compliant_only: false
-    state: present''', '''
+    state: present''',
+'''
+- name: Create a Linode Instance with a VPC interface and a NAT 1-1 mapping to its public IPv4 address.
+  linode.cloud.instance:
+    label: my-vpc-instance
+    region: us-mia
+    type: g6-nanode-1
+    image: linode/alpine3.21
+    booted: true
+    interfaces:
+      - purpose: vpc
+        subnet_id: '{{ create_subnet.subnet.id }}'
+        ipv4:
+          nat_1_1: any
+    state: present''',
+'''
+# NOTE: IPv6 VPCs may not currently be available to all users.
+- name: Create a Linode Instance with a public VPC interface, assigning one IPv6 SLAAC prefix and one additional IPv6 range.
+  linode.cloud.instance:
+    label: my-vpc-ipv6-instance
+    region: us-mia
+    type: g6-nanode-1
+    image: linode/alpine3.21
+    booted: true
+    interfaces:
+      - purpose: vpc
+        subnet_id: '{{ create_subnet.subnet.id }}'
+        ipv6:
+          is_public: true
+          slaac:
+            - range: auto
+          ranges:
+            - range: auto
+    state: present''',
+'''
 - name: Delete a Linode instance.
   linode.cloud.instance:
     label: my-linode
@@ -188,6 +222,28 @@ result_configs_samples = ['''[
         "ipam_address": "10.0.0.1/24",
         "label": "example-interface",
         "purpose": "vlan"
+      },
+      {
+        "ip_ranges": null,
+        "ipam_address": null,
+        "ipv4": null,
+        "ipv6": {
+          "is_public": null,
+          "ranges": [
+            {
+              "range": "auto"
+            }
+          ],
+          "slaac": [
+            {
+              "range": "auto"
+            }
+          ]
+        },
+        "label": null,
+        "primary": false,
+        "purpose": "vpc",
+        "subnet_id": 271176
       }
     ],
     "kernel": "linode/latest-64bit",
@@ -266,6 +322,25 @@ result_networking_samples = ['''
         "subnet_mask": "255.255.255.0",
         "type": "ipv4"
       }
+    ],
+    "vpc": [
+      {
+        "active": true,
+        "address": "10.0.0.2",
+        "address_range": null,
+        "config_id": 12345,
+        "database_id": null,
+        "gateway": "10.0.0.1",
+        "interface_id": 12345,
+        "linode_id": 12345,
+        "nat_1_1": null,
+        "nodebalancer_id": null,
+        "prefix": 24,
+        "region": "us-example-1",
+        "subnet_id": 12345,
+        "subnet_mask": "255.255.255.0",
+        "vpc_id": 12345
+      }
     ]
   },
   "ipv6": {
@@ -296,6 +371,54 @@ result_networking_samples = ['''
       "region": "us-east",
       "subnet_mask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
       "type": "ipv6"
+    },
+    "vpc": {
+      "vpc": [
+        {
+          "active": true,
+          "address": null,
+          "address_range": null,
+          "config_id": 12345,
+          "database_id": null,
+          "gateway": null,
+          "interface_id": 12345,
+          "ipv6_addresses": [
+            {
+              "slaac_address": "2001:db8:acad:1:abcd:ef12:3456:7890"
+            }
+          ],
+          "ipv6_is_public": false,
+          "ipv6_range": "2001:db8:acad:1::/64",
+          "linode_id": 12345,
+          "nat_1_1": "",
+          "nodebalancer_id": null,
+          "prefix": 64,
+          "region": "us-example-1",
+          "subnet_id": 12345,
+          "subnet_mask": "",
+          "vpc_id": 12345
+        },
+        {
+          "active": true,
+          "address": null,
+          "address_range": null,
+          "config_id": 12345,
+          "database_id": null,
+          "gateway": null,
+          "interface_id": 12345,
+          "ipv6_addresses": [],
+          "ipv6_is_public": false,
+          "ipv6_range": "2001:db8:acad:2::/64",
+          "linode_id": 12345,
+          "nat_1_1": "",
+          "nodebalancer_id": null,
+          "prefix": 64,
+          "region": "us-example-1",
+          "subnet_id": 12345,
+          "subnet_mask": "",
+          "vpc_id": 12345
+        }
+      ]
     }
   }
 }''']

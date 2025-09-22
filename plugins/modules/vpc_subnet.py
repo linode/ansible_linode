@@ -20,6 +20,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     handle_updates,
     safe_find,
 )
+from ansible_collections.linode.cloud.plugins.module_utils.linode_networking import (
+    auto_alloc_ranges_equivalent,
+)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -49,6 +52,22 @@ SPEC = {
         type=FieldType.string,
         description=["The IPV4 range for this subnet in CIDR format."],
     ),
+    "ipv6": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        description=[
+            "The IPv6 ranges of this subnet.",
+            "NOTE: IPv6 VPCs may currently be available to all users.",
+        ],
+        suboptions={
+            "range": SpecField(
+                type=FieldType.string,
+                description="An existing IPv6 prefix owned by the current account "
+                + "or a forward slash (/) followed by a valid prefix length. "
+                + "If unspecified, a range with the default prefix will be allocated for this VPC.",
+            ),
+        },
+    ),
 }
 
 
@@ -70,7 +89,7 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-CREATE_FIELDS = {"label", "ipv4"}
+CREATE_FIELDS = {"label", "ipv4", "ipv6"}
 
 DOCUMENTATION = r"""
 """
@@ -91,6 +110,27 @@ class Module(LinodeModuleBase):
             module_arg_spec=self.module_arg_spec,
         )
 
+    def __ipv6_updated(self, subnet: VPCSubnet) -> bool:
+        ipv6_arg = self.module.params.get("ipv6")
+        ipv6_actual = subnet.ipv6
+
+        if len(ipv6_arg) != len(ipv6_actual):
+            return True
+
+        for i, entry_arg in enumerate(ipv6_arg):
+            range_arg = entry_arg.get("range")
+
+            if range_arg is None:
+                # The value isn't specified, so we shouldn't diff
+                continue
+
+            if not auto_alloc_ranges_equivalent(
+                range_arg, ipv6_actual[i].range
+            ):
+                return True
+
+        return False
+
     def _create(self, vpc: VPC) -> Optional[VPCSubnet]:
         params = filter_null_values(
             {k: v for k, v in self.module.params.items() if k in CREATE_FIELDS}
@@ -103,7 +143,16 @@ class Module(LinodeModuleBase):
 
     def _update(self, subnet: VPCSubnet) -> None:
         # VPC Subnets cannot be updated
-        handle_updates(subnet, self.module.params, set(), self.register_action)
+        handle_updates(
+            subnet,
+            self.module.params,
+            set(),
+            self.register_action,
+            ignore_keys={"ipv6"},
+        )
+
+        if subnet.ipv6 is not None and self.__ipv6_updated(subnet):
+            self.fail(msg="IPv6 cannot be updated after VPC subnet creation.")
 
     def _handle_present(self) -> None:
         params = self.module.params

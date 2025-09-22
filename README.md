@@ -128,9 +128,11 @@ Name | Description |
 [linode.cloud.volume_list](./docs/modules/volume_list.md)|List and filter on Linode Volumes.|
 [linode.cloud.volume_type_list](./docs/modules/volume_type_list.md)|List and filter on Volume Types.|
 [linode.cloud.vpc_ip_list](./docs/modules/vpc_ip_list.md)|List and filter on VPC IP Addresses.|
+[linode.cloud.vpc_ipv6_list](./docs/modules/vpc_ipv6_list.md)|List and filter on all VPC IPv6 addresses for a given VPC.|
 [linode.cloud.vpc_list](./docs/modules/vpc_list.md)|List and filter on VPCs.|
 [linode.cloud.vpc_subnet_list](./docs/modules/vpc_subnet_list.md)|List and filter on VPC Subnets.|
 [linode.cloud.vpcs_ip_list](./docs/modules/vpcs_ip_list.md)|List and filter on all VPC IP Addresses.|
+[linode.cloud.vpcs_ipv6_list](./docs/modules/vpcs_ipv6_list.md)|List and filter on all VPC IPv6 addresses.|
 
 
 ### Inventory Plugins
