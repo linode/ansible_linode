@@ -1,3 +1,7 @@
+"""
+Contains various networking-related helper functions.
+"""
+
 import ipaddress
 from typing import Optional, Tuple
 

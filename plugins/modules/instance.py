@@ -232,7 +232,8 @@ linode_instance_interface_spec = {
                 type=FieldType.bool,
                 description=[
                     "If true, connections from the interface to IPv6 addresses outside the VPC, "
-                    + "and connections from IPv6 addresses outside the VPC to the interface will be permitted."
+                    + "and connections from IPv6 addresses outside the VPC to the interface "
+                    + "will be permitted."
                 ],
             ),
             "slaac": SpecField(
@@ -810,7 +811,7 @@ class LinodeInstance(LinodeModuleBase):
                 if remote_nat is None:
                     return False
 
-                if local_nat != "any" and remote_nat != local_nat:
+                if local_nat not in ("any", remote_nat):
                     return False
 
             return matching_keys_eq(local, remote)

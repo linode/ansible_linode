@@ -80,7 +80,8 @@ specdoc_examples = ['''
       compliant_only: false
     state: present''',
 '''
-- name: Create a Linode Instance with a VPC interface and a NAT 1-1 mapping to its public IPv4 address.
+- name: Create a Linode Instance with a VPC interface '''
++ '''and a NAT 1-1 mapping to its public IPv4 address.
   linode.cloud.instance:
     label: my-vpc-instance
     region: us-mia
@@ -95,7 +96,8 @@ specdoc_examples = ['''
     state: present''',
 '''
 # NOTE: IPv6 VPCs may not currently be available to all users.
-- name: Create a Linode Instance with a public VPC interface, assigning one IPv6 SLAAC prefix and one additional IPv6 range.
+- name: Create a Linode Instance with a public VPC interface, '''
++ '''assigning one IPv6 SLAAC prefix and one additional IPv6 range.
   linode.cloud.instance:
     label: my-vpc-ipv6-instance
     region: us-mia

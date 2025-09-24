@@ -66,7 +66,8 @@ SPEC = {
             ),
             "allocation_class": SpecField(
                 type=FieldType.string,
-                description="The labeled IPv6 Inventory that the VPC Prefix should be allocated from.",
+                description="The labeled IPv6 Inventory that the VPC Prefix "
+                + "should be allocated from.",
             ),
         },
     ),
