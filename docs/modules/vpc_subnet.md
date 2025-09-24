@@ -34,7 +34,7 @@ Create, read, and update a Linode VPC Subnet.
     state: present
 ```
 
-```yaml'
+```yaml
 - name: Delete a VPC Subnet
   linode.cloud.vpc_subnet:
     vpc_id: 12345

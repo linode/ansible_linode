@@ -15,7 +15,7 @@ specdoc_examples = ['''
     label: my-subnet
     ipv6:
     - range: auto
-    state: present''',''''
+    state: present''','''
 - name: Delete a VPC Subnet
   linode.cloud.vpc_subnet:
     vpc_id: 12345
