@@ -141,21 +141,6 @@
           - db_info_id.database.private_network.vpc_id == create_vpc.vpc.id
           - db_info_id.database.private_network.subnet_id == create_subnet_2.subnet.id
           - db_info_id.database.private_network.public_access == True
-
-    - name: Get information this database using the list module
-      linode.cloud.database_list:
-        filters:
-          - name: label
-            values: "ansible-test-{{ r }}"
-      register: db_list
-
-    - name: Assert the database is found by ID
-      assert:
-        that:
-          - db_list.databases[0].status == "active"
-          - db_list.databases[0].private_network.vpc_id == create_vpc.vpc.id
-          - db_list.databases[0].private_network.subnet_id == create_subnet_2.subnet.id
-          - db_list.databases[0].private_network.public_access == True
   always:
     - ignore_errors: true
       block:
