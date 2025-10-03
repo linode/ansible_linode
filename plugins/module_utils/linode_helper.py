@@ -5,6 +5,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, cast
 import linode_api4
 import polling
 from linode_api4 import (
+    ApiError,
     JSONObject,
     LinodeClient,
     LKENodePool,
@@ -18,6 +19,7 @@ from linode_api4.objects.filtering import (
     FilterableAttribute,
     FilterableMetaclass,
 )
+from linode_api4.polling import TimeoutContext
 
 
 def dict_select_spec(target: dict, spec: dict) -> dict:
@@ -116,10 +118,12 @@ def handle_updates(
     mutable_fields: set,
     register_func: Callable,
     ignore_keys: Set[str] = None,
+    nullable_keys: Set[str] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
     ignore_keys = ignore_keys or set()
+    nullable_keys = nullable_keys or set()
 
     obj._api_get()
 
@@ -128,6 +132,11 @@ def handle_updates(
 
     # Update mutable values
     params = filter_null_values(params)
+
+    # Populate excluded nullable keys with None
+    for key in nullable_keys:
+        if key not in params:
+            params[key] = None
 
     put_request = {}
     result = set()
@@ -138,7 +147,7 @@ def handle_updates(
 
         old_value = parse_linode_types(getattr(obj, key))
 
-        if isinstance(new_value, dict):
+        if isinstance(new_value, dict) and isinstance(old_value, dict):
             # If this field is a dict, we only want to compare values that are
             # specified by the user
             old_value, new_value = dict_select_matching(
@@ -381,3 +390,28 @@ def safe_find(
         return None
     except Exception as exception:
         raise Exception(f"failed to get resource: {exception}") from exception
+
+
+def retry_on_response_status(
+    timeout_ctx: TimeoutContext, func: Callable[[], None], *statuses: int
+):
+    """
+    Retries a given function if it raises an ApiError with specific response statuses.
+    """
+
+    def __attempt_delete() -> bool:
+        try:
+            func()
+        except ApiError as err:
+            if err.status in statuses:
+                return False
+
+            raise err
+
+        return True
+
+    poll_condition(
+        __attempt_delete,
+        step=4,
+        timeout=timeout_ctx.seconds_remaining,
+    )

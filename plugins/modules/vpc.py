@@ -18,7 +18,11 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
     handle_updates,
+    retry_on_response_status,
     safe_find,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_vpc_shared import (
+    should_retry_subnet_delete_400s,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -129,6 +133,16 @@ class Module(LinodeModuleBase):
         vpc = safe_find(self.client.vpcs, VPC.label == label)
 
         if vpc is not None:
+            should_retry_on_400 = all(
+                should_retry_subnet_delete_400s(self.client, subnet)
+                for subnet in vpc.subnets
+            )
+
+            if should_retry_on_400:
+                retry_on_response_status(self._timeout_ctx, vpc.delete, 400)
+            else:
+                vpc.delete()
+
             self.results["vpc"] = vpc._raw_json
             vpc.delete()
             self.register_action(f"Deleted VPC {label}")

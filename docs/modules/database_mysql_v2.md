@@ -71,6 +71,20 @@ Create, read, and update a Linode MySQL database.
 ```
 
 ```yaml
+- name: Create a MySQL database attached to a VPC
+  linode.cloud.database_mysql_v2:
+    label: my-db
+    region: us-mia
+    engine: mysql/8
+    type: g6-nanode-1
+    private_network:
+        vpc_id: 123
+        subnet_id: 456
+        public_access: true
+    state: present
+```
+
+```yaml
 - name: Delete a MySQL database
   linode.cloud.database_mysql_v2:
     label: my-db
@@ -88,6 +102,8 @@ Create, read, and update a Linode MySQL database.
 | `engine` | <center>`str`</center> | <center>Optional</center> | The Managed Database engine in engine/version format.  **(Updatable)** |
 | [`engine_config` (sub-options)](#engine_config) | <center>`dict`</center> | <center>Optional</center> | Various parameters used to configure this database's underlying engine. NOTE: If a configuration parameter is not current accepted by this field, configure using the linode.cloud.api_request module.  **(Updatable)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the Managed Database.   |
+| `detach_private_network` | <center>`bool`</center> | <center>Optional</center> | If true, the Managed Database will be detached from its current private network when `private_network` is null. If the Managed Database is not currently attached to a private network or the private_network field is specified, this option has no effect. This is not necessary when switching between VPC subnets.  **(Default: `False`)** |
+| [`private_network` (sub-options)](#private_network) | <center>`dict`</center> | <center>Optional</center> | Restricts access to this database using a virtual private cloud (VPC) that you've configured in the region where the database will live.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>Optional</center> | The region of the Managed Database.   |
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Instance type used by the Managed Database for its nodes.  **(Updatable)** |
 | [`fork` (sub-options)](#fork) | <center>`dict`</center> | <center>Optional</center> | Information about a database to fork from.   |
@@ -132,6 +148,14 @@ Create, read, and update a Linode MySQL database.
 | `sql_require_primary_key` | <center>`bool`</center> | <center>Optional</center> | Require primary key to be defined for new tables or old tables modified with ALTER TABLE and fail if missing.   |
 | `tmp_table_size` | <center>`int`</center> | <center>Optional</center> | Limits the size of internal in-memory tables. Also sets max_heap_table_size. Default is 16777216 (16M).   |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The number of seconds the server waits for activity on a noninteractive connection before closing it.   |
+
+### private_network
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `vpc_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the virtual private cloud (VPC) to restrict access to this database using   |
+| `subnet_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the VPC subnet to restrict access to this database using.   |
+| `public_access` | <center>`bool`</center> | <center>Optional</center> | Set to `true` to allow clients outside of the VPC to connect to the database using a public IP address.  **(Default: `False`)** |
 
 ### fork
 
@@ -183,6 +207,11 @@ Create, read, and update a Linode MySQL database.
           "oldest_restore_time": "2025-02-10T20:15:07",
           "platform": "rdbms-default",
           "port": 11876,
+          "private_network": {
+            "public_access": true,
+            "subnet_id": 456,
+            "vpc_id": 123
+          },
           "region": "ap-west",
           "ssl_connection": true,
           "status": "active",
