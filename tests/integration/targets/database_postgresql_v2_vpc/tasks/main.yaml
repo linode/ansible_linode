@@ -140,6 +140,19 @@
           - db_info_id.database.private_network.vpc_id == create_vpc.vpc.id
           - db_info_id.database.private_network.subnet_id == create_subnet_2.subnet.id
           - db_info_id.database.private_network.public_access == True
+
+    - name: Get information about the VPC subnet by ID
+      linode.cloud.vpc_subnet_info:
+        vpc_id: "{{ create_vpc.vpc.id }}"
+        id: '{{ create_subnet_2.subnet.id }}'
+      register: subnet_info
+
+    - name: Assert the database is found by ID
+      assert:
+        that:
+          - subnet_info.subnet.databases[0].id == db_create.database.id
+          - dsubnet_info.subnet.databases[0].ipv4_range != None
+          - dsubnet_info.subnet.databases[0].ipv6_range != None
   always:
     - ignore_errors: true
       block:

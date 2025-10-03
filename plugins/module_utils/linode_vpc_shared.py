@@ -2,6 +2,8 @@
 This file contains various helpers shared between VPC-related modules.
 """
 
+from itertools import chain
+
 from linode_api4 import VPCSubnet
 
 
@@ -16,18 +18,23 @@ def should_retry_subnet_delete_400s(
     occasionally take longer than expected to propagate on VPC subnets.
     """
 
+    relevant_dbs = {
+        db.id: db
+        for db in chain(
+            client.database.mysql_instances(),
+            client.database.postgresql_instances(),
+        )
+    }
+
     # TODO: Use without _raw_json after support added to linode_api4
     subnet._api_get()
 
-    subnet_dbs = {db.id: db for db in subnet._raw_json.get("databases", [])}
-    if len(subnet_dbs) < 1:
-        # Nothing to do here
-        return False
-
-    for db in client.database.instances():
-        if db.private_network is None or db.private_network.id != subnet.id:
-            continue
-
-        subnet_dbs.pop(db.id)
-
-    return len(subnet_dbs) < 1
+    return (
+        all(
+            subnet_db.id not in relevant_dbs
+            or relevant_dbs[subnet_db.id].private_network is None
+            or relevant_dbs[subnet_db.id].private_network.subnet_id != subnet.id
+            for subnet_db in subnet.databases
+        )
+        and len(subnet.databases) > 0
+    )

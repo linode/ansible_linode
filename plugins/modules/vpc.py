@@ -133,18 +133,20 @@ class Module(LinodeModuleBase):
         vpc = safe_find(self.client.vpcs, VPC.label == label)
 
         if vpc is not None:
-            should_retry_on_400 = all(
-                should_retry_subnet_delete_400s(self.client, subnet)
-                for subnet in vpc.subnets
-            )
+            self.results["vpc"] = vpc._raw_json
 
-            if should_retry_on_400:
+            # If any entities attached to this VPC's subnets are
+            # in a transient state expected to eventually allow deletions,
+            # retry the delete until it succeeds.
+            if all(
+                should_retry_subnet_delete_400s(self.client, subnet)
+                or len(subnet.databases) == 0
+                for subnet in vpc.subnets
+            ):
                 retry_on_response_status(self._timeout_ctx, vpc.delete, 400)
             else:
                 vpc.delete()
 
-            self.results["vpc"] = vpc._raw_json
-            vpc.delete()
             self.register_action(f"Deleted VPC {label}")
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
