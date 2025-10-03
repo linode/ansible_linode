@@ -18,7 +18,7 @@ def should_retry_subnet_delete_400s(
     occasionally take longer than expected to propagate on VPC subnets.
     """
 
-    relevant_dbs = {
+    account_dbs = {
         db.id: db
         for db in chain(
             client.database.mysql_instances(),
@@ -26,15 +26,25 @@ def should_retry_subnet_delete_400s(
         )
     }
 
-    # TODO: Use without _raw_json after support added to linode_api4
-    subnet._api_get()
+    if len(subnet.databases) < 1:
+        # There are no databases attached to this subnet,
+        # so there is nothing to retry
+        return False
 
-    return (
-        all(
-            subnet_db.id not in relevant_dbs
-            or relevant_dbs[subnet_db.id].private_network is None
-            or relevant_dbs[subnet_db.id].private_network.subnet_id != subnet.id
-            for subnet_db in subnet.databases
-        )
-        and len(subnet.databases) > 0
-    )
+    for subnet_db in subnet.databases:
+        if subnet_db.id not in account_dbs:
+            continue
+
+        db = account_dbs[subnet_db.id]
+        db._api_get()
+
+        if (
+            db.private_network is None
+            or db.private_network.subnet_id != subnet.id
+        ):
+            continue
+
+        # This database is not in the process of being detached
+        return False
+
+    return True
