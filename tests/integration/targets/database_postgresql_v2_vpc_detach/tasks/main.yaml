@@ -36,10 +36,10 @@
     - name: Create a subnet
       linode.cloud.vpc_subnet:
         vpc_id: "{{ create_vpc.vpc.id }}"
-        label: "test-subnet-1"
+        label: "test-subnet"
         ipv4: "10.0.0.0/24"
         state: present
-      register: create_subnet_1
+      register: create_subnet
 
     - name: Create a database
       linode.cloud.database_postgresql_v2:
@@ -47,9 +47,10 @@
         region: "{{ target_region }}"
         engine: "{{ engine_id }}"
         type: g6-nanode-1
+        allow_list: []
         private_network:
           vpc_id: "{{ create_vpc.vpc.id }}"
-          subnet_id: '{{ create_subnet_1.subnet.id }}'
+          subnet_id: '{{ create_subnet.subnet.id }}'
           public_access: false
         state: present
       register: db_create
@@ -60,7 +61,7 @@
           - db_create.changed
           - db_create.database.status == "active"
           - db_create.database.private_network.vpc_id == create_vpc.vpc.id
-          - db_create.database.private_network.subnet_id == create_subnet_1.subnet.id
+          - db_create.database.private_network.subnet_id == create_subnet.subnet.id
           - db_create.database.private_network.public_access == False
 
     - name: Remove the private network configuration
@@ -69,6 +70,7 @@
         region: "{{ target_region }}"
         engine: "{{ engine_id }}"
         type: g6-nanode-1
+        allow_list: []
         detach_private_network: true
         state: present
       register: db_remove_private_network
@@ -86,6 +88,7 @@
         region: "{{ target_region }}"
         engine: "{{ engine_id }}"
         type: g6-nanode-1
+        allow_list: []
         detach_private_network: true
         state: present
       register: db_remove_private_network_unchanged
@@ -105,10 +108,15 @@
             label: "{{ db_create.database.label }}"
             state: absent
 
+        - name: Delete VPC subnet
+          linode.cloud.vpc_subnet:
+            label: "test-subnet"
+            vpc_id: "{{ create_vpc.vpc.id }}"
+            state: absent
+
         - name: Delete VPC
           linode.cloud.vpc:
             label: "ansible-test-{{ r }}"
-            region: "{{ target_region }}"
             state: absent
 
   environment:

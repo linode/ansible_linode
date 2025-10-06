@@ -77,6 +77,7 @@
         region: "{{ target_region }}"
         engine: "{{ engine_id }}"
         type: g6-nanode-1
+        allow_list: []
         private_network:
           vpc_id: "{{ create_vpc.vpc.id }}"
           subnet_id: '{{ create_subnet_2.subnet.id }}'
@@ -99,6 +100,7 @@
         region: "{{ target_region }}"
         engine: "{{ engine_id }}"
         type: g6-nanode-1
+        allow_list: []
         private_network:
           vpc_id: "{{ create_vpc.vpc.id }}"
           subnet_id: '{{ create_subnet_2.subnet.id }}'
@@ -151,8 +153,8 @@
       assert:
         that:
           - subnet_info.subnet.databases[0].id == db_create.database.id
-          - dsubnet_info.subnet.databases[0].ipv4_range != None
-          - dsubnet_info.subnet.databases[0].ipv6_range != None
+          - subnet_info.subnet.databases[0].ipv4_range != None
+          - '"ipv6_ranges" in subnet_info.subnet.databases[0]'
   always:
     - ignore_errors: true
       block:
@@ -164,7 +166,6 @@
         - name: Delete VPC
           linode.cloud.vpc:
             label: "ansible-test-{{ r }}"
-            region: "{{ target_region }}"
             state: absent
 
   environment:
