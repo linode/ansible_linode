@@ -19,7 +19,7 @@ module = ListModule(
     result_samples=docs.result_addresses_samples,
     description=[
         "List and filter on all VPC IPv6 addresses.",
-        "NOTE: IPv6 VPCs may not current be available to all users.",
+        "NOTE: IPv6 VPCs may not currently be available to all users.",
     ],
 )
 
