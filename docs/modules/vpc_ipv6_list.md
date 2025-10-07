@@ -2,7 +2,7 @@
 
 List and filter on all VPC IPv6 addresses for a given VPC.
 
-NOTE: IPv6 VPCs may not current be available to all users.
+NOTE: IPv6 VPCs may not currently be available to all users.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
