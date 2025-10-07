@@ -225,7 +225,7 @@ linode_instance_interface_spec = {
         type=FieldType.dict,
         description=[
             "The IPv6 configuration for this interface. (VPC only)",
-            "NOTE: IPv6 VPCs may currently be available to all users.",
+            "NOTE: IPv6 VPCs may not currently be available to all users.",
         ],
         suboptions={
             "is_public": SpecField(
