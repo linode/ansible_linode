@@ -401,7 +401,7 @@ def pop_and_compare_optional_attribute(
     local_parent: Dict[str, Any],
     remote_parent: Dict[str, Any],
     key: str,
-    compare: Callable[[Any, Any], bool] = None,
+    compare: Optional[Callable[[Any, Any], bool]] = None,
 ) -> bool:
     """
     Returns whether the given key for the local and remote dicts are equivalent,
