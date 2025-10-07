@@ -11,7 +11,7 @@ def auto_alloc_ranges_equivalent(
     range2: str,
 ) -> bool:
     """
-    Returns whether the given ranges auto-alloc ranges are semantically equivalent.
+    Returns whether the given auto-alloc ranges are semantically equivalent.
     These ranges accept an explicit range, a prefix, or "auto".
     """
 
