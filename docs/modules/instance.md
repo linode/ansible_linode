@@ -300,7 +300,7 @@ Manage Linode Instances, Configs, and Disks.
 | `primary` | <center>`bool`</center> | <center>Optional</center> | Whether this is a primary interface  **(Default: `False`)** |
 | `subnet_id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC subnet to assign this interface to.   |
 | [`ipv4` (sub-options)](#ipv4) | <center>`dict`</center> | <center>Optional</center> | The IPv4 configuration for this interface. (VPC only)   |
-| [`ipv6` (sub-options)](#ipv6) | <center>`dict`</center> | <center>Optional</center> | The IPv6 configuration for this interface. (VPC only) NOTE: IPv6 VPCs may currently be available to all users.   |
+| [`ipv6` (sub-options)](#ipv6) | <center>`dict`</center> | <center>Optional</center> | The IPv6 configuration for this interface. (VPC only) NOTE: IPv6 VPCs may not currently be available to all users.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces.   |
 | `ipam_address` | <center>`str`</center> | <center>Optional</center> | This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.   |
 | `ip_ranges` | <center>`list`</center> | <center>Optional</center> | Packets to these CIDR ranges are routed to the VPC network interface. (VPC only)   |

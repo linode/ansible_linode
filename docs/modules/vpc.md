@@ -50,7 +50,7 @@ Create, read, and update a Linode VPC.
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this token.  **(Choices: `present`, `absent`)** |
 | `description` | <center>`str`</center> | <center>Optional</center> | A description describing this VPC.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The region this VPC is located in.   |
-| [`ipv6` (sub-options)](#ipv6) | <center>`list`</center> | <center>Optional</center> | A list of IPv6 ranges in CIDR notation. NOTE: IPv6 VPCs may currently be available to all users.   |
+| [`ipv6` (sub-options)](#ipv6) | <center>`list`</center> | <center>Optional</center> | A list of IPv6 ranges in CIDR notation. NOTE: IPv6 VPCs may not currently be available to all users.   |
 
 ### ipv6
 

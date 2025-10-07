@@ -51,7 +51,7 @@ Create, read, and update a Linode VPC Subnet.
 | `label` | <center>`str`</center> | <center>**Required**</center> | This VPC's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this token.  **(Choices: `present`, `absent`)** |
 | `ipv4` | <center>`str`</center> | <center>Optional</center> | The IPV4 range for this subnet in CIDR format.   |
-| [`ipv6` (sub-options)](#ipv6) | <center>`list`</center> | <center>Optional</center> | The IPv6 ranges of this subnet. NOTE: IPv6 VPCs may currently be available to all users.   |
+| [`ipv6` (sub-options)](#ipv6) | <center>`list`</center> | <center>Optional</center> | The IPv6 ranges of this subnet. NOTE: IPv6 VPCs may not currently be available to all users.   |
 
 ### ipv6
 
