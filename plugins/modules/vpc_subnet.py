@@ -57,7 +57,7 @@ SPEC = {
         element_type=FieldType.dict,
         description=[
             "The IPv6 ranges of this subnet.",
-            "NOTE: IPv6 VPCs may currently be available to all users.",
+            "NOTE: IPv6 VPCs may not currently be available to all users.",
         ],
         suboptions={
             "range": SpecField(
