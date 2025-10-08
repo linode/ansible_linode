@@ -11,5 +11,6 @@ result_account_settings_samples = ['''{
   "longview_subscription": "longview-3",
   "managed": true,
   "network_helper": false,
-  "object_storage": "active"
+  "object_storage": "active",
+  "maintenance_policy": "linode/migrate"
 }''']

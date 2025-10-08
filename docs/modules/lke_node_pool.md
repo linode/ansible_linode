@@ -57,6 +57,7 @@ Manage Linode LKE cluster node pools.
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
 | [`autoscaler` (sub-options)](#autoscaler) | <center>`dict`</center> | <center>Optional</center> | When enabled, the number of nodes autoscales within the defined minimum and maximum values.  **(Updatable)** |
 | `count` | <center>`int`</center> | <center>Optional</center> | The number of nodes in the Node Pool.  **(Updatable)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | A unique label for this Node Pool.  **(Updatable)** |
 | [`disks` (sub-options)](#disks) | <center>`list`</center> | <center>Optional</center> | This Node Pool’s custom disk layout. Each item in this array will create a new disk partition for each node in this Node Pool.   |
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type for all of the nodes in the Node Pool. Required if `state` == `present`.   |
 | `skip_polling` | <center>`bool`</center> | <center>Optional</center> | If true, the module will not wait for all nodes in the node pool to be ready.  **(Default: `False`)** |

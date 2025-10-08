@@ -117,6 +117,7 @@ Name | Description |
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|**NOTE: This module has been deprecated in favor of `type_list`.**|
 [linode.cloud.lke_type_list](./docs/modules/lke_type_list.md)|List and filter on LKE Types.|
 [linode.cloud.lke_version_list](./docs/modules/lke_version_list.md)|List and filter on LKE Versions.|
+[linode.cloud.maintenance_policy_list](./docs/modules/maintenance_policy_list.md)|List and filter on Maintenance Policies.|
 [linode.cloud.network_transfer_prices_list](./docs/modules/network_transfer_prices_list.md)|List and filter on Network Transfer Prices.|
 [linode.cloud.nodebalancer_list](./docs/modules/nodebalancer_list.md)|List and filter on Node Balancers.|
 [linode.cloud.nodebalancer_type_list](./docs/modules/nodebalancer_type_list.md)|List and filter on Node Balancer Types.|

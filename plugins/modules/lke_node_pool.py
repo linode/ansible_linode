@@ -111,6 +111,12 @@ MODULE_SPEC = {
         editable=True,
         description=["The number of nodes in the Node Pool."],
     ),
+    "label": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=["A unique label for this Node Pool."],
+        required=False,
+    ),
     "disks": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
@@ -319,6 +325,7 @@ class LinodeLKENodePool(LinodeModuleBase):
         new_count = params.pop("count")
         new_taints = params.pop("taints") if "taints" in params else None
         new_labels = params.pop("labels") if "labels" in params else None
+        new_label = params.pop("label") if "label" in params else None
         new_k8s_version = (
             params.pop("k8s_version") if "k8s_version" in params else None
         )
@@ -360,6 +367,11 @@ class LinodeLKENodePool(LinodeModuleBase):
         if new_labels is not None and pool.labels != new_labels:
             self.register_action("Updated labels for Node Pool")
             pool.labels = new_labels
+            should_update = True
+
+        if new_label is not None and pool.label != new_label:
+            self.register_action("Updated label for Node Pool")
+            pool.label = new_label
             should_update = True
 
         if new_k8s_version is not None and pool.k8s_version != new_k8s_version:

@@ -164,6 +164,7 @@ Manage Linode Instances, Configs, and Disks.
 | `image` | <center>`str`</center> | <center>Optional</center> | The image ID to deploy the instance disk from.  **(Conflicts With: `disks`,`configs`)** |
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
 | `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
+| `maintenance_policy` | <center>`str`</center> | <center>Optional</center> | The slug of the maintenance policy to apply during maintenance. NOTE: This field is under v4beta.  **(Choices: `linode/migrate`, `linode/power_off_on`)** |
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If not specified, one will be generated. This generated password will be available in the task success JSON.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
@@ -458,6 +459,7 @@ Manage Linode Instances, Configs, and Disks.
           "watchdog_enabled": true,
           "disk_encryption": "enabled",
           "lke_cluster_id": null,
+          "maintenance_policy": "linode/migrate",
           "placement_group": {
             "id": 123,
             "label": "test",
