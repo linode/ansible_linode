@@ -10,7 +10,7 @@
       register: get_lke_versions_enterprise
 
     - set_fact:
-        lke_versions: '{{ get_lke_versions_enterprise.lke_versions|sort(attribute="id") }}'
+        lke_versions: '{{ get_lke_versions_enterprise.lke_versions|sort(attribute="id", reserve=True) }}'
 
     - set_fact:
         kube_version: '{{ lke_versions[0].id }}'
