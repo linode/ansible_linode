@@ -9,7 +9,7 @@
       register: all_regions
 
     - set_fact:
-        capable_regions:  '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Object Storage") | rejectattr("id", "in", disallowed_image_regions) | map(attribute="id") | list) }}'
+        capable_regions: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Object Storage") | rejectattr("id", "in", disallowed_image_regions) | map(attribute="id") | list) }}'
 
     - name: Create an instance to image
       linode.cloud.instance:
