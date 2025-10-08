@@ -15,7 +15,7 @@
       register: all_regions
 
     - set_fact:
-        lde_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "LA Disk Encryption") | list)[0].id }}'
+        lde_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Disk Encryption") | list)[0].id }}'
 
     - name: Create a minimal LKE cluster
       linode.cloud.lke_cluster:
