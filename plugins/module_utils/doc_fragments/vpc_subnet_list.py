@@ -29,6 +29,13 @@ result_vpc_samples = ['''[
                 "interfaces": [{"active": false, "id": 654321}]
             }
         ],
+        "databases": [
+            {
+                "id": 1234567,
+                "ipv4_range": "10.0.0.16/28",
+                "ipv6_range": "2001:db8:1234:1::/64"
+            }
+        ],
         "updated": "2023-08-31T18:53:04"
     }
 ]''']

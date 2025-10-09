@@ -45,6 +45,17 @@ specdoc_examples = ['''
     fork:
         source: 12345
     state: present''', '''
+- name: Create a PostgreSQL database attached to a VPC
+  linode.cloud.database_postgresql_v2:
+    label: my-db
+    region: us-mia
+    engine: postgresql/16
+    type: g6-nanode-1
+    private_network:
+        vpc_id: 123
+        subnet_id: 456
+        public_access: true
+    state: present''', '''
 - name: Delete a PostgreSQL database
   linode.cloud.database_postgresql_v2:
     label: my-db
@@ -78,6 +89,11 @@ result_database_samples = ['''{
   "oldest_restore_time": "2025-02-10T20:15:07",
   "platform": "rdbms-default",
   "port": 11876,
+  "private_network": {
+    "public_access": true,
+    "subnet_id": 456,
+    "vpc_id": 123
+  },
   "region": "ap-west",
   "ssl_connection": true,
   "status": "active",

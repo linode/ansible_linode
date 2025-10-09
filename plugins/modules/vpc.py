@@ -18,10 +18,14 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
     handle_updates,
+    retry_on_response_status,
     safe_find,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_networking import (
     auto_alloc_ranges_equivalent,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_vpc_shared import (
+    should_retry_subnet_delete_400s,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -180,7 +184,19 @@ class Module(LinodeModuleBase):
 
         if vpc is not None:
             self.results["vpc"] = vpc._raw_json
-            vpc.delete()
+
+            # If any entities attached to this VPC's subnets are
+            # in a transient state expected to eventually allow deletions,
+            # retry the delete until it succeeds.
+            if all(
+                should_retry_subnet_delete_400s(self.client, subnet)
+                or len(subnet.databases) == 0
+                for subnet in vpc.subnets
+            ):
+                retry_on_response_status(self._timeout_ctx, vpc.delete, 400)
+            else:
+                vpc.delete()
+
             self.register_action(f"Deleted VPC {label}")
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:

@@ -67,6 +67,11 @@ List and filter on Linode Managed Databases.
               "id": 123,
               "instance_uri": "/v4/databases/mysql/instances/123",
               "label": "example-db",
+              "private_network": {
+                 "public_access": true,
+                 "subnet_id": 456,
+                 "vpc_id": 123
+              },
               "region": "us-east",
               "status": "active",
               "type": "g6-dedicated-2",
