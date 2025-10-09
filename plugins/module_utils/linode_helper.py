@@ -118,7 +118,7 @@ def handle_updates(
     mutable_fields: set,
     register_func: Callable,
     ignore_keys: Set[str] = None,
-    nullable_keys: Set[str] = None,
+    nullable_keys: set[str] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
