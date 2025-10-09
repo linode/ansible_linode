@@ -431,6 +431,51 @@ SPEC = {
         type=FieldType.string,
         description=["The label of the Managed Database."],
     ),
+    "detach_private_network": SpecField(
+        description=[
+            "If true, the Managed Database will be detached from its current private network "
+            + "when `private_network` is null.",
+            "If the Managed Database is not currently attached to a private network or "
+            + "the private_network field is specified, this option has no effect.",
+            "This is not necessary when switching between VPC subnets.",
+        ],
+        type=FieldType.bool,
+        default=False,
+    ),
+    "private_network": SpecField(
+        description=[
+            "Restricts access to this database using a virtual private cloud (VPC) "
+            + "that you've configured in the region where the database will live."
+        ],
+        editable=True,
+        type=FieldType.dict,
+        suboptions={
+            "vpc_id": SpecField(
+                description=[
+                    "The ID of the virtual private cloud (VPC) "
+                    + "to restrict access to this database using"
+                ],
+                type=FieldType.integer,
+                required=True,
+            ),
+            "subnet_id": SpecField(
+                description=[
+                    "The ID of the VPC subnet to restrict access "
+                    + "to this database using."
+                ],
+                type=FieldType.integer,
+                required=True,
+            ),
+            "public_access": SpecField(
+                description=[
+                    "Set to `true` to allow clients outside of the VPC to "
+                    + "connect to the database using a public IP address."
+                ],
+                type=FieldType.bool,
+                default=False,
+            ),
+        },
+    ),
     "region": SpecField(
         type=FieldType.string,
         description=["The region of the Managed Database."],
@@ -538,6 +583,7 @@ class Module(LinodeModuleBase):
                     "engine_config",
                     "fork",
                     "label",
+                    "private_network",
                     "region",
                     "type",
                 ]
@@ -605,6 +651,13 @@ class Module(LinodeModuleBase):
         if params.get("updates") is not None:
             params["updates"]["pending"] = database.updates.pending
 
+        # We want to explicitly include keys that are nullable in the update request
+        # only if their corresponding "detach" parameter is True.
+        nullable_keys = set()
+
+        if self.module.params.get("detach_private_network"):
+            nullable_keys.add("private_network")
+
         updated_fields = handle_updates(
             database,
             params,
@@ -613,11 +666,13 @@ class Module(LinodeModuleBase):
                 "allow_list",
                 "cluster_size",
                 "engine_config",
+                "private_network",
                 "updates",
                 "type",
                 "version",
             },
             self.register_action,
+            nullable_keys=nullable_keys,
         )
 
         # NOTE: We don't poll for the database_update event here because it is not
