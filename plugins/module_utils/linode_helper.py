@@ -422,7 +422,7 @@ def pop_and_compare_optional_attribute(
     if isinstance(local_value, dict) and isinstance(remote_value, dict):
         return matching_keys_eq(local_value, remote_value)
 
-    return local_value != remote_value
+    return local_value == remote_value
 
 
 def matching_keys_eq(
