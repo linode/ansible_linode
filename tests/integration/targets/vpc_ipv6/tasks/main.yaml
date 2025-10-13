@@ -1,0 +1,91 @@
+- name: vpc_ipv6
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: no-osl-1
+        ipv6:
+          - range: "/52"
+        state: present
+      register: create_vpc
+
+    - name: Assert VPC created
+      assert:
+        that:
+          - create_vpc.changed
+          - create_vpc.vpc.label == 'ansible-test-{{ r }}'
+          - create_vpc.vpc.region == 'no-osl-1'
+          - create_vpc.vpc.ipv6 | length == 1
+          - create_vpc.vpc.ipv6[0].range.endswith('/52')
+
+    - name: Attempt to update the IPv6 range's prefix
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: no-osl-1
+        description: test description updated
+        ipv6:
+          - range: "/53"
+        state: present
+      register: failed_update_prefix
+      failed_when: "'IPv6 cannot be updated after VPC creation.' not in failed_update_prefix.msg"
+
+    - name: Ensure semantic equality (explicit address)
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: no-osl-1
+        ipv6:
+          - range: "{{ create_vpc.vpc.ipv6[0].range }}"
+        state: present
+      register: no_update_vpc
+
+    - name: Assert VPC not updated
+      assert:
+        that:
+          - no_update_vpc.changed == False
+
+    - name: Ensure semantic equality (auto)
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: no-osl-1
+        ipv6:
+          - range: "auto"
+        state: present
+      register: no_update_vpc
+
+    - name: Assert VPC not updated
+      assert:
+        that:
+          - no_update_vpc.changed == False
+
+    - name: Ensure semantic equality (None)
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: no-osl-1
+        ipv6: [{}]
+        state: present
+      register: no_update_vpc
+
+    - name: Assert VPC not updated
+      assert:
+        that:
+          - no_update_vpc.changed == False
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+
+    LINODE_CA: '{{ ca_file or "" }}'

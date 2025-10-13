@@ -55,6 +55,11 @@ List and filter on VPCs.
                 "created": "2023-08-31T18:35:01",
                 "description": "A description of this VPC",
                 "id": 344,
+                "ipv6": [
+                    {
+                        "range": "2001:db8:acad:0::/52"
+                    }
+                ],
                 "label": "my-vpc",
                 "region": "us-east",
                 "subnets": [],

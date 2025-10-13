@@ -143,6 +143,40 @@ Manage Linode Instances, Configs, and Disks.
               - range: /32
     state: present
 
+- name: Create a Linode Instance with a VPC interface and a NAT 1-1 mapping to its public IPv4 address.
+  linode.cloud.instance:
+    label: my-vpc-instance
+    region: us-mia
+    type: g6-nanode-1
+    image: linode/alpine3.21
+    booted: true
+    interfaces:
+      - purpose: vpc
+        subnet_id: '{{ create_subnet.subnet.id }}'
+        ipv4:
+          nat_1_1: any
+    state: present
+```
+
+```yaml
+# NOTE: IPv6 VPCs may not currently be available to all users.
+- name: Create a Linode Instance with a public VPC interface, assigning one IPv6 SLAAC prefix and one additional IPv6 range.
+  linode.cloud.instance:
+    label: my-vpc-ipv6-instance
+    region: us-mia
+    type: g6-nanode-1
+    image: linode/alpine3.21
+    booted: true
+    interfaces:
+      - purpose: vpc
+        subnet_id: '{{ create_subnet.subnet.id }}'
+        ipv6:
+          is_public: true
+          slaac:
+            - range: auto
+          ranges:
+            - range: auto
+    state: present
 ```
 
 ```yaml
@@ -303,10 +337,38 @@ Manage Linode Instances, Configs, and Disks.
 | `purpose` | <center>`str`</center> | <center>**Required**</center> | The type of interface.  **(Choices: `public`, `vlan`, `vpc`)** |
 | `primary` | <center>`bool`</center> | <center>Optional</center> | Whether this is a primary interface  **(Default: `False`)** |
 | `subnet_id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC subnet to assign this interface to.   |
-| `ipv4` | <center>`dict`</center> | <center>Optional</center> | The IPv4 configuration for this interface. (VPC only)   |
+| [`ipv4` (sub-options)](#ipv4) | <center>`dict`</center> | <center>Optional</center> | The IPv4 configuration for this interface. (VPC only)   |
+| [`ipv6` (sub-options)](#ipv6) | <center>`dict`</center> | <center>Optional</center> | The IPv6 configuration for this interface. (VPC only) NOTE: IPv6 VPCs may not currently be available to all users.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The name of this interface. Required for vlan purpose interfaces. Must be an empty string or null for public purpose interfaces.   |
 | `ipam_address` | <center>`str`</center> | <center>Optional</center> | This Network Interface’s private IP address in Classless Inter-Domain Routing (CIDR) notation.   |
 | `ip_ranges` | <center>`list`</center> | <center>Optional</center> | Packets to these CIDR ranges are routed to the VPC network interface. (VPC only)   |
+
+### ipv4
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `vpc` | <center>`str`</center> | <center>Optional</center> | The IP from the VPC subnet to use for this interface.   |
+| `nat_1_1` | <center>`str`</center> | <center>Optional</center> | The public IPv4 address assigned to the Linode will be 1:1 with the VPC IPv4 address.   |
+
+### ipv6
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `is_public` | <center>`bool`</center> | <center>Optional</center> | If true, connections from the interface to IPv6 addresses outside the VPC, and connections from IPv6 addresses outside the VPC to the interface will be permitted.   |
+| [`slaac` (sub-options)](#slaac) | <center>`list`</center> | <center>Optional</center> | An array of SLAAC prefixes to use for this interface.   |
+| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | An array of SLAAC prefixes to use for this interface.   |
+
+### slaac
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `range` | <center>`str`</center> | <center>Optional</center> | A SLAAC prefix to add to this interface, or `auto` for a new IPv6 prefix to be automatically allocated.   |
+
+### ranges
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `range` | <center>`str`</center> | <center>Optional</center> | A prefix to add to this interface, or `auto` for a new IPv6 prefix to be automatically allocated.   |
 
 ### disks
 
@@ -525,6 +587,28 @@ Manage Linode Instances, Configs, and Disks.
                 "ipam_address": "10.0.0.1/24",
                 "label": "example-interface",
                 "purpose": "vlan"
+              },
+              {
+                "ip_ranges": null,
+                "ipam_address": null,
+                "ipv4": null,
+                "ipv6": {
+                  "is_public": null,
+                  "ranges": [
+                    {
+                      "range": "auto"
+                    }
+                  ],
+                  "slaac": [
+                    {
+                      "range": "auto"
+                    }
+                  ]
+                },
+                "label": null,
+                "primary": false,
+                "purpose": "vpc",
+                "subnet_id": 271176
               }
             ],
             "kernel": "linode/latest-64bit",
@@ -617,6 +701,25 @@ Manage Linode Instances, Configs, and Disks.
                 "subnet_mask": "255.255.255.0",
                 "type": "ipv4"
               }
+            ],
+            "vpc": [
+              {
+                "active": true,
+                "address": "10.0.0.2",
+                "address_range": null,
+                "config_id": 12345,
+                "database_id": null,
+                "gateway": "10.0.0.1",
+                "interface_id": 12345,
+                "linode_id": 12345,
+                "nat_1_1": null,
+                "nodebalancer_id": null,
+                "prefix": 24,
+                "region": "us-example-1",
+                "subnet_id": 12345,
+                "subnet_mask": "255.255.255.0",
+                "vpc_id": 12345
+              }
             ]
           },
           "ipv6": {
@@ -647,6 +750,54 @@ Manage Linode Instances, Configs, and Disks.
               "region": "us-east",
               "subnet_mask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
               "type": "ipv6"
+            },
+            "vpc": {
+              "vpc": [
+                {
+                  "active": true,
+                  "address": null,
+                  "address_range": null,
+                  "config_id": 12345,
+                  "database_id": null,
+                  "gateway": null,
+                  "interface_id": 12345,
+                  "ipv6_addresses": [
+                    {
+                      "slaac_address": "2001:db8:acad:1:abcd:ef12:3456:7890"
+                    }
+                  ],
+                  "ipv6_is_public": false,
+                  "ipv6_range": "2001:db8:acad:1::/64",
+                  "linode_id": 12345,
+                  "nat_1_1": "",
+                  "nodebalancer_id": null,
+                  "prefix": 64,
+                  "region": "us-example-1",
+                  "subnet_id": 12345,
+                  "subnet_mask": "",
+                  "vpc_id": 12345
+                },
+                {
+                  "active": true,
+                  "address": null,
+                  "address_range": null,
+                  "config_id": 12345,
+                  "database_id": null,
+                  "gateway": null,
+                  "interface_id": 12345,
+                  "ipv6_addresses": [],
+                  "ipv6_is_public": false,
+                  "ipv6_range": "2001:db8:acad:2::/64",
+                  "linode_id": 12345,
+                  "nat_1_1": "",
+                  "nodebalancer_id": null,
+                  "prefix": 64,
+                  "region": "us-example-1",
+                  "subnet_id": 12345,
+                  "subnet_mask": "",
+                  "vpc_id": 12345
+                }
+              ]
             }
           }
         }
