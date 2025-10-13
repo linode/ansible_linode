@@ -143,6 +143,9 @@ Manage Linode Instances, Configs, and Disks.
               - range: /32
     state: present
 
+```
+
+```yaml
 - name: Create a Linode Instance with a VPC interface and a NAT 1-1 mapping to its public IPv4 address.
   linode.cloud.instance:
     label: my-vpc-instance
@@ -347,16 +350,14 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `vpc` | <center>`str`</center> | <center>Optional</center> | The IP from the VPC subnet to use for this interface.   |
-| `nat_1_1` | <center>`str`</center> | <center>Optional</center> | The public IPv4 address assigned to the Linode will be 1:1 with the VPC IPv4 address.   |
+| [`addresses` (sub-options)](#addresses) | <center>`list`</center> | <center>Optional</center> |   **(Updatable)** |
+| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | A list of VPC IPv4 ranges.   |
 
 ### ipv6
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `is_public` | <center>`bool`</center> | <center>Optional</center> | If true, connections from the interface to IPv6 addresses outside the VPC, and connections from IPv6 addresses outside the VPC to the interface will be permitted.   |
-| [`slaac` (sub-options)](#slaac) | <center>`list`</center> | <center>Optional</center> | An array of SLAAC prefixes to use for this interface.   |
-| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | An array of SLAAC prefixes to use for this interface.   |
+| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | IPv6 address ranges to assign to this interface.  **(Updatable)** |
 
 ### slaac
 
@@ -368,7 +369,7 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `range` | <center>`str`</center> | <center>Optional</center> | A prefix to add to this interface, or `auto` for a new IPv6 prefix to be automatically allocated.   |
+| `range` | <center>`str`</center> | <center>Optional</center> | CIDR notation of a range (1.2.3.4/24) or prefix only (/24).  **(Updatable)** |
 
 ### disks
 
@@ -409,13 +410,6 @@ Manage Linode Instances, Configs, and Disks.
 | [`ipv4` (sub-options)](#ipv4) | <center>`dict`</center> | <center>Optional</center> | IPv4 address settings for this public interface. If omitted, a public IPv4 address is automatically allocated.  **(Updatable)** |
 | [`ipv6` (sub-options)](#ipv6) | <center>`dict`</center> | <center>Optional</center> | IPv6 address ranges to assign to this interface. If omitted, no ranges are assigned.  **(Updatable)** |
 
-### ipv4
-
-| Field     | Type | Required | Description                                                                  |
-|-----------|------|----------|------------------------------------------------------------------------------|
-| [`addresses` (sub-options)](#addresses) | <center>`list`</center> | <center>Optional</center> |   **(Updatable)** |
-| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | A list of VPC IPv4 ranges.   |
-
 ### addresses
 
 | Field     | Type | Required | Description                                                                  |
@@ -423,18 +417,6 @@ Manage Linode Instances, Configs, and Disks.
 | `address` | <center>`str`</center> | <center>Optional</center> | Specifies which IPv4 address to use in the VPC subnet.  **(Default: `auto`; Updatable)** |
 | `nat_1_1_address` | <center>`str`</center> | <center>Optional</center> | The 1:1 NAT IPv4 address used to associate a public IPv4 address with the interface's VPC subnet IPv4 address.  **(Updatable)** |
 | `primary` | <center>`bool`</center> | <center>Optional</center> | This IPv4 primary address is used to configure the source address for routes within the Linode on the corresponding network interface.  **(Default: `False`; Updatable)** |
-
-### ipv6
-
-| Field     | Type | Required | Description                                                                  |
-|-----------|------|----------|------------------------------------------------------------------------------|
-| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | IPv6 address ranges to assign to this interface.  **(Updatable)** |
-
-### ranges
-
-| Field     | Type | Required | Description                                                                  |
-|-----------|------|----------|------------------------------------------------------------------------------|
-| `range` | <center>`str`</center> | <center>Optional</center> | CIDR notation of a range (1.2.3.4/24) or prefix only (/24).  **(Updatable)** |
 
 ### vlan
 

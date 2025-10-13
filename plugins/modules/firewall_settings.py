@@ -25,12 +25,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-
-try:
-    from linode_api4 import FirewallSettings
-except ImportError:
-    # handled in module_utils.linode_common
-    pass
+from linode_api4 import FirewallSettings
 
 default_firewall_ids_spec: dict = {
     "linode": SpecField(

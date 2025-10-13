@@ -573,6 +573,8 @@ def normalize_params_recursive(
         return local_entry
 
     return __inner(local_data, remote_data, tuple())
+
+
 def pop_and_compare_optional_attribute(
     local_parent: Dict[str, Any],
     remote_parent: Dict[str, Any],

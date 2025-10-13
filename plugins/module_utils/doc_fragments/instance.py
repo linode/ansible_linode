@@ -113,8 +113,7 @@ specdoc_examples = ['''
             ranges:
               - range: /32
     state: present
-''','''
-    state: present''',
+''',
 '''
 - name: Create a Linode Instance with a VPC interface '''
 + '''and a NAT 1-1 mapping to its public IPv4 address.
