@@ -1,6 +1,16 @@
 """This module contains helper functions for various Linode modules."""
 
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+    cast,
+)
 
 import linode_api4
 import polling
@@ -142,7 +152,11 @@ def handle_updates(
     result = set()
 
     for key, new_value in params.items():
-        if not hasattr(obj, key) or key in ignore_keys:
+        if (
+            key not in property_metadata
+            or not hasattr(obj, key)
+            or key in ignore_keys
+        ):
             continue
 
         old_value = parse_linode_types(getattr(obj, key))
@@ -390,6 +404,46 @@ def safe_find(
         return None
     except Exception as exception:
         raise Exception(f"failed to get resource: {exception}") from exception
+
+
+def pop_and_compare_optional_attribute(
+    local_parent: Dict[str, Any],
+    remote_parent: Dict[str, Any],
+    key: str,
+    compare: Optional[Callable[[Any, Any], bool]] = None,
+) -> bool:
+    """
+    Returns whether the given key for the local and remote dicts are equivalent,
+    ignoring unspecified local values.
+
+    NOTE: This helper pops the keys from their respective dicts.
+    """
+
+    if key not in local_parent:
+        return True
+
+    local_value = local_parent.pop(key, None)
+    remote_value = remote_parent.pop(key, None)
+
+    if compare is not None:
+        return compare(local_value, remote_value)
+
+    if isinstance(local_value, dict) and isinstance(remote_value, dict):
+        return matching_keys_eq(local_value, remote_value)
+
+    return local_value == remote_value
+
+
+def matching_keys_eq(
+    a: Dict[str, Any],
+    b: Dict[str, Any],
+):
+    """
+    Compares values for matching keys in two dicts.
+    """
+
+    a, b = dict_select_matching(a, b)
+    return b == a
 
 
 def retry_on_response_status(

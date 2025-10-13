@@ -21,6 +21,9 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     retry_on_response_status,
     safe_find,
 )
+from ansible_collections.linode.cloud.plugins.module_utils.linode_networking import (
+    auto_alloc_ranges_equivalent,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_vpc_shared import (
     should_retry_subnet_delete_400s,
 )
@@ -53,6 +56,25 @@ SPEC = {
         type=FieldType.string,
         description=["The region this VPC is located in."],
     ),
+    "ipv6": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        description=[
+            "A list of IPv6 ranges in CIDR notation.",
+            "NOTE: IPv6 VPCs may not currently be available to all users.",
+        ],
+        suboptions={
+            "range": SpecField(
+                type=FieldType.string,
+                description="The IPv6 range assigned to this VPC.",
+            ),
+            "allocation_class": SpecField(
+                type=FieldType.string,
+                description="The labeled IPv6 Inventory that the VPC Prefix "
+                + "should be allocated from.",
+            ),
+        },
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -73,7 +95,7 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-CREATE_FIELDS = {"label", "region", "description"}
+CREATE_FIELDS = {"label", "region", "description", "ipv6"}
 MUTABLE_FIELDS = {"description"}
 
 DOCUMENTATION = r"""
@@ -96,6 +118,27 @@ class Module(LinodeModuleBase):
             required_if=[("state", "present", ["region"])],
         )
 
+    def __ipv6_updated(self, vpc: VPC) -> bool:
+        ipv6_arg = self.module.params.get("ipv6")
+        ipv6_actual = vpc.ipv6
+
+        if len(ipv6_arg) != len(ipv6_actual):
+            return True
+
+        for i, entry_arg in enumerate(ipv6_arg):
+            range_arg = entry_arg.get("range")
+
+            if range_arg is None:
+                # The value isn't specified, so we shouldn't diff
+                continue
+
+            if not auto_alloc_ranges_equivalent(
+                range_arg, ipv6_actual[i].range
+            ):
+                return True
+
+        return False
+
     def _create(self) -> Optional[VPC]:
         params = filter_null_values(
             {k: v for k, v in self.module.params.items() if k in CREATE_FIELDS}
@@ -108,8 +151,15 @@ class Module(LinodeModuleBase):
 
     def _update(self, vpc: VPC) -> None:
         handle_updates(
-            vpc, self.module.params, MUTABLE_FIELDS, self.register_action
+            vpc,
+            self.module.params,
+            MUTABLE_FIELDS,
+            self.register_action,
+            ignore_keys={"ipv6"},
         )
+
+        if vpc.ipv6 is not None and self.__ipv6_updated(vpc):
+            self.fail(msg="IPv6 cannot be updated after VPC creation.")
 
     def _handle_present(self) -> None:
         params = self.module.params

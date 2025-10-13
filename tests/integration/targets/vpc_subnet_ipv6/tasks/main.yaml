@@ -1,0 +1,124 @@
+- name: vpc_subnet_ipv6
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: no-osl-1
+        ipv6:
+          - range: "/52"
+        state: present
+      register: create_vpc
+
+    - name: Assert VPC created
+      assert:
+        that:
+          - create_vpc.changed
+          - create_vpc.vpc.label == 'ansible-test-{{ r }}'
+          - create_vpc.vpc.region == 'no-osl-1'
+          - create_vpc.vpc.ipv6 | length == 1
+          - create_vpc.vpc.ipv6[0].range.endswith('/52')
+
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        ipv6:
+          - range: "auto"
+        state: present
+      register: create_subnet
+
+    - name: Assert Subnet created
+      assert:
+        that:
+          - create_subnet.changed
+          - create_subnet.subnet.label == 'test-subnet'
+          - create_subnet.subnet.ipv4 == '10.0.0.0/24'
+          - create_subnet.subnet.ipv6 | length == 1
+          - create_subnet.subnet.ipv6[0].range != None
+          - create_subnet.subnet.created != None
+          - create_subnet.subnet.updated != None
+          - create_subnet.subnet.linodes | length == 0
+
+    - name: Attempt to update the VPC subnet's IPv6 ranges
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        ipv6:
+          - range: "::/2"
+        state: present
+      register: invalid_subnet
+      failed_when: "'IPv6 cannot be updated after VPC subnet creation.' not in invalid_subnet.msg"
+
+    - name: Ensure semantic equality (explicit address)
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        ipv6:
+          - range: "{{ create_subnet.subnet.ipv6[0].range }}"
+        state: present
+      register: unchanged
+
+    - name: Ensure unchanged
+      assert:
+        that:
+          - unchanged.changed == False
+
+    - name: Ensure semantic equality (prefix)
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        ipv6:
+          - range: "/{{ (create_subnet.subnet.ipv6[0].range | split('/'))[1] }}"
+        state: present
+      register: unchanged
+
+    - name: Ensure unchanged
+      assert:
+        that:
+          - unchanged.changed == False
+
+    - name: Ensure semantic equality (auto)
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        ipv6:
+          - range: "auto"
+        state: present
+      register: unchanged
+
+    - name: Ensure unchanged
+      assert:
+        that:
+          - unchanged.changed == False
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a subnet
+          linode.cloud.vpc_subnet:
+            vpc_id: '{{ create_vpc.vpc.id }}'
+            label: 'test-subnet'
+            state: absent
+          register: delete_subnet
+
+        - name: Delete a VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+
+    LINODE_CA: '{{ ca_file or "" }}'

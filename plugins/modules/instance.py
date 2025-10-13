@@ -24,9 +24,14 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     filter_null_values,
     filter_null_values_recursive,
     handle_updates,
+    matching_keys_eq,
     paginated_list_to_json,
     parse_linode_types,
     poll_condition,
+    pop_and_compare_optional_attribute,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_networking import (
+    auto_alloc_ranges_equivalent,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -214,6 +219,56 @@ linode_instance_interface_spec = {
     "ipv4": SpecField(
         type=FieldType.dict,
         description=["The IPv4 configuration for this interface. (VPC only)"],
+        suboptions=linode_instance_interface_ipv4_spec,
+    ),
+    "ipv6": SpecField(
+        type=FieldType.dict,
+        description=[
+            "The IPv6 configuration for this interface. (VPC only)",
+            "NOTE: IPv6 VPCs may not currently be available to all users.",
+        ],
+        suboptions={
+            "is_public": SpecField(
+                type=FieldType.bool,
+                description=[
+                    "If true, connections from the interface to IPv6 addresses outside the VPC, "
+                    + "and connections from IPv6 addresses outside the VPC to the interface "
+                    + "will be permitted."
+                ],
+            ),
+            "slaac": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                description=[
+                    "An array of SLAAC prefixes to use for this interface."
+                ],
+                suboptions={
+                    "range": SpecField(
+                        type=FieldType.string,
+                        description=[
+                            "A SLAAC prefix to add to this interface, "
+                            "or `auto` for a new IPv6 prefix to be automatically allocated."
+                        ],
+                    )
+                },
+            ),
+            "ranges": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                description=[
+                    "An array of SLAAC prefixes to use for this interface."
+                ],
+                suboptions={
+                    "range": SpecField(
+                        type=FieldType.string,
+                        description=[
+                            "A prefix to add to this interface, "
+                            "or `auto` for a new IPv6 prefix to be automatically allocated."
+                        ],
+                    )
+                },
+            ),
+        },
     ),
     "label": SpecField(
         type=FieldType.string,
@@ -738,37 +793,87 @@ class LinodeInstance(LinodeModuleBase):
         )
 
     @staticmethod
-    def _normalize_local_interface(
+    def _interfaces_equivalent(
         local_interface: Dict[str, Any], remote_interface: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    ) -> bool:
         """
-        Normalizes the given param interface to the remote interface
-        for direct comparison.
+        Returns whether the given user-defined and remote interfaces are equivalent.
         """
-        result = copy.deepcopy(local_interface)
 
-        # The IPv4 field will be implicitly populated if is not defined
-        if "ipv4" not in local_interface and "ipv4" in remote_interface:
-            result["ipv4"] = remote_interface.get("ipv4")
+        def __compare_ipv4(
+            local: Dict[str, Any], remote: Dict[str, Any]
+        ) -> bool:
+            local, remote = copy.deepcopy(local), copy.deepcopy(remote)
 
-        # Primary is only allowed for public and VPC purposes, so we
-        # should implicitly populate a default
-        if (
-            local_interface.get("purpose") in ("public", "vpc")
-            and "primary" not in local_interface
+            local_nat = local.pop("nat_1_1", None)
+            remote_nat = remote.pop("nat_1_1", None)
+            if local_nat is not None:
+                if remote_nat is None:
+                    return False
+
+                if local_nat not in ("any", remote_nat):
+                    return False
+
+            return matching_keys_eq(local, remote)
+
+        def __compare_ipv6_range(
+            local: Dict[str, Any], remote: Dict[str, Any]
+        ) -> bool:
+            local, remote = copy.deepcopy(local), copy.deepcopy(remote)
+
+            # Diff `range` field with respect for semantic equality
+            if not pop_and_compare_optional_attribute(
+                local, remote, "range", auto_alloc_ranges_equivalent
+            ):
+                return False
+
+            return matching_keys_eq(local, remote)
+
+        def __compare_ipv6(
+            local: Dict[str, Any], remote: Dict[str, Any]
+        ) -> bool:
+            local, remote = copy.deepcopy(local), copy.deepcopy(remote)
+
+            # Diff ranges
+            local_ranges, remote_ranges = local.pop("ranges", []), remote.pop(
+                "ranges", []
+            )
+            if len(local_ranges) != len(remote_ranges):
+                return False
+
+            for local_range, remote_range in zip(local_ranges, remote_ranges):
+                if not __compare_ipv6_range(local_range, remote_range):
+                    return False
+
+            # Diff SLAAC
+            local_slaac, remote_slaac = local.pop("slaac", []), remote.pop(
+                "slaac", []
+            )
+            if len(local_slaac) != len(remote_slaac):
+                return False
+
+            for local_slaac, remote_slaac in zip(local_slaac, remote_slaac):
+                if not __compare_ipv6_range(local_slaac, remote_slaac):
+                    return False
+
+            # Compare other matching fields
+            return matching_keys_eq(local, remote)
+
+        # Root-level diff
+        local_interface = copy.deepcopy(local_interface)
+        remote_interface = copy.deepcopy(remote_interface)
+
+        if not pop_and_compare_optional_attribute(
+            local_interface, remote_interface, "ipv4", __compare_ipv4
         ):
-            result["primary"] = False
+            return False
 
-        # The primary field will not be returned for VLAN interfaces,
-        # so we should drop it from the user-configured interface.
-        if local_interface.get("purpose") == "vlan" and "primary" in result:
-            primary = result.pop("primary")
+        if not pop_and_compare_optional_attribute(
+            local_interface, remote_interface, "ipv6", __compare_ipv6
+        ):
+            return False
 
-            # Extra validation step to make sure users aren't trying to
-            # set a VLAN as a primary interface.
-            if primary:
-                raise ValueError("VLAN interfaces cannot be primary interfaces")
-        return result
+        return matching_keys_eq(local_interface, remote_interface)
 
     @staticmethod
     def _compare_interfaces(
@@ -784,11 +889,8 @@ class LinodeInstance(LinodeModuleBase):
 
         for i, local_interface in enumerate(local_interfaces):
             remote_interface = remote_interfaces[i]
-            if (
-                LinodeInstance._normalize_local_interface(
-                    local_interface, remote_interface
-                )
-                != remote_interfaces[i]
+            if not LinodeInstance._interfaces_equivalent(
+                local_interface, remote_interface
             ):
                 return False
 
