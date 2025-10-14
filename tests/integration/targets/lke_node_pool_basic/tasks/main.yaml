@@ -15,7 +15,7 @@
       register: all_regions
 
     - set_fact:
-        lde_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "LA Disk Encryption") | list)[0].id }}'
+        lde_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Disk Encryption") | list)[0].id }}'
 
     - name: Create a minimal LKE cluster
       linode.cloud.lke_cluster:
@@ -44,6 +44,7 @@
         tags: ['my-pool']
         type: g6-standard-1
         count: 2
+        label: new-pool-label
         labels:
           foo.example.com/test: bar
           foo.example.com/test2: foo
@@ -58,6 +59,7 @@
       assert:
         that:
           - new_pool.node_pool.count == 2
+          - new_pool.node_pool.label == 'new-pool-label'
           - new_pool.node_pool.type == 'g6-standard-1'
           - new_pool.node_pool.nodes[0].status == 'ready'
           - new_pool.node_pool.nodes[1].status == 'ready'
@@ -86,6 +88,7 @@
         type: g6-standard-1
         count: 1
         skip_polling: true
+        label: updated-pool-label
         autoscaler:
           enabled: true
           min: 1
@@ -104,6 +107,7 @@
       assert:
         that:
           - update_pool.node_pool.count == 1
+          - update_pool.node_pool.label == 'updated-pool-label'
           - update_pool.node_pool.type == 'g6-standard-1'
           - update_pool.node_pool.autoscaler.enabled
           - update_pool.node_pool.autoscaler.min == 1

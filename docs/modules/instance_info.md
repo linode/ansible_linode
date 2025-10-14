@@ -151,6 +151,28 @@ Get info about a Linode Instance.
                 "ipam_address": "10.0.0.1/24",
                 "label": "example-interface",
                 "purpose": "vlan"
+              },
+              {
+                "ip_ranges": null,
+                "ipam_address": null,
+                "ipv4": null,
+                "ipv6": {
+                  "is_public": null,
+                  "ranges": [
+                    {
+                      "range": "auto"
+                    }
+                  ],
+                  "slaac": [
+                    {
+                      "range": "auto"
+                    }
+                  ]
+                },
+                "label": null,
+                "primary": false,
+                "purpose": "vpc",
+                "subnet_id": 271176
               }
             ],
             "kernel": "linode/latest-64bit",
@@ -243,6 +265,25 @@ Get info about a Linode Instance.
                 "subnet_mask": "255.255.255.0",
                 "type": "ipv4"
               }
+            ],
+            "vpc": [
+              {
+                "active": true,
+                "address": "10.0.0.2",
+                "address_range": null,
+                "config_id": 12345,
+                "database_id": null,
+                "gateway": "10.0.0.1",
+                "interface_id": 12345,
+                "linode_id": 12345,
+                "nat_1_1": null,
+                "nodebalancer_id": null,
+                "prefix": 24,
+                "region": "us-example-1",
+                "subnet_id": 12345,
+                "subnet_mask": "255.255.255.0",
+                "vpc_id": 12345
+              }
             ]
           },
           "ipv6": {
@@ -273,6 +314,54 @@ Get info about a Linode Instance.
               "region": "us-east",
               "subnet_mask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
               "type": "ipv6"
+            },
+            "vpc": {
+              "vpc": [
+                {
+                  "active": true,
+                  "address": null,
+                  "address_range": null,
+                  "config_id": 12345,
+                  "database_id": null,
+                  "gateway": null,
+                  "interface_id": 12345,
+                  "ipv6_addresses": [
+                    {
+                      "slaac_address": "2001:db8:acad:1:abcd:ef12:3456:7890"
+                    }
+                  ],
+                  "ipv6_is_public": false,
+                  "ipv6_range": "2001:db8:acad:1::/64",
+                  "linode_id": 12345,
+                  "nat_1_1": "",
+                  "nodebalancer_id": null,
+                  "prefix": 64,
+                  "region": "us-example-1",
+                  "subnet_id": 12345,
+                  "subnet_mask": "",
+                  "vpc_id": 12345
+                },
+                {
+                  "active": true,
+                  "address": null,
+                  "address_range": null,
+                  "config_id": 12345,
+                  "database_id": null,
+                  "gateway": null,
+                  "interface_id": 12345,
+                  "ipv6_addresses": [],
+                  "ipv6_is_public": false,
+                  "ipv6_range": "2001:db8:acad:2::/64",
+                  "linode_id": 12345,
+                  "nat_1_1": "",
+                  "nodebalancer_id": null,
+                  "prefix": 64,
+                  "region": "us-example-1",
+                  "subnet_id": 12345,
+                  "subnet_mask": "",
+                  "vpc_id": 12345
+                }
+              ]
             }
           }
         }

@@ -18,7 +18,7 @@ jobs:
           path: .ansible/collections/ansible_collections/linode/cloud
 
       - name: setup python 3
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
 
@@ -55,7 +55,7 @@ jobs:
           path: .ansible/collections/ansible_collections/linode/cloud
 
       - name: setup python 3
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
 

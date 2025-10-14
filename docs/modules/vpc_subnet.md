@@ -15,11 +15,22 @@ Create, read, and update a Linode VPC Subnet.
 ## Examples
 
 ```yaml
-- name: Create a VPC Subnet
+- name: Create a VPC subnet
   linode.cloud.vpc_subnet:
     vpc_id: 12345
     label: my-subnet
     ipv4: '10.0.0.0/24'
+    state: present
+```
+
+```yaml
+# NOTE: IPv6 VPCs may not currently be available to all users.
+- name: Create a VPC subnet with an auto-allocated IPv6 range
+  linode.cloud.vpc_subnet:
+    vpc_id: 12345
+    label: my-subnet
+    ipv6:
+    - range: auto
     state: present
 ```
 
@@ -40,6 +51,13 @@ Create, read, and update a Linode VPC Subnet.
 | `label` | <center>`str`</center> | <center>**Required**</center> | This VPC's unique label.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this token.  **(Choices: `present`, `absent`)** |
 | `ipv4` | <center>`str`</center> | <center>Optional</center> | The IPV4 range for this subnet in CIDR format.   |
+| [`ipv6` (sub-options)](#ipv6) | <center>`list`</center> | <center>Optional</center> | The IPv6 ranges of this subnet. NOTE: IPv6 VPCs may not currently be available to all users.   |
+
+### ipv6
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `range` | <center>`str`</center> | <center>Optional</center> | An existing IPv6 prefix owned by the current account or a forward slash (/) followed by a valid prefix length. If unspecified, a range with the default prefix will be allocated for this VPC.   |
 
 ## Return Values
 
@@ -51,11 +69,23 @@ Create, read, and update a Linode VPC Subnet.
             "created": "2023-08-31T18:53:04",
             "id": 271,
             "ipv4": "10.0.0.0/24",
+            "ipv6": [
+                {
+                    "range": "2001:db8:acad:300::/56"
+                }
+            ],
             "label": "test-subnet",
             "linodes": [
                 {
                     "id": 1234567,
                     "interfaces": [{"active": false, "id": 654321}]
+                }
+            ],
+            "databases": [
+                {
+                    "id": 1234567,
+                    "ipv4_range": "10.0.0.16/28",
+                    "ipv6_range": "2001:db8:1234:1::/64"
                 }
             ],
             "updated": "2023-08-31T18:53:04"

@@ -1,10 +1,21 @@
 """This module contains helper functions for various Linode modules."""
 
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+    cast,
+)
 
 import linode_api4
 import polling
 from linode_api4 import (
+    ApiError,
     JSONObject,
     LinodeClient,
     LKENodePool,
@@ -18,6 +29,7 @@ from linode_api4.objects.filtering import (
     FilterableAttribute,
     FilterableMetaclass,
 )
+from linode_api4.polling import TimeoutContext
 
 
 def dict_select_spec(target: dict, spec: dict) -> dict:
@@ -116,10 +128,12 @@ def handle_updates(
     mutable_fields: set,
     register_func: Callable,
     ignore_keys: Set[str] = None,
+    nullable_keys: set[str] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
     ignore_keys = ignore_keys or set()
+    nullable_keys = nullable_keys or set()
 
     obj._api_get()
 
@@ -129,16 +143,25 @@ def handle_updates(
     # Update mutable values
     params = filter_null_values(params)
 
+    # Populate excluded nullable keys with None
+    for key in nullable_keys:
+        if key not in params:
+            params[key] = None
+
     put_request = {}
     result = set()
 
     for key, new_value in params.items():
-        if not hasattr(obj, key) or key in ignore_keys:
+        if (
+            key not in property_metadata
+            or not hasattr(obj, key)
+            or key in ignore_keys
+        ):
             continue
 
         old_value = parse_linode_types(getattr(obj, key))
 
-        if isinstance(new_value, dict):
+        if isinstance(new_value, dict) and isinstance(old_value, dict):
             # If this field is a dict, we only want to compare values that are
             # specified by the user
             old_value, new_value = dict_select_matching(
@@ -381,3 +404,68 @@ def safe_find(
         return None
     except Exception as exception:
         raise Exception(f"failed to get resource: {exception}") from exception
+
+
+def pop_and_compare_optional_attribute(
+    local_parent: Dict[str, Any],
+    remote_parent: Dict[str, Any],
+    key: str,
+    compare: Optional[Callable[[Any, Any], bool]] = None,
+) -> bool:
+    """
+    Returns whether the given key for the local and remote dicts are equivalent,
+    ignoring unspecified local values.
+
+    NOTE: This helper pops the keys from their respective dicts.
+    """
+
+    if key not in local_parent:
+        return True
+
+    local_value = local_parent.pop(key, None)
+    remote_value = remote_parent.pop(key, None)
+
+    if compare is not None:
+        return compare(local_value, remote_value)
+
+    if isinstance(local_value, dict) and isinstance(remote_value, dict):
+        return matching_keys_eq(local_value, remote_value)
+
+    return local_value == remote_value
+
+
+def matching_keys_eq(
+    a: Dict[str, Any],
+    b: Dict[str, Any],
+):
+    """
+    Compares values for matching keys in two dicts.
+    """
+
+    a, b = dict_select_matching(a, b)
+    return b == a
+
+
+def retry_on_response_status(
+    timeout_ctx: TimeoutContext, func: Callable[[], None], *statuses: int
+):
+    """
+    Retries a given function if it raises an ApiError with specific response statuses.
+    """
+
+    def __attempt_delete() -> bool:
+        try:
+            func()
+        except ApiError as err:
+            if err.status in statuses:
+                return False
+
+            raise err
+
+        return True
+
+    poll_condition(
+        __attempt_delete,
+        step=4,
+        timeout=timeout_ctx.seconds_remaining,
+    )

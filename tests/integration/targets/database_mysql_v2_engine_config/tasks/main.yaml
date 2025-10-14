@@ -8,7 +8,7 @@
       register: all_regions
 
     - set_fact:
-        target_region: '{{ (all_regions.regions | selectattr("capabilities", "search", "Databases") | list)[0]["id"] }}'
+        target_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Databases") | list)[0]["id"] }}'
 
     - name: Get an available MySQL engine
       linode.cloud.database_engine_list:

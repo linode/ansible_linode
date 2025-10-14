@@ -8,6 +8,9 @@
     - name: GET region_list request
       linode.cloud.region_list:
       register: regions
+
+    - set_fact:
+        valid_region: '{{ ( regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Block Storage") | list)[0] }}'
     
     - name: POST volume request
       linode.cloud.api_request:
@@ -17,7 +20,7 @@
           {
             "label": "ansible-test-{{ r }}",
             "size": 10,
-            "region": "{{ regions.regions[0].id }}"
+            "region": "{{ valid_region.id }}"
           }
       register: response
 
