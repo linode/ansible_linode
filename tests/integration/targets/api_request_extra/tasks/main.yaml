@@ -10,7 +10,7 @@
       register: regions
 
     - set_fact:
-        valid_region: '{{ ( regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Block Storage") | list)[0].id }}'
+        valid_region: '{{ ( regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Block Storage") | list)[0] }}'
     
     - name: POST volume request
       linode.cloud.api_request:
