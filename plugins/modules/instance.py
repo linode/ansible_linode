@@ -52,6 +52,7 @@ try:
         Config,
         ConfigInterface,
         Disk,
+        ExplicitNullValue,
         Firewall,
         Instance,
         StackScript,
@@ -965,6 +966,13 @@ class LinodeInstance(LinodeModuleBase):
         # and the `interface_generation` instance POST field.
         _linode_interfaces = params.pop("linode_interfaces")
         if _linode_interfaces is not None:
+            for interface in _linode_interfaces:
+                if (
+                    "firewall_id" in interface
+                    and interface["firewall_id"] is None
+                ):
+                    interface["firewall_id"] = ExplicitNullValue()
+
             params["interfaces"] = _linode_interfaces
 
         result = {"instance": None, "root_pass": ""}
@@ -1633,7 +1641,7 @@ class LinodeInstance(LinodeModuleBase):
         self.results["networking"] = self._get_networking()
 
         self.results["linode_interfaces"] = paginated_list_to_json(
-            self._instance.interfaces
+            self._instance.linode_interfaces
         )
 
     def _handle_absent(self) -> None:
@@ -1651,7 +1659,7 @@ class LinodeInstance(LinodeModuleBase):
             self.results["networking"] = self._get_networking()
 
             self.results["linode_interfaces"] = paginated_list_to_json(
-                self._instance.interfaces
+                self._instance.linode_interfaces
             )
 
             self.register_action("Deleted instance {0}".format(label))
