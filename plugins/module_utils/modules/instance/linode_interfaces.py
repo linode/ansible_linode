@@ -222,9 +222,7 @@ SPEC_INTERFACE_VPC = {
             "ranges": SpecField(
                 type=FieldType.list,
                 element_type=FieldType.dict,
-                description=[
-                    "Assigned IPv6 SLAAC address ranges, calculated from `addresses` input."
-                ],
+                description=["Defines additional IPv6 network ranges."],
                 suboptions={
                     "range": SpecField(
                         type=FieldType.string,

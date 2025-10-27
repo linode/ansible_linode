@@ -387,7 +387,7 @@ Manage Linode Instances, Configs, and Disks.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `is_public` | <center>`bool`</center> | <center>Optional</center> | Indicates whether the IPv6 configuration on the Linode interface is public.  **(Updatable)** |
 | [`slaac` (sub-options)](#slaac) | <center>`list`</center> | <center>Optional</center> | Defines IPv6 SLAAC address ranges.  **(Updatable)** |
-| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | Assigned IPv6 SLAAC address ranges, calculated from `addresses` input.   |
+| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | Defines additional IPv6 network ranges.   |
 
 ### slaac
 
