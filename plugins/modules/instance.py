@@ -1633,7 +1633,7 @@ class LinodeInstance(LinodeModuleBase):
         self.results["networking"] = self._get_networking()
 
         self.results["linode_interfaces"] = paginated_list_to_json(
-            self._instance.interfaces
+            self._instance.linode_interfaces
         )
 
     def _handle_absent(self) -> None:
@@ -1651,7 +1651,7 @@ class LinodeInstance(LinodeModuleBase):
             self.results["networking"] = self._get_networking()
 
             self.results["linode_interfaces"] = paginated_list_to_json(
-                self._instance.interfaces
+                self._instance.linode_interfaces
             )
 
             self.register_action("Deleted instance {0}".format(label))

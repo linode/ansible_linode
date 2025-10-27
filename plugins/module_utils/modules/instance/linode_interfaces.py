@@ -189,6 +189,55 @@ SPEC_INTERFACE_VPC = {
             ),
         },
     ),
+    "ipv6": SpecField(
+        type=FieldType.dict,
+        editable=True,
+        description=[
+            "Interfaces can be configured with IPv6 addresses or ranges."
+        ],
+        suboptions={
+            "is_public": SpecField(
+                type=FieldType.bool,
+                editable=True,
+                description=[
+                    "Indicates whether the IPv6 configuration on the Linode interface is public."
+                ],
+            ),
+            "slaac": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                editable=True,
+                description=["Defines IPv6 SLAAC address ranges."],
+                suboptions={
+                    "range": SpecField(
+                        type=FieldType.string,
+                        default="auto",
+                        editable=True,
+                        description=[
+                            "The IPv6 network range in CIDR notation."
+                        ],
+                    ),
+                },
+            ),
+            "ranges": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.dict,
+                description=[
+                    "Assigned IPv6 SLAAC address ranges, calculated from `addresses` input."
+                ],
+                suboptions={
+                    "range": SpecField(
+                        type=FieldType.string,
+                        default="auto",
+                        editable=True,
+                        description=[
+                            "The IPv6 network range in CIDR notation."
+                        ],
+                    )
+                },
+            ),
+        },
+    ),
 }
 
 SPEC_INTERFACE = linode_instance_linode_interface_spec = {
@@ -256,7 +305,8 @@ def __passthrough_implicit_range(
     """
     return (
         remote
-        if local is not None and len(local.split("/")[0].strip()) < 1
+        if local is not None
+        and (local == "auto" or len(local.split("/")[0].strip()) < 1)
         else local
     )
 
@@ -272,6 +322,8 @@ __interface_normalization_handlers = {
         "nat_1_1_address",
     ): __passthrough_implicit_address,
     ("vpc", "ipv4", "ranges", "range"): __passthrough_implicit_range,
+    ("vpc", "ipv6", "ranges", "range"): __passthrough_implicit_range,
+    ("vpc", "ipv6", "slaac", "range"): __passthrough_implicit_range,
 }
 
 INTERFACE_TYPE_KEYS = ["public", "vlan", "vpc"]
@@ -345,7 +397,7 @@ def update_linode_interfaces(
         return
 
     operations = reconcile_sub_entity_operations(
-        local_interfaces, instance.interfaces, interface_param_matches
+        local_interfaces, instance.linode_interfaces, interface_param_matches
     )
 
     needs_updates = (
