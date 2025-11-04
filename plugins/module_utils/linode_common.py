@@ -166,13 +166,7 @@ class LinodeModuleBase:
                 self.fail(
                     msg="failed to wait for condition: timeout period expired"
                 )
-            except (
-                ValueError,
-                RuntimeError,
-                UnexpectedResponseError,
-                TypeError,
-                IndexError,
-            ) as err:
+            except BaseException as err:
                 self.fail(msg=format_generic_error(err))
 
             self.module.exit_json(**res)

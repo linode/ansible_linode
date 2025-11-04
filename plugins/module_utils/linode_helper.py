@@ -428,7 +428,7 @@ def get_all_paginated(
     return result
 
 
-def format_generic_error(err: Exception) -> str:
+def format_generic_error(err: BaseException) -> str:
     """Formats a generic error into a readable string"""
 
     return f"{type(err).__name__}: {str(err)}"
