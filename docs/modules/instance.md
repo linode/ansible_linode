@@ -146,6 +146,32 @@ Manage Linode Instances, Configs, and Disks.
 ```
 
 ```yaml
+# NOTE: IPv6 VPCs may not currently be available to all users.
+- name: Create a Linode Instance with a public VPC interface, assigning one IPv6 SLAAC prefix and one additional IPv6 range.
+  linode.cloud.instance:
+    label: my-vpc-ipv6-instance
+    region: us-mia
+    type: g6-nanode-1
+    image: linode/alpine3.21
+    booted: true
+    interface_generation: linode
+    linode_interfaces:
+      - default_route:
+          ipv4: true
+          ipv6: true
+        firewall_id: 12345
+        vpc:
+          subnet_id: 456
+          ipv6:
+            is_public: true
+            slaac:
+              - range: auto
+            ranges:
+              - range: auto
+    state: present
+```
+
+```yaml
 - name: Create a Linode Instance with a VPC interface and a NAT 1-1 mapping to its public IPv4 address.
   linode.cloud.instance:
     label: my-vpc-instance
@@ -153,6 +179,7 @@ Manage Linode Instances, Configs, and Disks.
     type: g6-nanode-1
     image: linode/alpine3.21
     booted: true
+    interface_generation: legacy_config
     interfaces:
       - purpose: vpc
         subnet_id: '{{ create_subnet.subnet.id }}'
@@ -163,13 +190,14 @@ Manage Linode Instances, Configs, and Disks.
 
 ```yaml
 # NOTE: IPv6 VPCs may not currently be available to all users.
-- name: Create a Linode Instance with a public VPC interface, assigning one IPv6 SLAAC prefix and one additional IPv6 range.
+- name: Create a Linode Instance with a legacy public VPC interface, assigning one IPv6 SLAAC prefix and one additional IPv6 range.
   linode.cloud.instance:
     label: my-vpc-ipv6-instance
     region: us-mia
     type: g6-nanode-1
     image: linode/alpine3.21
     booted: true
+    interface_generation: legacy_config
     interfaces:
       - purpose: vpc
         subnet_id: '{{ create_subnet.subnet.id }}'
@@ -357,19 +385,21 @@ Manage Linode Instances, Configs, and Disks.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | IPv6 address ranges to assign to this interface.  **(Updatable)** |
+| `is_public` | <center>`bool`</center> | <center>Optional</center> | Indicates whether the IPv6 configuration on the Linode interface is public.  **(Updatable)** |
+| [`slaac` (sub-options)](#slaac) | <center>`list`</center> | <center>Optional</center> | Defines IPv6 SLAAC address ranges.  **(Updatable)** |
+| [`ranges` (sub-options)](#ranges) | <center>`list`</center> | <center>Optional</center> | Defines additional IPv6 network ranges.   |
 
 ### slaac
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `range` | <center>`str`</center> | <center>Optional</center> | A SLAAC prefix to add to this interface, or `auto` for a new IPv6 prefix to be automatically allocated.   |
+| `range` | <center>`str`</center> | <center>Optional</center> | The IPv6 network range in CIDR notation.  **(Default: `auto`; Updatable)** |
 
 ### ranges
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `range` | <center>`str`</center> | <center>Optional</center> | CIDR notation of a range (1.2.3.4/24) or prefix only (/24).  **(Updatable)** |
+| `range` | <center>`str`</center> | <center>Optional</center> | The IPv6 network range in CIDR notation.  **(Default: `auto`; Updatable)** |
 
 ### disks
 
@@ -431,6 +461,7 @@ Manage Linode Instances, Configs, and Disks.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `subnet_id` | <center>`int`</center> | <center>Optional</center> | The VPC subnet identifier for this interface.Your subnet’s VPC must be in the same data center (region) as the Linode.   |
 | [`ipv4` (sub-options)](#ipv4) | <center>`dict`</center> | <center>Optional</center> | Interfaces can be configured with IPv4 addresses or ranges  **(Updatable)** |
+| [`ipv6` (sub-options)](#ipv6) | <center>`dict`</center> | <center>Optional</center> | Interfaces can be configured with IPv6 addresses or ranges.  **(Updatable)** |
 
 ### metadata
 
@@ -870,7 +901,8 @@ Manage Linode Instances, Configs, and Disks.
         {
           "created": "2025-01-01T00:01:01",
           "default_route": {
-            "ipv4": true
+            "ipv4": true,
+            "ipv6": true
           },
           "id": 1234,
           "mac_address": "22:00:AB:CD:EF:01",
@@ -892,6 +924,23 @@ Manage Linode Instances, Configs, and Disks.
                 },
                 {
                   "range": "192.168.22.32/28"
+                }
+              ]
+            },
+            "ipv6": {
+              "is_public": false,
+              "ranges": [
+                {
+                  "range": "2600:3c13:e405:2::/64"
+                },
+                {
+                  "range": "2600:3c13:e405:3::/64"
+                }
+              ],
+              "slaac": [
+                {
+                  "address": "2600:3c13:e405:1:2000:71ff:fea5:7f5b",
+                  "range": "2600:3c13:e405:1::/64"
                 }
               ]
             },

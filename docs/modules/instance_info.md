@@ -452,7 +452,8 @@ Get info about a Linode Instance.
         {
           "created": "2025-01-01T00:01:01",
           "default_route": {
-            "ipv4": true
+            "ipv4": true,
+            "ipv6": true
           },
           "id": 1234,
           "mac_address": "22:00:AB:CD:EF:01",
@@ -474,6 +475,23 @@ Get info about a Linode Instance.
                 },
                 {
                   "range": "192.168.22.32/28"
+                }
+              ]
+            },
+            "ipv6": {
+              "is_public": false,
+              "ranges": [
+                {
+                  "range": "2600:3c13:e405:2::/64"
+                },
+                {
+                  "range": "2600:3c13:e405:3::/64"
+                }
+              ],
+              "slaac": [
+                {
+                  "address": "2600:3c13:e405:1:2000:71ff:fea5:7f5b",
+                  "range": "2600:3c13:e405:1::/64"
                 }
               ]
             },

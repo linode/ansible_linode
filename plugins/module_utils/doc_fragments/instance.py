@@ -115,21 +115,6 @@ specdoc_examples = ['''
     state: present
 ''',
 '''
-- name: Create a Linode Instance with a VPC interface '''
-+ '''and a NAT 1-1 mapping to its public IPv4 address.
-  linode.cloud.instance:
-    label: my-vpc-instance
-    region: us-mia
-    type: g6-nanode-1
-    image: linode/alpine3.21
-    booted: true
-    interfaces:
-      - purpose: vpc
-        subnet_id: '{{ create_subnet.subnet.id }}'
-        ipv4:
-          nat_1_1: any
-    state: present''',
-'''
 # NOTE: IPv6 VPCs may not currently be available to all users.
 - name: Create a Linode Instance with a public VPC interface, '''
 + '''assigning one IPv6 SLAAC prefix and one additional IPv6 range.
@@ -139,6 +124,48 @@ specdoc_examples = ['''
     type: g6-nanode-1
     image: linode/alpine3.21
     booted: true
+    interface_generation: linode
+    linode_interfaces:
+      - default_route:
+          ipv4: true
+          ipv6: true
+        firewall_id: 12345
+        vpc:
+          subnet_id: 456
+          ipv6:
+            is_public: true
+            slaac:
+              - range: auto
+            ranges:
+              - range: auto
+    state: present''',
+'''
+- name: Create a Linode Instance with a VPC interface '''
++ '''and a NAT 1-1 mapping to its public IPv4 address.
+  linode.cloud.instance:
+    label: my-vpc-instance
+    region: us-mia
+    type: g6-nanode-1
+    image: linode/alpine3.21
+    booted: true
+    interface_generation: legacy_config
+    interfaces:
+      - purpose: vpc
+        subnet_id: '{{ create_subnet.subnet.id }}'
+        ipv4:
+          nat_1_1: any
+    state: present''',
+'''
+# NOTE: IPv6 VPCs may not currently be available to all users.
+- name: Create a Linode Instance with a legacy public VPC interface, '''
++ '''assigning one IPv6 SLAAC prefix and one additional IPv6 range.
+  linode.cloud.instance:
+    label: my-vpc-ipv6-instance
+    region: us-mia
+    type: g6-nanode-1
+    image: linode/alpine3.21
+    booted: true
+    interface_generation: legacy_config
     interfaces:
       - purpose: vpc
         subnet_id: '{{ create_subnet.subnet.id }}'
@@ -533,7 +560,8 @@ result_linode_interfaces_samples = ['''
 {
   "created": "2025-01-01T00:01:01",
   "default_route": {
-    "ipv4": true
+    "ipv4": true,
+    "ipv6": true
   },
   "id": 1234,
   "mac_address": "22:00:AB:CD:EF:01",
@@ -555,6 +583,23 @@ result_linode_interfaces_samples = ['''
         },
         {
           "range": "192.168.22.32/28"
+        }
+      ]
+    },
+    "ipv6": {
+      "is_public": false,
+      "ranges": [
+        {
+          "range": "2600:3c13:e405:2::/64"
+        },
+        {
+          "range": "2600:3c13:e405:3::/64"
+        }
+      ],
+      "slaac": [
+        {
+          "address": "2600:3c13:e405:1:2000:71ff:fea5:7f5b",
+          "range": "2600:3c13:e405:1::/64"
         }
       ]
     },
