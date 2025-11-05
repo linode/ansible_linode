@@ -38,7 +38,6 @@ try:
         PostgreSQLDatabase,
         SSHKey,
         StackScript,
-        UnexpectedResponseError,
         VPCSubnet,
     )
     from linode_api4.polling import TimeoutContext
