@@ -29,6 +29,7 @@
         k8s_version: '{{ old_kube_version }}'
         node_pools:
           - type: g6-standard-1
+            firewall_id: 123456
             count: 3
             labels:
                foo.example.com/test: bar
@@ -53,6 +54,7 @@
         that:
           - create_cluster.cluster.k8s_version == old_kube_version
           - create_cluster.cluster.region == 'us-southeast'
+          - create_cluster.node_pools[0].firewall_id == 123456
           - create_cluster.node_pools[0].type == 'g6-standard-1'
           - create_cluster.node_pools[0].count == 3
           - create_cluster.node_pools[1].label == 'pool-with-autoscaler'
@@ -75,6 +77,7 @@
           - type: g6-standard-1
             count: 2
             label: updated-pool-label
+            firewall_id: 654321
             labels:
               foo.example.com/update: updated
               foo.example.com/test2: foo
@@ -99,6 +102,7 @@
 
           - update_pools.node_pools[0].type == 'g6-standard-1'
           - update_pools.node_pools[0].count == 2
+          - update_pools.node_pools[0].firewall_id == 654321
           - update_pools.node_pools[0].label == 'updated-pool-label'
           - update_pools.node_pools[0].id == create_cluster.node_pools[0].id
 

@@ -177,6 +177,12 @@ linode_lke_cluster_node_pool_spec = {
         ],
         suboptions=linode_lke_cluster_taint,
     ),
+    "firewall_id": SpecField(
+        type=FieldType.integer,
+        editable=True,
+        description=["Firewall ID for the Node Pool."],
+        required=False,
+    ),
 }
 
 linode_lke_cluster_spec = {
@@ -583,6 +589,16 @@ class LinodeLKECluster(LinodeModuleBase):
                         current_pool.label = pool.get("label")
                         current_pool.save()
 
+                    if "firewall_id" in pool and current_pool.firewall_id != pool["firewall_id"]:
+                        self.register_action(
+                            "Updated firewall_id for Node Pool {}".format(
+                                current_pool.id
+                            )
+                        )
+
+                        current_pool.firewall_id = pool.get("firewall_id")
+                        current_pool.save()
+
                     pools_handled[k] = True
                     should_keep[i] = True
                     break
@@ -661,6 +677,16 @@ class LinodeLKECluster(LinodeModuleBase):
                         existing_pool.label = pool["label"]
                         should_update = True
 
+                    if "firewall_id" in pool and existing_pool.firewall_id != pool["firewall_id"]:
+                        self.register_action(
+                            "Updated firewall_id for Node Pool {}".format(
+                                existing_pool.id
+                            )
+                        )
+
+                        existing_pool.firewall_id = pool.get("firewall_id")
+                        existing_pool.save()
+ 
                     if should_update:
                         existing_pool.save()
 

@@ -44,6 +44,7 @@
         tags: ['my-pool']
         type: g6-standard-1
         count: 2
+        firewall_id: 123456
         label: new-pool-label
         labels:
           foo.example.com/test: bar
@@ -59,6 +60,7 @@
       assert:
         that:
           - new_pool.node_pool.count == 2
+          - new_pool.node_pool.firewall_id == 123456
           - new_pool.node_pool.label == 'new-pool-label'
           - new_pool.node_pool.type == 'g6-standard-1'
           - new_pool.node_pool.nodes[0].status == 'ready'
@@ -83,7 +85,7 @@
     - name: Update the node pool
       linode.cloud.lke_node_pool:
         cluster_id: '{{ create_cluster.cluster.id }}'
-
+        firewall_id: 654321
         tags: ['my-pool']
         type: g6-standard-1
         count: 1
@@ -107,6 +109,7 @@
       assert:
         that:
           - update_pool.node_pool.count == 1
+          - update_pool.node_pool.firewall_id == 654321
           - update_pool.node_pool.label == 'updated-pool-label'
           - update_pool.node_pool.type == 'g6-standard-1'
           - update_pool.node_pool.autoscaler.enabled
