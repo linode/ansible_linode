@@ -166,7 +166,7 @@ class LinodeModuleBase:
                     msg="failed to wait for condition: timeout period expired"
                 )
             except Exception as err:
-                self.fail(msg=format_generic_error(err))
+                self.fail(msg=format_generic_error(err, self.module._verbosity))
 
             self.module.exit_json(**res)
 
