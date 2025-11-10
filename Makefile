@@ -56,7 +56,7 @@ gendocs:
 	mkdir -p $(DOCS_PATH)/modules $(DOCS_PATH)/inventory
 
 	DOCS_PATH=$(DOCS_PATH) ./scripts/specdoc_generate.sh
-	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
+	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory $(abspath plugins/inventory/*.py)
 	python3 scripts/render_readme.py $(COLLECTION_VERSION)
 
 # if want to add all the test add the tag --tags never at the end
