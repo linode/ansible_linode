@@ -91,7 +91,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
+          python-version: '3.13'
 
       - name: Install Python dependencies
         run: pip3 install requests wheel boto3==1.35.99
@@ -176,7 +177,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
+          python-version: '3.13'
 
       - name: Install Linode CLI
         run: |

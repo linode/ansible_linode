@@ -21,7 +21,8 @@ jobs:
       - name: setup python 3
         uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
+          python-version: '3.13'
 
       - name: install dependencies
         run: make deps
