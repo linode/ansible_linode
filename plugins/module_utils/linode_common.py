@@ -38,7 +38,6 @@ try:
         PostgreSQLDatabase,
         SSHKey,
         StackScript,
-        UnexpectedResponseError,
         VPCSubnet,
     )
     from linode_api4.polling import TimeoutContext
@@ -166,14 +165,8 @@ class LinodeModuleBase:
                 self.fail(
                     msg="failed to wait for condition: timeout period expired"
                 )
-            except (
-                ValueError,
-                RuntimeError,
-                UnexpectedResponseError,
-                TypeError,
-                IndexError,
-            ) as err:
-                self.fail(msg=format_generic_error(err))
+            except Exception as err:
+                self.fail(msg=format_generic_error(err, self.module._verbosity))
 
             self.module.exit_json(**res)
 
