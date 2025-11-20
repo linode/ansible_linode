@@ -1,5 +1,6 @@
 """This module contains helper functions for various Linode modules."""
 
+import traceback
 from dataclasses import dataclass, field
 from typing import (
     Any,
@@ -428,10 +429,13 @@ def get_all_paginated(
     return result
 
 
-def format_generic_error(err: Exception) -> str:
+def format_generic_error(exc: Exception, verbosity: int = 0) -> str:
     """Formats a generic error into a readable string"""
 
-    return f"{type(err).__name__}: {str(err)}"
+    if verbosity > 0:
+        return "\n".join(traceback.format_exception(exc))
+
+    return "\n".join(traceback.format_exception_only(exc))
 
 
 def poll_condition(

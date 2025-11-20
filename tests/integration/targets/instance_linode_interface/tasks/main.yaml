@@ -383,10 +383,10 @@
 
         state: present
       register: attempt_update_firewall_id
-      failed_when: '"firewall_id cannot be updated on an existing interface" not in attempt_update_firewall_id.module_stderr'
+      failed_when: '"firewall_id cannot be updated on an existing interface" not in attempt_update_firewall_id["msg"]'
 
   always:
-    - ignore_errors: yes
+    - ignore_errors: true
       block:
         - name: Delete a Linode instance
           linode.cloud.instance:
