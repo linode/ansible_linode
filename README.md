@@ -206,6 +206,11 @@ Use-case examples for this collection can be found [here](./examples/README.md).
 
 The following section outlines various information relating to the development of this collection.
 
+### Generating Documentation
+
+This collection's documentation is generated dynamically from the specification defined in each module using 
+[ansible-specdoc](https://github.com/linode/ansible-specdoc).
+
 ### Attaching a Debugger
 
 To quickly and easily attach a debugger to a running module in this collection, 

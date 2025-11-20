@@ -42,7 +42,8 @@ jobs:
       - name: setup python 3
         uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
+          python-version: '3.13'
 
       - name: install ansible dependencies
         run: ansible-galaxy collection install amazon.aws:==9.5.0
@@ -146,7 +147,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
+          python-version: '3.13'
 
       - name: Install Linode CLI
         run: |

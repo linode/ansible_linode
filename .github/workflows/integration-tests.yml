@@ -66,7 +66,7 @@ jobs:
 
       - name: Upload Test Report as Artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: xml-test-reports
           if-no-files-found: ignore
@@ -91,7 +91,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
+          python-version: '3.13'
 
       - name: Install Python dependencies
         run: pip3 install requests wheel boto3==1.35.99
@@ -101,7 +102,7 @@ jobs:
         run: mkdir -p tests/output/junit
 
       - name: Download test report
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: xml-test-reports  # Specify the artifact name from the 'run-tests' job
           path: tests/output/junit
@@ -176,7 +177,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
+          python-version: '3.13'
 
       - name: Install Linode CLI
         run: |
