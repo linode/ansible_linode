@@ -1640,9 +1640,9 @@ class LinodeInstance(LinodeModuleBase):
         self.results["disks"] = paginated_list_to_json(self._instance.disks)
         self.results["networking"] = self._get_networking()
 
-        self.results["linode_interfaces"] = paginated_list_to_json(
-            self._instance.linode_interfaces
-        )
+        linode_interfaces = self._instance.linode_interfaces
+        if linode_interfaces is not None:
+            self.results["linode_interfaces"] = paginated_list_to_json(linode_interfaces)
 
     def _handle_absent(self) -> None:
         """Destroys the instance defined in kwargs"""
