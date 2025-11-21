@@ -32,8 +32,8 @@
     - name: List image_list with empty filter
       linode.cloud.image_list:
         filters:
-          - name: vendor
-            values: DefinitelyRealVendor
+          - name: label
+            values: DefinitelyRealLabel
       register: filter_empty
 
     - name: Assert image_list with empty filter
