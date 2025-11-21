@@ -1640,9 +1640,12 @@ class LinodeInstance(LinodeModuleBase):
         self.results["disks"] = paginated_list_to_json(self._instance.disks)
         self.results["networking"] = self._get_networking()
 
-        linode_interfaces = self._instance.linode_interfaces
-        if linode_interfaces is not None:
-            self.results["linode_interfaces"] = paginated_list_to_json(linode_interfaces)
+        instance_linode_interfaces = self._instance.linode_interfaces
+        self.results["linode_interfaces"] = (
+            paginated_list_to_json(instance_linode_interfaces)
+            if instance_linode_interfaces is not None
+            else instance_linode_interfaces
+        )
 
     def _handle_absent(self) -> None:
         """Destroys the instance defined in kwargs"""
@@ -1658,8 +1661,11 @@ class LinodeInstance(LinodeModuleBase):
             self.results["disks"] = paginated_list_to_json(self._instance.disks)
             self.results["networking"] = self._get_networking()
 
-            self.results["linode_interfaces"] = paginated_list_to_json(
-                self._instance.linode_interfaces
+            instance_linode_interfaces = self._instance.linode_interfaces
+            self.results["linode_interfaces"] = (
+                paginated_list_to_json(instance_linode_interfaces)
+                if instance_linode_interfaces is not None
+                else instance_linode_interfaces
             )
 
             self.register_action("Deleted instance {0}".format(label))
