@@ -119,7 +119,7 @@
       assert:
         that:
           - update_pool.node_pool.count == 1
-          - update_pool.node_pool.firewall_id == {{ update_firewall.firewall.id }}
+          - update_pool.node_pool.firewall_id == {{ update_firewall.firewall.id enable_vpc_ipv6}}
           - update_pool.node_pool.label == 'updated-pool-label'
           - update_pool.node_pool.type == 'g6-standard-1'
           - update_pool.node_pool.autoscaler.enabled

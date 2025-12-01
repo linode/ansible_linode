@@ -589,7 +589,10 @@ class LinodeLKECluster(LinodeModuleBase):
                         current_pool.label = pool.get("label")
                         current_pool.save()
 
-                    if "firewall_id" in pool and current_pool.firewall_id != pool["firewall_id"]:
+                    if (
+                        "firewall_id" in pool
+                        and current_pool.firewall_id != pool["firewall_id"]
+                    ):
                         self.register_action(
                             "Updated firewall_id for Node Pool {}".format(
                                 current_pool.id
@@ -677,7 +680,10 @@ class LinodeLKECluster(LinodeModuleBase):
                         existing_pool.label = pool["label"]
                         should_update = True
 
-                    if "firewall_id" in pool and existing_pool.firewall_id != pool["firewall_id"]:
+                    if (
+                        "firewall_id" in pool
+                        and existing_pool.firewall_id != pool["firewall_id"]
+                    ):
                         self.register_action(
                             "Updated firewall_id for Node Pool {}".format(
                                 existing_pool.id
@@ -686,7 +692,7 @@ class LinodeLKECluster(LinodeModuleBase):
 
                         existing_pool.firewall_id = pool.get("firewall_id")
                         existing_pool.save()
- 
+
                     if should_update:
                         existing_pool.save()
 
