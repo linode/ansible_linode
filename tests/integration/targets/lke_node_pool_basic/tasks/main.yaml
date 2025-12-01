@@ -44,7 +44,6 @@
         tags: ['my-pool']
         type: g6-standard-1
         count: 2
-        firewall_id: {{ firewall_id }}
         label: new-pool-label
         labels:
           foo.example.com/test: bar
@@ -60,7 +59,6 @@
       assert:
         that:
           - new_pool.node_pool.count == 2
-          - new_pool.node_pool.firewall_id == {{ firewall_id }}
           - new_pool.node_pool.label == 'new-pool-label'
           - new_pool.node_pool.type == 'g6-standard-1'
           - new_pool.node_pool.nodes[0].status == 'ready'
@@ -82,20 +80,9 @@
       register: update_pool_fail
       failed_when: '"failed to update" not in update_pool_fail.msg'
 
-    - name: Ensure firewall exists
-      linode.cloud.firewall:
-        api_token: "{{ api_token }}"
-        label: "update-firewall-{{ r }}"
-        state: present
-        rules:
-          inbound_policy: ACCEPT
-          outbound_policy: ACCEPT
-      register: update_firewall
-
     - name: Update the node pool
       linode.cloud.lke_node_pool:
         cluster_id: '{{ create_cluster.cluster.id }}'
-        firewall_id: {{ update_firewall.firewall.id }}
         tags: ['my-pool']
         type: g6-standard-1
         count: 1
@@ -119,7 +106,6 @@
       assert:
         that:
           - update_pool.node_pool.count == 1
-          - update_pool.node_pool.firewall_id == {{ update_firewall.firewall.id enable_vpc_ipv6}}
           - update_pool.node_pool.label == 'updated-pool-label'
           - update_pool.node_pool.type == 'g6-standard-1'
           - update_pool.node_pool.autoscaler.enabled

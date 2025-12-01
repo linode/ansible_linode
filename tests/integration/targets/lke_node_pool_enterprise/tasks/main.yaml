@@ -45,6 +45,7 @@
     - name: Add an enterprise node pool to the cluster
       linode.cloud.lke_node_pool:
         cluster_id: '{{ create_enterprise_cluster.cluster.id }}'
+        firewall_id: '{{ firewall_id }}'
         tags: [ 'my-pool' ]
         type: g6-standard-1
         count: 2
@@ -58,15 +59,27 @@
       assert:
         that:
           - new_pool.node_pool.count == 2
+          - new_pool.node_pool.firewall_id == '{{ firewall_id }}'
           - new_pool.node_pool.type == 'g6-standard-1'
           - new_pool.node_pool.nodes[0].status == 'ready'
           - new_pool.node_pool.nodes[1].status == 'ready'
           - new_pool.node_pool.k8s_version == kube_version
           - new_pool.node_pool.update_strategy == 'rolling_update'
 
+    - name: Ensure firewall exists
+      linode.cloud.firewall:
+        api_token: "{{ api_token }}"
+        label: "update-firewall-{{ r }}"
+        state: present
+        rules:
+          inbound_policy: ACCEPT
+          outbound_policy: ACCEPT
+      register: update_firewall
+
     - name: Update the enterprise node pool
       linode.cloud.lke_node_pool:
         cluster_id: '{{ create_enterprise_cluster.cluster.id }}'
+        firewall_id: '{{ update_firewall.firewall.id }}'
         tags: [ 'my-pool' ]
         type: g6-standard-1
         count: 2
@@ -79,6 +92,7 @@
       assert:
         that:
           - updated_pool.node_pool.count == 2
+          - update_pool.node_pool.firewall_id == {{ update_firewall.firewall.id enable_vpc_ipv6 }}
           - updated_pool.node_pool.type == 'g6-standard-1'
           - updated_pool.node_pool.nodes[0].status == 'ready'
           - updated_pool.node_pool.nodes[1].status == 'ready'
