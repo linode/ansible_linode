@@ -208,7 +208,7 @@ def handle_updates(
     # We need the type to access property metadata
     property_metadata = type(obj).properties
 
-    def __diff_default(_old_value: Any, _new_value: Any) -> bool:
+    def _diff_default(_old_value: Any, _new_value: Any) -> bool:
         """
         Default diff function for handle_updates.
         """
@@ -258,7 +258,7 @@ def handle_updates(
 
         old_value = parse_linode_types(getattr(obj, key))
 
-        if diff_overrides.get(key, __diff_default)(old_value, new_value):
+        if diff_overrides.get(key, _diff_default)(old_value, new_value):
             if key in mutable_fields:
                 put_request[key] = new_value
                 result.add(key)
