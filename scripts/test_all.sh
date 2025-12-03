@@ -3,7 +3,7 @@
 PARALLEL_JOBS="${PARALLEL_JOBS:=3}"
 
 run_test() {
-    ansible-test integration $1
+    ansible-test integration -vvv $1
 }
 
 cleanup() {

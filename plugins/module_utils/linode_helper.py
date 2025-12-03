@@ -35,7 +35,6 @@ from linode_api4.objects.filtering import (
 )
 from linode_api4.polling import TimeoutContext
 
-
 def dict_select_spec(target: dict, spec: dict) -> dict:
     """Returns a new dictionary that only selects the keys from target that are specified in spec"""
 
@@ -216,7 +215,6 @@ def handle_updates(
 
     put_request = {}
     result = set()
-
     for key, new_value in params.items():
         if (
             key not in property_metadata
