@@ -189,7 +189,7 @@ def handle_updates(
     match_recursive: bool = False,
     dry_run: bool = False,
     nullable_keys: set[str] = None,
-    diff_overrides: Dict[str, Callable[[Any, Any], bool]] = None,
+    diff_overrides: Dict[str, Callable[[str, Any, Any], bool]] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
@@ -208,7 +208,7 @@ def handle_updates(
     # We need the type to access property metadata
     property_metadata = type(obj).properties
 
-    def _diff_default(_old_value: Any, _new_value: Any) -> bool:
+    def _diff_default(_key: str, _old_value: Any, _new_value: Any) -> bool:
         """
         Default diff function for handle_updates.
         """
@@ -228,8 +228,8 @@ def handle_updates(
         # Python SDK.
         if (
             property_metadata is not None
-            and property_metadata.get(key) is not None
-            and property_metadata.get(key).unordered
+            and property_metadata.get(_key) is not None
+            and property_metadata.get(_key).unordered
         ):
             return set(_old_value) != set(_new_value)
 
@@ -256,7 +256,7 @@ def handle_updates(
 
         old_value = parse_linode_types(getattr(obj, key))
 
-        if diff_overrides.get(key, _diff_default)(old_value, new_value):
+        if diff_overrides.get(key, _diff_default)(key, old_value, new_value):
             if key in mutable_fields:
                 put_request[key] = new_value
                 result.add(key)
