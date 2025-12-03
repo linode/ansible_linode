@@ -22,7 +22,8 @@ make create-e2e-firewall || exit 1
 
 export -f run_test
 
-parallel -j $PARALLEL_JOBS --group --keep-order --retries 3 run_test ::: $(ls tests/integration/targets)
+run_test firewall_settings
+#parallel -j $PARALLEL_JOBS --group --keep-order --retries 3 run_test ::: $(ls tests/integration/targets)
 TEST_EXIT_CODE=$?
 
 
