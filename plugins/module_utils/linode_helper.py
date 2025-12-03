@@ -226,7 +226,7 @@ def handle_updates(
             and property_metadata.get(key) is not None
             and property_metadata.get(key).unordered
         ):
-            return set(old_value) != set(_new_value)
+            return set(_old_value) != set(_new_value)
 
         return _new_value != _old_value
 
