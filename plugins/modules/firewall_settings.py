@@ -18,6 +18,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
     handle_updates,
+    matching_keys_eq,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -130,6 +131,9 @@ class LinodeFirewall(LinodeModuleBase):
             filter_null_values(self.module.params),
             set(["default_firewall_ids"]),
             self.register_action,
+            diff_overrides={
+                "default_firewall_ids": lambda a, b: not matching_keys_eq(a, b)
+            },
         )
 
         self._firewall_settings._api_get()

@@ -46,7 +46,7 @@
           linode.cloud.firewall_settings:
             api_version: v4beta
             default_firewall_ids:
-              linode: '{{ default_firewall_settings.firewall_settings.default_firewall_ids.linode }}'
+              linode: '{{ default_firewall_settings.firewall_settings.default_firewall_ids.linode or None }}'
 
         - name: Delete Firewall
           linode.cloud.firewall:
