@@ -235,8 +235,6 @@ def handle_updates(
 
         return _new_value != _old_value
 
-        # End of _diff_default
-
     # Update mutable values
     params = filter_null_values(params)
 
