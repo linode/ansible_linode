@@ -15,7 +15,7 @@ clean:
 	rm -f *.tar.gz && rm -rf galaxy.yml
 
 build: deps clean gendocs
-	python3 scripts/render_galaxy.py $(COLLECTION_VERSION) && ansible-galaxy collection build
+	ansible-galaxy collection build
 
 publish: build
 	@if test "$(GALAXY_TOKEN)" = ""; then \
