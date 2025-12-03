@@ -201,6 +201,7 @@ def handle_updates(
 
     ignore_keys = ignore_keys or set()
     nullable_keys = nullable_keys or set()
+    diff_overrides = diff_overrides or {}
 
     obj._api_get()
 
@@ -208,6 +209,10 @@ def handle_updates(
     property_metadata = type(obj).properties
 
     def __diff_default(_old_value: Any, _new_value: Any) -> bool:
+        """
+        Default diff function for handle_updates.
+        """
+
         if isinstance(_new_value, dict) and isinstance(_old_value, dict):
             # If this field is a dict, we only want to compare values that are
             # specified by the user
@@ -230,6 +235,8 @@ def handle_updates(
 
         return _new_value != _old_value
 
+        # End of _diff_default
+
     # Update mutable values
     params = filter_null_values(params)
 
@@ -251,13 +258,7 @@ def handle_updates(
 
         old_value = parse_linode_types(getattr(obj, key))
 
-        diff_func = (
-            diff_overrides.get(key, __diff_default)
-            if diff_overrides
-            else __diff_default
-        )
-
-        if diff_func(old_value, new_value):
+        if diff_overrides.get(key, __diff_default)(old_value, new_value):
             if key in mutable_fields:
                 put_request[key] = new_value
                 result.add(key)
