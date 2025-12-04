@@ -189,7 +189,9 @@ def handle_updates(
     match_recursive: bool = False,
     dry_run: bool = False,
     nullable_keys: set[str] = None,
-    diff_overrides: Dict[str, Callable[[str, Any, Any], bool]] = None,
+    diff_overrides: Dict[
+        str, Callable[[str, Any, Any], Tuple[bool, Any]]
+    ] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
@@ -208,9 +210,12 @@ def handle_updates(
     # We need the type to access property metadata
     property_metadata = type(obj).properties
 
-    def _diff_default(_key: str, _old_value: Any, _new_value: Any) -> bool:
+    def _diff_default(
+        _key: str, _old_value: Any, _new_value: Any
+    ) -> Tuple[bool, Any]:
         """
-        Default diff function for handle_updates.
+        Returns whether a diff was found for the given values and
+        the request body that should be used to reach the desired state.
         """
 
         if isinstance(_new_value, dict) and isinstance(_old_value, dict):
@@ -221,7 +226,7 @@ def handle_updates(
                 filter_null_values_recursive(_new_value),
             )
 
-            return _new_value != _old_value
+            return _new_value != _old_value, _new_value
 
         # We should convert properties to sets
         # if they are annotated as unordered in the
@@ -231,9 +236,9 @@ def handle_updates(
             and property_metadata.get(_key) is not None
             and property_metadata.get(_key).unordered
         ):
-            return set(_old_value) != set(_new_value)
+            return set(_old_value) != set(_new_value), _new_value
 
-        return _new_value != _old_value
+        return _new_value != _old_value, _new_value
 
     # Update mutable values
     params = filter_null_values(params)
@@ -256,22 +261,24 @@ def handle_updates(
 
         old_value = parse_linode_types(getattr(obj, key))
 
-        if diff_overrides.get(key, _diff_default)(key, old_value, new_value):
-            if key in mutable_fields:
-                put_request[key] = new_value
-                result.add(key)
-                register_func(
-                    'Updated {0}: "{1}" -> "{2}"'.format(
-                        key, old_value, new_value
-                    )
-                )
+        has_change, put_value = diff_overrides.get(key, _diff_default)(
+            key, old_value, new_value
+        )
 
-                continue
+        if not has_change:
+            continue
 
+        if key not in mutable_fields:
             raise RuntimeError(
                 "failed to update {} -> {}: {} is a non-updatable"
                 " field".format(old_value, new_value, key)
             )
+
+        put_request[key] = new_value
+        result.add(key)
+        register_func(
+            'Updated {0}: "{1}" -> "{2}"'.format(key, old_value, new_value)
+        )
 
     if len(put_request.keys()) > 0 and not dry_run:
         obj._client.put(type(obj).api_endpoint, model=obj, data=put_request)
