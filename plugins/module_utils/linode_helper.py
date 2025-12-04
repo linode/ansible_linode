@@ -274,10 +274,10 @@ def handle_updates(
                 " field".format(old_value, new_value, key)
             )
 
-        put_request[key] = new_value
+        put_request[key] = put_value
         result.add(key)
         register_func(
-            'Updated {0}: "{1}" -> "{2}"'.format(key, old_value, new_value)
+            'Updated {0}: "{1}" -> "{2}"'.format(key, old_value, put_value)
         )
 
     if len(put_request.keys()) > 0 and not dry_run:
