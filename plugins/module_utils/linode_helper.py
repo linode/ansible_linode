@@ -189,6 +189,7 @@ def handle_updates(
     match_recursive: bool = False,
     dry_run: bool = False,
     nullable_keys: set[str] = None,
+    diff_overrides: Dict[str, Callable[[str, Any, Any], bool]] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
@@ -200,11 +201,39 @@ def handle_updates(
 
     ignore_keys = ignore_keys or set()
     nullable_keys = nullable_keys or set()
+    diff_overrides = diff_overrides or {}
 
     obj._api_get()
 
     # We need the type to access property metadata
     property_metadata = type(obj).properties
+
+    def _diff_default(_key: str, _old_value: Any, _new_value: Any) -> bool:
+        """
+        Default diff function for handle_updates.
+        """
+
+        if isinstance(_new_value, dict) and isinstance(_old_value, dict):
+            # If this field is a dict, we only want to compare values that are
+            # specified by the user
+            _old_value, _new_value = match_func(
+                filter_null_values_recursive(_old_value),
+                filter_null_values_recursive(_new_value),
+            )
+
+            return _new_value != _old_value
+
+        # We should convert properties to sets
+        # if they are annotated as unordered in the
+        # Python SDK.
+        if (
+            property_metadata is not None
+            and property_metadata.get(_key) is not None
+            and property_metadata.get(_key).unordered
+        ):
+            return set(_old_value) != set(_new_value)
+
+        return _new_value != _old_value
 
     # Update mutable values
     params = filter_null_values(params)
@@ -227,27 +256,7 @@ def handle_updates(
 
         old_value = parse_linode_types(getattr(obj, key))
 
-        if isinstance(new_value, dict) and isinstance(old_value, dict):
-            # If this field is a dict, we only want to compare values that are
-            # specified by the user
-            old_value, new_value = match_func(
-                filter_null_values_recursive(old_value),
-                filter_null_values_recursive(new_value),
-            )
-
-        has_diff = new_value != old_value
-
-        # We should convert properties to sets
-        # if they are annotated as unordered in the
-        # Python SDK.
-        if (
-            property_metadata is not None
-            and property_metadata.get(key) is not None
-            and property_metadata.get(key).unordered
-        ):
-            has_diff = set(old_value) != set(new_value)
-
-        if has_diff:
+        if diff_overrides.get(key, _diff_default)(key, old_value, new_value):
             if key in mutable_fields:
                 put_request[key] = new_value
                 result.add(key)
