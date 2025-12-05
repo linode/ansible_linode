@@ -17,7 +17,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     safe_find,
 )
 from ansible_specdoc.objects import FieldType
-from linode_api4 import Instance
+from linode_api4 import Instance, InterfaceGeneration
 
 module = InfoModule(
     examples=docs.specdoc_examples,
@@ -65,8 +65,11 @@ module = InfoModule(
             display_name="Linode Interfaces",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-interfaces",
             samples=docs_parent.result_linode_interfaces_samples,
-            get=lambda client, instance, params: client.get(
-                "/linode/instances/{0}/interfaces".format(instance.get("id"))
+            get=lambda client, instance, params: (
+                client.get(f"/linode/instances/{instance['id']}/interfaces")
+                if instance.get("interface_generation")
+                == InterfaceGeneration.LINODE
+                else None
             ),
         ),
     ],
