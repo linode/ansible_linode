@@ -603,7 +603,6 @@ class LinodeLKECluster(LinodeModuleBase):
                         current_pool.firewall_id = pool.get("firewall_id")
                         should_update = True
 
-
                     if should_update:
                         current_pool.save()
 
