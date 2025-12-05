@@ -68,7 +68,6 @@
 
     - name: Ensure firewall exists
       linode.cloud.firewall:
-        api_token: "{{ api_token }}"
         label: "update-firewall-{{ r }}"
         state: present
         rules:
