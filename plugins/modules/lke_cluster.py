@@ -535,6 +535,7 @@ class LinodeLKECluster(LinodeModuleBase):
                 if should_keep[i]:
                     continue
 
+                should_update = False
                 # pool already exists
                 if (
                     current_pool.count == pool["count"]
@@ -551,7 +552,7 @@ class LinodeLKECluster(LinodeModuleBase):
                         )
 
                         current_pool.autoscaler = pool.get("autoscaler")
-                        current_pool.save()
+                        should_update = True
 
                     if (
                         "taints" in pool
@@ -564,7 +565,7 @@ class LinodeLKECluster(LinodeModuleBase):
                         )
 
                         current_pool.taints = pool.get("taints")
-                        current_pool.save()
+                        should_update = True
 
                     if (
                         "labels" in pool
@@ -577,7 +578,7 @@ class LinodeLKECluster(LinodeModuleBase):
                         )
 
                         current_pool.labels = pool.get("labels")
-                        current_pool.save()
+                        should_update = True
 
                     if "label" in pool and current_pool.label != pool["label"]:
                         self.register_action(
@@ -587,7 +588,7 @@ class LinodeLKECluster(LinodeModuleBase):
                         )
 
                         current_pool.label = pool.get("label")
-                        current_pool.save()
+                        should_update = True
 
                     if (
                         "firewall_id" in pool
@@ -600,6 +601,10 @@ class LinodeLKECluster(LinodeModuleBase):
                         )
 
                         current_pool.firewall_id = pool.get("firewall_id")
+                        should_update = True
+
+
+                    if should_update:
                         current_pool.save()
 
                     pools_handled[k] = True
@@ -691,7 +696,7 @@ class LinodeLKECluster(LinodeModuleBase):
                         )
 
                         existing_pool.firewall_id = pool.get("firewall_id")
-                        existing_pool.save()
+                        should_update = True
 
                     if should_update:
                         existing_pool.save()
