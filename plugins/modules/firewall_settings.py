@@ -133,8 +133,9 @@ class LinodeFirewall(LinodeModuleBase):
             self.register_action,
             diff_overrides={
                 # We still want to diff on None values in default_firewall_ids
-                "default_firewall_ids": lambda _, a, b: not matching_keys_eq(
-                    a, b
+                "default_firewall_ids": lambda _, old, new: (
+                    not matching_keys_eq(old, new),
+                    new,
                 )
             },
         )
