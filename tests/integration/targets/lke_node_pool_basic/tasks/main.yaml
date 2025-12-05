@@ -83,7 +83,6 @@
     - name: Update the node pool
       linode.cloud.lke_node_pool:
         cluster_id: '{{ create_cluster.cluster.id }}'
-
         tags: ['my-pool']
         type: g6-standard-1
         count: 1
