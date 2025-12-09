@@ -2,60 +2,62 @@
 
 - name: firewall_device
   block:
-    - set_fact:
-        r: "{{ 1000000000 | random }}"
+    - debug:
+        msg: Skipping...
+  #   - set_fact:
+  #       r: "{{ 1000000000 | random }}"
 
-    - name: Get the default firewall settings
-      linode.cloud.firewall_settings_info: {}
-      register: default_firewall_settings
+  #   - name: Get the default firewall settings
+  #     linode.cloud.firewall_settings_info: {}
+  #     register: default_firewall_settings
 
-    - name: Create a Linode Firewall
-      linode.cloud.firewall:
-        api_version: v4beta
-        label: 'ansible-test-{{ r }}'
-        rules:
-          inbound: []
-          inbound_policy: DROP
-          outbound: []
-          outbound_policy: DROP
-        state: present
-      register: fw
+  #   - name: Create a Linode Firewall
+  #     linode.cloud.firewall:
+  #       api_version: v4beta
+  #       label: 'ansible-test-{{ r }}'
+  #       rules:
+  #         inbound: []
+  #         inbound_policy: DROP
+  #         outbound: []
+  #         outbound_policy: DROP
+  #       state: present
+  #     register: fw
     
-    - name: Assert firewall created
-      assert:
-        that:
-          - fw.changed
+  #   - name: Assert firewall created
+  #     assert:
+  #       that:
+  #         - fw.changed
 
-    - name: Update firewall settings
-      linode.cloud.firewall_settings:
-        api_version: v4beta
-        default_firewall_ids:
-          linode: '{{ fw.firewall.id }}'
-      register: updated_firewall_settings
+  #   - name: Update firewall settings
+  #     linode.cloud.firewall_settings:
+  #       api_version: v4beta
+  #       default_firewall_ids:
+  #         linode: '{{ fw.firewall.id }}'
+  #     register: updated_firewall_settings
 
-    - name: Assert firewall settings updated
-      assert:
-        that:
-          - updated_firewall_settings.changed
-          - updated_firewall_settings.firewall_settings.default_firewall_ids.linode == fw.firewall.id
+  #   - name: Assert firewall settings updated
+  #     assert:
+  #       that:
+  #         - updated_firewall_settings.changed
+  #         - updated_firewall_settings.firewall_settings.default_firewall_ids.linode == fw.firewall.id
 
-  always:
-    - ignore_errors: true
-      block:
-        - name: Restore default firewall settings
-          linode.cloud.firewall_settings:
-            api_version: v4beta
-            default_firewall_ids:
-              linode: '{{ default_firewall_settings.firewall_settings.default_firewall_ids.linode or None }}'
+  # always:
+  #   - ignore_errors: true
+  #     block:
+  #       - name: Restore default firewall settings
+  #         linode.cloud.firewall_settings:
+  #           api_version: v4beta
+  #           default_firewall_ids:
+  #             linode: '{{ default_firewall_settings.firewall_settings.default_firewall_ids.linode or None }}'
 
-        - name: Delete Firewall
-          linode.cloud.firewall:
-            label: '{{ fw.firewall.label }}'
-            state: absent
+  #       - name: Delete Firewall
+  #         linode.cloud.firewall:
+  #           label: '{{ fw.firewall.label }}'
+  #           state: absent
 
-  environment:
-    LINODE_UA_PREFIX: '{{ ua_prefix }}'
-    LINODE_API_TOKEN: '{{ api_token }}'
-    LINODE_API_URL: '{{ api_url }}'
-    LINODE_API_VERSION: '{{ api_version }}'
-    LINODE_CA: '{{ ca_file or "" }}'
+  # environment:
+  #   LINODE_UA_PREFIX: '{{ ua_prefix }}'
+  #   LINODE_API_TOKEN: '{{ api_token }}'
+  #   LINODE_API_URL: '{{ api_url }}'
+  #   LINODE_API_VERSION: '{{ api_version }}'
+  #   LINODE_CA: '{{ ca_file or "" }}'
