@@ -45,7 +45,7 @@
           - create_enterprise_cluster.cluster.k8s_version == kube_version
           - create_enterprise_cluster.cluster.region == lke_e_region
           - create_enterprise_cluster.cluster.tier == 'enterprise'
-          - create_enterprise_cluster.node_pools[0].firewall_id == '{{ firewall_id }}'
+          - create_enterprise_cluster.node_pools[0].firewall_id == firewall_id
 
   always:
     - ignore_errors: yes
