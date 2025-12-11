@@ -658,3 +658,39 @@ def retry_on_response_status(
         step=4,
         timeout=timeout_ctx.seconds_remaining,
     )
+
+
+def api_filter_constructor_for_aclp_monitor_services(
+    params: Dict[str, Any],
+) -> Dict[str, Any]:
+    """
+    Customize a filter string for listing ACLP Monitor Services,
+    because on the API side only the `+and` and `+or` operators are supported,
+    and you can't nest filter operators. `order_by` and `order` are not supported either
+    and will be ignored if provided.
+    """
+    filters = params.get("filters")
+    value_filters = {}
+
+    if filters is not None:
+        if len(filters) == 1:
+            # filter on single field with `+or`
+            value_filters = {
+                "+or": [
+                    {filters[0]["name"]: value}
+                    for value in filters[0]["values"]
+                ]
+            }
+        else:
+            result = []
+            for filter_opt in filters:
+                flat_filters = [
+                    {filter_opt["name"]: v}
+                    for v in filter_opt.get("values", [])
+                ]
+                result.extend(flat_filters)
+
+            # filter on multiple fields with `+and`
+            value_filters = {"+and": result}
+
+    return value_filters

@@ -58,6 +58,7 @@ class ListModule(
         result_samples: List[str] = None,
         requires_beta: bool = False,
         deprecated: bool = False,
+        disable_filters: bool = False,
         deprecation_message: Optional[str] = None,
         custom_options: Optional[Dict[str, SpecField]] = None,
         custom_field_resolver: Optional[callable] = None,
@@ -100,6 +101,8 @@ class ListModule(
         if self.deprecated:
             self.description.insert(0, f"**NOTE: {self.deprecation_message}**")
 
+        self.disable_filters = disable_filters
+
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for list module"""
 
@@ -108,9 +111,13 @@ class ListModule(
 
         # Use custom API filter constructor if provided
         filter_dict = (
-            self.custom_api_filter_constructor(self.module.params)
-            if self.custom_api_filter_constructor
-            else construct_api_filter(self.module.params)
+            (
+                self.custom_api_filter_constructor(self.module.params)
+                if self.custom_api_filter_constructor
+                else construct_api_filter(self.module.params)
+            )
+            if not self.disable_filters
+            else None
         )
 
         # Dynamically resolve fields if custom logic is provided
