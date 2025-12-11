@@ -10,7 +10,7 @@
     - name: Only create alert definition when there are alert channels available
       block:
         - set_fact:
-            alert_channels: [ '{{ alert_channel_list.alert_channels[0].id if alert_channel_list | length > 0}}' ]
+            alert_channels: [ '{{ alert_channel_list.alert_channels[0].id if alert_channel_list.alert_channels | length > 0 }}' ]
             label: 'ansible-test-{{ r }}'
 
         - name: Create an alert definition for dbaas

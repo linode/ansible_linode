@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 """This module allows users to manage ACLP alert definitions.
-"NOTE: This module is under v4beta.","""
+NOTE: This module is under v4beta."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -293,11 +293,11 @@ class LinodeMonitorServicesAlertDefinition(LinodeModuleBase):
         )
 
     def _wait_for_alert_definition_ready(
-        self, alert_definiton: AlertDefinition
+        self, alert_definition: AlertDefinition
     ) -> None:
         def poll_func() -> bool:
-            alert_definiton._api_get()
-            return alert_definiton.status not in ["in progress"]
+            alert_definition._api_get()
+            return alert_definition.status not in ["in progress"]
 
         # Initial attempt
         if poll_func():

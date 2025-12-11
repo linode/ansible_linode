@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """This module allows users to retrieve information about a ACLP Monitor Service Alert Definition.
-"NOTE: This module is under v4beta.","""
+NOTE: This module is under v4beta."""
 
 from __future__ import absolute_import, division, print_function
 
