@@ -120,7 +120,10 @@ class Module(LinodeModuleBase):
 
     def __ipv6_updated(self, vpc: VPC) -> bool:
         ipv6_arg = self.module.params.get("ipv6")
-        ipv6_actual = vpc.ipv6
+        if ipv6_arg is None:
+            return False
+
+        ipv6_actual = vpc.ipv6 or []
 
         if len(ipv6_arg) != len(ipv6_actual):
             return True
@@ -158,7 +161,7 @@ class Module(LinodeModuleBase):
             ignore_keys={"ipv6"},
         )
 
-        if vpc.ipv6 is not None and self.__ipv6_updated(vpc):
+        if self.__ipv6_updated(vpc):
             self.fail(msg="IPv6 cannot be updated after VPC creation.")
 
     def _handle_present(self) -> None:

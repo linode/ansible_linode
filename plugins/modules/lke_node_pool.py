@@ -205,6 +205,12 @@ MODULE_SPEC = {
         ],
         choices=["rolling_update", "on_recycle"],
     ),
+    "firewall_id": SpecField(
+        type=FieldType.integer,
+        editable=True,
+        description=["Firewall ID for the Node Pool."],
+        required=False,
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -315,6 +321,7 @@ class LinodeLKENodePool(LinodeModuleBase):
                 )
             )
 
+    # pylint: disable=too-many-statements
     def _update_pool(self, pool: LKENodePool) -> LKENodePool:
         params = filter_null_values(self.module.params)
 
@@ -326,6 +333,9 @@ class LinodeLKENodePool(LinodeModuleBase):
         new_taints = params.pop("taints") if "taints" in params else None
         new_labels = params.pop("labels") if "labels" in params else None
         new_label = params.pop("label") if "label" in params else None
+        new_firewall_id = (
+            params.pop("firewall_id") if "firewall_id" in params else None
+        )
         new_k8s_version = (
             params.pop("k8s_version") if "k8s_version" in params else None
         )
@@ -372,6 +382,11 @@ class LinodeLKENodePool(LinodeModuleBase):
         if new_label is not None and pool.label != new_label:
             self.register_action("Updated label for Node Pool")
             pool.label = new_label
+            should_update = True
+
+        if new_firewall_id is not None and pool.firewall_id != new_firewall_id:
+            self.register_action("Updated firewall_id for Node Pool")
+            pool.firewall_id = new_firewall_id
             should_update = True
 
         if new_k8s_version is not None and pool.k8s_version != new_k8s_version:

@@ -66,6 +66,7 @@ Manage Linode LKE cluster node pools.
 | [`taints` (sub-options)](#taints) | <center>`list`</center> | <center>Optional</center> | Kubernetes taints to add to node pool nodes. Taints help control how pods are scheduled onto nodes, specifically allowing them to repel certain pods.  **(Updatable)** |
 | `k8s_version` | <center>`str`</center> | <center>Optional</center> | The desired Kubernetes version for this Kubernetes  Node Pool in the format of <major>.<minor>, and the  latest supported patch version. NOTE: Only available for LKE Enterprise to support node pool upgrades.  This field may not currently be available to all users and is under v4beta.  **(Updatable)** |
 | `update_strategy` | <center>`str`</center> | <center>Optional</center> | Upgrade strategy describes the available upgrade strategies. NOTE: Only available for LKE Enterprise to support node pool upgrades.  This field may not currently be available to all users and is under v4beta.  **(Choices: `rolling_update`, `on_recycle`; Updatable)** |
+| `firewall_id` | <center>`int`</center> | <center>Optional</center> | Firewall ID for the Node Pool.  **(Updatable)** |
 
 ### autoscaler
 
