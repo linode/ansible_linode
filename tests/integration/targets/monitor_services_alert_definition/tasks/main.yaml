@@ -1,0 +1,181 @@
+- name: monitor_services_alert_definition
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List available alert channels
+      linode.cloud.monitor_alert_channel_list:
+      register: alert_channel_list
+
+    - name: Only create alert definition when there are alert channels available
+      block:
+        - set_fact:
+            alert_channels: [ '{{ alert_channel_list.alert_channels[0].id if alert_channel_list | length > 0}}' ]
+            label: 'ansible-test-{{ r }}'
+
+        - name: Create an alert definition for dbaas
+          linode.cloud.monitor_services_alert_definition:
+            service_type: 'dbaas'
+            description: 'An alert definition for ansible test'
+            label: '{{ label }}'
+            severity: 1
+            rule_criteria:
+              rules:
+                - aggregate_function: 'avg'
+                  dimension_filters:
+                    - dimension_label: 'node_type'
+                      operator: 'eq'
+                      value: 'primary'
+                  metric: 'memory_usage'
+                  operator: 'gt'
+                  threshold: 90
+            trigger_conditions:
+              criteria_condition: 'ALL'
+              evaluation_period_seconds: 300
+              polling_interval_seconds: 300
+              trigger_occurrences: 1
+            channel_ids: '{{ alert_channels }}'
+            wait: yes
+            state: present
+          register: create
+
+        - name: Assert alert definition is created
+          assert:
+            that:
+              - create.alert_definition.description == 'An alert definition for ansible test'
+              - create.alert_definition.label == label
+              - create.alert_definition.severity == 1
+              - create.alert_definition.rule_criteria.rules[0].aggregate_function == 'avg'
+              - create.alert_definition.rule_criteria.rules[0].dimension_filters[0].dimension_label == 'node_type'
+              - create.alert_definition.trigger_conditions.criteria_condition == 'ALL'
+              - create.alert_definition.trigger_conditions.evaluation_period_seconds == 300
+              - create.alert_definition.trigger_conditions.polling_interval_seconds == 300
+              - create.alert_definition.trigger_conditions.trigger_occurrences == 1
+
+        - name: Update an alert definition
+          linode.cloud.monitor_services_alert_definition:
+            service_type: 'dbaas'
+            id: '{{ create.alert_definition.id }}'
+            description: 'An updated alert definition for ansible test'
+            label: '{{ label }}-updated'
+            severity: 1
+            rule_criteria:
+              rules:
+                - aggregate_function: 'sum'
+                  dimension_filters:
+                    - dimension_label: 'node_type'
+                      operator: 'eq'
+                      value: 'primary'
+                  metric: 'memory_usage'
+                  operator: 'gt'
+                  threshold: 90
+            trigger_conditions:
+              criteria_condition: 'ALL'
+              evaluation_period_seconds: 300
+              polling_interval_seconds: 300
+              trigger_occurrences: 1
+            channel_ids: '{{ alert_channels }}'
+            wait: yes
+            state: present
+          register: update
+
+        - name: Assert alert definition is updated
+          assert:
+            that:
+              - update.changed
+              - update.alert_definition.label == (label + '-updated')
+              - update.alert_definition.description == 'An updated alert definition for ansible test'
+              - update.alert_definition.rule_criteria.rules[0].aggregate_function == 'sum'
+
+        - name: Get alert definition information
+          linode.cloud.monitor_services_alert_definition_info:
+            service_type: '{{ create.alert_definition.service_type }}'
+            id: '{{ create.alert_definition.id }}'
+          register: info
+
+        - name: Assert alert_definition_info response
+          assert:
+            that:
+              - info.alert_definition.id == update.alert_definition.id
+              - info.alert_definition.service_type == update.alert_definition.service_type
+              - info.alert_definition.label == update.alert_definition.label
+
+        - name: List available alert definitions by service type
+          linode.cloud.monitor_services_alert_definition_by_service_type_list:
+            service_type: 'dbaas'
+          register: alert_definitions_list_by_service_type
+
+        - name: Assert alert_definitions_list_by_service_type response
+          assert:
+            that:
+              - alert_definitions_list_by_service_type.alert_definitions | length > 0
+
+        - name: List available alert definitions
+          linode.cloud.monitor_services_alert_definition_list:
+            filters:
+              - name: id
+                values: ['{{ create.alert_definition.id }}']
+          register: alert_definitions_list
+
+        - name: Assert alert_definitions_list response
+          assert:
+            that:
+              - alert_definitions_list.alert_definitions | length > 0
+
+        - name: List available alert definitions and expect empty result with filter
+          linode.cloud.monitor_services_alert_definition_list:
+            filters:
+              - name: id
+                values: [ '{{ create.alert_definition.id }}' ]
+              - name: label
+                values: ["some label"]
+          register: monitor_services_alert_definition_list_empty
+
+        - name: Assert monitor_services_alert_definition_list response
+          assert:
+            that:
+              - monitor_services_alert_definition_list_empty.alert_definitions | length == 0
+
+      when: alert_channel_list | length > 0
+
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete alert definition
+          linode.cloud.monitor_services_alert_definition:
+            service_type: 'dbaas'
+            id: '{{ create.alert_definition.id }}'
+            description: 'An updated alert definition for ansible test'
+            label: '{{ label }}-updated'
+            severity: 1
+            rule_criteria:
+              rules:
+                - aggregate_function: 'sum'
+                  dimension_filters:
+                    - dimension_label: 'node_type'
+                      operator: 'eq'
+                      value: 'primary'
+                  metric: 'memory_usage'
+                  operator: 'gt'
+                  threshold: 90
+            trigger_conditions:
+              criteria_condition: 'ALL'
+              evaluation_period_seconds: 300
+              polling_interval_seconds: 300
+              trigger_occurrences: 1
+            channel_ids: '{{ alert_channels }}'
+            state: absent
+          register: delete
+
+        - name: Assert alert definition is deleted
+          assert:
+            that:
+              - delete.changed
+              - delete.alert_definition.id == create.alert_definition.id
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
