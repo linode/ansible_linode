@@ -92,6 +92,7 @@ class ListModule(
 
         # Store custom options if provided
         self.custom_options = custom_options or {}
+        self.disable_filters = disable_filters
 
         self.module_arg_spec = self.spec.ansible_spec
         self.results: Dict[str, Any] = {self.result_field_name: []}
@@ -100,8 +101,6 @@ class ListModule(
         # to the module's description.
         if self.deprecated:
             self.description.insert(0, f"**NOTE: {self.deprecation_message}**")
-
-        self.disable_filters = disable_filters
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for list module"""
@@ -158,37 +157,48 @@ class ListModule(
             ),
         }
 
-        options = {
-            "order": SpecField(
-                type=FieldType.string,
-                description=[
-                    f"The order to list {self.result_display_name} in."
-                ],
-                default="asc",
-                choices=["desc", "asc"],
-            ),
-            "order_by": SpecField(
-                type=FieldType.string,
-                description=[
-                    f"The attribute to order {self.result_display_name} by."
-                ],
-            ),
-            "filters": SpecField(
-                type=FieldType.list,
-                element_type=FieldType.dict,
-                suboptions=spec_filter,
-                description=[
-                    f"A list of filters to apply to the resulting {self.result_display_name}."
-                ],
-            ),
-            "count": SpecField(
-                type=FieldType.integer,
-                description=[
-                    f"The number of {self.result_display_name} to return.",
-                    "If undefined, all results will be returned.",
-                ],
-            ),
-        }
+        if not self.disable_filters:
+            options = {
+                "order": SpecField(
+                    type=FieldType.string,
+                    description=[
+                        f"The order to list {self.result_display_name} in."
+                    ],
+                    default="asc",
+                    choices=["desc", "asc"],
+                ),
+                "order_by": SpecField(
+                    type=FieldType.string,
+                    description=[
+                        f"The attribute to order {self.result_display_name} by."
+                    ],
+                ),
+                "filters": SpecField(
+                    type=FieldType.list,
+                    element_type=FieldType.dict,
+                    suboptions=spec_filter,
+                    description=[
+                        f"A list of filters to apply to the resulting {self.result_display_name}."
+                    ],
+                ),
+                "count": SpecField(
+                    type=FieldType.integer,
+                    description=[
+                        f"The number of {self.result_display_name} to return.",
+                        "If undefined, all results will be returned.",
+                    ],
+                ),
+            }
+        else:
+            options = {
+                "count": SpecField(
+                    type=FieldType.integer,
+                    description=[
+                        f"The number of {self.result_display_name} to return.",
+                        "If undefined, all results will be returned.",
+                    ],
+                ),
+            }
 
         options.update(self.custom_options)
 
