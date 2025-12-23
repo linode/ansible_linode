@@ -56,6 +56,7 @@ SPEC = {
     "label": SpecField(
         type=FieldType.string,
         description=["This Image Share Group's unique label."],
+        required=True,
     ),
     "description": SpecField(
         type=FieldType.string,
@@ -137,7 +138,7 @@ class Module(LinodeModuleBase):
             return self.client.sharegroups.create_sharegroup(**params)
         except Exception as exception:
             return self.fail(
-                msg="failed to create image Share Group: {0}".format(exception)
+                msg="failed to create Image Share Group: {0}".format(exception)
             )
 
     def _update(self, image_share_group: ImageShareGroup) -> Optional[ImageShareGroup]:
@@ -301,31 +302,15 @@ class Module(LinodeModuleBase):
 
         self.results["image_share_group"] = raw
 
-    # def _populate_results(self, sharegroup: ImageShareGroup) -> None:
-    #     sharegroup._api_get()
-    #     raw = sharegroup._raw_json
-    #
-    #     # If images were explicitly provided, they define the new state
-    #     if self.module.params.get("images") is not None:
-    #         raw["images"] = self.module.params.get("images")
-    #
-    #     # Otherwise, preserve the previously known Ansible state
-    #     else:
-    #         previous = self.results.get("image_share_group") or {}
-    #         raw["images"] = previous.get("images", [])
-    #
-    #     self.results["image_share_group"] = raw
-
     def _handle_present(self) -> None:
         label = self.module.params.get("label")
         image_share_group = self._get_image_share_group_by_label(
-            self.module.params.get("label")
+            label
         )
 
         if not image_share_group:
-            if not label:
-                self.fail(msg="`label` is required when creating a new Image Share Group")
             image_share_group = self._create()
+            self.register_action("Created Image Share Group {0}".format(image_share_group.label))
 
         self._update(image_share_group)
 
