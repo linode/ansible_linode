@@ -1,3 +1,4 @@
-linode-api4>=5.38.0
+#linode-api4>=5.38.0
+git+https://github.com/linode/linode_api4-python.git@ce04f894279cd01ad1d2bc82b223cec4cadb5253#egg=linode-api4
 polling==0.3.2
 ansible-specdoc>=0.0.19
