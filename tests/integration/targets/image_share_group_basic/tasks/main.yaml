@@ -1,0 +1,229 @@
+- name: image_share_group_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+        disallowed_image_regions: ["gb-lon", "au-mel", "sg-sin-2", "jp-tyo-3", "no-osl-1"]
+
+    - name: List regions
+      linode.cloud.region_list: { }
+      register: all_regions
+
+    - set_fact:
+        capable_regions: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Object Storage") | rejectattr("id", "in", disallowed_image_regions) | map(attribute="id") | list) }}'
+
+    - name: Create instance one to image
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}-one'
+        region: '{{ capable_regions[1] }}'
+        type: g6-standard-1
+        image: linode/alpine3.19
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: instance_one_create
+
+    - name: Create image one
+      linode.cloud.image:
+        disk_id: "{{ instance_one_create.disks.0.id }}"
+        label: image-one
+        description: first image
+        state: present
+      register: image_one_create
+
+    - name: Create instance two to image
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}-two'
+        region: '{{ capable_regions[1] }}'
+        type: g6-standard-1
+        image: linode/alpine3.19
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: instance_two_create
+
+    - name: Create image two
+      linode.cloud.image:
+        disk_id: "{{ instance_two_create.disks.0.id }}"
+        label: image-two
+        description: second-image
+        state: present
+      register: image_two_create
+
+    - name: Assert images are created
+      assert:
+        that:
+          - image_one_create.image.status == 'available'
+          - image_two_create.image.status == 'available'
+          - image_one_create.image.image_sharing.shared_with.sharegroup_count == 0
+          - image_two_create.image.image_sharing.shared_with.sharegroup_count == 0
+
+    - name: Create an image share group without any images
+      linode.cloud.image_share_group:
+        label: 'ansible-share-group-empty'
+        description: 'share group desc'
+        state: present
+      register: share_group_empty_create
+
+    - name: Assert image share group is created
+      assert:
+        that:
+            - share_group_empty_create.image_share_group.label == 'ansible-share-group-empty'
+            - share_group_empty_create.image_share_group.description == 'share group desc'
+            - share_group_empty_create.image_share_group.images_count == 0
+
+    - name: Add images to share group
+      linode.cloud.image_share_group:
+        label: '{{ share_group_empty_create.image_share_group.label }}'
+        images:
+          - id: '{{ image_one_create.image.id }}'
+            label: 'image-one'
+            description: 'first image'
+          - id: '{{ image_two_create.image.id }}'
+            label: 'image-two'
+        state: present
+      register: share_group_empty_add_images
+
+    - name: Select images for assertions
+      set_fact:
+        img_one: "{{ share_group_empty_add_images.image_share_group.images | selectattr('id', 'equalto', image_one_create.image.id) | first }}"
+        img_two: "{{ share_group_empty_add_images.image_share_group.images | selectattr('id', 'equalto', image_two_create.image.id) | first }}"
+
+    - name: Assert images added to share group
+      assert:
+        that:
+          - img_one.label == 'image-one'
+          - img_one.description == 'first image'
+          - img_two.label == 'image-two'
+          - img_two.description is none
+          - share_group_empty_add_images.image_share_group.images | length == 2
+          - share_group_empty_add_images.image_share_group.images_count == 2
+
+    - name: Update images in share group
+      linode.cloud.image_share_group:
+        label: '{{ share_group_empty_add_images.image_share_group.label }}'
+        images:
+          - id: '{{ image_one_create.image.id }}'
+            label: 'image-one-updated'
+            description: 'first image updated'
+        state: present
+      register: share_group_empty_update_images
+
+    - name: Select updated images for assertions
+      set_fact:
+        img_one_updated: "{{ share_group_empty_update_images.image_share_group.images | selectattr('id', 'equalto', image_one_create.image.id) | first }}"
+        img_two_removed: "{{ share_group_empty_update_images.image_share_group.images | selectattr('id', 'equalto', image_two_create.image.id) | list }}"
+
+    - name: Assert images updated in share group
+      assert:
+        that:
+          - img_one_updated.label == 'image-one-updated'
+          - img_one_updated.description == 'first image updated'
+          - img_two_removed | length == 0
+          - share_group_empty_update_images.image_share_group.images | length == 1
+          - share_group_empty_update_images.image_share_group.images_count == 1
+
+    - name: Remove remaining images in share group
+      linode.cloud.image_share_group:
+        label: '{{ share_group_empty_update_images.image_share_group.label }}'
+        images: []
+        state: present
+      register: share_group_empty_images_removed
+
+    - name: Select removed images for assertions
+      set_fact:
+        img_one_removed: "{{ share_group_empty_images_removed.image_share_group.images | selectattr('id', 'equalto', image_one_create.image.id) | list }}"
+        img_two_removed: "{{ share_group_empty_images_removed.image_share_group.images | selectattr('id', 'equalto', image_two_create.image.id) | list }}"
+
+    - name: Assert images removed from share group
+      assert:
+        that:
+          - img_one_removed | length == 0
+          - img_two_removed | length == 0
+          - share_group_empty_images_removed.image_share_group.images | length == 0
+          - share_group_empty_images_removed.image_share_group.images_count == 0
+
+    - name: Update image share group details
+      linode.cloud.image_share_group:
+        label: '{{ share_group_empty_images_removed.image_share_group.label }}'
+        description: 'share group desc updated'
+        state: present
+      register: share_group_update_details
+
+    - name: Assert image share group details updated
+      assert:
+        that:
+            - share_group_update_details.image_share_group.description == 'share group desc updated'
+
+    - name: Create an image share group with an image
+      linode.cloud.image_share_group:
+        label: 'ansible-share-group-populated'
+        images:
+          - id: '{{ image_one_create.image.id }}'
+            label: 'image-one'
+            description: 'first image'
+        state: present
+      register: share_group_populated_create
+
+    - name: Assert image share group is created
+      assert:
+        that:
+          - share_group_populated_create.image_share_group.label == 'ansible-share-group-populated'
+          - share_group_populated_create.image_share_group.images_count == 1
+
+    - name: Check that removing images field leaves images unchanged
+      linode.cloud.image_share_group:
+        label: '{{ share_group_populated_create.image_share_group.label }}'
+        state: present
+      register: share_group_populated_no_change
+
+    - name: Assert images unchanged in share group
+      assert:
+        that:
+          - share_group_populated_no_change.image_share_group.images | length == 1
+          - share_group_populated_no_change.image_share_group.images_count == 1
+
+    - name: Remove remaining images in share group
+      linode.cloud.image_share_group:
+        label: '{{ share_group_populated_create.image_share_group.label }}'
+        images: []
+        state: present
+      register: share_group_populated_images_removed
+
+    - name: Assert images removed from share group
+      assert:
+        that:
+          - share_group_populated_images_removed.image_share_group.images | length == 0
+          - share_group_populated_images_removed.image_share_group.images_count == 0
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete image share group
+          linode.cloud.image_share_group:
+            label: '{{ share_group_update_details.image_share_group.label }}'
+            state: absent
+
+        - name: Delete image
+          linode.cloud.image:
+            label: '{{ image_one_create.image.label }}'
+            state: absent
+
+        - name: Delete image
+          linode.cloud.image:
+            label: '{{ image_two_create.image.label }}'
+            state: absent
+
+        - name: Delete instance
+          linode.cloud.instance:
+            label: '{{ instance_one_create.instance.label }}'
+            state: absent
+
+        - name: Delete instance
+          linode.cloud.instance:
+            label: '{{ instance_two_create.instance.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

@@ -1,0 +1,77 @@
+- name: image_share_group_token
+  block:
+    - name: Normalize producer/consumer tokens
+      set_fact:
+        _producer_token: "{{ producer_api_token | default('', true) | trim }}"
+        _consumer_token: "{{ consumer_api_token | default('', true) | trim }}"
+
+    - name: Skip test if producer/consumer tokens are missing
+      meta: end_play
+      when: _producer_token == '' or _consumer_token == ''
+
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create image share group (producer task)
+      linode.cloud.image_share_group:
+        label: "ansible-test-{{ r }}"
+        state: present
+      register: share_group_create
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Assert image share group is created
+      assert:
+        that:
+          - share_group_create.image_share_group.label == "ansible-test-" ~ r
+          - share_group_create.image_share_group.images_count == 0
+          - share_group_create.image_share_group.members_count == 0
+
+    - name: Create image share group token (consumer task)
+      linode.cloud.image_share_group_token:
+        label: "ansible-test-{{ r }}"
+        valid_for_sharegroup_uuid: "{{ share_group_create.image_share_group.uuid }}"
+        state: present
+      register: share_group_token_create
+      environment:
+        LINODE_API_TOKEN: "{{ consumer_api_token }}"
+
+    - name: Assert image share group token is created
+      assert:
+        that:
+          - share_group_token_create.image_share_group_token.label == "ansible-test-" ~ r
+          - share_group_token_create.image_share_group_token.valid_for_sharegroup_uuid == share_group_create.image_share_group.uuid
+          - share_group_token_create.single_use_token is defined
+          - share_group_token_create.single_use_token | length > 0
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete image share group token
+          linode.cloud.image_share_group_token:
+            label: "{{ share_group_token_create.image_share_group_token.label }}"
+            valid_for_sharegroup_uuid: "{{ share_group_token_create.image_share_group_token.valid_for_sharegroup_uuid }}"
+            state: absent
+          when:
+            - share_group_token_create is defined
+            - share_group_token_create.image_share_group_token is defined
+          environment:
+            LINODE_API_TOKEN: "{{ consumer_api_token }}"
+
+        - name: Delete image share group
+          linode.cloud.image_share_group:
+            label: "{{ share_group_create.image_share_group.label }}"
+            state: absent
+          when:
+            - share_group_create is defined
+            - share_group_create.image_share_group is defined
+          environment:
+            LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+  environment:
+    LINODE_UA_PREFIX: "{{ ua_prefix }}"
+    LINODE_PRODUCER_API_TOKEN: "{{ producer_api_token }}"
+    LINODE_CONSUMER_API_TOKEN: "{{ consumer_api_token }}"
+    LINODE_API_URL: "{{ api_url }}"
+    LINODE_API_VERSION: "{{ api_version }}"
+    LINODE_CA: "{{ ca_file or '' }}"
