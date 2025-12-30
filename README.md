@@ -77,6 +77,7 @@ Name | Description |
 [linode.cloud.firewall_settings_info](./docs/modules/firewall_settings_info.md)|Get info about a Linode Firewall Settings.|
 [linode.cloud.firewall_template_info](./docs/modules/firewall_template_info.md)|Get info about a Linode Firewall Template.|
 [linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
+[linode.cloud.image_share_group_info](./docs/modules/image_share_group_info.md)|Get info about a Linode Image Share Group.|
 [linode.cloud.instance_info](./docs/modules/instance_info.md)|Get info about a Linode Instance.|
 [linode.cloud.instance_interface_settings_info](./docs/modules/instance_interface_settings_info.md)|Get the interface settings for a Linode instance.|
 [linode.cloud.ip_info](./docs/modules/ip_info.md)|Get info about a Linode IP.|
@@ -115,6 +116,7 @@ Name | Description |
 [linode.cloud.firewall_list](./docs/modules/firewall_list.md)|List and filter on Firewalls.|
 [linode.cloud.firewall_template_list](./docs/modules/firewall_template_list.md)|List and filter on Firewall Templates.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Images.|
+[linode.cloud.image_share_group_list](./docs/modules/image_share_group_list.md)|List and filter on Image Share Groups.|
 [linode.cloud.instance_interface_firewall_list](./docs/modules/instance_interface_firewall_list.md)|List and filter on Linode Interface Firewalls.|
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Instances.|
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|**NOTE: This module has been deprecated in favor of `type_list`.**|

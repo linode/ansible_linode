@@ -1,0 +1,62 @@
+- name: image_share_group_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create an image share group
+      linode.cloud.image_share_group:
+        label: 'ansible-test-{{ r }}-one'
+        state: present
+      register: share_group_one_create
+
+    - name: Create another image share group
+      linode.cloud.image_share_group:
+        label: 'ansible-test-{{ r }}-two'
+        state: present
+      register: share_group_two_create
+
+    - name: List Image Share Groups with no filter
+      linode.cloud.image_share_group_list:
+        count: 2
+      register: no_filter
+
+    - name: Assert image_share_group_list with no filter
+      assert:
+        that:
+          - no_filter.image_share_groups | length == 2
+
+    - name: List Image Share Groups with filter on label
+      linode.cloud.image_share_group_list:
+        count: 1
+        order_by: created
+        order: desc
+        filters:
+          - name: label
+            values: 'ansible-test-{{ r }}-one'
+      register: filter
+
+    - name: Assert image_share_group_list with filter on label
+      assert:
+        that:
+          - filter.image_share_groups | length == 1
+          - filter.image_share_groups[0].label == "ansible-test-" ~ r ~ "-one"
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete image share group
+          linode.cloud.image_share_group:
+            label: '{{ share_group_one_create.image_share_group.label }}'
+            state: absent
+
+        - name: Delete image share group
+          linode.cloud.image_share_group:
+            label: '{{ share_group_two_create.image_share_group.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
