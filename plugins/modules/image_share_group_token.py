@@ -5,20 +5,21 @@
 
 from __future__ import absolute_import, division, print_function
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image_share_group_token as docs
-from typing import Optional, Any
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    filter_null_values,
+from typing import Any, Optional
+
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    image_share_group_token as docs,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
 )
-
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    filter_null_values,
+)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -35,8 +36,9 @@ SPEC = {
     ),
     "valid_for_sharegroup_uuid": SpecField(
         type=FieldType.string,
-        description=["The UUID of the Image Share Group that this token is valid for."],
-        required=True,
+        description=[
+            "The UUID of the Image Share Group that this token is valid for."
+        ],
     ),
     "state": SpecField(
         type=FieldType.string,
@@ -61,10 +63,10 @@ SPECDOC_META = SpecDocMeta(
         ),
         "single_use_token": SpecReturnValue(
             description="The single use token string to provide to a Image Share Group Producer "
-                        "to be added to the share group.",
+            "to be added to the share group.",
             type=FieldType.string,
             sample=docs.result_single_use_token_samples,
-        )
+        ),
     },
 )
 
@@ -88,33 +90,50 @@ class Module(LinodeModuleBase):
             "single_use_token": None,
         }
 
-        super().__init__(module_arg_spec=self.module_arg_spec)
+        super().__init__(
+            module_arg_spec=self.module_arg_spec,
+            required_if=[
+                ("state", "present", ["valid_for_sharegroup_uuid"]),
+            ],
+        )
 
-    def _get_image_share_group_token_by_label(self, label: str) -> Optional[ImageShareGroupToken]:
+    def _get_image_share_group_token_by_label(
+        self, label: str
+    ) -> Optional[ImageShareGroupToken]:
         try:
-            return self.client.sharegroups.tokens(ImageShareGroupToken.label == label)[0]
+            return self.client.sharegroups.tokens(
+                ImageShareGroupToken.label == label
+            )[0]
         except IndexError:
             return None
         except Exception as exception:
             return self.fail(
-                msg="failed to get image share group token for label {0}: {1}".format(label, exception)
+                msg="failed to get image share group token for label {0}: {1}".format(
+                    label, exception
+                )
             )
 
     def _create(self) -> Optional[ImageShareGroupToken]:
         params = filter_null_values(
             {
                 "label": self.module.params.get("label"),
-                "valid_for_sharegroup_uuid": self.module.params.get("valid_for_sharegroup_uuid"),
+                "valid_for_sharegroup_uuid": self.module.params.get(
+                    "valid_for_sharegroup_uuid"
+                ),
             }
         )
 
         try:
-            token_obj, single_use_token = self.client.sharegroups.create_token(**params)
+            token_obj, single_use_token = self.client.sharegroups.create_token(
+                **params
+            )
             self.results["single_use_token"] = single_use_token
             return token_obj
         except Exception as exception:
             return self.fail(
-                msg="failed to create Image Share Group Token: {0}".format(exception)
+                msg="failed to create Image Share Group Token: {0}".format(
+                    exception
+                )
             )
 
     def _handle_present(self) -> None:
@@ -123,7 +142,9 @@ class Module(LinodeModuleBase):
 
         if not token:
             token = self._create()
-            self.register_action("Created Image Share Group Token {0}".format(label))
+            self.register_action(
+                "Created Image Share Group Token {0}".format(label)
+            )
 
         # Force lazy-loading
         token._api_get()
@@ -137,7 +158,9 @@ class Module(LinodeModuleBase):
         if token is not None:
             self.results["image_share_group_token"] = token._raw_json
             token.delete()
-            self.register_action("Deleted image share group token {0}".format(label))
+            self.register_action(
+                "Deleted image share group token {0}".format(label)
+            )
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for Image Share Group Token module"""

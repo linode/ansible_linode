@@ -5,30 +5,33 @@
 
 from __future__ import absolute_import, division, print_function
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image_share_group as docs
 import copy
 from typing import Any, Optional
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    filter_null_values_recursive,
-    handle_updates,
-)
+
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.image_share_group as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
-
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
     global_authors,
     global_requirements,
 )
-
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    filter_null_values_recursive,
+    handle_updates,
+)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import ImageShareGroup, ImageShareGroupImageToAdd, ImageShareGroupImagesToAdd, \
-    ImageShareGroupImageToUpdate
+from linode_api4 import (
+    ImageShareGroup,
+    ImageShareGroupImagesToAdd,
+    ImageShareGroupImageToAdd,
+    ImageShareGroupImageToUpdate,
+)
 
 image_share_group_images_spec = {
     "id": SpecField(
@@ -115,14 +118,18 @@ class Module(LinodeModuleBase):
 
         super().__init__(module_arg_spec=self.module_arg_spec)
 
-    def _get_image_share_group_by_label(self, label: str) -> Optional[ImageShareGroup]:
+    def _get_image_share_group_by_label(
+        self, label: str
+    ) -> Optional[ImageShareGroup]:
         try:
             return self.client.sharegroups(ImageShareGroup.label == label)[0]
         except IndexError:
             return None
         except Exception as exception:
             return self.fail(
-                msg="failed to get image share group {0}: {1}".format(label, exception)
+                msg="failed to get image share group {0}: {1}".format(
+                    label, exception
+                )
             )
 
     def _create(self) -> Optional[ImageShareGroup]:
@@ -141,11 +148,17 @@ class Module(LinodeModuleBase):
                 msg="failed to create Image Share Group: {0}".format(exception)
             )
 
-    def _update(self, image_share_group: ImageShareGroup) -> Optional[ImageShareGroup]:
+    def _update(
+        self, image_share_group: ImageShareGroup
+    ) -> Optional[ImageShareGroup]:
         image_share_group._api_get()
 
-        new_params = filter_null_values_recursive(copy.deepcopy(self.module.params))
-        new_params = {k: v for k, v in new_params.items() if k in MUTABLE_FIELDS}
+        new_params = filter_null_values_recursive(
+            copy.deepcopy(self.module.params)
+        )
+        new_params = {
+            k: v for k, v in new_params.items() if k in MUTABLE_FIELDS
+        }
 
         images_to_update = self.module.params.get("images")
 
@@ -159,14 +172,14 @@ class Module(LinodeModuleBase):
 
         return image_share_group
 
-    def _update_images(self, image_share_group: ImageShareGroup, desired_images: list) -> None:
+    # pylint: disable=too-many-statements
+    def _update_images(
+        self, image_share_group: ImageShareGroup, desired_images: list
+    ) -> None:
         desired_images = desired_images or []
 
         # Build a map of the desired state of images by their private IDs
-        plan_map = {
-            img["id"]: img
-            for img in desired_images
-        }
+        plan_map = {img["id"]: img for img in desired_images}
 
         # Build a map of the remote state of images by their private IDs
         remote_map = {}
@@ -196,16 +209,20 @@ class Module(LinodeModuleBase):
 
             if not remote:
                 # Not present remotely, should be added
-                to_add.append({
-                    "id": private_id,
-                    "label": desired_image.get("label"),
-                    "description": desired_image.get("description"),
-                })
+                to_add.append(
+                    {
+                        "id": private_id,
+                        "label": desired_image.get("label"),
+                        "description": desired_image.get("description"),
+                    }
+                )
                 continue
 
             # Present remotely, check if an update is needed
             label_changed = desired_image.get("label") != remote.get("label")
-            desc_changed = desired_image.get("description") != remote.get("description")
+            desc_changed = desired_image.get("description") != remote.get(
+                "description"
+            )
 
             if label_changed or desc_changed:
                 opts = {}
@@ -214,10 +231,12 @@ class Module(LinodeModuleBase):
                 if desc_changed:
                     opts["description"] = desired_image.get("description")
 
-                to_update.append({
-                    "shared_id": remote["shared_id"],
-                    "opts": opts,
-                })
+                to_update.append(
+                    {
+                        "shared_id": remote["shared_id"],
+                        "opts": opts,
+                    }
+                )
 
         # Determine which images to remove
         for private_id, remote in remote_map.items():
@@ -252,21 +271,22 @@ class Module(LinodeModuleBase):
         for update in to_update:
             try:
                 kwargs = {}
-                if 'label' in update['opts']:
-                    kwargs['label'] = update['opts']['label']
-                if 'description' in update['opts']:
-                    kwargs['description'] = update['opts']['description']
+                if "label" in update["opts"]:
+                    kwargs["label"] = update["opts"]["label"]
+                if "description" in update["opts"]:
+                    kwargs["description"] = update["opts"]["description"]
 
                 images_to_update = ImageShareGroupImageToUpdate(
-                    image_share_id=update['shared_id'],
-                    **kwargs
+                    image_share_id=update["shared_id"], **kwargs
                 )
 
                 image_share_group.update_image_share(images_to_update)
                 self.register_action(f"Updated image {update['shared_id']}")
                 self.results["changed"] = True
             except Exception as e:
-                self.fail(msg=f"Failed to update image {update['shared_id']}: {e}")
+                self.fail(
+                    msg=f"Failed to update image {update['shared_id']}: {e}"
+                )
 
         # Remove
         for img_shared_id in to_remove:
@@ -290,27 +310,31 @@ class Module(LinodeModuleBase):
             # User omitted images so fetch current images from API
             images = []
             for img in sharegroup.get_image_shares():
-                shared_by = getattr(getattr(img, "image_sharing", None), "shared_by", None)
+                shared_by = getattr(
+                    getattr(img, "image_sharing", None), "shared_by", None
+                )
                 private_id = getattr(shared_by, "source_image_id", None)
                 if private_id:
-                    images.append({
-                        "id": private_id,
-                        "label": getattr(img, "label", None),
-                        "description": getattr(img, "description", None),
-                    })
+                    images.append(
+                        {
+                            "id": private_id,
+                            "label": getattr(img, "label", None),
+                            "description": getattr(img, "description", None),
+                        }
+                    )
             raw["images"] = images
 
         self.results["image_share_group"] = raw
 
     def _handle_present(self) -> None:
         label = self.module.params.get("label")
-        image_share_group = self._get_image_share_group_by_label(
-            label
-        )
+        image_share_group = self._get_image_share_group_by_label(label)
 
         if not image_share_group:
             image_share_group = self._create()
-            self.register_action("Created Image Share Group {0}".format(image_share_group.label))
+            self.register_action(
+                "Created Image Share Group {0}".format(image_share_group.label)
+            )
 
         self._update(image_share_group)
 

@@ -33,6 +33,9 @@ Name | Description |
 [linode.cloud.firewall_device](./docs/modules/firewall_device.md)|Manage Linode Firewall Devices.|
 [linode.cloud.firewall_settings](./docs/modules/firewall_settings.md)|Configure the firewall settings for the account.|
 [linode.cloud.image](./docs/modules/image.md)|Manage a Linode Image.|
+[linode.cloud.image_share_group](./docs/modules/image_share_group.md)|Manage an Image Share Group.|
+[linode.cloud.image_share_group_member](./docs/modules/image_share_group_member.md)|Manage an Image Share Group Member.|
+[linode.cloud.image_share_group_token](./docs/modules/image_share_group_token.md)|Manage an Image Share Group Token.|
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
 [linode.cloud.instance_interface_settings](./docs/modules/instance_interface_settings.md)|Create, read, and update the interface settings for a Linode instance.|
 [linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account. The Linode must be configured to support additional addresses - please Open a support ticket requesting additional addresses before attempting allocation.|

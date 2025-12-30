@@ -1,4 +1,4 @@
-- name: image_share_group_token
+- name: image_share_group_member
   block:
     - name: Normalize producer/consumer tokens
       set_fact:
@@ -44,9 +44,35 @@
           - share_group_token_create.single_use_token is defined
           - share_group_token_create.single_use_token | length > 0
 
+    - name: Add consumer as member to share group (producer task)
+      linode.cloud.image_share_group_member:
+        label: "ansible-test-{{ r }}"
+        token: "{{ share_group_token_create.single_use_token }}"
+        sharegroup_id: "{{ share_group_create.image_share_group.id }}"
+        state: present
+      register: share_group_member_add
+      environment:
+          LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Assert image share group member is added
+      assert:
+        that:
+          - share_group_member_add.image_share_group_member.label == "ansible-test-" ~ r
+
   always:
     - ignore_errors: yes
       block:
+        - name: Delete image share group member
+          linode.cloud.image_share_group_member:
+            label: "ansible-test-{{ r }}"
+            sharegroup_id: "{{ share_group_create.image_share_group.id }}"
+            state: absent
+          when:
+            - share_group_create is defined
+            - share_group_create.image_share_group is defined
+          environment:
+            LINODE_API_TOKEN: "{{ producer_api_token }}"
+
         - name: Delete image share group token
           linode.cloud.image_share_group_token:
             label: "{{ share_group_token_create.image_share_group_token.label }}"

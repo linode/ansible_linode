@@ -5,9 +5,9 @@ specdoc_examples = ['''
     label: "my-sharegroup-token"
     valid_for_sharegroup_uuid: "1533863e-16a4-47b5-b829-ac0f35c13278"
     state: present''', '''
-- name: Delete an image share group
+- name: Delete an image share group token
   linode.cloud.image_share_group_token:
-    valid_for_sharegroup_uuid: "e1d0e58b-f89f-4237-84ab-b82077342359"
+    label: "my-sharegroup-token"
     state: absent''']
 
 result_image_share_group_token_samples = ['''{
