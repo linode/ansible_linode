@@ -672,7 +672,7 @@ def api_filter_constructor_for_aclp_monitor_services(
     filters = params.get("filters")
     value_filters = {}
 
-    if filters is not None:
+    if filters is not None and len(filters) > 0:
         if len(filters) == 1:
             # filter on single field with `+or`
             value_filters = {

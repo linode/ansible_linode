@@ -136,7 +136,7 @@
             that:
               - monitor_services_alert_definition_list_empty.alert_definitions | length == 0
 
-      when: alert_channel_list | length > 0
+      when: alert_channel_list.alert_channels | length > 0
 
 
   always:
