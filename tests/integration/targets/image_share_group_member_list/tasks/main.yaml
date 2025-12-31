@@ -120,8 +120,8 @@
             label: "{{ share_group_token_create_one.image_share_group_token.label }}"
             state: absent
           when:
-            - share_group_token_create is defined
-            - share_group_token_create.image_share_group_token is defined
+            - share_group_token_create_one is defined
+            - share_group_token_create_one.image_share_group_token is defined
           environment:
             LINODE_API_TOKEN: "{{ consumer_api_token }}"
 
@@ -130,8 +130,8 @@
             label: "{{ share_group_token_create_two.image_share_group_token.label }}"
             state: absent
           when:
-            - share_group_token_create is defined
-            - share_group_token_create.image_share_group_token is defined
+            - share_group_token_create_two is defined
+            - share_group_token_create_two.image_share_group_token is defined
           environment:
             LINODE_API_TOKEN: "{{ consumer_api_token }}"
 
