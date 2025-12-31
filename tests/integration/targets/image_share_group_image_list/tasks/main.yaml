@@ -1,0 +1,145 @@
+- name: image_share_group_images_list
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+        disallowed_image_regions: ["gb-lon", "au-mel", "sg-sin-2", "jp-tyo-3", "no-osl-1"]
+
+    - name: List regions
+      linode.cloud.region_list: { }
+      register: all_regions
+
+    - set_fact:
+        capable_regions: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Object Storage") | rejectattr("id", "in", disallowed_image_regions) | map(attribute="id") | list) }}'
+
+    - name: Create instance one to image
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}-one'
+        region: '{{ capable_regions[1] }}'
+        type: g6-standard-1
+        image: linode/alpine3.19
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: instance_one_create
+
+    - name: Create image one
+      linode.cloud.image:
+        disk_id: "{{ instance_one_create.disks.0.id }}"
+        label: image-one
+        description: first image
+        state: present
+      register: image_one_create
+
+    - name: Create instance two to image
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}-two'
+        region: '{{ capable_regions[1] }}'
+        type: g6-standard-1
+        image: linode/alpine3.19
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: instance_two_create
+
+    - name: Create image two
+      linode.cloud.image:
+        disk_id: "{{ instance_two_create.disks.0.id }}"
+        label: image-two
+        description: second-image
+        state: present
+      register: image_two_create
+
+    - name: Assert images are created
+      assert:
+        that:
+          - image_one_create.image.status == 'available'
+          - image_two_create.image.status == 'available'
+          - image_one_create.image.image_sharing.shared_with.sharegroup_count == 0
+          - image_two_create.image.image_sharing.shared_with.sharegroup_count == 0
+
+    - name: Create an image share group
+      linode.cloud.image_share_group:
+        label: "ansible-test-{{ r }}"
+        images:
+          - id: '{{ image_one_create.image.id }}'
+            label: 'image-one'
+            description: 'first image'
+          - id: '{{ image_two_create.image.id }}'
+            label: 'image-two'
+            description: 'second image'
+        state: present
+      register: share_group_create
+
+    - name: List image share group images with no filter
+      linode.cloud.image_share_group_image_list:
+        sharegroup_id: "{{ share_group_create.image_share_group.id }}"
+        count: 2
+      register: no_filter
+
+    - name: Assert image_share_group_image_list with no filter
+      assert:
+        that:
+          - no_filter.image_share_group_images | length == 2
+
+    - name: List image share group images with filter on label
+      linode.cloud.image_share_group_image_list:
+        sharegroup_id: "{{ share_group_create.image_share_group.id }}"
+        count: 1
+        order_by: created
+        order: desc
+        filters:
+          - name: label
+            values: 'image-one'
+      register: filter
+
+    - name: Assert image_share_group_image_list with filter on label
+      assert:
+        that:
+          - filter.image_share_group_images | length == 1
+          - filter.image_share_group_images[0].label == "image-one"
+
+    - name: Remove remaining images in share group
+      linode.cloud.image_share_group:
+        label: '{{ share_group_create.image_share_group.label }}'
+        images: []
+        state: present
+      register: share_group_images_removed
+
+    - name: Assert images removed from share group
+      assert:
+        that:
+          - share_group_images_removed.image_share_group.images | length == 0
+          - share_group_images_removed.image_share_group.images_count == 0
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete image share group
+          linode.cloud.image_share_group:
+            label: '{{ share_group_images_removed.image_share_group.label }}'
+            state: absent
+
+        - name: Delete image
+          linode.cloud.image:
+            label: '{{ image_one_create.image.label }}'
+            state: absent
+
+        - name: Delete image
+          linode.cloud.image:
+            label: '{{ image_two_create.image.label }}'
+            state: absent
+
+        - name: Delete instance
+          linode.cloud.instance:
+            label: '{{ instance_one_create.instance.label }}'
+            state: absent
+
+        - name: Delete instance
+          linode.cloud.instance:
+            label: '{{ instance_two_create.instance.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

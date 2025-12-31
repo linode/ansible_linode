@@ -118,6 +118,7 @@ Name | Description |
 [linode.cloud.firewall_list](./docs/modules/firewall_list.md)|List and filter on Firewalls.|
 [linode.cloud.firewall_template_list](./docs/modules/firewall_template_list.md)|List and filter on Firewall Templates.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Images.|
+[linode.cloud.image_share_group_image_list](./docs/modules/image_share_group_image_list.md)|List and filter on Image Share Group Images.|
 [linode.cloud.image_share_group_list](./docs/modules/image_share_group_list.md)|List and filter on Image Share Groups.|
 [linode.cloud.image_share_group_member_list](./docs/modules/image_share_group_member_list.md)|List and filter on Image Share Group Members.|
 [linode.cloud.image_share_group_token_list](./docs/modules/image_share_group_token_list.md)|List and filter on Image Share Group Tokens.|

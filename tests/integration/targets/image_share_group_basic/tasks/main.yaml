@@ -201,6 +201,11 @@
             label: '{{ share_group_update_details.image_share_group.label }}'
             state: absent
 
+        - name: Delete image share group
+          linode.cloud.image_share_group:
+            label: '{{ share_group_populated_images_removed.image_share_group.label }}'
+            state: absent
+
         - name: Delete image
           linode.cloud.image:
             label: '{{ image_one_create.image.label }}'
