@@ -68,6 +68,7 @@ Name | Description |
 [linode.cloud.account_availability_info](./docs/modules/account_availability_info.md)|Get info about a Linode Account Availability.|
 [linode.cloud.account_info](./docs/modules/account_info.md)|Get info about a Linode Account.|
 [linode.cloud.child_account_info](./docs/modules/child_account_info.md)|Get info about a Linode Child Account.|
+[linode.cloud.consumer_image_share_group_info](./docs/modules/consumer_image_share_group_info.md)|Get info about a Linode Image Share Group.|
 [linode.cloud.database_config_info](./docs/modules/database_config_info.md)|Get info about a Linode Configuration.|
 [linode.cloud.database_mysql_info](./docs/modules/database_mysql_info.md)|Get info about a Linode MySQL Managed Database.|
 [linode.cloud.database_postgresql_info](./docs/modules/database_postgresql_info.md)|Get info about a Linode PostgreSQL Managed Database.|
