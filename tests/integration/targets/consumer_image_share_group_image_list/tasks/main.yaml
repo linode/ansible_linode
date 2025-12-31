@@ -1,0 +1,218 @@
+- name: consumer_image_share_group_images_list
+  block:
+    - name: Normalize producer/consumer tokens
+      set_fact:
+        _producer_token: "{{ producer_api_token | default('', true) | trim }}"
+        _consumer_token: "{{ consumer_api_token | default('', true) | trim }}"
+
+    - name: Skip test if producer/consumer tokens are missing
+      meta: end_play
+      when: _producer_token == '' or _consumer_token == ''
+
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+        disallowed_image_regions: ["gb-lon", "au-mel", "sg-sin-2", "jp-tyo-3", "no-osl-1"]
+
+    - name: List regions
+      linode.cloud.region_list: { }
+      register: all_regions
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - set_fact:
+        capable_regions: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Object Storage") | rejectattr("id", "in", disallowed_image_regions) | map(attribute="id") | list) }}'
+
+    - name: Create instance one to image
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}-one'
+        region: '{{ capable_regions[1] }}'
+        type: g6-standard-1
+        image: linode/alpine3.19
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: instance_one_create
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Create image one
+      linode.cloud.image:
+        disk_id: "{{ instance_one_create.disks.0.id }}"
+        label: image-one
+        description: first image
+        state: present
+      register: image_one_create
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Create instance two to image
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}-two'
+        region: '{{ capable_regions[1] }}'
+        type: g6-standard-1
+        image: linode/alpine3.19
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: instance_two_create
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Create image two
+      linode.cloud.image:
+        disk_id: "{{ instance_two_create.disks.0.id }}"
+        label: image-two
+        description: second-image
+        state: present
+      register: image_two_create
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Create image share group (producer task)
+      linode.cloud.image_share_group:
+        label: "ansible-test-{{ r }}"
+        images:
+          - id: '{{ image_one_create.image.id }}'
+            label: 'image-one'
+            description: 'first image'
+          - id: '{{ image_two_create.image.id }}'
+            label: 'image-two'
+            description: 'second image'
+        state: present
+      register: share_group_create
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Create image share group token (consumer task)
+      linode.cloud.image_share_group_token:
+        label: "ansible-test-{{ r }}"
+        valid_for_sharegroup_uuid: "{{ share_group_create.image_share_group.uuid }}"
+        state: present
+      register: share_group_token_create
+      environment:
+        LINODE_API_TOKEN: "{{ consumer_api_token }}"
+
+    - name: Add consumer as member to share group (producer task)
+      linode.cloud.image_share_group_member:
+        label: "ansible-test-{{ r }}"
+        token: "{{ share_group_token_create.single_use_token }}"
+        sharegroup_id: "{{ share_group_create.image_share_group.id }}"
+        state: present
+      register: share_group_member_add
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: List image share group images with no filter
+      linode.cloud.consumer_image_share_group_image_list:
+        token_uuid: "{{ share_group_token_create.image_share_group_token.token_uuid }}"
+        count: 2
+      register: no_filter
+      environment:
+        LINODE_API_TOKEN: "{{ consumer_api_token }}"
+
+    - name: Assert consumer_image_share_group_image_list with no filter
+      assert:
+        that:
+          - no_filter.image_share_group_images | length == 2
+
+    - name: List image share group images with filter on label
+      linode.cloud.consumer_image_share_group_image_list:
+        token_uuid: "{{ share_group_token_create.image_share_group_token.token_uuid }}"
+        count: 1
+        order_by: created
+        order: desc
+        filters:
+          - name: label
+            values: 'image-one'
+      register: filter
+      environment:
+        LINODE_API_TOKEN: "{{ consumer_api_token }}"
+
+    - name: Assert consumer_image_share_group_image_list with filter on label
+      assert:
+        that:
+          - filter.image_share_group_images | length == 1
+          - filter.image_share_group_images[0].label == "image-one"
+
+    - name: Remove remaining images in share group
+      linode.cloud.image_share_group:
+        label: '{{ share_group_create.image_share_group.label }}'
+        images: [ ]
+        state: present
+      register: share_group_images_removed
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Assert images removed from share group
+      assert:
+        that:
+          - share_group_images_removed.image_share_group.images | length == 0
+          - share_group_images_removed.image_share_group.images_count == 0
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete image share group member
+          linode.cloud.image_share_group_member:
+            label: "ansible-test-{{ r }}"
+            sharegroup_id: "{{ share_group_create.image_share_group.id }}"
+            state: absent
+          when:
+            - share_group_create is defined
+            - share_group_create.image_share_group is defined
+          environment:
+            LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+        - name: Delete image share group token
+          linode.cloud.image_share_group_token:
+            label: "{{ share_group_token_create.image_share_group_token.label }}"
+            state: absent
+          when:
+            - share_group_token_create is defined
+            - share_group_token_create.image_share_group_token is defined
+          environment:
+            LINODE_API_TOKEN: "{{ consumer_api_token }}"
+
+        - name: Delete image share group
+          linode.cloud.image_share_group:
+            label: "{{ share_group_create.image_share_group.label }}"
+            state: absent
+          when:
+            - share_group_create is defined
+            - share_group_create.image_share_group is defined
+          environment:
+            LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+        - name: Delete image
+          linode.cloud.image:
+            label: '{{ image_one_create.image.label }}'
+            state: absent
+          environment:
+            LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+        - name: Delete image
+          linode.cloud.image:
+            label: '{{ image_two_create.image.label }}'
+            state: absent
+          environment:
+            LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+        - name: Delete instance
+          linode.cloud.instance:
+            label: '{{ instance_one_create.instance.label }}'
+            state: absent
+          environment:
+            LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+        - name: Delete instance
+          linode.cloud.instance:
+            label: '{{ instance_two_create.instance.label }}'
+            state: absent
+          environment:
+            LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+  environment:
+    LINODE_UA_PREFIX: "{{ ua_prefix }}"
+    LINODE_PRODUCER_API_TOKEN: "{{ producer_api_token }}"
+    LINODE_CONSUMER_API_TOKEN: "{{ consumer_api_token }}"
+    LINODE_API_URL: "{{ api_url }}"
+    LINODE_API_VERSION: "{{ api_version }}"
+    LINODE_CA: "{{ ca_file or '' }}"
