@@ -1,0 +1,108 @@
+- name: image_share_group_member_list
+  block:
+    - name: Normalize producer/consumer tokens
+      set_fact:
+        _producer_token: "{{ producer_api_token | default('', true) | trim }}"
+        _consumer_token: "{{ consumer_api_token | default('', true) | trim }}"
+
+    - name: Skip test if producer/consumer tokens are missing
+      meta: end_play
+      when: _producer_token == '' or _consumer_token == ''
+
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create image share group (producer task)
+      linode.cloud.image_share_group:
+        label: "ansible-test-{{ r }}"
+        state: present
+      register: share_group_create
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Create image share group token (consumer task)
+      linode.cloud.image_share_group_token:
+        label: "ansible-test-{{ r }}"
+        valid_for_sharegroup_uuid: "{{ share_group_create.image_share_group.uuid }}"
+        state: present
+      register: share_group_token_create
+      environment:
+        LINODE_API_TOKEN: "{{ consumer_api_token }}"
+
+    - name: Add consumer as member to share group (producer task)
+      linode.cloud.image_share_group_member:
+        label: "ansible-test-{{ r }}"
+        token: "{{ share_group_token_create.single_use_token }}"
+        sharegroup_id: "{{ share_group_create.image_share_group.id }}"
+        state: present
+      register: share_group_member_add
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Get information about the Image Share Group Member by label
+      linode.cloud.image_share_group_member_info:
+        sharegroup_id: "{{ share_group_create.image_share_group.id }}"
+        label: "{{ share_group_member_add.image_share_group_member.label }}"
+      register: share_group_member_info_label
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Assert Image Share Group Member information
+      assert:
+        that:
+          - share_group_member_info_label.image_share_group_member.label == "ansible-test-" ~ r
+
+    - name: Get information about the Image Share Group Member by token_uuid
+      linode.cloud.image_share_group_member_info:
+        sharegroup_id: "{{ share_group_create.image_share_group.id }}"
+        token_uuid: "{{ share_group_member_add.image_share_group_member.token_uuid }}"
+      register: share_group_member_info_token_uuid
+      environment:
+        LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+    - name: Assert Image Share Group Member information
+      assert:
+        that:
+          - share_group_member_info_token_uuid.image_share_group_member.label == "ansible-test-" ~ r
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete image share group member
+          linode.cloud.image_share_group_member:
+            label: "ansible-test-{{ r }}"
+            sharegroup_id: "{{ share_group_create.image_share_group.id }}"
+            state: absent
+          when:
+            - share_group_create is defined
+            - share_group_create.image_share_group is defined
+          environment:
+            LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+        - name: Delete image share group token
+          linode.cloud.image_share_group_token:
+            label: "{{ share_group_token_create.image_share_group_token.label }}"
+            state: absent
+          when:
+            - share_group_token_create is defined
+            - share_group_token_create.image_share_group_token is defined
+          environment:
+            LINODE_API_TOKEN: "{{ consumer_api_token }}"
+
+        - name: Delete image share group
+          linode.cloud.image_share_group:
+            label: "{{ share_group_create.image_share_group.label }}"
+            state: absent
+          when:
+            - share_group_create is defined
+            - share_group_create.image_share_group is defined
+          environment:
+            LINODE_API_TOKEN: "{{ producer_api_token }}"
+
+  environment:
+    LINODE_UA_PREFIX: "{{ ua_prefix }}"
+    LINODE_PRODUCER_API_TOKEN: "{{ producer_api_token }}"
+    LINODE_CONSUMER_API_TOKEN: "{{ consumer_api_token }}"
+    LINODE_API_URL: "{{ api_url }}"
+    LINODE_API_VERSION: "{{ api_version }}"
+    LINODE_CA: "{{ ca_file or '' }}"

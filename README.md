@@ -78,6 +78,7 @@ Name | Description |
 [linode.cloud.firewall_template_info](./docs/modules/firewall_template_info.md)|Get info about a Linode Firewall Template.|
 [linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
 [linode.cloud.image_share_group_info](./docs/modules/image_share_group_info.md)|Get info about a Linode Image Share Group.|
+[linode.cloud.image_share_group_member_info](./docs/modules/image_share_group_member_info.md)|Get info about a Linode Image Share Group Member.|
 [linode.cloud.image_share_group_token_info](./docs/modules/image_share_group_token_info.md)|Get info about a Linode Image Share Group Token.|
 [linode.cloud.instance_info](./docs/modules/instance_info.md)|Get info about a Linode Instance.|
 [linode.cloud.instance_interface_settings_info](./docs/modules/instance_interface_settings_info.md)|Get the interface settings for a Linode instance.|
@@ -118,6 +119,7 @@ Name | Description |
 [linode.cloud.firewall_template_list](./docs/modules/firewall_template_list.md)|List and filter on Firewall Templates.|
 [linode.cloud.image_list](./docs/modules/image_list.md)|List and filter on Images.|
 [linode.cloud.image_share_group_list](./docs/modules/image_share_group_list.md)|List and filter on Image Share Groups.|
+[linode.cloud.image_share_group_member_list](./docs/modules/image_share_group_member_list.md)|List and filter on Image Share Group Members.|
 [linode.cloud.image_share_group_token_list](./docs/modules/image_share_group_token_list.md)|List and filter on Image Share Group Tokens.|
 [linode.cloud.instance_interface_firewall_list](./docs/modules/instance_interface_firewall_list.md)|List and filter on Linode Interface Firewalls.|
 [linode.cloud.instance_list](./docs/modules/instance_list.md)|List and filter on Instances.|
