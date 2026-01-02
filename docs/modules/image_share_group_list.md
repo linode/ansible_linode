@@ -19,6 +19,12 @@ List and filter on Image Share Groups.
   linode.cloud.image_share_group_list: {}
 ```
 
+```yaml
+- name: List all of the Image Share Groups that contain a specific private image
+  linode.cloud.image_share_group_list:
+    image_id: "private/12345"
+```
+
 
 ## Parameters
 
@@ -28,6 +34,7 @@ List and filter on Image Share Groups.
 | `order_by` | <center>`str`</center> | <center>Optional</center> | The attribute to order Image Share Groups by.   |
 | [`filters` (sub-options)](#filters) | <center>`list`</center> | <center>Optional</center> | A list of filters to apply to the resulting Image Share Groups.   |
 | `count` | <center>`int`</center> | <center>Optional</center> | The number of Image Share Groups to return. If undefined, all results will be returned.   |
+| `image_id` | <center>`str`</center> | <center>Optional</center> | Specifies the private image ID to list share groups for. If provided, only share groups containing the specified image will be returned.   |
 
 ### filters
 

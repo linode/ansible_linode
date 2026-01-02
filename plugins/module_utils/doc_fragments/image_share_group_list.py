@@ -2,7 +2,10 @@
 
 specdoc_examples = ['''
 - name: List all of the Image Share Groups for the current Linode Account
-  linode.cloud.image_share_group_list: {}''']
+  linode.cloud.image_share_group_list: {}''', '''
+- name: List all of the Image Share Groups that contain a specific private image
+  linode.cloud.image_share_group_list:
+    image_id: "private/12345"''']
 
 result_image_share_groups_samples = ['''[
     {
