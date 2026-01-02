@@ -1,4 +1,4 @@
-- name: image_share_group_images_list
+- name: image_share_group_image_list
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"

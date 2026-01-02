@@ -1,4 +1,4 @@
-- name: image_share_group_member_list
+- name: image_share_group_member_info
   block:
     - name: Normalize producer/consumer tokens
       set_fact:
