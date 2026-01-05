@@ -1,0 +1,31 @@
+- name: "firewall update tests"
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Get info about a Firewall Template by slug
+      linode.cloud.firewall_template_info:
+        slug: public
+      register: public_template
+
+    - name: Assert firewall template info is returned
+      assert:
+        that:
+          - public_template.firewall_template.slug == 'public'
+
+    - name: List all of the firewall templates
+      linode.cloud.firewall_template_list: {}
+      register: all_templates
+
+    - name: Assert firewall templates are returned
+      assert:
+        that:
+          - all_templates.firewall_templates | length > 0
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

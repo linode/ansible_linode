@@ -33,6 +33,12 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_networking import (
     auto_alloc_ranges_equivalent,
 )
+from ansible_collections.linode.cloud.plugins.module_utils.modules.instance import (
+    linode_interfaces,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.modules.instance.util import (
+    resolve_terminal_status,
+)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -46,6 +52,7 @@ try:
         Config,
         ConfigInterface,
         Disk,
+        ExplicitNullValue,
         Firewall,
         Instance,
         StackScript,
@@ -294,6 +301,7 @@ linode_instance_interface_spec = {
     ),
 }
 
+
 linode_instance_config_spec = {
     "comments": SpecField(
         type=FieldType.string,
@@ -510,8 +518,39 @@ linode_instance_spec = {
         description=[
             "A list of network interfaces to apply to the Linode.",
             "See the [Linode API documentation]"
-            "(https://techdocs.akamai.com/linode-api/reference/post-linode-instance).",
+            + "(https://techdocs.akamai.com/linode-api/reference/post-linode-instance).",
         ],
+    ),
+    "interface_generation": SpecField(
+        type=FieldType.string,
+        description=[
+            "Specifies the interface type for the Linode.",
+            "The default value is determined by the interfaces_for_new_linodes "
+            + "setting in the account settings.",
+        ],
+        choices=["legacy_config", "linode"],
+    ),
+    "linode_interfaces": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_interfaces.SPEC_INTERFACE,
+        editable=True,
+        description=[
+            "A list of Linode interfaces to apply to the Linode.",
+            "See the [Linode API documentation]"
+            + "(https://techdocs.akamai.com/linode-api/reference/post-linode-interface).",
+            "NOTE: To upgrade from config (legacy) interfaces, consider using the "
+            "linode.cloud.api_request module to make a request to the "
+            "(POST linode/instances/{linode_id}/upgrade-interfaces endpoint).",
+        ],
+    ),
+    "allow_implicit_reboots": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Whether the Linode should be implicitly rebooted during operations "
+            "that require a certain power status."
+        ],
+        default=False,
     ),
     "booted": SpecField(
         type=FieldType.bool,
@@ -651,6 +690,12 @@ SPECDOC_META = SpecDocMeta(
             type=FieldType.dict,
             sample=docs.result_networking_samples,
         ),
+        "linode_interfaces": SpecReturnValue(
+            description="A list of Linode interfaces tied to this Linode Instance.",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-linode-interface",
+            type=FieldType.list,
+            sample=docs.result_linode_interfaces_samples,
+        ),
     },
 )
 
@@ -698,6 +743,9 @@ class LinodeInstance(LinodeModuleBase):
 
         self._instance: Optional[Instance] = None
         self._root_pass: str = ""
+
+        self._original_boot_status: Optional[bool] = None
+        self._restore_boot_status: bool = False
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
@@ -876,7 +924,7 @@ class LinodeInstance(LinodeModuleBase):
         return matching_keys_eq(local_interface, remote_interface)
 
     @staticmethod
-    def _compare_interfaces(
+    def _compare_config_interfaces(
         local_interfaces: List[Dict[str, Any]],
         remote_interfaces: List[Dict[str, Any]],
     ) -> bool:
@@ -912,6 +960,20 @@ class LinodeInstance(LinodeModuleBase):
                 user_data=metadata.get("user_data"),
                 encode_user_data=not metadata.get("user_data_encoded"),
             )
+
+        # The API accepts either the `interfaces` or `linode_interfaces` schema
+        # depending on the interfaces `interfaces_for_new_linodes` acccount setting
+        # and the `interface_generation` instance POST field.
+        _linode_interfaces = params.pop("linode_interfaces")
+        if _linode_interfaces is not None:
+            for interface in _linode_interfaces:
+                if (
+                    "firewall_id" in interface
+                    and interface["firewall_id"] is None
+                ):
+                    interface["firewall_id"] = ExplicitNullValue()
+
+            params["interfaces"] = _linode_interfaces
 
         result = {"instance": None, "root_pass": ""}
 
@@ -1014,7 +1076,7 @@ class LinodeInstance(LinodeModuleBase):
         self.register_action("Deleted disk {0}".format(disk.label))
         disk.delete()
 
-    def _update_interfaces(self) -> None:
+    def _update_config_interfaces(self) -> None:
         config = self._get_boot_config()
         param_interfaces: List[Any] = self.module.params.get("interfaces")
 
@@ -1030,7 +1092,7 @@ class LinodeInstance(LinodeModuleBase):
             for v in config.interfaces
         ]
 
-        if self._compare_interfaces(param_interfaces, remote_interfaces):
+        if self._compare_config_interfaces(param_interfaces, remote_interfaces):
             return
 
         config.interfaces = [ConfigInterface(**v) for v in param_interfaces]
@@ -1209,7 +1271,7 @@ class LinodeInstance(LinodeModuleBase):
                     [drop_empty_strings(v, recursive=True) for v in new_value]
                 )
 
-                if not self._compare_interfaces(new_value, old_value):
+                if not self._compare_config_interfaces(new_value, old_value):
                     should_update = True
                     config.interfaces = new_value
                     self.register_action(
@@ -1400,8 +1462,11 @@ class LinodeInstance(LinodeModuleBase):
                     "specified in the instance creation."
                 )
 
-        # Update interfaces
-        self._update_interfaces()
+        # Update config interfaces
+        self._update_config_interfaces()
+
+        # Update Linode interfaces
+        linode_interfaces.update_linode_interfaces(self, self._instance)
 
         # Handle updating on the target Firewall ID
         self._update_firewall()
@@ -1416,6 +1481,9 @@ class LinodeInstance(LinodeModuleBase):
         boot_status = self.module.params.get("booted")
         should_poll = self.module.params.get("wait")
 
+        if boot_status is None and self._restore_boot_status:
+            boot_status = self._original_boot_status
+
         # Wait for instance to not be busy
         self.client.polling.wait_for_entity_free(
             "linode",
@@ -1427,7 +1495,7 @@ class LinodeInstance(LinodeModuleBase):
 
         event_poller = None
 
-        if boot_status and self._instance.status != "running":
+        if boot_status and resolve_terminal_status(self._instance) != "running":
             event_poller = self.client.polling.event_poller_create(
                 "linode",
                 "linode_boot",
@@ -1439,7 +1507,10 @@ class LinodeInstance(LinodeModuleBase):
                 "Booted instance {0}".format(self.module.params.get("label"))
             )
 
-        if not boot_status and self._instance.status != "offline":
+        if (
+            not boot_status
+            and resolve_terminal_status(self._instance) != "offline"
+        ):
             event_poller = self.client.polling.event_poller_create(
                 "linode",
                 "linode_shutdown",
@@ -1463,6 +1534,10 @@ class LinodeInstance(LinodeModuleBase):
 
         should_poll = self.module.params.get("wait")
 
+        # We don't want to reboot if the Linode is already offline
+        if resolve_terminal_status(self._instance) != "running":
+            return
+
         # Wait for instance to not be busy
         self.client.polling.wait_for_entity_free(
             "linode",
@@ -1471,10 +1546,6 @@ class LinodeInstance(LinodeModuleBase):
         )
 
         self._instance._api_get()
-
-        # We don't want to reboot if the Linode is already offline
-        if self._instance.status != "running":
-            return
 
         reboot_poller = self.client.polling.event_poller_create(
             "linode", "linode_reboot", entity_id=self._instance.id
@@ -1523,7 +1594,14 @@ class LinodeInstance(LinodeModuleBase):
 
                 for ip_type in additional_ip_types:
                     self._instance.ip_allocate(public=ip_type["public"])
+
+            self._original_boot_status = (
+                resolve_terminal_status(self._instance) == "running"
+            )
         else:
+            self._original_boot_status = (
+                resolve_terminal_status(self._instance) == "running"
+            )
             self._update_instance()
 
         # Wait for Linode to not be busy if configs or disks need to be created
@@ -1545,10 +1623,15 @@ class LinodeInstance(LinodeModuleBase):
         if self.module.params.get("rebooted") is not None and already_exists:
             self._handle_instance_reboot()
 
-        if self.module.params.get("booted") is not None:
+        if (
+            self.module.params.get("booted") is not None
+            or self._restore_boot_status
+        ):
             self._handle_instance_boot()
 
+        self._instance.invalidate()
         self._instance._api_get()
+
         inst_result = self._instance._raw_json
         inst_result["root_pass"] = self._root_pass
 
@@ -1556,6 +1639,13 @@ class LinodeInstance(LinodeModuleBase):
         self.results["configs"] = paginated_list_to_json(self._instance.configs)
         self.results["disks"] = paginated_list_to_json(self._instance.disks)
         self.results["networking"] = self._get_networking()
+
+        instance_linode_interfaces = self._instance.linode_interfaces
+        self.results["linode_interfaces"] = (
+            paginated_list_to_json(instance_linode_interfaces)
+            if instance_linode_interfaces is not None
+            else instance_linode_interfaces
+        )
 
     def _handle_absent(self) -> None:
         """Destroys the instance defined in kwargs"""
@@ -1570,6 +1660,14 @@ class LinodeInstance(LinodeModuleBase):
             )
             self.results["disks"] = paginated_list_to_json(self._instance.disks)
             self.results["networking"] = self._get_networking()
+
+            instance_linode_interfaces = self._instance.linode_interfaces
+            self.results["linode_interfaces"] = (
+                paginated_list_to_json(instance_linode_interfaces)
+                if instance_linode_interfaces is not None
+                else instance_linode_interfaces
+            )
+
             self.register_action("Deleted instance {0}".format(label))
             self._instance.delete()
 

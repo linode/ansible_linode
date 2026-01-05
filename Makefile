@@ -56,7 +56,7 @@ gendocs:
 	mkdir -p $(DOCS_PATH)/modules $(DOCS_PATH)/inventory
 
 	DOCS_PATH=$(DOCS_PATH) ./scripts/specdoc_generate.sh
-	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory plugins/inventory/*.py
+	ansible-doc-extractor --template=template/module.rst.j2 $(DOCS_PATH)/inventory $(abspath plugins/inventory/*.py)
 	python3 scripts/render_readme.py $(COLLECTION_VERSION)
 
 # if want to add all the test add the tag --tags never at the end
@@ -126,11 +126,14 @@ endif
 	@echo "api_version: $${LINODE_API_VERSION:-$${TEST_API_VERSION:-v4beta}}" >> $(INTEGRATION_CONFIG)
 	@echo "ca_file: $${LINODE_CA:-$${TEST_API_CA}}" >> $(INTEGRATION_CONFIG)
 
+
 inject:
 	@echo "Injecting documentation into source files"
-	for f in `ls ./plugins/modules/*.py`; do echo "$$f" && ansible-specdoc -j -i $$f; done
-	ansible-test sanity --test ansible-doc
+	find ./plugins/modules -maxdepth 1 -name '*.py' -print0 | \
+		xargs -I {} -0 -P 5 bash -c 'export TARGET="{}"; echo "$$TARGET" && ansible-specdoc -j -i "$$TARGET";'
 
 inject-clean:
 	@echo "Removing injected documentation from source files"
-	for f in `ls ./plugins/modules/*.py`; do echo "$$f" && ansible-specdoc -jc -i $$f; done
+	find ./plugins/modules -maxdepth 1 -name '*.py' -print0 | \
+		xargs -I {} -0 -P 5 bash -c 'export TARGET="{}"; echo "$$TARGET" && ansible-specdoc -jc -i "$$TARGET";'
+

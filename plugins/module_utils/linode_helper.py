@@ -1,13 +1,17 @@
 """This module contains helper functions for various Linode modules."""
 
+import traceback
+from dataclasses import dataclass, field
 from typing import (
     Any,
     Callable,
     Dict,
+    Generic,
     List,
     Optional,
     Set,
     Tuple,
+    TypeVar,
     Union,
     cast,
 )
@@ -45,6 +49,60 @@ def dict_select_matching(d_1: dict, d_2: dict) -> Tuple[dict, dict]:
     new_d2 = {key: d_2.get(key) for key in d_1.keys() if key in d_2.keys()}
 
     return new_d1, new_d2
+
+
+def dict_select_matching_recursive(
+    *dicts: Dict[str, Any]
+) -> Tuple[Dict[str, Any], ...]:
+    """Returns copies of the given dictionaries with all non-shared keys removed"""
+
+    result = tuple({} for _ in range(len(dicts)))
+
+    mutual_keys = dicts[0].keys()
+    for d in dicts[1:]:
+        mutual_keys &= d.keys()
+
+    for key in mutual_keys:
+        # Matching key handler
+        dict_values = tuple(d.get(key) for d in dicts)
+
+        if all(isinstance(v, dict) for v in dict_values):
+            dict_values = dict_select_matching_recursive(*dict_values)
+        elif all(isinstance(v, list) for v in dict_values):
+            list_values = [[] for _ in range(len(dict_values))]
+            longest_list_length = max(len(v) for v in dict_values)
+
+            for list_index in range(longest_list_length):
+                # Aggregate a list of (dict_index, dict_value) pairs
+                # for dicts with entries for list_index.
+                #
+                # Pairing is necessary to preserve the index when writing back
+                # to the result below.
+                relevant_dict_value_pairs = [
+                    (i, dict_value[list_index])
+                    for i, dict_value in enumerate(dict_values)
+                    if list_index < len(dict_value)
+                ]
+
+                # We only want to compare entries of dicts with other entries of the same index
+                entry_match_result = dict_select_matching_recursive(
+                    *[dict_value for _, dict_value in relevant_dict_value_pairs]
+                )
+
+                for result_index, (dict_index, _) in enumerate(
+                    relevant_dict_value_pairs
+                ):
+                    # Append an entry to the dict value's corresponding list
+                    list_values[dict_index].append(
+                        entry_match_result[result_index]
+                    )
+
+            dict_values = list_values
+
+        for i, value in enumerate(dict_values):
+            result[i][key] = value
+
+    return result
 
 
 def filter_null_values(input_dict: dict) -> dict:
@@ -128,17 +186,59 @@ def handle_updates(
     mutable_fields: set,
     register_func: Callable,
     ignore_keys: Set[str] = None,
+    match_recursive: bool = False,
+    dry_run: bool = False,
     nullable_keys: set[str] = None,
+    diff_overrides: Dict[
+        str, Callable[[str, Any, Any], Tuple[bool, Any]]
+    ] = None,
 ) -> Set[str]:
     """Handles updates for a linode_api4 object"""
 
+    match_func = (
+        dict_select_matching_recursive
+        if match_recursive
+        else dict_select_matching
+    )
+
     ignore_keys = ignore_keys or set()
     nullable_keys = nullable_keys or set()
+    diff_overrides = diff_overrides or {}
 
     obj._api_get()
 
     # We need the type to access property metadata
     property_metadata = type(obj).properties
+
+    def _diff_default(
+        _key: str, _old_value: Any, _new_value: Any
+    ) -> Tuple[bool, Any]:
+        """
+        Returns whether a diff was found for the given values and
+        the request body that should be used to reach the desired state.
+        """
+
+        if isinstance(_new_value, dict) and isinstance(_old_value, dict):
+            # If this field is a dict, we only want to compare values that are
+            # specified by the user
+            _old_value, _new_value = match_func(
+                filter_null_values_recursive(_old_value),
+                filter_null_values_recursive(_new_value),
+            )
+
+            return _new_value != _old_value, _new_value
+
+        # We should convert properties to sets
+        # if they are annotated as unordered in the
+        # Python SDK.
+        if (
+            property_metadata is not None
+            and property_metadata.get(_key) is not None
+            and property_metadata.get(_key).unordered
+        ):
+            return set(_old_value) != set(_new_value), _new_value
+
+        return _new_value != _old_value, _new_value
 
     # Update mutable values
     params = filter_null_values(params)
@@ -161,44 +261,26 @@ def handle_updates(
 
         old_value = parse_linode_types(getattr(obj, key))
 
-        if isinstance(new_value, dict) and isinstance(old_value, dict):
-            # If this field is a dict, we only want to compare values that are
-            # specified by the user
-            old_value, new_value = dict_select_matching(
-                filter_null_values_recursive(old_value),
-                filter_null_values_recursive(new_value),
-            )
+        has_change, put_value = diff_overrides.get(key, _diff_default)(
+            key, old_value, new_value
+        )
 
-        has_diff = new_value != old_value
+        if not has_change:
+            continue
 
-        # We should convert properties to sets
-        # if they are annotated as unordered in the
-        # Python SDK.
-        if (
-            property_metadata is not None
-            and property_metadata.get(key) is not None
-            and property_metadata.get(key).unordered
-        ):
-            has_diff = set(old_value) != set(new_value)
-
-        if has_diff:
-            if key in mutable_fields:
-                put_request[key] = new_value
-                result.add(key)
-                register_func(
-                    'Updated {0}: "{1}" -> "{2}"'.format(
-                        key, old_value, new_value
-                    )
-                )
-
-                continue
-
+        if key not in mutable_fields:
             raise RuntimeError(
                 "failed to update {} -> {}: {} is a non-updatable"
                 " field".format(old_value, new_value, key)
             )
 
-    if len(put_request.keys()) > 0:
+        put_request[key] = put_value
+        result.add(key)
+        register_func(
+            'Updated {0}: "{1}" -> "{2}"'.format(key, old_value, put_value)
+        )
+
+    if len(put_request.keys()) > 0 and not dry_run:
         obj._client.put(type(obj).api_endpoint, model=obj, data=put_request)
 
     return result
@@ -269,9 +351,9 @@ def validate_required(required_fields: Set[str], params: Dict[str, Any]):
     has_missing_field = False
     missing_fields = []
 
-    for field in required_fields:
-        if field not in params:
-            missing_fields.append(field)
+    for required_field in required_fields:
+        if required_field not in params:
+            missing_fields.append(required_field)
             has_missing_field = True
 
     if has_missing_field:
@@ -363,10 +445,13 @@ def get_all_paginated(
     return result
 
 
-def format_generic_error(err: Exception) -> str:
+def format_generic_error(exc: Exception, verbosity: int = 0) -> str:
     """Formats a generic error into a readable string"""
 
-    return f"{type(err).__name__}: {str(err)}"
+    if verbosity > 0:
+        return "\n".join(traceback.format_exception(exc))
+
+    return "\n".join(traceback.format_exception_only(exc))
 
 
 def poll_condition(
@@ -404,6 +489,110 @@ def safe_find(
         return None
     except Exception as exception:
         raise Exception(f"failed to get resource: {exception}") from exception
+
+
+APIModelT = TypeVar("APIModelT", bound=linode_api4.Base)
+
+
+@dataclass
+class ReconcileSubEntityOperationsResult(Generic[APIModelT]):
+    """
+    Contains the actions necessary to bring a collection of sub-entities
+    up to parity with a set of user-provided params.
+    """
+
+    to_create: List[Dict[str, Any]] = field(default_factory=list)
+    to_diff: List[Tuple[APIModelT, Dict[str, Any]]] = field(
+        default_factory=list
+    )
+    to_delete: List[APIModelT] = field(default_factory=list)
+
+
+def reconcile_sub_entity_operations(
+    local_entities: List[Dict[str, Any]],
+    remote_entities: List[APIModelT],
+    entity_matches_param: Callable[[APIModelT, Dict[str, Any]], bool],
+) -> ReconcileSubEntityOperationsResult:
+    """
+    Reconciles the necessary create, update, and delete operations to bring the
+    given entities up to parity with the given user-configured entities.
+    """
+    result = ReconcileSubEntityOperationsResult()
+    unhandled_remote_entities = {
+        entity.id: entity for entity in remote_entities
+    }
+
+    for local_entity in local_entities:
+        remote_entity = next(
+            (
+                v
+                for v in unhandled_remote_entities.values()
+                if entity_matches_param(v, local_entity)
+            ),
+            None,
+        )
+
+        if remote_entity is None:
+            result.to_create.append(local_entity)
+            continue
+
+        del unhandled_remote_entities[remote_entity.id]
+        result.to_diff.append((remote_entity, local_entity))
+
+    for remote_entity in unhandled_remote_entities.values():
+        result.to_delete.append(remote_entity)
+
+    return result
+
+
+def normalize_params_recursive(
+    local_data: Dict[str, Any],
+    remote_data: Union[linode_api4.JSONObject, linode_api4.Base],
+    normalization_handlers: Dict[Tuple[str, ...], Callable[[Any, Any], Any]],
+) -> Dict[str, Any]:
+    """
+    Modifies the given local data to match the given remote data,
+    running the given normalization handlers for each path.
+    """
+
+    def __inner(
+        local_entry: Any,
+        remote_entry: Any,
+        current_path: Tuple[str, ...],
+    ):
+        if local_entry is None or remote_entry is None:
+            return local_entry
+
+        if isinstance(local_entry, dict):
+            # Recurse through each key in the local entry dict
+            for key, local_value in local_entry.items():
+                local_entry[key] = __inner(
+                    local_value,
+                    getattr(remote_entry, key, None),
+                    current_path + tuple([key]),
+                )
+
+        elif isinstance(local_entry, list):
+            # Recurse through pairs of local and remote list entries
+            for index, (local_value, remote_value) in enumerate(
+                zip(local_entry, remote_entry)
+            ):
+                # NOTE: We don't extend the path here since indices aren't supported
+                # in normalization handler paths.
+                local_entry[index] = __inner(
+                    local_value, remote_value, current_path
+                )
+
+        elif current_path in normalization_handlers:
+            # This field has a specified normalization handler
+            return normalization_handlers[current_path](
+                local_entry, remote_entry
+            )
+
+        # Nothing to change
+        return local_entry
+
+    return __inner(local_data, remote_data, tuple())
 
 
 def pop_and_compare_optional_attribute(

@@ -11,6 +11,7 @@ result_vpc_samples = ["""
     {
         "address": "10.0.0.2",
         "address_range": null,
+        "config_id": 123456,
         "vpc_id": 56242,
         "subnet_id": 55829,
         "region": "us-mia",

@@ -37,6 +37,26 @@ Get info about a Linode IP.
           "address": "97.107.143.141",
           "gateway": "97.107.143.1",
           "linode_id": 123,
+          "interface_id": 1234,
+          "prefix": 24,
+          "public": true,
+          "rdns": "test.example.org",
+          "region": "us-east",
+          "subnet_mask": "255.255.255.0",
+          "type": "ipv4",
+          "vpc_nat_1_1": {
+            "vpc_id": 242,
+            "subnet_id": 194,
+            "address": "139.144.244.36"
+          }
+        }
+        ```
+        ```json
+        {
+          "address": "97.107.143.141",
+          "gateway": "97.107.143.1",
+          "linode_id": 123,
+          "interface_id": null,
           "prefix": 24,
           "public": true,
           "rdns": "test.example.org",

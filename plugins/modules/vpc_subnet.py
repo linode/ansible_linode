@@ -116,7 +116,10 @@ class Module(LinodeModuleBase):
 
     def __ipv6_updated(self, subnet: VPCSubnet) -> bool:
         ipv6_arg = self.module.params.get("ipv6")
-        ipv6_actual = subnet.ipv6
+        if ipv6_arg is None:
+            return False
+
+        ipv6_actual = subnet.ipv6 or []
 
         if len(ipv6_arg) != len(ipv6_actual):
             return True

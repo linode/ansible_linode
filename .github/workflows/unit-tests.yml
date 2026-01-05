@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.9','3.10','3.11', '3.12' ]
+        python-version: [ '3.10','3.11', '3.12', '3.13' ]
     defaults:
       run:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: checkout repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: .ansible/collections/ansible_collections/linode/cloud
 

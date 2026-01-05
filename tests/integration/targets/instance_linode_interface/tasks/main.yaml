@@ -1,0 +1,421 @@
+- name: instance_linode_interfaces
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        description: test description
+        state: present
+      register: create_vpc
+
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        state: present
+      register: create_subnet
+
+    - name: Create an instance with an implicit image and dedicated Linode interfaces
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: true
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv6: true
+            firewall_id: '{{ firewall_id }}'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+
+          - vlan:
+              vlan_label: ansible-test-vlan
+              ipam_address: 10.0.0.5/32
+
+          - default_route:
+              ipv4: true
+            firewall_id: '{{ firewall_id }}'
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: auto
+                    nat_1_1_address: auto
+                    primary: true
+                ranges:
+                  - range: /32
+        state: present
+      register: create
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create.changed
+          - create.instance.status == 'running'
+
+          # NOTE: This instance has two public IPv4 addresses because
+          # nat_1_1_address=auto on creation allocates an additional IP.
+          # This reverts to 1 when we remove the nat_1_1_address below.
+          - create.instance.ipv4|length == 2
+
+          - create.linode_interfaces | length == 3
+
+          # Public interface
+          - create.linode_interfaces[0].default_route.ipv6 == True
+          - create.linode_interfaces[0].public.ipv4.addresses[0].address | length > 4
+          - create.linode_interfaces[0].public.ipv4.addresses[0].primary == True
+          - create.linode_interfaces[0].public.ipv6.ranges[0].range | length > 4
+
+          # VLAN interface
+          - create.linode_interfaces[1].vlan.vlan_label == 'ansible-test-vlan'
+          - create.linode_interfaces[1].vlan.ipam_address == '10.0.0.5/32'
+
+          # VPC interface
+          - create.linode_interfaces[2].default_route.ipv4 == True
+          - create.linode_interfaces[2].vpc.subnet_id == create_subnet.subnet.id
+          - create.linode_interfaces[2].vpc.ipv4.addresses[0].address | length > 4
+          - create.linode_interfaces[2].vpc.ipv4.addresses[0].nat_1_1_address | length > 4
+          - create.linode_interfaces[2].vpc.ipv4.addresses[0].primary == True
+          - create.linode_interfaces[2].vpc.ipv4.ranges[0].range | length > 4
+
+    - name: Don't change the instance
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: true
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv6: true
+            firewall_id: '{{ firewall_id }}'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+
+          - vlan:
+              vlan_label: ansible-test-vlan
+              ipam_address: 10.0.0.5/32
+
+          - default_route:
+              ipv4: true
+            firewall_id: '{{ firewall_id }}'
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: auto
+                    nat_1_1_address: auto
+                    primary: true
+                ranges:
+                  - range: /32
+        state: present
+      register: unchanged
+
+    - name: Asset instance unchanged
+      assert:
+        that:
+          - unchanged.changed == False
+
+    - name: Update the instance's interfaces
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: true
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: '{{ firewall_id }}'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+                  - range: /64
+
+          # NOTE: VLAN interface was dropped here
+
+          - firewall_id: '{{ firewall_id }}'
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+                ranges:
+                  - range: /32
+                  - range: /32
+        state: present
+      register: update
+
+    - name: Assert instance updated
+      assert:
+        that:
+          - update.changed
+          - update.instance.status == 'running'
+
+          - update.instance.ipv4|length == 1
+
+          - update.linode_interfaces | length == 2
+
+          # Public interface
+          - update.linode_interfaces[0].default_route.ipv4 == True
+          - update.linode_interfaces[0].default_route.ipv6 == True
+
+          - update.linode_interfaces[0].public.ipv4.addresses[0].address == create.linode_interfaces[0].public.ipv4.addresses[0].address
+          - update.linode_interfaces[0].public.ipv4.addresses[0].primary == True
+
+          - update.linode_interfaces[0].public.ipv6.ranges | length == 2
+          - update.linode_interfaces[0].public.ipv6.ranges | selectattr("range", "equalto", create.linode_interfaces[0].public.ipv6.ranges[0].range) | length == 1
+
+          # VPC interface
+          - update.linode_interfaces[1].default_route.ipv4 == False
+          - update.linode_interfaces[1].vpc.subnet_id == create_subnet.subnet.id
+          - update.linode_interfaces[1].vpc.ipv4.addresses[0].address == create.linode_interfaces[2].vpc.ipv4.addresses[0].address
+          - update.linode_interfaces[1].vpc.ipv4.addresses[0].nat_1_1_address == None
+          - update.linode_interfaces[1].vpc.ipv4.addresses[0].primary == True
+
+          - update.linode_interfaces[1].vpc.ipv4.ranges | length == 2
+          - update.linode_interfaces[1].vpc.ipv4.ranges | selectattr("range", "equalto", create.linode_interfaces[2].vpc.ipv4.ranges[0].range) | length == 1
+
+    - name: Don't change the instance
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: true
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: '{{ firewall_id }}'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+                  - range: /64
+
+          # NOTE: VLAN interface was dropped here
+
+          - firewall_id: '{{ firewall_id }}'
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+                ranges:
+                  - range: /32
+                  - range: /32
+        state: present
+      register: unchanged
+
+    - name: Asset instance unchanged
+      assert:
+        that:
+          - unchanged.changed == False
+
+    - name: Add a VLAN interface
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: false
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: '{{ firewall_id }}'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+                  - range: /64
+
+          - vlan:
+              vlan_label: ansible-test-vlan-2
+              ipam_address: 10.0.0.6/32
+
+          - firewall_id: '{{ firewall_id }}'
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+                ranges:
+                  - range: /32
+                  - range: /32
+        state: present
+      register: add_vlan_interface
+
+    - name: Assert VLAN interface appended
+      assert:
+        that:
+          - add_vlan_interface.changed
+          - add_vlan_interface.instance.status == 'offline'
+
+          - add_vlan_interface.instance.ipv4|length == 1
+
+          - add_vlan_interface.linode_interfaces | length == 3
+
+          - add_vlan_interface.linode_interfaces[2].vlan.vlan_label == 'ansible-test-vlan-2'
+          - add_vlan_interface.linode_interfaces[2].vlan.ipam_address == '10.0.0.6/32'
+
+    - name: Don't change the instance
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: false
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: '{{ firewall_id }}'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+                  - range: /64
+
+          - vlan:
+              vlan_label: ansible-test-vlan-2
+              ipam_address: 10.0.0.6/32
+
+          - firewall_id: '{{ firewall_id }}'
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+                ranges:
+                  - range: /32
+                  - range: /32
+        state: present
+      register: unchanged
+
+    - name: Assert instance unchanged
+      assert:
+        that:
+          - unchanged.changed == False
+
+    - name: Attempt to change an interface's firewall ID and expect and error
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
+        booted: false
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: '123'
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+              ipv6:
+                ranges:
+                  - range: /64
+                  - range: /64
+
+        state: present
+      register: attempt_update_firewall_id
+      failed_when: '"firewall_id cannot be updated on an existing interface" not in attempt_update_firewall_id["msg"]'
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.instance.id == create.instance.id
+
+        - name: Delete the VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+        - name: Assert VPC delete succeeded
+          assert:
+            that:
+              - delete_vpc.changed
+              - delete_vpc.vpc.id == create_vpc.vpc.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

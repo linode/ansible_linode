@@ -14,14 +14,15 @@ jobs:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: checkout repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: .ansible/collections/ansible_collections/linode/cloud
 
       - name: setup python 3
         uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
+          python-version: '3.13'
 
       - name: install dependencies
         run: make deps

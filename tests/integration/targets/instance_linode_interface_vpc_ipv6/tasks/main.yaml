@@ -1,0 +1,210 @@
+- name: instance_linode_interfaces_vpc_ipv6
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions that support VPC Dual Stack
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "VPC Dual Stack") | selectattr("capabilities", "search", "Linode Interfaces") | list)[0].id }}'
+
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: "ansible-test-{{ r }}"
+        region: "{{ region }}"
+        ipv6:
+          - range: "auto"
+        state: present
+      register: create_vpc
+
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: "{{ create_vpc.vpc.id }}"
+        label: "test-subnet"
+        ipv4: "10.0.0.0/24"
+        ipv6:
+          - range: "auto"
+        state: present
+      register: create_subnet
+
+    - name: Create an instance with an implicit image and dedicated Linode interfaces
+      linode.cloud.instance:
+        label: "ansible-test-{{ r }}"
+        region: "{{ region }}"
+        type: g6-standard-1
+        image: linode/ubuntu24.04
+        root_pass: Fn$$oobar123
+        booted: true
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: "{{ firewall_id }}"
+            vpc:
+              subnet_id: "{{ create_subnet.subnet.id }}"
+              ipv6:
+                is_public: true
+                slaac:
+                  - range: auto
+                ranges:
+                  - range: auto
+        state: present
+      register: create
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create.changed
+          - create.instance.status == "running"
+          - create.linode_interfaces | length == 1
+
+          # VPC interface
+          - create.linode_interfaces[0].default_route.ipv4 == True
+          - create.linode_interfaces[0].default_route.ipv6 == True
+
+          - create.linode_interfaces[0].vpc.subnet_id == create_subnet.subnet.id
+
+          - create.linode_interfaces[0].vpc.ipv6.is_public == True
+
+          - create.linode_interfaces[0].vpc.ipv6.slaac | length == 1
+          - create.linode_interfaces[0].vpc.ipv6.slaac[0].range | length > 4
+
+          - create.linode_interfaces[0].vpc.ipv6.ranges | length == 1
+          - create.linode_interfaces[0].vpc.ipv6.ranges[0].range | length > 4
+
+    - name: Make various updates
+      linode.cloud.instance:
+        label: "ansible-test-{{ r }}"
+        region: "{{ region }}"
+        type: g6-standard-1
+        image: linode/ubuntu24.04
+        root_pass: Fn$$oobar123
+        booted: true
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: "{{ firewall_id }}"
+            vpc:
+              subnet_id: "{{ create_subnet.subnet.id }}"
+              ipv6:
+                is_public: false # true -> false
+                slaac:
+                  - range: auto
+                ranges:
+                  - range: "{{ create.linode_interfaces[0].vpc.ipv6.ranges[0].range }}"
+                  - range: auto # Range added
+        state: present
+      register: update
+
+    - name: Assert updates
+      assert:
+        that:
+          - update.changed
+          - update.instance.status == "running"
+          - update.linode_interfaces | length == 1
+
+          # VPC interface
+          - update.linode_interfaces[0].default_route.ipv4 == True
+          - update.linode_interfaces[0].default_route.ipv6 == True
+
+          - update.linode_interfaces[0].vpc.subnet_id == create_subnet.subnet.id
+
+          - update.linode_interfaces[0].vpc.ipv6.is_public == False
+
+          - update.linode_interfaces[0].vpc.ipv6.slaac | length == 1
+          - update.linode_interfaces[0].vpc.ipv6.slaac[0].range | length > 4
+
+          - update.linode_interfaces[0].vpc.ipv6.ranges | length == 2
+          - update.linode_interfaces[0].vpc.ipv6.ranges[0].range | length > 4
+          - update.linode_interfaces[0].vpc.ipv6.ranges[1].range | length > 4
+
+    - name: Leave unchanged
+      linode.cloud.instance:
+        label: "ansible-test-{{ r }}"
+        region: "{{ region }}"
+        type: g6-standard-1
+        image: linode/ubuntu24.04
+        root_pass: Fn$$oobar123
+        booted: true
+        allow_implicit_reboots: true
+        interface_generation: linode
+        linode_interfaces:
+          - default_route:
+              ipv4: true
+              ipv6: true
+            firewall_id: "{{ firewall_id }}"
+            vpc:
+              subnet_id: "{{ create_subnet.subnet.id }}"
+              ipv6:
+                slaac:
+                  - range: auto
+                ranges:
+                  - range: auto
+                  - range: "{{ update.linode_interfaces[0].vpc.ipv6.ranges[1].range }}"
+        state: present
+      register: unchanged
+
+    - name: Assert unchanged
+      assert:
+        that:
+          - unchanged.changed == False
+          - unchanged.instance.status == "running"
+          - unchanged.linode_interfaces | length == 1
+
+          # VPC interface
+          - unchanged.linode_interfaces[0].default_route.ipv4 == True
+          - unchanged.linode_interfaces[0].default_route.ipv6 == True
+
+          - unchanged.linode_interfaces[0].vpc.subnet_id == create_subnet.subnet.id
+
+          - unchanged.linode_interfaces[0].vpc.ipv6.is_public == False
+
+          - unchanged.linode_interfaces[0].vpc.ipv6.slaac | length == 1
+          - unchanged.linode_interfaces[0].vpc.ipv6.slaac[0].range | length > 4
+
+          - unchanged.linode_interfaces[0].vpc.ipv6.ranges | length == 2
+          - unchanged.linode_interfaces[0].vpc.ipv6.ranges[0].range | length > 4
+          - unchanged.linode_interfaces[0].vpc.ipv6.ranges[1].range | length > 4
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.instance.id == create.instance.id
+
+        - name: Delete the VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+        - name: Assert VPC delete succeeded
+          assert:
+            that:
+              - delete_vpc.changed
+              - delete_vpc.vpc.id == create_vpc.vpc.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+
