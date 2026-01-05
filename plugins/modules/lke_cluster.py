@@ -417,11 +417,21 @@ class LinodeLKECluster(LinodeModuleBase):
             self.register_action("Created LKE cluster {0}".format(label))
 
             # This is necessary to use fields not yet supported by linode_api4
+            nodepools = []
+            if "node_pools" in params:
+                nodepools = params.pop("node_pools")
+
+            if not nodepools and tier == "standard":
+                # throw error if no node pools specified for standard clusters
+                self.fail(
+                    msg="At least one node pool is required for standard LKE clusters."
+                )
+
             result = self.client.lke.cluster_create(
-                params.pop("region"),
-                label,
-                params.pop("node_pools"),
-                params.pop("k8s_version"),
+                region=params.pop("region"),
+                label=label,
+                node_pools=nodepools,
+                kube_version=params.pop("k8s_version"),
                 **params,
             )
 
@@ -515,7 +525,15 @@ class LinodeLKECluster(LinodeModuleBase):
         )
         new_params = {k: v for k, v in new_params.items() if k in CREATE_FIELDS}
 
-        pools = new_params.pop("node_pools")
+        pools = []
+        if "node_pools" in new_params:
+            pools = new_params.pop("node_pools")
+
+        tier = new_params.get("tier", "")
+        if not pools and tier == "standard":
+            self.fail(
+                msg="At least one node pool must be specified when creating a standard LKE cluster."
+            )
 
         # This is handled separately
         new_params.pop("k8s_version")
@@ -803,7 +821,9 @@ class LinodeLKECluster(LinodeModuleBase):
             return
 
         self._populate_kubeconfig_poll(cluster)
-        self._populate_dashboard_url_poll(cluster)
+        # enterprise clusters doesn't have dashboards.
+        if cluster.tier != "enterprise":
+            self._populate_dashboard_url_poll(cluster)
 
     def _handle_present(self) -> None:
         params = self.module.params
