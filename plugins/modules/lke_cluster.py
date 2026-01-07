@@ -821,7 +821,7 @@ class LinodeLKECluster(LinodeModuleBase):
             return
 
         self._populate_kubeconfig_poll(cluster)
-        # enterprise clusters doesn't have dashboards.
+        # enterprise clusters don't have dashboards.
         if cluster.tier != "enterprise":
             self._populate_dashboard_url_poll(cluster)
 
