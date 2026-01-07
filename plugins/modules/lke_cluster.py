@@ -424,7 +424,7 @@ class LinodeLKECluster(LinodeModuleBase):
             if not nodepools and tier == "standard":
                 # throw error if no node pools specified for standard clusters
                 self.fail(
-                    msg="At least one node pool is required for standard LKE clusters."
+                    msg="At least one node pool must be specified when creating standard LKE clusters."
                 )
 
             result = self.client.lke.cluster_create(
@@ -820,7 +820,7 @@ class LinodeLKECluster(LinodeModuleBase):
             return
 
         self._populate_kubeconfig_poll(cluster)
-        # enterprise clusters doesn't have dashboards.
+        # enterprise clusters don't have dashboards.
         if cluster.tier != "enterprise":
             self._populate_dashboard_url_poll(cluster)
 
