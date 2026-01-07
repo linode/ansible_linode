@@ -529,8 +529,7 @@ class LinodeLKECluster(LinodeModuleBase):
         if "node_pools" in new_params:
             pools = new_params.pop("node_pools")
 
-        tier = new_params.get("tier", "")
-        if not pools and tier == "standard":
+        if not pools and cluster.tier == "standard":
             self.fail(
                 msg="At least one node pool must be specified when creating a standard LKE cluster."
             )
