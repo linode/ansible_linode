@@ -138,16 +138,28 @@ class Module(LinodeModuleBase):
 
     def _handle_present(self) -> None:
         label = self.module.params.get("label")
+        requested_uuid = self.module.params.get("valid_for_sharegroup_uuid")
+
         token = self._get_image_share_group_token_by_label(label)
 
-        if not token:
+        if token:
+            token._api_get()
+
+            existing_uuid = token.valid_for_sharegroup_uuid
+
+            if requested_uuid != existing_uuid:
+                self.fail(
+                    msg=(
+                        "failed to update {} -> {}: valid_for_sharegroup_uuid "
+                        "is a non-updatable field"
+                    ).format(existing_uuid, requested_uuid)
+                )
+        else:
             token = self._create()
             self.register_action(
                 "Created Image Share Group Token {0}".format(label)
             )
-
-        # Force lazy-loading
-        token._api_get()
+            token._api_get()
 
         self.results["image_share_group_token"] = token._raw_json
 
