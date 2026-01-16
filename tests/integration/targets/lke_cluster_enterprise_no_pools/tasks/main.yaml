@@ -20,7 +20,12 @@
       register: all_regions
 
     - set_fact:
-        lke_e_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Kubernetes Enterprise") | list)[1].id }}'
+        lke_e_region: >-
+          {{ all_regions.regions
+             | selectattr("site_type", "equalto", "core")
+             | selectattr("capabilities", "search", "Kubernetes Enterprise")
+             | map(attribute="id")
+             | first }}
 
     - name: Create a Linode LKE Enterprise cluster without node pools
       linode.cloud.lke_cluster:
