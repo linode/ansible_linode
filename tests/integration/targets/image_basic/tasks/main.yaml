@@ -41,6 +41,8 @@
           - image_create.image.capabilities[0] == 'cloud-init'
           - image_create.image.tags | length == 2
           - image_create.image.size == image_create.image.total_size
+          - image_create.image.is_shared == false
+          - image_create.image.image_sharing.shared_with.sharegroup_count == 0
 
     - name: Get image_info by ID
       linode.cloud.image_info:
@@ -53,6 +55,8 @@
           - info_id.image.status == 'available'
           - info_id.image.description == 'cool'
           - info_id.image.id == image_create.image.id
+          - info_id.image.is_shared == false
+          - info_id.image.image_sharing.shared_with.sharegroup_count == 0
 
     - name: Get image_info by label
       linode.cloud.image_info:
