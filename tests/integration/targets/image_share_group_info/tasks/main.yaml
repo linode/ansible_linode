@@ -1,0 +1,35 @@
+- name: image_share_group_info
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create an image share group
+      linode.cloud.image_share_group:
+        label: 'ansible-test-{{ r }}'
+        state: present
+      register: share_group_create
+
+    - name: Get information about the Image Share Group
+      linode.cloud.image_share_group_info:
+        label: "{{ share_group_create.image_share_group.label }}"
+      register: share_group_info
+
+    - name: Assert Image Share Group information
+      assert:
+        that:
+          - share_group_info.image_share_group.label == "ansible-test-" ~ r
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete image share group
+          linode.cloud.image_share_group:
+            label: '{{ share_group_create.image_share_group.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

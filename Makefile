@@ -121,6 +121,11 @@ else
 	echo "LINODE_API_TOKEN must be set"; \
 	exit 1;
 endif
+    # Add producer/consumer tokens, may be empty
+	@echo "producer_api_token: $${LINODE_PRODUCER_API_TOKEN:-}" >> $(INTEGRATION_CONFIG)
+	@echo "consumer_api_token: $${LINODE_CONSUMER_API_TOKEN:-}" >> $(INTEGRATION_CONFIG)
+
+    # Common settings
 	@echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)
 	@echo "api_url: $$(url=$${LINODE_API_URL:-$${TEST_API_URL:-https://api.linode.com}}; echo $${url%/}/)" >> $(INTEGRATION_CONFIG)
 	@echo "api_version: $${LINODE_API_VERSION:-$${TEST_API_VERSION:-v4beta}}" >> $(INTEGRATION_CONFIG)
