@@ -27,7 +27,7 @@
       assert:
         that:
           - create_cluster.changed == false
-          - "'At least one node pool is required for standard LKE clusters.' in create_cluster.msg"
+          - "'At least one node pool must be specified when creating a standard LKE cluster.' in create_cluster.msg"
         fail_msg: "Expected cluster creation to fail without node_pools, but got: {{ create_cluster }}"
         success_msg: "Test passed: Cluster creation properly failed without node_pools"
 
