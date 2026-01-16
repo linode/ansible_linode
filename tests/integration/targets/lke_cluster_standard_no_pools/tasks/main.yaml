@@ -1,0 +1,40 @@
+- name: lke_cluster_standard_no_pools
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Resolve the latest K8s version
+      linode.cloud.lke_version_list: {}
+      register: get_lke_versions
+
+    - set_fact:
+        lke_versions: '{{ get_lke_versions.lke_versions|sort(attribute="id", reverse=True) }}'
+
+    - set_fact:
+        kube_version: '{{ lke_versions[0].id }}'
+
+    - name: Create a Linode LKE cluster without node_pools (should fail)
+      linode.cloud.lke_cluster:
+        label: 'ansible-test-{{ r }}'
+        region: us-southeast
+        k8s_version: '{{ kube_version }}'
+        skip_polling: true
+        state: present
+      register: create_cluster
+      ignore_errors: yes
+
+    - name: Verify that cluster creation failed as expected
+      assert:
+        that:
+          - create_cluster.changed == false
+          - "'At least one node pool must be specified when creating a standard LKE cluster.' in create_cluster.msg"
+        fail_msg: "Expected cluster creation to fail without node_pools, but got: {{ create_cluster }}"
+        success_msg: "Test passed: Cluster creation properly failed without node_pools"
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

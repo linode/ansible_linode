@@ -369,6 +369,18 @@ class LinodeLKECluster(LinodeModuleBase):
                 msg="failed to get lke cluster {0}: {1}".format(name, exception)
             )
 
+    def _get_node_pools(self, tier: str, params: dict) -> Optional[List[dict]]:
+        nodepools = []
+        if "node_pools" in params:
+            nodepools = params.pop("node_pools")
+
+        if not nodepools and (not tier or tier == "standard"):
+            # throw error if no node pools specified for standard clusters
+            self.fail(
+                msg="At least one node pool must be specified when creating a standard LKE cluster."
+            )
+        return nodepools
+
     def _wait_for_all_nodes_ready(
         self, cluster: LKECluster, timeout: int
     ) -> None:
@@ -417,11 +429,13 @@ class LinodeLKECluster(LinodeModuleBase):
             self.register_action("Created LKE cluster {0}".format(label))
 
             # This is necessary to use fields not yet supported by linode_api4
+            nodepools = self._get_node_pools(tier, params)
+
             result = self.client.lke.cluster_create(
-                params.pop("region"),
-                label,
-                params.pop("node_pools"),
-                params.pop("k8s_version"),
+                region=params.pop("region"),
+                label=label,
+                node_pools=nodepools,
+                kube_version=params.pop("k8s_version"),
                 **params,
             )
 
@@ -514,8 +528,7 @@ class LinodeLKECluster(LinodeModuleBase):
             copy.deepcopy(self.module.params)
         )
         new_params = {k: v for k, v in new_params.items() if k in CREATE_FIELDS}
-
-        pools = new_params.pop("node_pools")
+        pools = self._get_node_pools(cluster.tier, new_params)
 
         # This is handled separately
         new_params.pop("k8s_version")
@@ -803,7 +816,9 @@ class LinodeLKECluster(LinodeModuleBase):
             return
 
         self._populate_kubeconfig_poll(cluster)
-        self._populate_dashboard_url_poll(cluster)
+        # enterprise clusters don't have dashboards.
+        if cluster.tier != "enterprise":
+            self._populate_dashboard_url_poll(cluster)
 
     def _handle_present(self) -> None:
         params = self.module.params
