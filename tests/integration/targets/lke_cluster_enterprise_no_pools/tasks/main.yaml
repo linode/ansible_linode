@@ -1,4 +1,4 @@
-- name: lke_cluster_enterprise
+- name: lke_cluster_enterprise_no_pools
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
