@@ -242,6 +242,16 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         self, config_data: Dict[str, Any]
     ) -> Tuple[Any, Any, Any]:
         """Get user specified query options from the configuration."""
+
+        def expand_templates(query_list: List[str]) -> List[str]:
+            items = []
+            for item in query_list:
+                if self.templar.is_template(item):
+                    items.append(self.templar.template(item, disable_lookups=False))
+                else:
+                    items.append(item)
+            return items
+
         options = {
             "regions": {
                 "type_to_be": list,
@@ -259,9 +269,9 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
                 name, options[name]["type_to_be"], options[name]["value"]
             )
 
-        regions = options["regions"]["value"]
-        types = options["types"]["value"]
-        tags = options["tags"]["value"]
+        regions = expand_templates(options["regions"]["value"])
+        types = expand_templates(options["types"]["value"])
+        tags = expand_templates(options["tags"]["value"])
 
         return regions, types, tags
 
