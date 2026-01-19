@@ -50,7 +50,7 @@ DOCUMENTATION = """
           default: []
           type: list
         tags:
-          description: Populate inventory only with instances which have at least one of the tags listed here.
+          description: Populate inventory only with instances which have at least one of the linode tags listed here.
           default: []
           type: list
         types:
@@ -75,13 +75,13 @@ types:
 plugin: linode.cloud.instance
 api_token: foobar
 keyed_groups:
-  - key: tags
+  - key: linode_tags
     separator: ''
   - key: region
     prefix: region
 groups:
-  webservers: "'web' in (tags|list)"
-  mailservers: "'mail' in (tags|list)"
+  webservers: "'web' in linode_tags"
+  mailservers: "'mail' in linode_tags"
 compose:
   ansible_port: 2222
 """
@@ -213,6 +213,12 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
             hostvars = {}
             hostvars.update(instance._raw_json)
             hostvars["networking_info"] = instance.ips.dict
+
+            # Fix #744 - Rename 'tags' to circumvent collision
+            # between linode tags and ansible tags, and avoid Ansible
+            # reserved word warning.
+            if 'tags' in hostvars:
+                hostvars['linode_tags'] = hostvars.pop('tags')
 
             for hostvar_key in hostvars:
                 self.inventory.set_variable(
