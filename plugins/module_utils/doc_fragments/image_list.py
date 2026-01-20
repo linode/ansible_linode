@@ -15,31 +15,43 @@ specdoc_examples = ['''
         values: Alpine''']
 
 result_images_samples = ['''[
-   {
-      "created":"2021-08-14T22:44:02",
-      "created_by":"my-account",
-      "deprecated":false,
-      "description":"Example Image description.",
-      "eol":"2026-07-01T04:00:00",
-      "expiry":null,
-      "id":"private/123",
-      "is_public":false,
-      "label":"test",
-      "size":2500,
-      "status":null,
-      "type":"manual",
-      "updated":"2021-08-14T22:44:02",
-      "vendor":"Debian",
-      "tags": ["test"],
-      "total_size": 5000,
+    {
+      "capabilities": [
+        "cloud-init",
+        "distributed-sites"
+      ],
+      "created": "2021-08-14T22:44:02",
+      "created_by": "linode",
+      "deprecated": false,
+      "description": "Example image description.",
+      "eol": "2026-07-01T04:00:00",
+      "expiry": null,
+      "id": "private/15",
+      "image_sharing": {
+        "shared_by": null,
+        "shared_with": {
+          "sharegroup_count": 0,
+          "sharegroup_list_url": "/images/private/15/sharegroups"
+        }
+      },
+      "is_public": false,
+      "is_shared": false,
+      "label": "Debian 11",
       "regions": [
         {
-            "region": "us-east",
-            "status": "available"
-        },
-        {
-            "region": "us-central",
-            "status": "pending"
-        }]
-       }
+          "region": "us-iad",
+          "status": "available"
+        }
+      ],
+      "size": 2500,
+      "status": "available",
+      "tags": [
+        "repair-image",
+        "fix-1"
+      ],
+      "total_size": 1234567,
+      "type": "manual",
+      "updated": "2021-08-14T22:44:02",
+      "vendor": "Debian"
+    }
 ]''']

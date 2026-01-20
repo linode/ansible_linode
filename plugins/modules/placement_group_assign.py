@@ -3,7 +3,6 @@
 
 """This module contains all the functionality for Linode Placement Group Assignment."""
 
-
 from __future__ import absolute_import, division, print_function
 
 from typing import Any, Optional
