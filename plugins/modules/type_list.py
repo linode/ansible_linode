@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """This module allows users to list Linode Instance Types."""
+
 from __future__ import absolute_import, division, print_function
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.type_list as docs

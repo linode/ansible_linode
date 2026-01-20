@@ -3,7 +3,6 @@
 
 """This module allows users to retrieve information about a Linode IP address."""
 
-
 from __future__ import absolute_import, division, print_function
 
 from typing import Any, Optional
