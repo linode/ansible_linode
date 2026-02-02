@@ -53,7 +53,7 @@ SPEC = {
             "The type of lock to apply.",
             "Only one delete-protection lock may exist per resource at a time.",
             "'cannot_delete' - Prevents deletion of the entity.",
-            "'cannot_delete_with_subresources' - Prevents deletion of the "
+            "'cannot_delete_with_subresources' - Prevents deletion of the ",
             "entity and its subresources (disks, configs, etc.).",
         ],
     ),
