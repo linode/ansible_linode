@@ -36,10 +36,10 @@ SPEC = {
     ),
     "entity_type": SpecField(
         type=FieldType.string,
-        choices=["linode", "nodebalancer"],
+        choices=["linode", "volume", "nodebalancer", "lkecluster", "lkenodepool"],
         description=[
             "The type of entity to lock.",
-            "Supported entity types: 'linode', 'nodebalancer'.",
+            "Supported entity types: 'linode', 'volume', 'nodebalancer', 'lkecluster', 'lkenodepool'.",
         ],
     ),
     "entity_id": SpecField(

@@ -61,7 +61,7 @@ NOTE: Locks cannot be updated. To change a lock, delete it and create a new one.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of the lock.  **(Choices: `present`, `absent`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the lock to delete. Only used when state is absent; ignored when state is present.   |
-| `entity_type` | <center>`str`</center> | <center>Optional</center> | The type of entity to lock. Supported entity types: 'linode', 'nodebalancer'.  **(Choices: `linode`, `nodebalancer`)** |
+| `entity_type` | <center>`str`</center> | <center>Optional</center> | The type of entity to lock. Supported entity types: 'linode', 'volume', 'nodebalancer', 'lkecluster', 'lkenodepool'.  **(Choices: `linode`, `volume`, `nodebalancer`, `lkecluster`, `lkenodepool`)** |
 | `entity_id` | <center>`int`</center> | <center>Optional</center> | The ID of the entity to lock.   |
 | `lock_type` | <center>`str`</center> | <center>Optional</center> | The type of lock to apply. Only one delete-protection lock may exist per resource at a time. 'cannot_delete' - Prevents deletion of the entity. 'cannot_delete_with_subresources' - Prevents deletion of the entity and its subresources (disks, configs, etc.).  **(Choices: `cannot_delete`, `cannot_delete_with_subresources`)** |
 
