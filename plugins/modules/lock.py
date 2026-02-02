@@ -45,7 +45,8 @@ SPEC = {
         ],
         description=[
             "The type of entity to lock.",
-            "Supported entity types: 'linode', 'volume', 'nodebalancer', 'lkecluster', 'lkenodepool'.",
+            "Supported entity types: "
+            + "'linode', 'volume', 'nodebalancer', 'lkecluster', 'lkenodepool'.",
         ],
     ),
     "entity_id": SpecField(
@@ -115,7 +116,7 @@ class Module(LinodeModuleBase):
             ],
         )
 
-    def _create_lock(self) -> Lock | None:
+    def _create_lock(self) -> Optional[Lock]:
         """Create a new resource lock."""
         params = filter_null_values(
             {
