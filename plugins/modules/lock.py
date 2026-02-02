@@ -130,7 +130,7 @@ class Module(LinodeModuleBase):
             result = self.client.locks.create(**params)
             return result
         except Exception as exception:
-            self.fail(msg=f"Failed to create lock: {exception}")
+            return self.fail(msg=f"Failed to create lock: {exception}")
 
     def _delete_lock(self, lock: Lock) -> None:
         """Delete a resource lock."""
@@ -156,7 +156,7 @@ class Module(LinodeModuleBase):
                     return lock._raw_json
             return None
         except Exception as exception:
-            self.fail(msg=f"Failed to list locks: {exception}")
+            return self.fail(msg=f"Failed to list locks: {exception}")
 
     def _handle_present(self) -> None:
         """Handle state=present - create a lock if it doesn't exist."""
