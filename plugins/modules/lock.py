@@ -36,7 +36,13 @@ SPEC = {
     ),
     "entity_type": SpecField(
         type=FieldType.string,
-        choices=["linode", "volume", "nodebalancer", "lkecluster", "lkenodepool"],
+        choices=[
+            "linode",
+            "volume",
+            "nodebalancer",
+            "lkecluster",
+            "lkenodepool",
+        ],
         description=[
             "The type of entity to lock.",
             "Supported entity types: 'linode', 'volume', 'nodebalancer', 'lkecluster', 'lkenodepool'.",
@@ -109,7 +115,7 @@ class Module(LinodeModuleBase):
             ],
         )
 
-    def _create_lock(self) -> dict:
+    def _create_lock(self) -> Lock | None:
         """Create a new resource lock."""
         params = filter_null_values(
             {
@@ -121,7 +127,7 @@ class Module(LinodeModuleBase):
 
         try:
             result = self.client.locks.create(**params)
-            return result._raw_json
+            return result
         except Exception as exception:
             self.fail(msg=f"Failed to create lock: {exception}")
 
@@ -163,12 +169,15 @@ class Module(LinodeModuleBase):
 
         # Create the lock
         lock = self._create_lock()
+        if not lock:
+            return
+
         self.register_action(
-            f"Created lock {lock.get('id')} on "
-            f"{self.module.params.get('entity_type')} "
-            f"{self.module.params.get('entity_id')}"
+            f"Created lock {lock.id} on "
+            f"{lock.entity.type} "
+            f"{lock.entity.id}"
         )
-        self.results["lock"] = lock
+        self.results["lock"] = lock._raw_json
 
     def _handle_absent(self) -> None:
         """Handle state=absent - delete the lock."""
