@@ -51,7 +51,7 @@ Get info about a Linode PostgreSQL Managed Database.
           "engine": "postgresql",
           "hosts": {
             "primary": "lin-0000-000-pgsql-primary.servers.linodedb.net",
-            "secondary": "lin-0000-000-pgsql-primary-private.servers.linodedb.net"
+            "standby": "lin-0000-000-pgsql-primary-private.servers.linodedb.net"
           },
           "id": 123,
           "label": "example-db",

@@ -95,7 +95,7 @@ Manage a Linode MySQL database.
           "engine": "mysql",
           "hosts": {
             "primary": "lin-123-456-mysql-mysql-primary.servers.linodedb.net",
-            "secondary": "lin-123-456-mysql-primary-private.servers.linodedb.net"
+            "standby": "lin-123-456-mysql-primary-private.servers.linodedb.net"
           },
           "id": 123,
           "label": "example-db",
