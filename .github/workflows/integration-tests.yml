@@ -65,7 +65,7 @@ jobs:
           ANSIBLE_CALLBACKS_ENABLED: "junit"
 
       - name: Upload Test Report as Artifact
-        if: always()
+        if: always() && github.event_name == 'push' 
         uses: actions/upload-artifact@v6
         with:
           name: xml-test-reports
