@@ -424,7 +424,6 @@ linode_instance_spec = {
         type=FieldType.string,
         description=[
             "The slug of the maintenance policy to apply during maintenance.",
-            "NOTE: This field is under v4beta.",
         ],
         choices=["linode/migrate", "linode/power_off_on"],
     ),
