@@ -74,7 +74,7 @@ NOTE: Domain records are identified by their name, target, and type.
 | `service` | <center>`str`</center> | <center>Optional</center> | An underscore (_) is prepended and a period (.) is appended automatically to the submitted value for this property. Only valid and required for SRV record requests. The name of the service.  **(Updatable)** |
 | `tag` | <center>`str`</center> | <center>Optional</center> | The tag portion of a CAA record. Only valid and required for CAA record requests.  **(Updatable)** |
 | `target` | <center>`str`</center> | <center>Optional</center> | The target for this Record.   |
-| `ttl_sec` | <center>`int`</center> | <center>Optional</center> | The amount of time in seconds that this Domain’s records may be cached by resolvers or other domain servers.  **(Updatable)** |
+| `ttl_sec` | <center>`int`</center> | <center>Optional</center> | Time to Live - the amount of time in seconds that this Domain's records may be cached by resolvers or other domain servers. Valid values are 300, 3600, 7200, 14400, 28800, 57600, 86400, 172800, 345600, 604800, 1209600, and 2419200 - any other value will be rounded to the nearest valid value.  **(Updatable)** |
 | `type` | <center>`str`</center> | <center>Optional</center> | The type of Record this is in the DNS system.   |
 | `weight` | <center>`int`</center> | <center>Optional</center> | The relative weight of this Record used in the case of identical priority.  **(Updatable)** |
 
