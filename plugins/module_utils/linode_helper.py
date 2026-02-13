@@ -35,6 +35,8 @@ from linode_api4.objects.filtering import (
 )
 from linode_api4.polling import TimeoutContext
 
+MAX_DEVICES_PER_CONFIG = 64
+
 
 def dict_select_spec(target: dict, spec: dict) -> dict:
     """Returns a new dictionary that only selects the keys from target that are specified in spec"""
@@ -694,3 +696,22 @@ def api_filter_constructor_for_aclp_monitor_services(
             value_filters = {"+and": result}
 
     return value_filters
+
+
+def generate_device_suffixes() -> List[str]:
+    """
+    Generates a list of device suffixes. Currently supports up to 64 devices,
+    which is the maximum number of devices supported by Linode instances.
+    The suffixes are generated in the format of a, b, c, ..., z, aa, ab, ..., az, ba, bb, ..., bl.
+    """
+    result = []
+    for i in range(MAX_DEVICES_PER_CONFIG):
+        if i < 26:
+            result.append(chr(ord("a") + i))
+        else:
+            shifted = i - 26
+            first_letter = chr(ord("a") + (shifted // 26))
+            second_letter = chr(ord("a") + (shifted % 26))
+            result.append(first_letter + second_letter)
+
+    return result
