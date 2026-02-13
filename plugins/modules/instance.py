@@ -1018,7 +1018,7 @@ class LinodeInstance(LinodeModuleBase):
 
         return None
 
-    def _calculate_devices(
+    def _reconcile_devices(
         self, config_params: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
         device_params = config_params.pop("devices")
@@ -1055,7 +1055,7 @@ class LinodeInstance(LinodeModuleBase):
         return devices
 
     def _create_config_register(self, config_params: Dict[str, Any]) -> None:
-        devices = self._calculate_devices(config_params)
+        devices = self._reconcile_devices(config_params)
         try:
             self._instance.config_create(
                 devices=devices, **filter_null_values(config_params)
