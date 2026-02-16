@@ -63,6 +63,10 @@ except ImportError:
     # handled in module_utils.linode_common
     pass
 
+MB_PER_GB = 1024
+MAX_DEVICE_LIMIT = 64
+MIN_DEVICE_LIMIT = 8
+
 linode_instance_metadata_spec = {
     "user_data": SpecField(
         type=FieldType.string,
@@ -163,7 +167,7 @@ linode_instance_devices_spec = {
         description=[f"The device to be mapped to /dev/sd{k}"],
         suboptions=linode_instance_device_spec,
     )
-    for k in generate_device_suffixes()
+    for k in generate_device_suffixes(MAX_DEVICE_LIMIT)
 }
 
 linode_instance_helpers_spec = {
@@ -724,10 +728,6 @@ RETURN = r"""
 class LinodeInstance(LinodeModuleBase):
     """Module for creating and destroying Linode Instances"""
 
-    MB_PER_GB = 1024
-    MAX_DEVICE_LIMIT = 64
-    MIN_DEVICE_LIMIT = 8
-
     def __init__(self) -> None:
         self.module_arg_spec = SPECDOC_META.ansible_spec
 
@@ -1020,22 +1020,22 @@ class LinodeInstance(LinodeModuleBase):
 
     def _reconcile_devices(
         self, config_params: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+    ) -> List[Union[Disk, Volume]]:
         device_params = config_params.pop("devices")
         devices = []
 
         if device_params is not None:
             device_limit = int(
                 max(
-                    self.MIN_DEVICE_LIMIT,
+                    MIN_DEVICE_LIMIT,
                     min(
-                        self._instance.specs.memory // self.MB_PER_GB,
-                        self.MAX_DEVICE_LIMIT,
+                        self._instance.specs.memory // MB_PER_GB,
+                        MAX_DEVICE_LIMIT,
                     ),
                 )
             )
 
-            for device_suffix in generate_device_suffixes():
+            for device_suffix in generate_device_suffixes(MAX_DEVICE_LIMIT):
                 device_name = "sd{0}".format(device_suffix)
                 if device_name not in device_params:
                     continue

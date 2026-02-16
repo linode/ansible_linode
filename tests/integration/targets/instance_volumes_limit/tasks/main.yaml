@@ -11,22 +11,22 @@
         size: "{{ item.size }}"
         state: present
       loop:
-        - { label: 'sdy', region: 'us-ord', size: 10 }
-        - { label: 'sdz', region: 'us-ord', size: 10 }
-        - { label: 'sdaa', region: 'us-ord', size: 10 }
-        - { label: 'sdaz', region: 'us-ord', size: 10 }
-        - { label: 'sdba', region: 'us-ord', size: 10 }
-        - { label: 'sdbb', region: 'us-ord', size: 10 }
-        - { label: 'sdbc', region: 'us-ord', size: 10 }
-        - { label: 'sdbd', region: 'us-ord', size: 10 }
-        - { label: 'sdbe', region: 'us-ord', size: 10 }
-        - { label: 'sdbf', region: 'us-ord', size: 10 }
-        - { label: 'sdbg', region: 'us-ord', size: 10 }
-        - { label: 'sdbh', region: 'us-ord', size: 10 }
-        - { label: 'sdbi', region: 'us-ord', size: 10 }
-        - { label: 'sdbj', region: 'us-ord', size: 10 }
-        - { label: 'sdbk', region: 'us-ord', size: 10 }
-        - { label: 'sdbl', region: 'us-ord', size: 10 }
+        - { label: 'sdy-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdz-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdaa-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdaz-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdba-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbb-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbc-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbd-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbe-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbf-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbg-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbh-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbi-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbj-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbk-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbl-{{ r }}', region: 'us-ord', size: 10 }
       register: volumes_output
 
     - name: Create a Linode instance with 16 volumes
@@ -111,7 +111,7 @@
     - name: Create extra volume for the instance to exceed the max limit
       linode.cloud.volume:
         region: 'us-ord'
-        label: 'sda-extra'
+        label: 'sda-extra-{{ r2 }}'
         size: 10
         state: present
       register: extra_volume
@@ -199,23 +199,23 @@
             label: '{{ item.label }}'
             state: absent
           loop:
-            - { label: 'sdy' }
-            - { label: 'sdz' }
-            - { label: 'sdaa' }
-            - { label: 'sdaz' }
-            - { label: 'sdba' }
-            - { label: 'sdbb' }
-            - { label: 'sdbc' }
-            - { label: 'sdbd' }
-            - { label: 'sdbe' }
-            - { label: 'sdbf' }
-            - { label: 'sdbg' }
-            - { label: 'sdbh' }
-            - { label: 'sdbi' }
-            - { label: 'sdbj' }
-            - { label: 'sdbk' }
-            - { label: 'sdbl' }
-            - { label: 'sda-extra' }
+            - { label: 'sdy-{{ r }}' }
+            - { label: 'sdz-{{ r }}' }
+            - { label: 'sdaa-{{ r }}' }
+            - { label: 'sdaz-{{ r }}' }
+            - { label: 'sdba-{{ r }}' }
+            - { label: 'sdbb-{{ r }}' }
+            - { label: 'sdbc-{{ r }}' }
+            - { label: 'sdbd-{{ r }}' }
+            - { label: 'sdbe-{{ r }}' }
+            - { label: 'sdbf-{{ r }}' }
+            - { label: 'sdbg-{{ r }}' }
+            - { label: 'sdbh-{{ r }}' }
+            - { label: 'sdbi-{{ r }}' }
+            - { label: 'sdbj-{{ r }}' }
+            - { label: 'sdbk-{{ r }}' }
+            - { label: 'sdbl-{{ r }}' }
+            - { label: 'sda-extra-{{ r2 }}' }
           register: delete_volumes
 
         - name: Assert volumes delete succeeded

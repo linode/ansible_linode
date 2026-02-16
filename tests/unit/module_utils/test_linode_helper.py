@@ -6,6 +6,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     generate_device_suffixes,
     validate_required,
 )
+from ansible_collections.linode.cloud.plugins.modules.instance import MAX_DEVICE_LIMIT
 
 
 class TestLinodeHelper:
@@ -89,5 +90,5 @@ class TestLinodeHelper:
                              'al', 'am', 'an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 
                              'aw', 'ax', 'ay', 'az', 'ba', 'bb', 'bc', 'bd', 'be', 'bf', 'bg', 
                              'bh', 'bi', 'bj', 'bk', 'bl']
-        result = generate_device_suffixes()
+        result = generate_device_suffixes(MAX_DEVICE_LIMIT)
         assert result == expected_suffixes
