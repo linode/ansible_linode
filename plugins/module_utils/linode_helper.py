@@ -694,3 +694,22 @@ def api_filter_constructor_for_aclp_monitor_services(
             value_filters = {"+and": result}
 
     return value_filters
+
+
+def generate_device_suffixes(max_device_limit: int) -> List[str]:
+    """
+    Generates a list of device suffixes. Currently supports up to 64 devices,
+    which is the maximum number of devices supported by Linode instances.
+    The suffixes are generated in the format of a, b, c, ..., z, aa, ab, ..., az, ba, bb, ..., bl.
+    """
+    result = []
+    for i in range(max_device_limit):
+        if i < 26:
+            result.append(chr(ord("a") + i))
+        else:
+            shifted = i - 26
+            first_letter = chr(ord("a") + (shifted // 26))
+            second_letter = chr(ord("a") + (shifted % 26))
+            result.append(first_letter + second_letter)
+
+    return result
