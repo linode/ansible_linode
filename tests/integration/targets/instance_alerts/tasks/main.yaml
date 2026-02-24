@@ -1,0 +1,142 @@
+- name: instance_alerts
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions that support PGs
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        pg_region: "{{ ( all_regions.regions | selectattr('site_type', 'equalto', 'core') | selectattr('capabilities', 'search', 'Placement Group') | selectattr('capabilities', 'search', 'Maintenance Policy') | list)[0].id }}"
+
+    - name: Get available system alert definitions for Linode
+      linode.cloud.monitor_services_alert_definition_by_service_type_list:
+        service_type: linode
+      register: linode_system_alert_defs
+
+    - name: Set a system_alert_id for tests (if any exist)
+      set_fact:
+        system_alert_id: >-
+          {{ (linode_system_alert_defs.alert_definitions | default([]) | first).id
+             if (linode_system_alert_defs.alert_definitions | default([]) | length) > 0
+             else None }}
+
+    - name: Attempt to create instance with legacy alerts (should fail)
+      linode.cloud.instance:
+        label: "ansible-test-alerts-invalid-create-{{ r }}"
+        region: "{{ pg_region }}"
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        private_ip: true
+        wait: false
+        state: present
+        alerts:
+          network_in: 5
+      register: invalid_alerts_create
+      failed_when:
+        - invalid_alerts_create.changed == true
+        - "'Only alerts.system_alerts and alerts.user_alerts' not in invalid_alerts_create.msg"
+
+    - name: Create instance with ACLP system alerts
+      linode.cloud.instance:
+        label: "ansible-test-aclp-alerts-create-{{ r }}"
+        region: "{{ pg_region }}"
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        private_ip: true
+        wait: false
+        state: present
+        alerts:
+          system_alerts:
+            - "{{ system_alert_id }}"
+      register: create_system_alerts
+      when:
+        - system_alert_id is not none
+
+    - name: Assert instance with system alerts created
+      assert:
+        that:
+          - create_system_alerts.changed
+      when:
+        - system_alert_id is not none
+
+    - name: Update alerts instance with legacy alerts (thresholds)
+      linode.cloud.instance:
+        label: "{{ create_system_alerts.instance.label }}"
+        region: "{{ pg_region }}"
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        private_ip: true
+        wait: false
+        state: present
+        alerts:
+          network_in: 5
+          network_out: 5
+          cpu: 90
+          transfer_quota: 80
+          io: 5000
+      register: update_legacy_alerts
+      when:
+        - create_system_alerts is defined
+        - create_system_alerts.instance is defined
+
+    - name: Assert alerts instance legacy alerts update changed
+      assert:
+        that:
+          - update_legacy_alerts.changed
+      when:
+        - update_legacy_alerts is defined
+
+    - name: Attempt to update alerts instance with both legacy and ACLP alerts (should fail)
+      linode.cloud.instance:
+        label: "{{ create_system_alerts.instance.label }}"
+        region: "{{ pg_region }}"
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        private_ip: true
+        wait: false
+        state: present
+        alerts:
+          network_in: 5
+          system_alerts:
+            - "{{ system_alert_id }}"
+      register: invalid_alerts_update_mixed
+      failed_when:
+        - invalid_alerts_update_mixed.changed == true
+        - "'can't be updated in one request' not in invalid_alerts_update_mixed.msg"
+      when:
+        - create_system_alerts is defined
+        - create_system_alerts.instance is defined
+        - system_alert_id is not none
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete system alerts instance (if created)
+          linode.cloud.instance:
+            label: "{{ create_system_alerts.instance.label }}"
+            state: absent
+          register: delete_system_alerts_instance
+          when:
+            - create_system_alerts is defined
+            - create_system_alerts.instance is defined
+            - create_system_alerts.instance.label is defined
+
+        - name: Assert system alerts instance delete succeeded
+          assert:
+            that:
+              - delete_system_alerts_instance.changed
+              - delete_system_alerts_instance.instance.id == create_system_alerts.instance.id
+          when:
+            - delete_system_alerts_instance is defined
+            - delete_system_alerts_instance.instance is defined
+            - create_system_alerts is defined
+            - create_system_alerts.instance is defined
+
+  environment:
+    LINODE_UA_PREFIX: "{{ ua_prefix }}"
+    LINODE_API_TOKEN: "{{ api_token }}"
+    LINODE_API_URL: "{{ api_url }}"
+    LINODE_API_VERSION: "{{ api_version }}"
+    LINODE_CA: "{{ ca_file or '' }}"
