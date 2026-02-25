@@ -1,4 +1,4 @@
-"""Documentation fragments for the database_mysql module"""
+"""Documentation fragments for the database_postgresql module"""
 
 result_database_samples = ['''{
   "allow_list": [
