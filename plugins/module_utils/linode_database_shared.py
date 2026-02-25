@@ -10,7 +10,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_specdoc.objects import FieldType, SpecField
 from linode_api4 import ApiError, LinodeClient
 
-
 SPEC_FORK = {
     "restore_time": SpecField(
         type=FieldType.string,
