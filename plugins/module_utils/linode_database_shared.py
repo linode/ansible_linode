@@ -10,44 +10,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 from ansible_specdoc.objects import FieldType, SpecField
 from linode_api4 import ApiError, LinodeClient
 
-SPEC_UPDATE_WINDOW = {
-    "day_of_week": SpecField(
-        type=FieldType.integer,
-        required=True,
-        choices=list(range(1, 8)),
-        description=[
-            "The day to perform maintenance. 1=Monday, 2=Tuesday, etc."
-        ],
-    ),
-    "duration": SpecField(
-        type=FieldType.integer,
-        required=True,
-        choices=[1, 3],
-        description=["The maximum maintenance window time in hours."],
-    ),
-    "frequency": SpecField(
-        type=FieldType.string,
-        choices=["weekly", "monthly"],
-        default="weekly",
-        description=[
-            "Whether maintenance occurs on a weekly or monthly basis."
-        ],
-    ),
-    "hour_of_day": SpecField(
-        type=FieldType.integer,
-        required=True,
-        description=["The hour to begin maintenance based in UTC time."],
-    ),
-    "week_of_month": SpecField(
-        type=FieldType.integer,
-        description=[
-            "The week of the month to perform monthly frequency updates.",
-            "Defaults to None.",
-            "Required for monthly frequency updates.",
-            "Must be null for weekly frequency updates.",
-        ],
-    ),
-}
 
 SPEC_FORK = {
     "restore_time": SpecField(
