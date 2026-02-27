@@ -30,9 +30,9 @@
         image: linode/ubuntu22.04
         private_ip: true
         wait: false
-        state: present
         alerts:
           network_in: 5
+        state: present
       register: invalid_alerts_create
       failed_when:
         - invalid_alerts_create.changed == true
@@ -44,12 +44,11 @@
         region: "{{ pg_region }}"
         type: g6-standard-1
         image: linode/ubuntu22.04
-        private_ip: true
-        wait: false
-        state: present
+        wait: true
         alerts:
           system_alerts:
             - "{{ system_alert_id }}"
+        state: present
       register: create_system_alerts
       when:
         - system_alert_id is not none
@@ -67,15 +66,14 @@
         region: "{{ pg_region }}"
         type: g6-standard-1
         image: linode/ubuntu22.04
-        private_ip: true
         wait: false
-        state: present
         alerts:
           network_in: 5
           network_out: 5
           cpu: 90
           transfer_quota: 80
           io: 5000
+        state: present
       register: update_legacy_alerts
       when:
         - create_system_alerts is defined
@@ -94,13 +92,12 @@
         region: "{{ pg_region }}"
         type: g6-standard-1
         image: linode/ubuntu22.04
-        private_ip: true
         wait: false
-        state: present
         alerts:
           network_in: 5
           system_alerts:
             - "{{ system_alert_id }}"
+        state: present
       register: invalid_alerts_update_mixed
       failed_when:
         - invalid_alerts_update_mixed.changed == true

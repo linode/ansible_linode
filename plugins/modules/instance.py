@@ -1526,10 +1526,10 @@ class LinodeInstance(LinodeModuleBase):
             if legacy_present and aclp_present:
                 self.fail(
                     msg=(
-                        "legacy alerts: network_in, network_out, cpu, "
-                        "transfer_quota, and io, "
-                        "and ACLP alerts: system_alerts, and user_alerts, "
-                        "can't be updated in one request"
+                        "legacy alerts (network_in, network_out, cpu, "
+                        "transfer_quota, io) "
+                        "and ACLP alerts (system_alerts, user_alerts) "
+                        "can't be updated together in one request"
                     )
                 )
 
