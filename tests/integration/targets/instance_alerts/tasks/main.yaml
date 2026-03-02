@@ -34,9 +34,13 @@
           network_in: 5
         state: present
       register: invalid_alerts_create
-      failed_when:
-        - invalid_alerts_create.changed == true
-        - "'Only alerts.system_alerts and alerts.user_alerts' not in invalid_alerts_create.msg"
+      failed_when: false
+
+    - name: Assert legacy alerts instance creation failed as expected
+      assert:
+        that:
+          - invalid_alerts_create.failed
+          - "'Only alerts.system_alerts and alerts.user_alerts' in invalid_alerts_create.msg"
 
     - name: Create instance with ACLP system alerts
       linode.cloud.instance:

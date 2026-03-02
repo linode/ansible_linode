@@ -395,7 +395,7 @@ linode_instance_alerts_spec = {
             "The amount of incoming traffic, in Mbit/s, required to trigger an alert. "
             "If the average incoming traffic over two hours exceeds this value, "
             "we'll send you an alert. "
-            "If this is set to 0 (zero), the alert is disabled."
+            "If this is set to 0 (zero), the alert is disabled. "
             "Update only. "
         ],
     ),
@@ -426,7 +426,7 @@ linode_instance_alerts_spec = {
         description=[
             "The percentage of network transfer that may be used before an alert is triggered. "
             "When this value is exceeded, we'll alert you. "
-            "If this is set to 0 (zero), the alert is disabled."
+            "If this is set to 0 (zero), the alert is disabled. "
             "Update only. "
         ],
     ),
@@ -437,7 +437,7 @@ linode_instance_alerts_spec = {
             "The amount of disk IO operation per second required to trigger an alert. "
             "If the average disk IO over two hours exceeds this value, "
             "we'll send you an alert. "
-            "If set to 0, this alert is disabled."
+            "If set to 0, this alert is disabled. "
             "Update only. "
         ],
     ),
