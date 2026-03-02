@@ -9,35 +9,34 @@
 
     - set_fact:
         pg_region: "{{ ( all_regions.regions | selectattr('site_type', 'equalto', 'core') | selectattr('capabilities', 'search', 'Placement Group') | selectattr('capabilities', 'search', 'Maintenance Policy') | list)[0].id }}"
-        system_alert_id: 435
 
-#    - name: Get available system alert definitions for Linode
-#      linode.cloud.monitor_services_alert_definition_by_service_type_list:
-#        service_type: linode
-#      register: linode_system_alert_defs
+    - name: Get available system alert definitions for Linode
+      linode.cloud.monitor_services_alert_definition_by_service_type_list:
+        service_type: linode
+      register: linode_system_alert_defs
 
-#    - name: Set a system_alert_id for tests (if any exist)
-#      set_fact:
-#        system_alert_id: >-
-#          {{ (linode_system_alert_defs.alert_definitions | default([]) | first).id
-#             if (linode_system_alert_defs.alert_definitions | default([]) | length) > 0
-#             else None }}
+    - name: Set a system_alert_id for tests (if any exist)
+      set_fact:
+        system_alert_id: >-
+          {{ (linode_system_alert_defs.alert_definitions | default([]) | first).id
+             if (linode_system_alert_defs.alert_definitions | default([]) | length) > 0
+             else None }}
 
-#    - name: Attempt to create instance with legacy alerts (should fail)
-#      linode.cloud.instance:
-#        label: "ansible-test-alerts-invalid-create-{{ r }}"
-#        region: "{{ pg_region }}"
-#        type: g6-standard-1
-#        image: linode/ubuntu22.04
-#        private_ip: true
-#        wait: false
-#        alerts:
-#          network_in: 5
-#        state: present
-#      register: invalid_alerts_create
-#      failed_when:
-#        - invalid_alerts_create.changed == true
-#        - "'Only alerts.system_alerts and alerts.user_alerts' not in invalid_alerts_create.msg"
+    - name: Attempt to create instance with legacy alerts (should fail)
+      linode.cloud.instance:
+        label: "ansible-test-alerts-invalid-create-{{ r }}"
+        region: "{{ pg_region }}"
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        private_ip: true
+        wait: false
+        alerts:
+          network_in: 5
+        state: present
+      register: invalid_alerts_create
+      failed_when:
+        - invalid_alerts_create.changed == true
+        - "'Only alerts.system_alerts and alerts.user_alerts' not in invalid_alerts_create.msg"
 
     - name: Create instance with ACLP system alerts
       linode.cloud.instance:
