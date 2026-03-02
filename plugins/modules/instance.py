@@ -1502,37 +1502,6 @@ class LinodeInstance(LinodeModuleBase):
 
         params = filter_null_values(self.module.params)
 
-        if "alerts" in params and params.get("alerts") is not None:
-            params["alerts"] = filter_null_values(params["alerts"])
-
-            legacy_keys = {
-                "network_in",
-                "network_out",
-                "cpu",
-                "transfer_quota",
-                "io",
-            }
-            aclp_keys = {"system_alerts", "user_alerts"}
-
-            legacy_present = any(
-                k in params["alerts"] and params["alerts"].get(k) is not None
-                for k in legacy_keys
-            )
-            aclp_present = any(
-                k in params["alerts"] and params["alerts"].get(k) is not None
-                for k in aclp_keys
-            )
-
-            if legacy_present and aclp_present:
-                self.fail(
-                    msg=(
-                        "legacy alerts (network_in, network_out, cpu, "
-                        "transfer_quota, io) "
-                        "and ACLP alerts (system_alerts, user_alerts) "
-                        "can't be updated together in one request"
-                    )
-                )
-
         update_params = {
             k: v
             for k, v in params.items()

@@ -9,34 +9,35 @@
 
     - set_fact:
         pg_region: "{{ ( all_regions.regions | selectattr('site_type', 'equalto', 'core') | selectattr('capabilities', 'search', 'Placement Group') | selectattr('capabilities', 'search', 'Maintenance Policy') | list)[0].id }}"
+        system_alert_id: 435
 
-    - name: Get available system alert definitions for Linode
-      linode.cloud.monitor_services_alert_definition_by_service_type_list:
-        service_type: linode
-      register: linode_system_alert_defs
+#    - name: Get available system alert definitions for Linode
+#      linode.cloud.monitor_services_alert_definition_by_service_type_list:
+#        service_type: linode
+#      register: linode_system_alert_defs
 
-    - name: Set a system_alert_id for tests (if any exist)
-      set_fact:
-        system_alert_id: >-
-          {{ (linode_system_alert_defs.alert_definitions | default([]) | first).id
-             if (linode_system_alert_defs.alert_definitions | default([]) | length) > 0
-             else None }}
+#    - name: Set a system_alert_id for tests (if any exist)
+#      set_fact:
+#        system_alert_id: >-
+#          {{ (linode_system_alert_defs.alert_definitions | default([]) | first).id
+#             if (linode_system_alert_defs.alert_definitions | default([]) | length) > 0
+#             else None }}
 
-    - name: Attempt to create instance with legacy alerts (should fail)
-      linode.cloud.instance:
-        label: "ansible-test-alerts-invalid-create-{{ r }}"
-        region: "{{ pg_region }}"
-        type: g6-standard-1
-        image: linode/ubuntu22.04
-        private_ip: true
-        wait: false
-        alerts:
-          network_in: 5
-        state: present
-      register: invalid_alerts_create
-      failed_when:
-        - invalid_alerts_create.changed == true
-        - "'Only alerts.system_alerts and alerts.user_alerts' not in invalid_alerts_create.msg"
+#    - name: Attempt to create instance with legacy alerts (should fail)
+#      linode.cloud.instance:
+#        label: "ansible-test-alerts-invalid-create-{{ r }}"
+#        region: "{{ pg_region }}"
+#        type: g6-standard-1
+#        image: linode/ubuntu22.04
+#        private_ip: true
+#        wait: false
+#        alerts:
+#          network_in: 5
+#        state: present
+#      register: invalid_alerts_create
+#      failed_when:
+#        - invalid_alerts_create.changed == true
+#        - "'Only alerts.system_alerts and alerts.user_alerts' not in invalid_alerts_create.msg"
 
     - name: Create instance with ACLP system alerts
       linode.cloud.instance:
@@ -57,10 +58,34 @@
       assert:
         that:
           - create_system_alerts.changed
+          - create_system_alerts.instance.alerts.system_alerts | length == 1
+          - create_system_alerts.instance.alerts.system_alerts[0] == system_alert_id
       when:
         - system_alert_id is not none
 
-    - name: Update alerts instance with legacy alerts (thresholds)
+    - name: Disable ACLP system alerts for the instance
+      linode.cloud.instance:
+        label: "ansible-test-aclp-alerts-create-{{ r }}"
+        region: "{{ pg_region }}"
+        type: g6-standard-1
+        image: linode/ubuntu22.04
+        wait: true
+        alerts:
+          system_alerts: []
+        state: present
+      register: disable_system_alerts
+      when:
+        - create_system_alerts is defined
+
+    - name: Assert ACLP system alerts disabled
+      assert:
+        that:
+          - disable_system_alerts.changed
+          - disable_system_alerts.instance.alerts.system_alerts | length == 0
+      when:
+        - disable_system_alerts is defined
+
+    - name: Update alerts instance with legacy alerts
       linode.cloud.instance:
         label: "{{ create_system_alerts.instance.label }}"
         region: "{{ pg_region }}"
@@ -83,29 +108,13 @@
       assert:
         that:
           - update_legacy_alerts.changed
+          - update_legacy_alerts.instance.alerts.network_in == 5
+          - update_legacy_alerts.instance.alerts.network_out == 5
+          - update_legacy_alerts.instance.alerts.cpu == 90
+          - update_legacy_alerts.instance.alerts.transfer_quota == 80
+          - update_legacy_alerts.instance.alerts.io == 5000
       when:
         - update_legacy_alerts is defined
-
-    - name: Attempt to update alerts instance with both legacy and ACLP alerts (should fail)
-      linode.cloud.instance:
-        label: "{{ create_system_alerts.instance.label }}"
-        region: "{{ pg_region }}"
-        type: g6-standard-1
-        image: linode/ubuntu22.04
-        wait: false
-        alerts:
-          network_in: 5
-          system_alerts:
-            - "{{ system_alert_id }}"
-        state: present
-      register: invalid_alerts_update_mixed
-      failed_when:
-        - invalid_alerts_update_mixed.changed == true
-        - "'can't be updated in one request' not in invalid_alerts_update_mixed.msg"
-      when:
-        - create_system_alerts is defined
-        - create_system_alerts.instance is defined
-        - system_alert_id is not none
 
   always:
     - ignore_errors: true
