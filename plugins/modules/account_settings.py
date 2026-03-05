@@ -61,7 +61,6 @@ SPEC = {
         type=FieldType.string,
         description=[
             "The Slug of the maintenance policy associated with the account.",
-            "NOTE: This field is under v4beta.",
         ],
         choices=["linode/migrate", "linode/power_off_on"],
     ),
