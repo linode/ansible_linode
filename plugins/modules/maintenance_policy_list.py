@@ -19,7 +19,6 @@ module = ListModule(
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-maintenance-policies",
     examples=docs.specdoc_examples,
     result_samples=docs.result_maintenance_policy_samples,
-    requires_beta=True,
 )
 
 SPECDOC_META = module.spec
