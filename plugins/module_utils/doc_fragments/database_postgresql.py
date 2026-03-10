@@ -1,33 +1,4 @@
-"""Documentation fragments for the database_mysql module"""
-
-specdoc_examples = ['''
-- name: Create a basic PostgreSQL database
-  linode.cloud.database_postgresql:
-    label: my-db
-    region: us-east
-    engine: postgresql/14.6
-    type: g6-standard-1
-    allow_list:
-      - 0.0.0.0/0
-    state: present''', '''
-- name: Create a complex 3 node PostgreSQL database
-  linode.cloud.database_postgresql:
-    label: my-db
-    region: us-east
-    engine: postgresql/14.6
-    type: g6-standard-1
-    allow_list:
-      - 0.0.0.0/0
-    encrypted: true
-    cluster_size: 3
-    replication_type: semi_synch
-    replication_commit_type: remote_apply
-    ssl_connection: true
-    state: present''', '''
-- name: Delete a PostgreSQL database
-  linode.cloud.database_postgresql:
-    label: my-db
-    state: absent''']
+"""Documentation fragments for the database_postgresql module"""
 
 result_database_samples = ['''{
   "allow_list": [
