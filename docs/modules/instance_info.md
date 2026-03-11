@@ -86,6 +86,7 @@ Get info about a Linode Instance.
           "disk_encryption": "enabled",
           "lke_cluster_id": null,
           "maintenance_policy": "linode/migrate",
+          "locks": [],
           "placement_group": {
             "id": 123,
             "label": "test",
