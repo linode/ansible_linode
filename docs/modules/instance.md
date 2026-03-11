@@ -229,7 +229,7 @@ Manage Linode Instances, Configs, and Disks.
 | `image` | <center>`str`</center> | <center>Optional</center> | The image ID to deploy the instance disk from.  **(Conflicts With: `disks`,`configs`)** |
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
 | `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
-| `maintenance_policy` | <center>`str`</center> | <center>Optional</center> | The slug of the maintenance policy to apply during maintenance. NOTE: This field is under v4beta.  **(Choices: `linode/migrate`, `linode/power_off_on`)** |
+| `maintenance_policy` | <center>`str`</center> | <center>Optional</center> | The slug of the maintenance policy to apply during maintenance.  **(Choices: `linode/migrate`, `linode/power_off_on`)** |
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If not specified, one will be generated. This generated password will be available in the task success JSON.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
@@ -256,7 +256,7 @@ Manage Linode Instances, Configs, and Disks.
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object. Tags are for organizational purposes only.  **(Updatable)** |
 | `capabilities` | <center>`list`</center> | <center>Optional</center> | Read-only. A list of capabilities this compute instance supports.   |
 | [`placement_group` (sub-options)](#placement_group) | <center>`dict`</center> | <center>Optional</center> | A Placement Group to create this Linode under.   |
-| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this Linode. NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`)** |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this Linode.  **(Choices: `enabled`, `disabled`)** |
 | `swap_size` | <center>`int`</center> | <center>Optional</center> | When deploying from an Image, this field is optional, otherwise it is ignored. This is used to set the swap disk size for the newly-created Linode.   |
 
 ### configs
@@ -410,7 +410,7 @@ Manage Linode Instances, Configs, and Disks.
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
 | `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
 | `filesystem` | <center>`str`</center> | <center>Optional</center> | The filesystem to create this disk with.   |
-| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | **READ ONLY** The disk encryption status of this disk.NOTE: Disk encryption may not currently be available to all users and is set at the Linode Level.  **(Choices: `enabled`, `disabled`)** |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | **READ ONLY** The disk encryption status of this disk. This value is set at the Linode level.  **(Choices: `enabled`, `disabled`)** |
 | `image` | <center>`str`</center> | <center>Optional</center> | An Image ID to deploy the Disk from.   |
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The root user’s password on the newly-created Linode.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |

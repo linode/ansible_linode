@@ -9,7 +9,7 @@ render_module_doc() {
 
   echo "Rendering: $MODULE_NAME"
 
-  ansible-specdoc -i "$1" -f jinja2 -t template/module.md.j2 -o "$DOCS_PATH/modules/$MODULE_NAME.md"
+  ansible-specdoc -i "$1" -f jinja2 -t template/module.md.j2 -o "$DOCS_PATH/modules/$MODULE_NAME.md" --yes
 }
 
 export -f render_module_doc
