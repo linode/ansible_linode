@@ -7,20 +7,35 @@ specdoc_examples = ['''
 
 result_alert_channels_samples = ['''[
     {
-      "alerts": [
-        {
-          "id": 10000,
-          "label": "High Memory Usage Plan Dedicated",
-          "type": "alerts-definitions",
-          "url": "/monitor/alerts-definitions/10000"
-        },
-        {
-          "id": 10001,
-          "label": "High Memory Usage Plan Shared",
-          "type": "alerts-definitions",
-          "url": "/monitor/alerts-definitions/10001"
+      "alerts": {
+        "alert_count": 5,
+        "type": "alerts-definitions",
+        "url": "/monitor/alerts-definitions/10000"
+      },
+      "channel_type": "email",
+      "created": "2025-03-20 01:41:09",
+      "created_by": "johndoe",
+      "details": {
+        "email": {
+          "recipient_type": "user",
+          "usernames": [
+            "johndoe",
+            "janedoe"
+          ]
         }
-      ],
+      },
+      "id": 10000,
+      "label": "Notification channel #1",
+      "type": "user",
+      "updated": "2025-03-20 01:41:09",
+      "updated_by": "johndoe"
+    },
+    {
+      "alerts": {
+        "alert_count": 3,
+        "type": "alerts-definitions",
+        "url": "/monitor/alert-channels/10001/alerts"
+      },
       "channel_type": "email",
       "content": {
         "email": {
@@ -29,12 +44,18 @@ result_alert_channels_samples = ['''[
           ]
         }
       },
-      "created": "2025-03-20T01:41:09",
+      "created": "2025-03-20 01:41:09",
       "created_by": "system",
-      "id": 10000,
+      "details": {
+        "email": {
+          "recipient_type": "read_write_users",
+          "usernames": []
+        }
+      },
+      "id": 10001,
       "label": "Read-Write Channel",
       "type": "system",
-      "updated": "2025-03-20T01:41:09",
+      "updated": "2025-03-20 01:41:09",
       "updated_by": "system"
     }
 ]
