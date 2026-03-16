@@ -1,0 +1,68 @@
+- name: nodebalancer_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: create empty premium nodebalancer
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-empty-{{ r }}'
+        region: us-ord
+        type: premium
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: create_empty_premium_nodebalancer
+
+    - name: Assert empty NodeBalancer is created
+      assert:
+        that:
+          - create_empty_premium_nodebalancer.changed
+          - create_empty_premium_nodebalancer.configs|length == 0
+          - create_empty_premium_nodebalancer.node_balancer.type == 'premium'
+
+    - name: update empty premium nodebalancer
+      linode.cloud.nodebalancer:
+        label: '{{ create_empty_premium_nodebalancer.node_balancer.label }}'
+        region: us-ord
+        client_conn_throttle: 6
+        state: present
+      register: update_empty_premium_nodebalancer
+
+    - name: Assert empty premium NodeBalancer is updated
+      assert:
+        that:
+          - update_empty_premium_nodebalancer.changed
+          - update_empty_premium_nodebalancer.node_balancer.client_conn_throttle == 6
+
+    - name: Get info about the NodeBalancer by id
+      linode.cloud.nodebalancer_info:
+        id: '{{ create_empty_premium_nodebalancer.node_balancer.id }}'
+      register: nb_info_id
+
+    - name: Assert that info is correct
+      assert:
+        that:
+          - nb_info_id.node_balancer.type == 'premium'
+          - nb_info_id.node_balancer.client_conn_throttle == 6
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the empty premium NodeBalancer
+          linode.cloud.nodebalancer:
+            label: '{{ create_empty_premium_nodebalancer.node_balancer.label }}'
+            state: absent
+          register: delete_empty
+
+        - name: Assert empty premium NodeBalancer delete
+          assert:
+            that:
+              - delete_empty.changed
+              - delete_empty.node_balancer.id == create_empty_premium_nodebalancer.node_balancer.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

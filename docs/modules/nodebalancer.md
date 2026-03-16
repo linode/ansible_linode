@@ -53,6 +53,7 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 | `firewall_id` | <center>`int`</center> | <center>Optional</center> | The ID of the Firewall to assign this NodeBalancer to.   |
 | `tags` | <center>`list`</center> | <center>Optional</center> | Tags to assign to this NodeBalancer.  **(Updatable)** |
 | [`configs` (sub-options)](#configs) | <center>`list`</center> | <center>Optional</center> | A list of configs to apply to the NodeBalancer.  **(Updatable)** |
+| `type` | <center>`str`</center> | <center>Optional</center> | The type of this NodeBalancer.  **(Choices: `common`, `premium`, `premium_40gb`)** |
 
 ### configs
 
@@ -101,6 +102,7 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
           "ipv6": null,
           "label": "balancer12345",
           "region": "us-east",
+          "type": "common",
           "tags": [
             "example tag",
             "another example"
@@ -151,7 +153,7 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-config) for a list of returned fields
 
 
-- `nodes` - A list of configs applied to the NodeBalancer.
+- `nodes` - A list of nodes applied to the NodeBalancer.
 
     - Sample Response:
         ```json

@@ -49,6 +49,7 @@ Get info about a Linode Node Balancer.
           "ipv6": null,
           "label": "balancer12345",
           "region": "us-east",
+          "type": "common",
           "tags": [
             "example tag",
             "another example"

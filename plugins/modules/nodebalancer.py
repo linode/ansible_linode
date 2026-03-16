@@ -283,6 +283,11 @@ linode_nodebalancer_spec = {
         editable=True,
         description=["A list of configs to apply to the NodeBalancer."],
     ),
+    "type": SpecField(
+        type=FieldType.string,
+        description=["The type of this NodeBalancer."],
+        choices=["common", "premium", "premium_40gb"],
+    ),
 }
 
 
@@ -309,7 +314,7 @@ SPECDOC_META = SpecDocMeta(
             sample=docs.result_configs_samples,
         ),
         "nodes": SpecReturnValue(
-            description="A list of configs applied to the NodeBalancer.",
+            description="A list of nodes applied to the NodeBalancer.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-node",
             type=FieldType.list,
             sample=docs.result_nodes_samples,
@@ -402,6 +407,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
                 "label",
                 "firewall_id",
                 "tags",
+                "type",
             }
         }
 

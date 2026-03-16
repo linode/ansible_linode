@@ -29,6 +29,7 @@ result_node_balancer_samples = ['''{
   "ipv6": null,
   "label": "balancer12345",
   "region": "us-east",
+  "type": "common",
   "tags": [
     "example tag",
     "another example"

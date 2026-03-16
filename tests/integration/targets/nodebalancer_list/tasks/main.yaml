@@ -25,6 +25,7 @@
       assert:
         that:
           - no_filter.nodebalancers | length >= 1
+          - no_filter.nodebalancers[0].type == 'common'
 
     - name: List nodebalancers with filter on region
       linode.cloud.nodebalancer_list:
@@ -40,6 +41,7 @@
         that:
           - filter.nodebalancers | length >= 1
           - filter.nodebalancers[0].region == 'us-ord'
+          - filter.nodebalancers[0].type == 'common'
 
   always:
     - ignore_errors: yes

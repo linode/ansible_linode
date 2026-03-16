@@ -69,7 +69,8 @@ List and filter on Node Balancers.
                 "out": 3.5487728118896484,
                 "total": 32.46078109741211
               },
-              "updated": "2018-03-01T00:01:01"
+              "updated": "2018-03-01T00:01:01",
+              "type": "common"
             }
         ]
         ```
