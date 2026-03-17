@@ -41,6 +41,10 @@
       assert:
         that:
           - create_nodebalancer_with_vpc.changed
+          - create_nodebalancer_with_vpc.vpcs|length == 1
+          - create_nodebalancer_with_vpc.vpcs[0].subnet_id == create_subnet.subnet.id
+          - create_nodebalancer_with_vpc.vpcs[0].purpose == "backend"
+          - create_nodebalancer_with_vpc.frontend_vpcs|length == 0
 
     - name: Get info about the NodeBalancer by id
       linode.cloud.nodebalancer_info:

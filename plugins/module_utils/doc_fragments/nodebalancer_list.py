@@ -17,6 +17,8 @@ result_nodebalancers_samples = ['''[
       "id": 12345,
       "ipv4": "203.0.113.1",
       "ipv6": null,
+      "frontend_address_type": "public",
+      "frontend_vpc_subnet_id": null,
       "label": "balancer12345",
       "region": "us-east",
       "tags": [

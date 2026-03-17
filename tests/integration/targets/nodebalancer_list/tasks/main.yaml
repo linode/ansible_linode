@@ -3,19 +3,69 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - name: create empty nodebalancer
-      linode.cloud.nodebalancer:
-        label: 'ansible-test-empty-{{ r }}'
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
         region: us-ord
+        ipv6:
+          - range: "/52"
+        description: test description
+        state: present
+      register: create_vpc
+
+    - name: Assert VPC created
+      assert:
+        that:
+          - create_vpc.changed
+          - create_vpc.vpc.label == 'ansible-test-{{ r }}'
+          - create_vpc.vpc.region == 'us-ord'
+          - create_vpc.vpc.description == 'test description'
+
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet-{{ r }}'
+        ipv4: '10.0.0.0/24'
+        ipv6:
+          - range: "auto"
+        state: present
+      register: create_subnet
+
+    - name: Assert VPC subnet created
+      assert:
+        that:
+          - create_subnet.changed
+          - create_subnet.subnet.label == 'test-subnet-{{ r }}'
+          - create_subnet.subnet.ipv4 == '10.0.0.0/24'
+
+    - name: create nodebalancer with vpcs
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: premium
         state: present
         firewall_id: '{{ firewall_id }}'
+        vpcs:
+          - subnet_id: '{{ create_subnet.subnet.id }}'
+        frontend_vpcs:
+          - subnet_id: '{{ create_subnet.subnet.id }}'
+            ipv4_range: '10.0.0.4/30'
+            ipv6_range: '{{ create_subnet.subnet.ipv6[0].range }}'
       register: create
 
-    - name: Assert empty NodeBalancer is created
+    - name: Assert NodeBalancer with VPCs is created
       assert:
         that:
           - create.changed
           - create.configs|length == 0
+          - create.node_balancer.frontend_address_type == 'vpc'
+          - create.node_balancer.frontend_vpc_subnet_id != None
+          - create.vpcs|length == 1
+          - create.vpcs[0].subnet_id == create_subnet.subnet.id
+          - create.vpcs[0].purpose == "backend"
+          - create.frontend_vpcs|length == 1
+          - create.frontend_vpcs[0].subnet_id == create_subnet.subnet.id
+          - create.frontend_vpcs[0].purpose == "frontend"
 
     - name: List nodebalancers with no filter
       linode.cloud.nodebalancer_list:
@@ -25,7 +75,9 @@
       assert:
         that:
           - no_filter.nodebalancers | length >= 1
-          - no_filter.nodebalancers[0].type == 'common'
+          - no_filter.nodebalancers[0].type == 'premium'
+          - no_filter.nodebalancers[0].frontend_address_type == 'vpc'
+          - no_filter.nodebalancers[0].frontend_vpc_subnet_id != None
 
     - name: List nodebalancers with filter on region
       linode.cloud.nodebalancer_list:
@@ -41,22 +93,37 @@
         that:
           - filter.nodebalancers | length >= 1
           - filter.nodebalancers[0].region == 'us-ord'
-          - filter.nodebalancers[0].type == 'common'
+          - filter.nodebalancers[0].type == 'premium'
+          - filter.nodebalancers[0].frontend_address_type == 'vpc'
+          - filter.nodebalancers[0].frontend_vpc_subnet_id != None
 
   always:
     - ignore_errors: yes
       block:
-        - name: Delete the empty NodeBalancer
+        - name: Delete the NodeBalancer
           linode.cloud.nodebalancer:
             label: '{{ create.node_balancer.label }}'
             state: absent
           register: delete
 
-        - name: Assert empty NodeBalancer delete
+        - name: Assert NodeBalancer delete
           assert:
             that:
               - delete.changed
               - create.node_balancer.id == delete.node_balancer.id
+
+        - name: Delete a subnet
+          linode.cloud.vpc_subnet:
+            vpc_id: '{{ create_vpc.vpc.id }}'
+            label: 'test-subnet-{{ r }}'
+            state: absent
+          register: delete_subnet
+
+        - name: Delete a VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'

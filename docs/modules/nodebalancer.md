@@ -23,6 +23,12 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
     region: us-east
     tags: [ prod-env ]
     state: present
+    vpcs:
+      - subnet_id: 12345
+        ipv4_range: '10.0.0.4/30'
+    frontend_vpcs:
+      - subnet_id: 67890
+        ipv4_range: '10.0.0.8/30'
     configs:
       - port: 80
         protocol: http
@@ -55,6 +61,7 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 | [`configs` (sub-options)](#configs) | <center>`list`</center> | <center>Optional</center> | A list of configs to apply to the NodeBalancer.  **(Updatable)** |
 | `type` | <center>`str`</center> | <center>Optional</center> | The type of this NodeBalancer.  **(Choices: `common`, `premium`, `premium_40gb`)** |
 | [`vpcs` (sub-options)](#vpcs) | <center>`list`</center> | <center>Optional</center> | A VPC configuration for backend nodes.   |
+| [`frontend_vpcs` (sub-options)](#frontend_vpcs) | <center>`list`</center> | <center>Optional</center> | A VPC configuration for frontend nodes.   |
 
 ### configs
 
@@ -96,6 +103,14 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 | `ipv4_range` | <center>`str`</center> | <center>Optional</center> | A CIDR range for the VPC's IPv4 addresses. The NodeBalancer sources IP addresses from this range when routing traffic to the backend VPC nodes.   |
 | `ipv4_range_auto_assign` | <center>`bool`</center> | <center>Optional</center> | Enables the use of a larger ipv4_range subnet for multiple NodeBalancers within the same VPC by allocating smaller /30 subnets for each NodeBalancer's backends.  **(Default: `False`)** |
 
+### frontend_vpcs
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `subnet_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the subnet to attach this NodeBalancer to.   |
+| `ipv4_range` | <center>`str`</center> | <center>Optional</center> | A CIDR range for the VPC's IPv4 addresses allocated as the NodeBalancer's frontend IPs.   |
+| `ipv6_range` | <center>`str`</center> | <center>Optional</center> | A CIDR range for the VPC's IPv6 addresses allocated as the NodeBalancer's frontend IPs.   |
+
 ## Return Values
 
 - `node_balancer` - The NodeBalancer in JSON serialized form.
@@ -109,6 +124,8 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
           "id": 12345,
           "ipv4": "12.34.56.78",
           "ipv6": null,
+          "frontend_address_type": "public",
+          "frontend_vpc_subnet_id": null,
           "label": "balancer12345",
           "region": "us-east",
           "type": "common",
@@ -192,5 +209,43 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
         ]
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-firewalls) for a list of returned fields
+
+
+- `vpcs` - A list of VPC configurations for backend nodes.
+
+    - Sample Response:
+        ```json
+        [
+          {
+            "id": 123,
+            "nodebalancer_id": 12345,
+            "subnet_id": 456,
+            "vpc_id": 789,
+            "ipv4_range": "10.0.0.4/30",
+            "ipv6_range": null,
+            "purpose": "backend"
+          }
+        ]
+        ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs) for a list of returned fields
+
+
+- `frontend_vpcs` - A list of VPC configurations for frontend nodes.
+
+    - Sample Response:
+        ```json
+        [
+          {
+            "id": 123,
+            "nodebalancer_id": 12345,
+            "subnet_id": 456,
+            "vpc_id": 789,
+            "ipv4_range": "10.0.0.4/30",
+            "ipv6_range": "2001:db8:1234::/48",
+            "purpose": "frontend"
+          }
+        ]
+        ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs) for a list of returned fields
 
 

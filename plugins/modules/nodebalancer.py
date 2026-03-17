@@ -259,6 +259,28 @@ linode_nodebalancer_vpc_spec = {
     ),
 }
 
+linode_nodebalancer_frontend_vpc_spec = {
+    "subnet_id": SpecField(
+        type=FieldType.integer,
+        required=True,
+        description=["The ID of the subnet to attach this NodeBalancer to."],
+    ),
+    "ipv4_range": SpecField(
+        type=FieldType.string,
+        description=[
+            "A CIDR range for the VPC's IPv4 addresses allocated "
+            "as the NodeBalancer's frontend IPs."
+        ],
+    ),
+    "ipv6_range": SpecField(
+        type=FieldType.string,
+        description=[
+            "A CIDR range for the VPC's IPv6 addresses allocated "
+            "as the NodeBalancer's frontend IPs."
+        ],
+    ),
+}
+
 linode_nodebalancer_spec = {
     "label": SpecField(
         type=FieldType.string,
@@ -319,6 +341,12 @@ linode_nodebalancer_spec = {
         suboptions=linode_nodebalancer_vpc_spec,
         description=["A VPC configuration for backend nodes."],
     ),
+    "frontend_vpcs": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_nodebalancer_frontend_vpc_spec,
+        description=["A VPC configuration for frontend nodes."],
+    ),
 }
 
 
@@ -357,6 +385,18 @@ SPECDOC_META = SpecDocMeta(
             elements=FieldType.integer,
             sample=docs.result_firewalls_samples,
         ),
+        "vpcs": SpecReturnValue(
+            description="A list of VPC configurations for backend nodes.",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs",
+            type=FieldType.list,
+            sample=docs.result_vpcs_samples,
+        ),
+        "frontend_vpcs": SpecReturnValue(
+            description="A list of VPC configurations for frontend nodes.",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs",
+            type=FieldType.list,
+            sample=docs.result_frontend_vpcs_samples,
+        ),
     },
 )
 
@@ -387,6 +427,8 @@ class LinodeNodeBalancer(LinodeModuleBase):
             "configs": [],
             "nodes": [],
             "firewalls": [],
+            "vpcs": [],
+            "frontend_vpcs": [],
         }
 
         self._node_balancer: Optional[NodeBalancer] = None
@@ -440,6 +482,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
                 "tags",
                 "type",
                 "vpcs",
+                "frontend_vpcs",
             }
         }
 
@@ -686,6 +729,14 @@ class LinodeNodeBalancer(LinodeModuleBase):
         # the module result.
         self.results["firewalls"] = [
             v.id for v in self._node_balancer.firewalls()
+        ]
+
+        all_vpcs = self._node_balancer.vpcs()
+        self.results["vpcs"] = [
+            vpc._raw_json for vpc in all_vpcs if vpc.purpose == "backend"
+        ]
+        self.results["frontend_vpcs"] = [
+            vpc._raw_json for vpc in all_vpcs if vpc.purpose == "frontend"
         ]
 
         return self.results

@@ -56,6 +56,13 @@ def _get_vpcs(
     return [vpc._raw_json for vpc in vpcs if vpc.purpose == "backend"]
 
 
+def _get_frontend_vpcs(
+    client: LinodeClient, nodebalancer: NodeBalancer, params: Dict[str, Any]
+) -> List[Any]:
+    vpcs = NodeBalancer(client, nodebalancer["id"]).vpcs()
+    return [vpc._raw_json for vpc in vpcs if vpc.purpose == "frontend"]
+
+
 module = InfoModule(
     primary_result=InfoModuleResult(
         field_name="node_balancer",
@@ -112,6 +119,14 @@ module = InfoModule(
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs",
             samples=docs_parent.result_vpcs_samples,
             get=_get_vpcs,
+        ),
+        InfoModuleResult(
+            field_name="frontend_vpcs",
+            field_type=FieldType.list,
+            display_name="frontend_vpcs",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs",
+            samples=docs_parent.result_frontend_vpcs_samples,
+            get=_get_frontend_vpcs,
         ),
     ],
     attributes=[
