@@ -166,3 +166,22 @@ Get info about a Linode Node Balancer.
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-firewalls) for a list of returned fields
 
 
+- `vpcs` - The returned vpcs.
+
+    - Sample Response:
+        ```json
+        [
+          {
+            "id": 123,
+            "nodebalancer_id": 12345,
+            "subnet_id": 456,
+            "vpc_id": 789,
+            "ipv4_range": "10.0.0.4/30",
+            "ipv6_range": null,
+            "purpose": "backend"
+          }
+        ]
+        ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs) for a list of returned fields
+
+

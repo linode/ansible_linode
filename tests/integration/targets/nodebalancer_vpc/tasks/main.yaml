@@ -1,0 +1,97 @@
+- name: nodebalancer_vpc
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        description: test description
+        state: present
+      register: create_vpc
+
+    - name: Assert VPC created
+      assert:
+        that:
+          - create_vpc.changed
+          - create_vpc.vpc.label == 'ansible-test-{{ r }}'
+          - create_vpc.vpc.region == 'us-ord'
+          - create_vpc.vpc.description == 'test description'
+
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        state: present
+      register: create_subnet
+
+    - name: create nodebalancer with vpc
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-vpc-{{ r }}'
+        region: us-ord
+        state: present
+        firewall_id: '{{ firewall_id }}'
+        vpcs:
+          - subnet_id: '{{ create_subnet.subnet.id }}'
+      register: create_nodebalancer_with_vpc
+
+    - name: Assert NodeBalancer with VPC is created
+      assert:
+        that:
+          - create_nodebalancer_with_vpc.changed
+
+    - name: Get info about the NodeBalancer by id
+      linode.cloud.nodebalancer_info:
+        id: '{{ create_nodebalancer_with_vpc.node_balancer.id }}'
+      register: nb_info_id
+
+    - name: Assert that info is valid
+      assert:
+        that:
+          - nb_info_id.node_balancer.id == create_nodebalancer_with_vpc.node_balancer.id
+          - nb_info_id.node_balancer.type == 'common'        
+          - nb_info_id.vpcs|length == 1        
+          - nb_info_id.vpcs[0].nodebalancer_id == create_nodebalancer_with_vpc.node_balancer.id
+          - nb_info_id.vpcs[0].subnet_id == create_subnet.subnet.id
+          - nb_info_id.vpcs[0].vpc_id == create_vpc.vpc.id
+          - nb_info_id.vpcs[0].ipv4_range != None
+          - nb_info_id.vpcs[0].ipv6_range == None
+          - nb_info_id.vpcs[0].purpose == "backend"
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the NodeBalancer with VPC
+          linode.cloud.nodebalancer:
+            label: '{{ create_nodebalancer_with_vpc.node_balancer.label }}'
+            state: absent
+          register: delete_nodebalancer_with_vpc
+
+        - name: Assert NodeBalancer with VPC delete
+          assert:
+            that:
+              - delete_nodebalancer_with_vpc.changed
+              - delete_nodebalancer_with_vpc.node_balancer.id == create_nodebalancer_with_vpc.node_balancer.id
+            
+        - name: Delete a subnet
+          linode.cloud.vpc_subnet:
+            vpc_id: '{{ create_vpc.vpc.id }}'
+            label: 'test-subnet'
+            state: absent
+          register: delete_subnet
+
+        - name: Delete a VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

@@ -49,6 +49,13 @@ def _get_nodes(
     return nodes_json
 
 
+def _get_vpcs(
+    client: LinodeClient, nodebalancer: NodeBalancer, params: Dict[str, Any]
+) -> List[Any]:
+    vpcs = NodeBalancer(client, nodebalancer["id"]).vpcs()
+    return [vpc._raw_json for vpc in vpcs if vpc.purpose == "backend"]
+
+
 module = InfoModule(
     primary_result=InfoModuleResult(
         field_name="node_balancer",
@@ -97,6 +104,14 @@ module = InfoModule(
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-firewalls",
             samples=docs_parent.result_firewalls_data_samples,
             get=_get_firewalls_data,
+        ),
+        InfoModuleResult(
+            field_name="vpcs",
+            field_type=FieldType.list,
+            display_name="vpcs",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs",
+            samples=docs_parent.result_vpcs_samples,
+            get=_get_vpcs,
         ),
     ],
     attributes=[

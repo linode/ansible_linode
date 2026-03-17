@@ -114,3 +114,15 @@ result_firewalls_data_samples = ['''[
       "updated": "2020-04-10T13:34:01"
   }
 ]''']
+
+result_vpcs_samples = ['''[
+  {
+    "id": 123,
+    "nodebalancer_id": 12345,
+    "subnet_id": 456,
+    "vpc_id": 789,
+    "ipv4_range": "10.0.0.4/30",
+    "ipv6_range": null,
+    "purpose": "backend"
+  }
+]''']

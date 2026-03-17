@@ -234,6 +234,31 @@ linode_configs_spec = {
     ),
 }
 
+linode_nodebalancer_vpc_spec = {
+    "subnet_id": SpecField(
+        type=FieldType.integer,
+        required=True,
+        description=["The ID of the subnet to attach this NodeBalancer to."],
+    ),
+    "ipv4_range": SpecField(
+        type=FieldType.string,
+        description=[
+            "A CIDR range for the VPC's IPv4 addresses. "
+            + "The NodeBalancer sources IP addresses from this range "
+            + "when routing traffic to the backend VPC nodes."
+        ],
+    ),
+    "ipv4_range_auto_assign": SpecField(
+        type=FieldType.bool,
+        default=False,
+        description=[
+            "Enables the use of a larger ipv4_range subnet for multiple NodeBalancers "
+            + "within the same VPC by allocating smaller /30 subnets for "
+            + "each NodeBalancer's backends."
+        ],
+    ),
+}
+
 linode_nodebalancer_spec = {
     "label": SpecField(
         type=FieldType.string,
@@ -287,6 +312,12 @@ linode_nodebalancer_spec = {
         type=FieldType.string,
         description=["The type of this NodeBalancer."],
         choices=["common", "premium", "premium_40gb"],
+    ),
+    "vpcs": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_nodebalancer_vpc_spec,
+        description=["A VPC configuration for backend nodes."],
     ),
 }
 
@@ -408,6 +439,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
                 "firewall_id",
                 "tags",
                 "type",
+                "vpcs",
             }
         }
 

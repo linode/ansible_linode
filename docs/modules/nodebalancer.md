@@ -54,6 +54,7 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 | `tags` | <center>`list`</center> | <center>Optional</center> | Tags to assign to this NodeBalancer.  **(Updatable)** |
 | [`configs` (sub-options)](#configs) | <center>`list`</center> | <center>Optional</center> | A list of configs to apply to the NodeBalancer.  **(Updatable)** |
 | `type` | <center>`str`</center> | <center>Optional</center> | The type of this NodeBalancer.  **(Choices: `common`, `premium`, `premium_40gb`)** |
+| [`vpcs` (sub-options)](#vpcs) | <center>`list`</center> | <center>Optional</center> | A VPC configuration for backend nodes.   |
 
 ### configs
 
@@ -86,6 +87,14 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 | `address` | <center>`str`</center> | <center>**Required**</center> | The private IP Address where this backend can be reached. This must be a private IP address.  **(Updatable)** |
 | `weight` | <center>`int`</center> | <center>Optional</center> | Nodes with a higher weight will receive more traffic.  **(Updatable)** |
 | `mode` | <center>`str`</center> | <center>Optional</center> | The mode this NodeBalancer should use when sending traffic to this backend.  **(Choices: `accept`, `reject`, `drain`, `backup`; Updatable)** |
+
+### vpcs
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `subnet_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the subnet to attach this NodeBalancer to.   |
+| `ipv4_range` | <center>`str`</center> | <center>Optional</center> | A CIDR range for the VPC's IPv4 addresses. The NodeBalancer sources IP addresses from this range when routing traffic to the backend VPC nodes.   |
+| `ipv4_range_auto_assign` | <center>`bool`</center> | <center>Optional</center> | Enables the use of a larger ipv4_range subnet for multiple NodeBalancers within the same VPC by allocating smaller /30 subnets for each NodeBalancer's backends.  **(Default: `False`)** |
 
 ## Return Values
 
