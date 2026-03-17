@@ -78,7 +78,7 @@
         state: present
       register: disable_system_alerts
       when:
-        - create_system_alerts is defined
+        - system_alert_id is not none
 
     - name: Assert ACLP system alerts disabled
       assert:
@@ -87,6 +87,7 @@
           - disable_system_alerts.instance.alerts.system_alerts | length == 0
       when:
         - disable_system_alerts is defined
+        - disable_system_alerts is not skipped
 
     - name: Update alerts instance with legacy alerts
       linode.cloud.instance:
