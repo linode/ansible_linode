@@ -75,6 +75,23 @@
           - nb_info_id.frontend_vpcs[0].ipv6_range != None
           - nb_info_id.frontend_vpcs[0].purpose == "frontend"
 
+    - name: Get info about the NodeBalancer VPC config
+      linode.cloud.nodebalancer_vpc_info:
+        id: '{{ create_nodebalancer_with_frontend_vpc.node_balancer.id }}'
+        vpc_config_id: '{{ create_nodebalancer_with_frontend_vpc.frontend_vpcs[0].id }}'
+      register: nb_vpc_config_info
+
+    - name: Assert that VPC config info is valid
+      assert:
+        that:
+          - nb_vpc_config_info.vpc_config.id == create_nodebalancer_with_frontend_vpc.frontend_vpcs[0].id
+          - nb_vpc_config_info.vpc_config.nodebalancer_id == create_nodebalancer_with_frontend_vpc.node_balancer.id
+          - nb_vpc_config_info.vpc_config.subnet_id == create_subnet.subnet.id
+          - nb_vpc_config_info.vpc_config.vpc_id == create_vpc.vpc.id
+          - nb_vpc_config_info.vpc_config.ipv4_range != None
+          - nb_vpc_config_info.vpc_config.ipv6_range != None
+          - nb_vpc_config_info.vpc_config.purpose == "frontend"
+
     - name: Attempt to update with no differences
       linode.cloud.nodebalancer:
         label: 'ansible-test-frontend{{ r }}'

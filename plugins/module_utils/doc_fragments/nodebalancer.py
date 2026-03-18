@@ -146,3 +146,15 @@ result_frontend_vpcs_samples = ['''[
     "purpose": "frontend"
   }
 ]''']
+
+result_vpc_samples = ['''
+  {
+    "id": 123,
+    "nodebalancer_id": 12345,
+    "subnet_id": 456,
+    "vpc_id": 789,
+    "ipv4_range": "10.0.0.4/30",
+    "ipv6_range": null,
+    "purpose": "backend"
+  }
+''']
