@@ -19,7 +19,7 @@
     - name: Assert alert_channel_list_filter response
       assert:
         that:
-          - alert_channel_list.alert_channels | length > 0
+          - alert_channel_list_filter.alert_channels | length > 0
           - alert_channel_list_filter.alert_channels.0.label == 'Read-Write Channel'
 
   environment:

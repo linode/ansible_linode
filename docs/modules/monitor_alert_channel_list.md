@@ -53,7 +53,7 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
                 "url": "/monitor/alerts-definitions/10000"
               },
               "channel_type": "email",
-              "created": "2025-03-20 01:41:09",
+              "created": "2025-03-20T01:41:09",
               "created_by": "johndoe",
               "details": {
                 "email": {
@@ -67,7 +67,7 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
               "id": 10000,
               "label": "Notification channel #1",
               "type": "user",
-              "updated": "2025-03-20 01:41:09",
+              "updated": "2025-03-20T01:41:09",
               "updated_by": "johndoe"
             },
             {
@@ -84,7 +84,7 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
                   ]
                 }
               },
-              "created": "2025-03-20 01:41:09",
+              "created": "2025-03-20T01:41:09",
               "created_by": "system",
               "details": {
                 "email": {
@@ -95,7 +95,7 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
               "id": 10001,
               "label": "Read-Write Channel",
               "type": "system",
-              "updated": "2025-03-20 01:41:09",
+              "updated": "2025-03-20T01:41:09",
               "updated_by": "system"
             }
         ]
