@@ -160,6 +160,81 @@
           - record_dupe_update.record.ttl_sec == 300
           - record_dupe_update.record.weight == 55
 
+    - name: Create domain_record with invalid TTL (should round to nearest valid value)
+      linode.cloud.domain_record:
+        domain: '{{ domain_create.domain.domain }}'
+        name: 'ttl-test'
+        type: 'A'
+        target: '127.0.0.3'
+        ttl_sec: 4500  # Invalid value, should round to 3600
+        state: present
+      register: record_ttl_invalid
+
+    - name: Assert domain_record with invalid TTL is created with rounded value
+      assert:
+        that:
+          - record_ttl_invalid.record.name == 'ttl-test'
+          - record_ttl_invalid.record.type == 'A'
+          - record_ttl_invalid.record.target == '127.0.0.3'
+          - record_ttl_invalid.record.ttl_sec == 3600  # Rounded from 4500 to 3600
+
+    - name: Attempt to update with same invalid TTL (should be idempotent, no change)
+      linode.cloud.domain_record:
+        domain: '{{ domain_create.domain.domain }}'
+        record_id: '{{ record_ttl_invalid.record.id }}'
+        ttl_sec: 4500  # Same invalid value, should normalize to 3600 (no change)
+        state: present
+      register: record_ttl_idempotent
+
+    - name: Assert no change occurred (idempotency check)
+      assert:
+        that:
+          - record_ttl_idempotent.changed == false
+          - record_ttl_idempotent.record.ttl_sec == 3600
+
+    - name: Test TTL rounding edge cases - value below minimum
+      linode.cloud.domain_record:
+        domain: '{{ domain_create.domain.domain }}'
+        name: 'ttl-min'
+        type: 'A'
+        target: '127.0.0.5'
+        ttl_sec: 100  # Below minimum 300, should round to 300
+        state: present
+      register: record_ttl_min
+
+    - name: Assert TTL below minimum rounds to 300
+      assert:
+        that:
+          - record_ttl_min.record.name == 'ttl-min'
+          - record_ttl_min.record.ttl_sec == 300  # Rounded from 100 to 300
+
+    - name: Test TTL rounding edge cases - value above maximum
+      linode.cloud.domain_record:
+        domain: '{{ domain_create.domain.domain }}'
+        name: 'ttl-max'
+        type: 'A'
+        target: '127.0.0.6'
+        ttl_sec: 3000000  # Above maximum 2419200, should round to 2419200
+        state: present
+      register: record_ttl_max
+
+    - name: Assert TTL above maximum rounds to 2419200
+      assert:
+        that:
+          - record_ttl_max.record.name == 'ttl-max'
+          - record_ttl_max.record.ttl_sec == 2419200  # Rounded from 3000000 to 2419200
+
+    - name: Clean up TTL test records
+      linode.cloud.domain_record:
+        domain: '{{ domain_create.domain.domain }}'
+        record_id: '{{ item }}'
+        state: absent
+      loop:
+        - '{{ record_ttl_invalid.record.id }}'
+        - '{{ record_ttl_min.record.id }}'
+        - '{{ record_ttl_max.record.id }}'
+      register: ttl_cleanup
+
     - name: Create an SRV domain record
       linode.cloud.domain_record:
         domain: '{{ domain_create.domain.domain }}'

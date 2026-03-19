@@ -97,9 +97,8 @@ linode_instance_disk_spec = {
     ),
     "disk_encryption": SpecField(
         type=FieldType.string,
-        description="**READ ONLY** The disk encryption status of this disk."
-        + "NOTE: Disk encryption may not currently be available to all users "
-        + "and is set at the Linode Level.",
+        description="**READ ONLY** The disk encryption status of this disk. "
+        + "This value is set at the Linode level.",
         choices=["enabled", "disabled"],
     ),
     "image": SpecField(
@@ -424,7 +423,6 @@ linode_instance_spec = {
         type=FieldType.string,
         description=[
             "The slug of the maintenance policy to apply during maintenance.",
-            "NOTE: This field is under v4beta.",
         ],
         choices=["linode/migrate", "linode/power_off_on"],
     ),
@@ -646,8 +644,7 @@ linode_instance_spec = {
     ),
     "disk_encryption": SpecField(
         type=FieldType.string,
-        description="The disk encryption status of this Linode. "
-        + "NOTE: Disk encryption may not currently be available to all users.",
+        description=["The disk encryption status of this Linode."],
         choices=["enabled", "disabled"],
     ),
     "swap_size": SpecField(

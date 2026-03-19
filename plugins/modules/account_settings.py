@@ -43,13 +43,6 @@ SPEC = {
             "but may still be enrolled on creation or later."
         ],
     ),
-    "longview_subscription": SpecField(
-        type=FieldType.string,
-        description=[
-            "The Longview Pro tier you are currently subscribed to. "
-            "The value must be a Longview subscription ID or null for Longview Free."
-        ],
-    ),
     "network_helper": SpecField(
         type=FieldType.bool,
         description=[
@@ -61,7 +54,6 @@ SPEC = {
         type=FieldType.string,
         description=[
             "The Slug of the maintenance policy associated with the account.",
-            "NOTE: This field is under v4beta.",
         ],
         choices=["linode/migrate", "linode/power_off_on"],
     ),
