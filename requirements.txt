@@ -1,4 +1,3 @@
-# TODO: Update python-sdk dependency to latest version when merging proj/block-storage-volume-limit-increase branch.
-git+https://github.com/linode/linode_api4-python.git@proj/block-storage-volume-limit-increase#egg=linode-api4
+linode_api4>= 5.41.0
 polling==0.3.2
 ansible-specdoc>=0.0.19
