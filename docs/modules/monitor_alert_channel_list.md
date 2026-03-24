@@ -47,36 +47,10 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
         ```json
         [
             {
-              "alerts": {
-                "alert_count": 5,
-                "type": "alerts-definitions",
-                "url": "/monitor/alerts-definitions/10000"
-              },
-              "channel_type": "email",
-              "created": "2025-03-20T01:41:09",
-              "created_by": "johndoe",
-              "details": {
-                "email": {
-                  "recipient_type": "user",
-                  "usernames": [
-                    "johndoe",
-                    "janedoe"
-                  ]
-                }
-              },
               "id": 10000,
-              "label": "Notification channel #1",
-              "type": "user",
-              "updated": "2025-03-20T01:41:09",
-              "updated_by": "johndoe"
-            },
-            {
-              "alerts": {
-                "alert_count": 3,
-                "type": "alerts-definitions",
-                "url": "/monitor/alert-channels/10001/alerts"
-              },
+              "label": "Read-Write Channel",
               "channel_type": "email",
+              "type": "system",
               "content": {
                 "email": {
                   "email_addresses": [
@@ -84,21 +58,23 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
                   ]
                 }
               },
-              "created": "2025-03-20T01:41:09",
-              "created_by": "system",
               "details": {
                 "email": {
-                  "recipient_type": "read_write_users",
-                  "usernames": []
+                  "usernames": [],
+                  "recipient_type": "read_write_users"
                 }
               },
-              "id": 10001,
-              "label": "Read-Write Channel",
-              "type": "system",
+              "alerts": {
+                "url": "/monitor/alert-channels/10000/alerts",
+                "type": "alerts-definitions",
+                "alert_count": 8
+              },
+              "created": "2025-03-20T01:41:09",
               "updated": "2025-03-20T01:41:09",
+              "created_by": "system",
               "updated_by": "system"
             }
-        ]
+          ]
         
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-alert-channels) for a list of returned fields
