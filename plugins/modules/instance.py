@@ -23,6 +23,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     drop_empty_strings,
     filter_null_values,
     filter_null_values_recursive,
+    generate_device_suffixes,
     handle_updates,
     matching_keys_eq,
     paginated_list_to_json,
@@ -61,6 +62,10 @@ try:
 except ImportError:
     # handled in module_utils.linode_common
     pass
+
+MB_PER_GB = 1024
+MAX_DEVICE_LIMIT = 64
+MIN_DEVICE_LIMIT = 8
 
 linode_instance_metadata_spec = {
     "user_data": SpecField(
@@ -161,7 +166,7 @@ linode_instance_devices_spec = {
         description=[f"The device to be mapped to /dev/sd{k}"],
         suboptions=linode_instance_device_spec,
     )
-    for k in "abcdefgh"
+    for k in generate_device_suffixes(MAX_DEVICE_LIMIT)
 }
 
 linode_instance_helpers_spec = {
@@ -1010,19 +1015,44 @@ class LinodeInstance(LinodeModuleBase):
 
         return None
 
-    def _create_config_register(self, config_params: Dict[str, Any]) -> None:
+    def _reconcile_devices(
+        self, config_params: Dict[str, Any]
+    ) -> List[Union[Disk, Volume]]:
         device_params = config_params.pop("devices")
         devices = []
 
         if device_params is not None:
-            for device_suffix in ["a", "b", "c", "d", "e", "f", "g", "h"]:
+            device_limit = int(
+                max(
+                    MIN_DEVICE_LIMIT,
+                    min(
+                        self._instance.specs.memory // MB_PER_GB,
+                        MAX_DEVICE_LIMIT,
+                    ),
+                )
+            )
+
+            for device_suffix in generate_device_suffixes(MAX_DEVICE_LIMIT):
                 device_name = "sd{0}".format(device_suffix)
                 if device_name not in device_params:
                     continue
 
                 device_dict = device_params.get(device_name)
-                devices.append(self._param_device_to_device(device_dict))
+                device = self._param_device_to_device(device_dict)
+                if device is not None:
+                    devices.append(device)
+                    if len(devices) > device_limit:
+                        self.fail(
+                            msg=f"Too many devices specified for this instance type. "
+                            f"Instance '{self._instance.label}' (type: {self._instance.type.id}, "
+                            f"memory: {self._instance.specs.memory}MB) supports a maximum of "
+                            f"{device_limit} devices."
+                        )
 
+        return devices
+
+    def _create_config_register(self, config_params: Dict[str, Any]) -> None:
+        devices = self._reconcile_devices(config_params)
         try:
             self._instance.config_create(
                 devices=devices, **filter_null_values(config_params)
