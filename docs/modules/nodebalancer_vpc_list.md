@@ -63,7 +63,7 @@ List and filter on Node Balancer VPC Configurations.
               "ipv6_range": "/64",
               "purpose": "backend"
           }
-        ],
+        ]
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs) for a list of returned fields
 
