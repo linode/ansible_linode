@@ -1,7 +1,7 @@
 """Documentation fragments for the nodebalancer_vpc_list module"""
 
 specdoc_examples = ['''
-- name: List all of the Nodebalancer VPC configurations for the current Linode Account
+- name: List all of the Nodebalancer VPC configurations for a specific NodeBalancer
   linode.cloud.nodebalancer_vpc_list:
     nodebalancer_id: 123''']
 

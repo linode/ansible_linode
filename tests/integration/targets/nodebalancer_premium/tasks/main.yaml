@@ -1,4 +1,4 @@
-- name: nodebalancer_basic
+- name: nodebalancer_premium
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"

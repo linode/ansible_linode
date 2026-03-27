@@ -15,7 +15,7 @@ List and filter on Node Balancer VPC Configurations.
 ## Examples
 
 ```yaml
-- name: List all of the Nodebalancer VPC configurations for the current Linode Account
+- name: List all of the Nodebalancer VPC configurations for a specific NodeBalancer
   linode.cloud.nodebalancer_vpc_list:
     nodebalancer_id: 123
 ```

@@ -72,24 +72,33 @@
         nodebalancer_id: '{{ create.node_balancer.id }}'
       register: no_filter
 
-    - name: Assert nodebalancer_vpc_list with no filter
+    - name: Select frontend and backend VPC configs by purpose
+      set_fact:
+        frontend_vpc_config: >-
+          {{ (no_filter.nodebalancer_vpc_configs
+              | selectattr('purpose', 'equalto', 'frontend')
+              | list)[0] }}
+        backend_vpc_config: >-
+          {{ (no_filter.nodebalancer_vpc_configs
+              | selectattr('purpose', 'equalto', 'backend')
+              | list)[0] }}
+    - name: Assert frontend and backend VPC configs fields
       assert:
         that:
-          - no_filter.nodebalancer_vpc_configs | length >= 2
-          - no_filter.nodebalancer_vpc_configs[0].id != None
-          - no_filter.nodebalancer_vpc_configs[0].nodebalancer_id == create.node_balancer.id
-          - no_filter.nodebalancer_vpc_configs[0].vpc_id == create_vpc.vpc.id
-          - no_filter.nodebalancer_vpc_configs[0].subnet_id == create_subnet.subnet.id
-          - no_filter.nodebalancer_vpc_configs[0].ipv4_range != None
-          - no_filter.nodebalancer_vpc_configs[0].ipv6_range != None
-          - no_filter.nodebalancer_vpc_configs[0].purpose == 'frontend'
-          - no_filter.nodebalancer_vpc_configs[1].id != None
-          - no_filter.nodebalancer_vpc_configs[1].nodebalancer_id == create.node_balancer.id
-          - no_filter.nodebalancer_vpc_configs[1].vpc_id == create_vpc.vpc.id
-          - no_filter.nodebalancer_vpc_configs[1].subnet_id == create_subnet.subnet.id
-          - no_filter.nodebalancer_vpc_configs[1].ipv4_range != None
-          - no_filter.nodebalancer_vpc_configs[1].ipv6_range != None
-          - no_filter.nodebalancer_vpc_configs[1].purpose == 'backend'
+          - frontend_vpc_config.id != None
+          - frontend_vpc_config.nodebalancer_id == create.node_balancer.id
+          - frontend_vpc_config.vpc_id == create_vpc.vpc.id
+          - frontend_vpc_config.subnet_id == create_subnet.subnet.id
+          - frontend_vpc_config.ipv4_range != None
+          - frontend_vpc_config.ipv6_range != None
+          - frontend_vpc_config.purpose == 'frontend'
+          - backend_vpc_config.id != None
+          - backend_vpc_config.nodebalancer_id == create.node_balancer.id
+          - backend_vpc_config.vpc_id == create_vpc.vpc.id
+          - backend_vpc_config.subnet_id == create_subnet.subnet.id
+          - backend_vpc_config.ipv4_range != None
+          - backend_vpc_config.ipv6_range != None
+          - backend_vpc_config.purpose == 'backend'
 
   always:
     - ignore_errors: yes
