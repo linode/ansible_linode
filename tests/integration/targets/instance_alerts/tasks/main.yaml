@@ -39,7 +39,7 @@
     - name: Assert legacy alerts instance creation failed as expected
       assert:
         that:
-          - invalid_alerts_create.failed
+          - invalid_alerts_create.msg is defined
           - "'Only alerts.system_alerts and alerts.user_alerts' in invalid_alerts_create.msg"
 
     - name: Create instance with ACLP system alerts

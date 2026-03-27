@@ -446,7 +446,7 @@ linode_instance_alerts_spec = {
         element_type=FieldType.integer,
         editable=True,
         description=[
-            "A list of system alerts associated with current instance. "
+            "A list of system alerts associated with the current instance. "
             "Note: v4beta only and may not currently be available to all users."
         ],
     ),
@@ -455,7 +455,7 @@ linode_instance_alerts_spec = {
         element_type=FieldType.integer,
         editable=True,
         description=[
-            "A list of user alerts associated with current instance. "
+            "A list of user alerts associated with the current instance. "
             "Note: v4beta only and may not currently be available to all users."
         ],
     ),
@@ -651,6 +651,7 @@ linode_instance_spec = {
     ),
     "alerts": SpecField(
         type=FieldType.dict,
+        editable=True,
         suboptions=linode_instance_alerts_spec,
         description=[
             "Configuration options for alert triggers on this Linode.",
