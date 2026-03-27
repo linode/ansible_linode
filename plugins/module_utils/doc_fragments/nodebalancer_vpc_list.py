@@ -24,4 +24,4 @@ result_nodebalancer_vpcs_samples = ['''[
       "ipv6_range": "/64",
       "purpose": "backend"
   }
-],''']
+]''']
