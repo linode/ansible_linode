@@ -7,6 +7,7 @@
       linode.cloud.nodebalancer:
         label: 'ansible-test-{{ r }}'
         region: ap-northeast
+        type: premium
         client_udp_sess_throttle: 3
         state: present
         firewall_id: '{{ firewall_id }}'
@@ -24,6 +25,7 @@
         label: '{{ create_nodebalancer.node_balancer.label }}'
         region: ap-northeast
         client_udp_sess_throttle: 3
+        type: premium
         state: present
         configs:
           - port: 80
