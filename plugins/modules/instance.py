@@ -1138,7 +1138,7 @@ class LinodeInstance(LinodeModuleBase):
         """
         firewall_id = self.module.params.get("firewall_id")
         # Nothing to do
-        if firewall_id is None:
+        if firewall_id in (None, -1):
             return
 
         # Resolve the expected firewall; fail if firewall doesn't exist
