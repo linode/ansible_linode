@@ -41,12 +41,3 @@ result_credentials_samples = ['''{
 result_ssl_cert_samples = ['''{
   "ca_certificate": "LS0tLS1CRUdJ...=="
 }''']
-
-result_backups_samples = ['''[
-   {
-      "created":"2022-01-01T00:01:01",
-      "id":123,
-      "label":"Scheduled - 02/04/22 11:11 UTC-XcCRmI",
-      "type":"auto"
-   }
-]''']

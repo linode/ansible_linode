@@ -76,22 +76,6 @@ Get info about a Linode PostgreSQL Managed Database.
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instance) for a list of returned fields
 
 
-- `backups` - The database backups in JSON serialized form.
-
-    - Sample Response:
-        ```json
-        [
-           {
-              "created":"2022-01-01T00:01:01",
-              "id":123,
-              "label":"Scheduled - 02/04/22 11:11 UTC-XcCRmI",
-              "type":"auto"
-           }
-        ]
-        ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-postgre-sql-instance-backups) for a list of returned fields
-
-
 - `ssl_cert` - The SSL CA certificate for an accessible Managed PostgreSQL Database.
 
     - Sample Response:

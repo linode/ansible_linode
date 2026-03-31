@@ -66,7 +66,6 @@
           - db_create.database.encrypted == true
           - db_create.database.replication_type == 'asynch'
           - db_create.database.ssl_connection == true
-          - db_create.backups != None
           - db_create.credentials != None
           - db_create.ssl_cert != None
           - db_create.database.updates.day_of_week == 2
