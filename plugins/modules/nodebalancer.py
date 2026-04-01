@@ -20,7 +20,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     dict_select_matching,
     filter_null_values,
     handle_updates,
-    paginated_list_to_json,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -555,19 +554,25 @@ class LinodeNodeBalancer(LinodeModuleBase):
         for config in to_delete:
             self._delete_config_register(config)
 
+        result_configs = []
+
         for config, remote_config in to_create:
             new_config = self._create_config_register(
                 self._node_balancer, config
             )
             if config.get("nodes") is not None:
                 self._handle_config_nodes(new_config, config.get("nodes"))
+            new_config._api_get()
+            result_configs.append(new_config)
 
         for config, remote_config in to_update:
             if config.get("nodes") is not None:
                 self._handle_config_nodes(remote_config, config.get("nodes"))
+            remote_config._api_get()
+            result_configs.append(remote_config)
 
         cast(list, self.results["configs"]).extend(
-            paginated_list_to_json(self._node_balancer.configs)
+            [c._raw_json for c in result_configs]
         )
 
     def _update_nodebalancer(self) -> None:
