@@ -1,4 +1,4 @@
-- name: nodebalancer_vpc
+- name: nodebalancer_deprecated_vpc
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -27,13 +27,13 @@
         state: present
       register: create_subnet
 
-    - name: create nodebalancer with vpc
+    - name: create nodebalancer with deprecated vpcs attribute
       linode.cloud.nodebalancer:
         label: 'ansible-test-vpc-{{ r }}'
         region: us-ord
         state: present
         firewall_id: '{{ firewall_id }}'
-        backend_vpcs:
+        vpcs:
           - subnet_id: '{{ create_subnet.subnet.id }}'
       register: create_nodebalancer_with_vpc
 

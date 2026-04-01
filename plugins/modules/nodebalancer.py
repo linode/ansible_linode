@@ -339,6 +339,16 @@ linode_nodebalancer_spec = {
         type=FieldType.list,
         element_type=FieldType.dict,
         suboptions=linode_nodebalancer_vpc_spec,
+        description=[
+            "A VPC configuration for backend nodes.",
+            "**Deprecated**: Use `backend_vpcs` instead.",
+            "This field will be removed in a future major release.",
+        ],
+    ),
+    "backend_vpcs": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_nodebalancer_vpc_spec,
         description=["A VPC configuration for backend nodes."],
     ),
     "frontend_vpcs": SpecField(
@@ -481,10 +491,21 @@ class LinodeNodeBalancer(LinodeModuleBase):
                 "firewall_id",
                 "tags",
                 "type",
-                "vpcs",
                 "frontend_vpcs",
             }
         }
+
+        backend_vpcs = self.module.params.get("backend_vpcs")
+        vpcs_legacy = self.module.params.get("vpcs")
+
+        if backend_vpcs is not None:
+            params["backend_vpcs"] = backend_vpcs
+        elif vpcs_legacy is not None:
+            self.warn(
+                "The 'vpcs' field is deprecated and will be removed in a future major version. "
+                "Use 'backend_vpcs' instead."
+            )
+            params["backend_vpcs"] = vpcs_legacy
 
         try:
             return self.client.nodebalancer_create(

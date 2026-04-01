@@ -7,7 +7,7 @@ specdoc_examples = ['''
     region: us-east
     tags: [ prod-env ]
     state: present
-    vpcs:
+    backend_vpcs:
       - subnet_id: 12345
         ipv4_range: '10.0.0.4/30'
     frontend_vpcs:
