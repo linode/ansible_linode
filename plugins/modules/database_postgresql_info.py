@@ -29,7 +29,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
     mapping_to_dict,
-    paginated_list_to_json,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -66,13 +65,6 @@ SPECDOC_META = SpecDocMeta(
             type=FieldType.dict,
             sample=docs_parent.result_database_samples,
         ),
-        "backups": SpecReturnValue(
-            description="The database backups in JSON serialized form.",
-            docs_url="https://techdocs.akamai.com/linode-api/reference/"
-            "get-databases-postgre-sql-instance-backups",
-            type=FieldType.dict,
-            sample=docs_parent.result_backups_samples,
-        ),
         "ssl_cert": SpecReturnValue(
             description="The SSL CA certificate for an accessible Managed PostgreSQL Database.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/"
@@ -106,7 +98,6 @@ class Module(LinodeModuleBase):
         self.module_arg_spec = SPECDOC_META.ansible_spec
         self.results = {
             "database": None,
-            "backups": None,
             "credentials": None,
             "ssl_cert": None,
         }
@@ -143,9 +134,6 @@ class Module(LinodeModuleBase):
         database._api_get()
 
         self.results["database"] = database._raw_json
-        self.results["backups"] = call_protected_provisioning(
-            lambda: paginated_list_to_json(database.backups)
-        )
         self.results["credentials"] = call_protected_provisioning(
             lambda: mapping_to_dict(database.credentials)
         )

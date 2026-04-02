@@ -62,7 +62,6 @@
           - by_label.database.type == 'g6-standard-1'
           - by_label.ssl_cert != None
           - by_label.credentials != None
-          - by_label.backups != None
           - by_id.database.allow_list | length == 1
           - by_id.database.allow_list[0] == '0.0.0.0/0'
           - by_id.database.engine == 'mysql'
@@ -71,7 +70,6 @@
           - by_id.database.type == 'g6-standard-1'
           - by_id.ssl_cert != None
           - by_id.credentials != None
-          - by_id.backups != None
 
 
     - name: Update the database
