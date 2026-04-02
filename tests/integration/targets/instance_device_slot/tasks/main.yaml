@@ -3,11 +3,11 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - name: Create an instance with a disk only in slot sdz
+    - name: Create an instance with a disk only in slot sdl
       linode.cloud.instance:
         label: 'ansible-test-slot-{{ r }}'
         region: us-ord
-        type: g6-nanode-1
+        type: g6-standard-6
         booted: false
         disks:
           - label: test-disk
@@ -16,18 +16,18 @@
         configs:
           - label: test-config
             devices:
-              sdz:
+              sdl:
                 disk_label: test-disk
         state: present
         firewall_id: '{{ firewall_id }}'
       register: slot_test
 
-    - name: Assert disk is in slot sdz, not shifted to sda
+    - name: Assert disk is in slot sdl, not shifted to sda
       assert:
         that:
           - slot_test.changed
-          - slot_test.configs[0].devices.sdz.disk_id is not none
-          - slot_test.configs[0].devices.sda.disk_id is none
+          - slot_test.configs[0].devices.sdl.disk_id is not none
+          - slot_test.configs[0].devices.sda is none
 
   always:
     - ignore_errors: yes
