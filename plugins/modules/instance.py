@@ -1650,6 +1650,9 @@ class LinodeInstance(LinodeModuleBase):
             )
 
             self._update_disks()
+
+            self._instance.invalidate()
+
             created_configs = self._update_configs()
 
         # Don't reboot on instance creation
