@@ -495,6 +495,8 @@ class LinodeNodeBalancer(LinodeModuleBase):
             }
         }
 
+        # Currently both `vpcs` and `backend_vpcs` are accepted for backward compatibility,
+        # but `vpcs` is deprecated and will be removed in a future major release.
         backend_vpcs = self.module.params.get("backend_vpcs")
         vpcs_legacy = self.module.params.get("vpcs")
 

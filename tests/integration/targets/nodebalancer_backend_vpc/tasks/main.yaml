@@ -1,4 +1,4 @@
-- name: nodebalancer_vpc
+- name: nodebalancer_backend_vpc
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
