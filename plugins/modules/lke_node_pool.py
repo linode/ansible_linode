@@ -211,6 +211,11 @@ MODULE_SPEC = {
         description=["Firewall ID for the Node Pool."],
         required=False,
     ),
+    "disk_encryption": SpecField(
+        type=FieldType.string,
+        choices=["disabled", "enabled"],
+        description="Local disk encryption setting for this LKE node pool.",
+    )
 }
 
 SPECDOC_META = SpecDocMeta(
