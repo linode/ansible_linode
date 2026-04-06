@@ -215,7 +215,7 @@ MODULE_SPEC = {
         type=FieldType.string,
         choices=["disabled", "enabled"],
         description="Local disk encryption setting for this LKE node pool.",
-    )
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
