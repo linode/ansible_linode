@@ -62,7 +62,7 @@
         that:
           - create_system_alerts.changed
           - create_system_alerts.instance.alerts.system_alerts | length == 1
-          - create_system_alerts.instance.alerts.system_alerts[0] == system_alert_id
+          - create_system_alerts.instance.alerts.system_alerts[0] == system_alert_id | int
       when:
         - system_alert_id is not none
 
