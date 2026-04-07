@@ -387,6 +387,80 @@ linode_instance_placement_group_spec = {
     ),
 }
 
+linode_instance_alerts_spec = {
+    "network_in": SpecField(
+        type=FieldType.integer,
+        editable=True,
+        description=[
+            "The amount of incoming traffic, in Mbit/s, required to trigger an alert. "
+            "If the average incoming traffic over two hours exceeds this value, "
+            "we'll send you an alert. "
+            "If this is set to 0 (zero), the alert is disabled. "
+            "Update only. "
+        ],
+    ),
+    "network_out": SpecField(
+        type=FieldType.integer,
+        editable=True,
+        description=[
+            "The amount of outbound traffic, in Mbit/s, required to trigger an alert. "
+            "If the average outbound traffic over two hours exceeds this value, "
+            "we'll send you an alert. "
+            "If this is set to 0 (zero), the alert is disabled. "
+            "Update only. "
+        ],
+    ),
+    "cpu": SpecField(
+        type=FieldType.integer,
+        editable=True,
+        description=[
+            "The percentage of CPU usage required to trigger an alert. "
+            "If the average CPU usage over two hours exceeds this value, "
+            "we'll send you an alert. If this is set to 0, the alert is disabled. "
+            "Update only. "
+        ],
+    ),
+    "transfer_quota": SpecField(
+        type=FieldType.integer,
+        editable=True,
+        description=[
+            "The percentage of network transfer that may be used before an alert is triggered. "
+            "When this value is exceeded, we'll alert you. "
+            "If this is set to 0 (zero), the alert is disabled. "
+            "Update only. "
+        ],
+    ),
+    "io": SpecField(
+        type=FieldType.integer,
+        editable=True,
+        description=[
+            "The amount of disk IO operation per second required to trigger an alert. "
+            "If the average disk IO over two hours exceeds this value, "
+            "we'll send you an alert. "
+            "If set to 0, this alert is disabled. "
+            "Update only. "
+        ],
+    ),
+    "system_alerts": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.integer,
+        editable=True,
+        description=[
+            "A list of system alerts associated with the current instance. "
+            "Note: v4beta only and may not currently be available to all users."
+        ],
+    ),
+    "user_alerts": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.integer,
+        editable=True,
+        description=[
+            "A list of user alerts associated with the current instance. "
+            "Note: v4beta only and may not currently be available to all users."
+        ],
+    ),
+}
+
 linode_instance_spec = {
     "label": SpecField(
         type=FieldType.string,
@@ -575,6 +649,14 @@ linode_instance_spec = {
         type=FieldType.bool,
         description=["Enroll Instance in Linode Backup service."],
     ),
+    "alerts": SpecField(
+        type=FieldType.dict,
+        editable=True,
+        suboptions=linode_instance_alerts_spec,
+        description=[
+            "Configuration options for alert triggers on this Linode.",
+        ],
+    ),
     "wait": SpecField(
         type=FieldType.bool,
         default=True,
@@ -700,7 +782,7 @@ SPECDOC_META = SpecDocMeta(
 )
 
 # Fields that can be updated on an existing instance
-MUTABLE_FIELDS = {"group", "tags", "maintenance_policy"}
+MUTABLE_FIELDS = {"group", "tags", "maintenance_policy", "alerts"}
 
 linode_instance_config_mutable = {
     "comments",
@@ -950,6 +1032,23 @@ class LinodeInstance(LinodeModuleBase):
 
         if "root_pass" in params.keys() and params.get("root_pass") is None:
             params.pop("root_pass")
+
+        alerts = params.get("alerts")
+        if alerts is not None:
+            allowed_create_keys = {"system_alerts", "user_alerts"}
+            provided_disallowed = sorted(
+                k
+                for k, v in alerts.items()
+                if k not in allowed_create_keys and v is not None
+            )
+            if provided_disallowed:
+                self.fail(
+                    msg=(
+                        "Only alerts.system_alerts and alerts.user_alerts "
+                        "are supported during instance creation; "
+                        "remove: {0}"
+                    ).format(", ".join(provided_disallowed))
+                )
 
         ltype = params.pop("type")
         region = params.pop("region")
