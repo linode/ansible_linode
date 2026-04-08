@@ -82,6 +82,6 @@ NOTE: Locks cannot be updated. To change a lock, delete it and create a new one.
             }
         }
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-lock) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-resource-lock) for a list of returned fields
 
 

@@ -86,7 +86,7 @@ SPECDOC_META = SpecDocMeta(
     return_values={
         "lock": SpecReturnValue(
             description="The lock in JSON serialized form.",
-            docs_url="https://techdocs.akamai.com/linode-api/reference/get-lock",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-resource-lock",
             type=FieldType.dict,
             sample=docs.result_lock_samples,
         )
