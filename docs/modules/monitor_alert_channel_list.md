@@ -47,34 +47,30 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
         ```json
         [
             {
-              "id": 10000,
-              "label": "Read-Write Channel",
-              "channel_type": "email",
-              "type": "system",
-              "content": {
-                "email": {
-                  "email_addresses": [
-                    "Users-with-read-write-access-to-resources"
-                  ]
-                }
-              },
-              "details": {
-                "email": {
-                  "usernames": [],
-                  "recipient_type": "read_write_users"
-                }
-              },
-              "alerts": {
-                "url": "/monitor/alert-channels/10000/alerts",
-                "type": "alerts-definitions",
-                "alert_count": 8
-              },
-              "created": "2025-03-20T01:41:09",
-              "updated": "2025-03-20T01:41:09",
-              "created_by": "system",
-              "updated_by": "system"
+                "id": 123,
+                "label": "alert notification channel",
+                "type": "user",
+                "channel_type": "email",
+                "details": {
+                    "email": {
+                        "usernames": [
+                            "admin-user1",
+                            "admin-user2"
+                        ],
+                        "recipient_type": "user"
+                    }
+                },
+                "alerts": {
+                    "url": "/monitor/alert-channels/123/alerts",
+                    "type": "alerts-definitions",
+                    "alert_count": 0
+                },
+                "created": "2024-01-01T00:00:00",
+                "updated": "2024-01-01T00:00:00",
+                "created_by": "tester",
+                "updated_by": "tester"
             }
-          ]
+        ]
         
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-alert-channels) for a list of returned fields
