@@ -50,7 +50,7 @@
         description: test description updated
         state: present
       register: modify_vpc
-      failed_when: "'Label must include only ASCII letters, numbers, and dashes' not in modify_vpc.msg"
+      failed_when: "'Must only use ASCII letters, numbers, and dashes' not in modify_vpc.msg"
 
     - name: Don't update the VPC
       linode.cloud.vpc:
