@@ -20,6 +20,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     dict_select_matching,
     filter_null_values,
     handle_updates,
+    poll_condition,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -32,6 +33,7 @@ from linode_api4 import (
     NodeBalancer,
     NodeBalancerConfig,
     NodeBalancerNode,
+    ApiError,
 )
 
 linode_nodes_spec = {
@@ -413,17 +415,54 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
     def _create_config(
         self, node_balancer: NodeBalancer, config_params: dict
-    ) -> Optional[NodeBalancerConfig]:
-        """Creates a config with the given kwargs within the given NodeBalancer"""
+    ) -> tuple[Optional[NodeBalancerConfig], bool]:
+        """
+        Creates a config with the given kwargs within the given NodeBalancer.
+
+        Retries config_create(...) on 400s while a conflicting config's
+        deletion is still propagating.
+        """
+
+        result: Optional[NodeBalancerConfig] = None
+        changed = False
+
+        def _attempt() -> bool:
+            nonlocal result, changed
+
+            try:
+                result = node_balancer.config_create(**config_params)
+                changed = True
+                return True
+            except ApiError as err:
+                if err.status != 400 or "already using port" not in str(err):
+                    # This is a real error
+                    raise
+
+                node_balancer.invalidate()
+                exists, remote = self._check_config_exists(
+                    node_balancer.configs, config_params
+                )
+
+                if exists:
+                    # Config already exists so we can reuse it
+                    result = remote
+                    changed = False
+
+                    return True
+
+            # Config doesn't exist, keep polling for propagation
+            return False
 
         try:
-            return node_balancer.config_create(**config_params)
+            poll_condition(_attempt, step=2, timeout=120)
         except Exception as exception:
-            return self.fail(
+            self.fail(
                 msg="failed to create nodebalancer config: {0}".format(
                     exception
                 )
             )
+
+        return result, changed
 
     def _create_node(
         self, config: NodeBalancerConfig, node_params: dict
@@ -441,13 +480,14 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
     def _create_config_register(
         self, node_balancer: NodeBalancer, config_params: dict
-    ) -> NodeBalancerConfig:
+    ) -> Tuple[NodeBalancerConfig, bool]:
         """Registers a create action for the given config"""
 
-        config = self._create_config(node_balancer, config_params)
-        self.register_action("Created config: {0}".format(config.id))
+        config, created = self._create_config(node_balancer, config_params)
+        if created:
+            self.register_action("Created config: {0}".format(config.id))
 
-        return config
+        return config, created
 
     def _delete_config_register(self, config: NodeBalancerConfig) -> None:
         """Registers a delete action for the given config"""
@@ -502,6 +542,19 @@ class LinodeNodeBalancer(LinodeModuleBase):
         for node in node_map.values():
             self._delete_node_register(node)
 
+        # Wait for nodes to propagate
+        expected_node_count = len(new_nodes)
+
+        def _nodes_synced():
+            if hasattr(config, "_nodes"):
+                # In the future we should fix the invalidation behavior in the Python SDK,
+                # but this works as a workaround
+                object.__delattr__(config, "_nodes")
+
+            return len(config.nodes) == expected_node_count
+
+        poll_condition(_nodes_synced, step=2, timeout=120)
+
     @staticmethod
     def _check_config_exists(
         target: Set[NodeBalancerConfig], config: dict
@@ -511,8 +564,8 @@ class LinodeNodeBalancer(LinodeModuleBase):
         tmp_config = copy.deepcopy(config)
 
         # These fields will return as <REDACTED> so we should not diff on them
-        tmp_config.pop("ssl_cert")
-        tmp_config.pop("ssl_key")
+        tmp_config.pop("ssl_cert", None)
+        tmp_config.pop("ssl_key", None)
 
         for remote_config in target:
             config_match, remote_config_match = dict_select_matching(
@@ -524,56 +577,87 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         return False, None
 
-    def _handle_configs(self) -> None:
+    def _handle_configs(self) -> list:
         """Updates the configs defined in new_configs under this NodeBalancer"""
 
         new_configs = self.module.params.get("configs") or []
-        remote_configs = set(self._node_balancer.configs)
+        if not new_configs:
+            return []
 
-        to_create = []
-        to_update = []
-        to_delete = remote_configs
+        to_create, to_update, to_delete = self._plan_configs(new_configs)
 
-        for config in new_configs:
-            config_exists, remote_config = self._check_config_exists(
-                remote_configs, config
-            )
-
-            if not config_exists:
-                to_create.append((config, remote_config))
-                continue
-
-            if config.get("recreate"):
-                to_create.append((config, remote_config))
-                continue
-
-            to_update.append((config, remote_config))
-            to_delete.remove(remote_config)
-
-        # Remove remaining configs
         for config in to_delete:
             self._delete_config_register(config)
 
         result_configs = []
 
-        for config, remote_config in to_create:
-            new_config = self._create_config_register(
+        for config in to_create:
+            new_config, _ = self._create_config_register(
                 self._node_balancer, config
             )
-            if config.get("nodes") is not None:
-                self._handle_config_nodes(new_config, config.get("nodes"))
-            new_config._api_get()
+            self._sync_config_nodes(new_config, config.get("nodes"))
             result_configs.append(new_config)
 
         for config, remote_config in to_update:
-            if config.get("nodes") is not None:
-                self._handle_config_nodes(remote_config, config.get("nodes"))
-            remote_config._api_get()
+            self._sync_config_nodes(remote_config, config.get("nodes"))
             result_configs.append(remote_config)
+
+        self._wait_for_configs_synced(len(new_configs))
 
         cast(list, self.results["configs"]).extend(
             [c._raw_json for c in result_configs]
         )
+
+        return result_configs
+
+    def _wait_for_configs_synced(self, n: int) -> None:
+        """Workaround for config deletion eventual consistency issue."""
+
+        nb = self._node_balancer
+
+        def _synced() -> bool:
+            nb.invalidate()
+            return len(nb.configs) == n
+
+        poll_condition(_synced, step=2, timeout=120)
+
+    def _plan_configs(self, new_configs: list[dict]) -> tuple[
+        list[dict],
+        list[tuple[dict, NodeBalancerConfig]],
+        set[NodeBalancerConfig],
+    ]:
+        """Partition desired configs into (create, update, delete) sets."""
+
+        remote_configs = set(self._node_balancer.configs)
+        to_create: list[dict] = []
+        to_update: list[tuple[dict, NodeBalancerConfig]] = []
+        to_delete = remote_configs
+
+        for config in new_configs:
+            exists, remote_config = self._check_config_exists(
+                remote_configs, config
+            )
+
+            if not exists or config.get("recreate"):
+                to_create.append(config)
+                continue
+
+            to_update.append((config, remote_config))
+            to_delete.remove(remote_config)
+
+        return to_create, to_update, to_delete
+
+    def _sync_config_nodes(
+        self,
+        config: Optional[NodeBalancerConfig],
+        nodes: Optional[List[dict]],
+    ) -> None:
+        """Sync nodes against the given config if provided."""
+
+        if nodes is not None:
+            self._handle_config_nodes(config, nodes)
+
+        config._api_get()
 
     def _update_nodebalancer(self) -> None:
         """Handles updating the current NodeBalancer"""
@@ -640,10 +724,10 @@ class LinodeNodeBalancer(LinodeModuleBase):
             return self.results
 
         self._handle_nodebalancer()
-        self._handle_configs()
+        result_configs = self._handle_configs()
 
         # Append all nodes to the result
-        for config in self._node_balancer.configs:
+        for config in result_configs or self._node_balancer.configs:
             for node in config.nodes:
                 node._api_get()
                 cast(list, self.results["nodes"]).append(node._raw_json)
