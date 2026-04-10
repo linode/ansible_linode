@@ -1,0 +1,17 @@
+- name: regions_vpc_availability_list
+  block:
+    - name: List regions VPC availability
+      linode.cloud.regions_vpc_availability_list:
+      register: result
+
+    - name: Assert regions_vpc_availability_list
+      assert:
+        that:
+          - result.regions_vpc_availability | length >= 0
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
