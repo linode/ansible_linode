@@ -95,6 +95,7 @@ Name | Description |
 [linode.cloud.placement_group_info](./docs/modules/placement_group_info.md)|Get info about a Linode Placement Group.|
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
 [linode.cloud.region_info](./docs/modules/region_info.md)|Get info about a Linode Region.|
+[linode.cloud.region_vpc_availability_info](./docs/modules/region_vpc_availability_info.md)|Get info about a Linode Region VPC Availability.|
 [linode.cloud.ssh_key_info](./docs/modules/ssh_key_info.md)|Get info about a Linode SSH Key.|
 [linode.cloud.stackscript_info](./docs/modules/stackscript_info.md)|Get info about a Linode StackScript.|
 [linode.cloud.token_info](./docs/modules/token_info.md)|Get info about a Linode Personal Access Token.|

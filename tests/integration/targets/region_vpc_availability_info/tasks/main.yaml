@@ -1,0 +1,20 @@
+- name: region_vpc_availability_info
+  block:
+    - name: Get Info of a Linode Region VPC Availability
+      linode.cloud.region_vpc_availability_info:
+        id: us-mia
+      register: result
+
+    - name: Assert region_vpc_availability_info
+      assert:
+        that:
+          - result.region_vpc_availability.region == 'us-mia'
+          - result.region_vpc_availability.available == true
+          - result.region_vpc_availability.available_ipv6_prefix_lengths == [48, 52]
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
