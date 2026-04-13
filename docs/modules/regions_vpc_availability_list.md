@@ -18,7 +18,8 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
 
 ```yaml
 - name: List all of the Linode regions VPC availability
-  linode.cloud.regions_vpc_availability_list: {}
+  linode.cloud.regions_vpc_availability_list:
+    api_version: v4beta
 ```
 
 

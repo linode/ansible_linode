@@ -19,6 +19,7 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
 ```yaml
 - name: Get Info of a Linode Region VPC Availability
   linode.cloud.region_vpc_availability_info:
+    api_version: v4beta
     id: us-mia
 ```
 

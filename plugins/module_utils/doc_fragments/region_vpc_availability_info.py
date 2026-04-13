@@ -3,6 +3,7 @@
 specdoc_examples = ['''
 - name: Get Info of a Linode Region VPC Availability
   linode.cloud.region_vpc_availability_info:
+    api_version: v4beta
     id: us-mia''']
 
 result_region_vpc_availability_samples = ['''{
