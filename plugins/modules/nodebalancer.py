@@ -355,6 +355,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
         }
 
         self._node_balancer: Optional[NodeBalancer] = None
+        self._deleted_config_ids: Set[int] = set()
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
@@ -420,7 +421,9 @@ class LinodeNodeBalancer(LinodeModuleBase):
         Creates a config with the given kwargs within the given NodeBalancer.
 
         Retries config_create(...) on 400s while a conflicting config's
-        deletion is still propagating.
+        deletion is still propagating. If a matching remote surfaces while
+        the caller asked for a recreate, the remote is deleted and polling
+        continues until the create succeeds.
         """
 
         result: Optional[NodeBalancerConfig] = None
@@ -435,23 +438,24 @@ class LinodeNodeBalancer(LinodeModuleBase):
                 return True
             except ApiError as err:
                 if err.status != 400 or "already using port" not in str(err):
-                    # This is a real error
                     raise
 
-                node_balancer.invalidate()
-                exists, remote = self._check_config_exists(
-                    node_balancer.configs, config_params
-                )
+            node_balancer.invalidate()
+            exists, remote = self._check_config_exists(
+                set(node_balancer.configs), config_params
+            )
 
-                if exists:
-                    # Config already exists so we can reuse it
-                    result = remote
-                    changed = False
+            if not exists or remote.id in self._deleted_config_ids:
+                # No live match yet
+                return False
 
-                    return True
+            if config_params.get("recreate"):
+                self._delete_config_register(remote)
+                return False
 
-            # Config doesn't exist, keep polling for propagation
-            return False
+            result = remote
+            changed = False
+            return True
 
         try:
             poll_condition(_attempt, step=2, timeout=120)
@@ -494,6 +498,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         self.register_action("Deleted config: {0}".format(config.id))
         config.delete()
+        self._deleted_config_ids.add(config.id)
 
     def _create_node_register(
         self, config: NodeBalancerConfig, node_params: dict
@@ -589,6 +594,11 @@ class LinodeNodeBalancer(LinodeModuleBase):
         for config in to_delete:
             self._delete_config_register(config)
 
+        # Wait for deletions to propagate before attempting creates; otherwise
+        # the API returns "already using port" 400s on overlapping ports.
+        if to_delete:
+            self._wait_for_configs_synced(len(to_update))
+
         result_configs = []
 
         for config in to_create:
@@ -610,16 +620,27 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         return result_configs
 
-    def _wait_for_configs_synced(self, n: int) -> None:
+    def _wait_for_configs_synced(
+        self, num_configs: int, consecutive_threshold: int = 3
+    ) -> None:
         """Workaround for config deletion eventual consistency issue."""
 
-        nb = self._node_balancer
+        successful_requests = 0
 
         def _synced() -> bool:
-            nb.invalidate()
-            return len(nb.configs) == n
+            nonlocal successful_requests
 
-        poll_condition(_synced, step=2, timeout=120)
+            self._node_balancer.invalidate()
+
+            successful_requests = (
+                successful_requests + 1
+                if len(self._node_balancer.configs) == num_configs
+                else 0
+            )
+
+            return successful_requests >= consecutive_threshold
+
+        poll_condition(_synced, step=2, timeout=180)
 
     def _plan_configs(self, new_configs: list[dict]) -> tuple[
         list[dict],
