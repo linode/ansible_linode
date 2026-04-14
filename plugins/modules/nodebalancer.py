@@ -585,9 +585,11 @@ class LinodeNodeBalancer(LinodeModuleBase):
     def _handle_configs(self) -> list:
         """Updates the configs defined in new_configs under this NodeBalancer"""
 
-        new_configs = self.module.params.get("configs") or []
-        if not new_configs:
+        configs_param = self.module.params.get("configs")
+        if configs_param is None:
             return []
+
+        new_configs = configs_param
 
         to_create, to_update, to_delete = self._plan_configs(new_configs)
 
@@ -670,7 +672,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
     def _sync_config_nodes(
         self,
-        config: Optional[NodeBalancerConfig],
+        config: NodeBalancerConfig,
         nodes: Optional[List[dict]],
     ) -> None:
         """Sync nodes against the given config if provided."""

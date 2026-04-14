@@ -61,9 +61,9 @@
       delay: 10
 
     - set_fact:
-        node1_inst: '{{ node_jobs.results[0] }}'
-        node2_inst: '{{ node_jobs.results[1] }}'
-        node3_inst: '{{ node_jobs.results[2] }}'
+        node1_inst: '{{ node_jobs.results[0].result }}'
+        node2_inst: '{{ node_jobs.results[1].result }}'
+        node3_inst: '{{ node_jobs.results[2].result }}'
 
     - name: Assert node instances are created
       assert:
