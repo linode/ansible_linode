@@ -36,6 +36,15 @@ from linode_api4 import (
     NodeBalancerNode,
 )
 
+# tcp/http/https share a port namespace; udp is independent. Used to detect
+# which existing config is blocking a create on a given port.
+_TCP_FAMILY = {"tcp", "http", "https"}
+
+
+def _protocol_family(protocol: Optional[str]) -> Optional[str]:
+    return "tcp" if protocol in _TCP_FAMILY else protocol
+
+
 linode_nodes_spec = {
     "label": SpecField(
         type=FieldType.string,
@@ -441,21 +450,27 @@ class LinodeNodeBalancer(LinodeModuleBase):
                     raise
 
             node_balancer.invalidate()
+
+            remote_configs = set(node_balancer.configs)
+
             exists, remote = self._check_config_exists(
-                set(node_balancer.configs), config_params
+                remote_configs, config_params
             )
 
-            if not exists or remote.id in self._deleted_config_ids:
-                # No live match yet
-                return False
+            if exists and remote.id not in self._deleted_config_ids:
+                if config_params.get("recreate"):
+                    self._delete_config_register(remote)
+                    return False
 
-            if config_params.get("recreate"):
-                self._delete_config_register(remote)
-                return False
+                result = remote
+                changed = False
+                return True
 
-            result = remote
-            changed = False
-            return True
+            conflict = self._find_port_conflict(remote_configs, config_params)
+            if conflict is not None:
+                self._delete_config_register(conflict)
+
+            return False
 
         try:
             poll_condition(_attempt, step=2, timeout=120)
@@ -582,6 +597,28 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         return False, None
 
+    def _find_port_conflict(
+        self,
+        target: Set[NodeBalancerConfig],
+        config: dict[str, Any],
+    ) -> Optional[NodeBalancerConfig]:
+        """Return a remote config in conflict."""
+
+        port = config.get("port")
+        family = _protocol_family(config.get("protocol"))
+
+        for remote_config in target:
+            if (
+                remote_config.id in self._deleted_config_ids
+                or remote_config.port != port
+                or _protocol_family(remote_config.protocol) != family
+            ):
+                continue
+
+            return remote_config
+
+        return None
+
     def _handle_configs(self) -> list:
         """Updates the configs defined in new_configs under this NodeBalancer"""
 
@@ -625,21 +662,22 @@ class LinodeNodeBalancer(LinodeModuleBase):
     def _wait_for_configs_synced(
         self, num_configs: int, consecutive_threshold: int = 3
     ) -> None:
-        """Workaround for config deletion eventual consistency issue."""
-
+        """
+        Wait for the list endpoint to consistently show the expected config
+        count. Requires consecutive matching polls — the list is eventually
+        consistent across API nodes, so a single match can be transient.
+        """
         successful_requests = 0
 
         def _synced() -> bool:
             nonlocal successful_requests
-
             self._node_balancer.invalidate()
 
-            successful_requests = (
-                successful_requests + 1
-                if len(self._node_balancer.configs) == num_configs
-                else 0
-            )
+            if len(self._node_balancer.configs) != num_configs:
+                successful_requests = 0
+                return False
 
+            successful_requests += 1
             return successful_requests >= consecutive_threshold
 
         poll_condition(_synced, step=2, timeout=180)
