@@ -55,15 +55,14 @@
         - '{{ node2_job.ansible_job_id }}'
         - '{{ node3_job.ansible_job_id }}'
       register: node_jobs
-      until: node_jobs.results is defined and
-             (node_jobs.results | map(attribute='finished') | select('equalto', true) | list | length) == (node_jobs.results | length)
+      until: node_jobs.finished
       retries: 60
       delay: 10
 
     - set_fact:
-        node1_inst: '{{ node_jobs.results[0].result }}'
-        node2_inst: '{{ node_jobs.results[1].result }}'
-        node3_inst: '{{ node_jobs.results[2].result }}'
+        node1_inst: '{{ node_jobs.results[0] }}'
+        node2_inst: '{{ node_jobs.results[1] }}'
+        node3_inst: '{{ node_jobs.results[2] }}'
 
     - name: Assert node instances are created
       assert:
