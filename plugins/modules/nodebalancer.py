@@ -545,7 +545,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
         # Wait for nodes to propagate
         expected_node_count = len(new_nodes)
 
-        def _nodes_synced():
+        def _nodes_synced() -> bool:
             if hasattr(config, "_nodes"):
                 # In the future we should fix the invalidation behavior in the Python SDK,
                 # but this works as a workaround
