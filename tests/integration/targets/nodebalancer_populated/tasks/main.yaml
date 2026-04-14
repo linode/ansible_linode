@@ -55,7 +55,8 @@
         - '{{ node2_job.ansible_job_id }}'
         - '{{ node3_job.ansible_job_id }}'
       register: node_jobs
-      until: node_jobs.finished
+      until: node_jobs.results is defined and
+             (node_jobs.results | map(attribute='finished') | select('equalto', true) | list | length) == (node_jobs.results | length)
       retries: 60
       delay: 10
 
