@@ -29,11 +29,11 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 from linode_api4 import (
+    ApiError,
     Firewall,
     NodeBalancer,
     NodeBalancerConfig,
     NodeBalancerNode,
-    ApiError,
 )
 
 linode_nodes_spec = {
