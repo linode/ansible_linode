@@ -36,8 +36,6 @@ module = ListModule(
             type=FieldType.integer,
         ),
     ],
-    # filtering is currently not supported by this endpoint
-    disable_filters=True,
 )
 
 SPECDOC_META = module.spec
