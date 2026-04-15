@@ -660,6 +660,32 @@ def retry_on_response_status(
     )
 
 
+def poll_for_response_status(
+    timeout_ctx: TimeoutContext, func: Callable[[], None], *statuses: int
+):
+    """
+    Polls a given function until it raises an ApiError with one of the
+    specified response statuses.
+    """
+
+    def __attempt() -> bool:
+        try:
+            func()
+        except ApiError as err:
+            if err.status in statuses:
+                return True
+
+            raise err
+
+        return False
+
+    poll_condition(
+        __attempt,
+        step=4,
+        timeout=timeout_ctx.seconds_remaining,
+    )
+
+
 def api_filter_constructor_for_aclp_monitor_services(
     params: Dict[str, Any],
 ) -> Dict[str, Any]:
