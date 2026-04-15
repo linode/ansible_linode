@@ -354,8 +354,6 @@ MUTABLE_CONFIG_FIELDS: set[str] = {
     "port",
     "protocol",
     "proxy_protocol",
-    "ssl_cert",
-    "ssl_key",
     "stickiness",
     "udp_check_port",
 }
@@ -748,8 +746,13 @@ class LinodeNodeBalancer(LinodeModuleBase):
         self._handle_nodebalancer()
         result_configs = self._handle_configs()
 
-        # Append all nodes to the result
-        for config in result_configs or self._node_balancer.configs:
+        result_configs = (
+            result_configs
+            if self.module.params.get("configs") is not None
+            else self._node_balancer.configs
+        )
+
+        for config in result_configs:
             for node in config.nodes:
                 node._api_get()
                 cast(list, self.results["nodes"]).append(node._raw_json)
