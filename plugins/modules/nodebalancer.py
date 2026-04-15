@@ -5,7 +5,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-import copy
 from typing import Any, List, Optional, Set, Tuple, cast
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer as docs
@@ -21,6 +20,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     filter_null_values,
     handle_updates,
     poll_condition,
+    poll_for_response_status,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -35,6 +35,7 @@ from linode_api4 import (
     NodeBalancerConfig,
     NodeBalancerNode,
 )
+from linode_api4.polling import TimeoutContext
 
 # tcp/http/https share a port namespace; udp is independent. Used to detect
 # which existing config is blocking a create on a given port.
@@ -340,6 +341,25 @@ MUTABLE_FIELDS: Set[str] = {
     "client_udp_sess_throttle",
 }
 
+MUTABLE_CONFIG_FIELDS: set[str] = {
+    "algorithm",
+    "check",
+    "check_attempts",
+    "check_body",
+    "check_interval",
+    "check_passive",
+    "check_path",
+    "check_timeout",
+    "cipher_suite",
+    "port",
+    "protocol",
+    "proxy_protocol",
+    "ssl_cert",
+    "ssl_key",
+    "stickiness",
+    "udp_check_port",
+}
+
 DOCUMENTATION = r"""
 """
 EXAMPLES = r"""
@@ -426,62 +446,15 @@ class LinodeNodeBalancer(LinodeModuleBase):
     def _create_config(
         self, node_balancer: NodeBalancer, config_params: dict
     ) -> tuple[Optional[NodeBalancerConfig], bool]:
-        """
-        Creates a config with the given kwargs within the given NodeBalancer.
-
-        Retries config_create(...) on 400s while a conflicting config's
-        deletion is still propagating. If a matching remote surfaces while
-        the caller asked for a recreate, the remote is deleted and polling
-        continues until the create succeeds.
-        """
-
-        result: Optional[NodeBalancerConfig] = None
-        changed = False
-
-        def _attempt() -> bool:
-            nonlocal result, changed
-
-            try:
-                result = node_balancer.config_create(**config_params)
-                changed = True
-                return True
-            except ApiError as err:
-                if err.status != 400 or "already using port" not in str(err):
-                    raise
-
-            node_balancer.invalidate()
-
-            remote_configs = set(node_balancer.configs)
-
-            exists, remote = self._check_config_exists(
-                remote_configs, config_params
-            )
-
-            if exists and remote.id not in self._deleted_config_ids:
-                if config_params.get("recreate"):
-                    self._delete_config_register(remote)
-                    return False
-
-                result = remote
-                changed = False
-                return True
-
-            conflict = self._find_port_conflict(remote_configs, config_params)
-            if conflict is not None:
-                self._delete_config_register(conflict)
-
-            return False
+        """Creates a config with the given kwargs within the given NodeBalancer."""
 
         try:
-            poll_condition(_attempt, step=2, timeout=120)
-        except Exception as exception:
+            return node_balancer.config_create(**config_params), True
+        except ApiError as err:
             self.fail(
-                msg="failed to create nodebalancer config: {0}".format(
-                    exception
-                )
+                msg="failed to create nodebalancer config: {0}".format(err)
             )
-
-        return result, changed
+            return None, False
 
     def _create_node(
         self, config: NodeBalancerConfig, node_params: dict
@@ -575,34 +548,12 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         poll_condition(_nodes_synced, step=2, timeout=120)
 
-    @staticmethod
-    def _check_config_exists(
-        target: Set[NodeBalancerConfig], config: dict
-    ) -> Tuple[bool, Optional[NodeBalancerConfig]]:
-        """Returns whether a config exists in the target set"""
-
-        tmp_config = copy.deepcopy(config)
-
-        # These fields will return as <REDACTED> so we should not diff on them
-        tmp_config.pop("ssl_cert", None)
-        tmp_config.pop("ssl_key", None)
-
-        for remote_config in target:
-            config_match, remote_config_match = dict_select_matching(
-                filter_null_values(tmp_config), remote_config._raw_json
-            )
-
-            if config_match == remote_config_match:
-                return True, remote_config
-
-        return False, None
-
     def _find_port_conflict(
         self,
         target: Set[NodeBalancerConfig],
         config: dict[str, Any],
     ) -> Optional[NodeBalancerConfig]:
-        """Return a remote config in conflict."""
+        """Return a remote config matching on port+protocol-family."""
 
         port = config.get("port")
         family = _protocol_family(config.get("protocol"))
@@ -635,8 +586,10 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
         # Wait for deletions to propagate before attempting creates; otherwise
         # the API returns "already using port" 400s on overlapping ports.
-        if to_delete:
-            self._wait_for_configs_synced(len(to_update))
+        for config in to_delete:
+            poll_for_response_status(
+                TimeoutContext(timeout_seconds=120), config._api_get, 404
+            )
 
         result_configs = []
 
@@ -648,6 +601,12 @@ class LinodeNodeBalancer(LinodeModuleBase):
             result_configs.append(new_config)
 
         for config, remote_config in to_update:
+            handle_updates(
+                remote_config,
+                filter_null_values(config),
+                MUTABLE_CONFIG_FIELDS,
+                self.register_action,
+            )
             self._sync_config_nodes(remote_config, config.get("nodes"))
             result_configs.append(remote_config)
 
@@ -664,8 +623,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
     ) -> None:
         """
         Wait for the list endpoint to consistently show the expected config
-        count. Requires consecutive matching polls — the list is eventually
-        consistent across API nodes, so a single match can be transient.
+        count. Workaround for API propagation behavior
         """
         successful_requests = 0
 
@@ -695,16 +653,14 @@ class LinodeNodeBalancer(LinodeModuleBase):
         to_delete = remote_configs
 
         for config in new_configs:
-            exists, remote_config = self._check_config_exists(
-                remote_configs, config
-            )
+            match = self._find_port_conflict(to_delete, config)
 
-            if not exists or config.get("recreate"):
-                to_create.append(config)
+            if match is not None and not config.get("recreate"):
+                to_update.append((config, match))
+                to_delete.remove(match)
                 continue
 
-            to_update.append((config, remote_config))
-            to_delete.remove(remote_config)
+            to_create.append(config)
 
         return to_create, to_update, to_delete
 
