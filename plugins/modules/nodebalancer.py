@@ -610,35 +610,40 @@ class LinodeNodeBalancer(LinodeModuleBase):
             self._sync_config_nodes(remote_config, config.get("nodes"))
             result_configs.append(remote_config)
 
-        self._wait_for_configs_synced(len(new_configs))
-
         cast(list, self.results["configs"]).extend(
             [c._raw_json for c in result_configs]
         )
 
         return result_configs
 
-    def _wait_for_configs_synced(
-        self, num_configs: int, consecutive_threshold: int = 3
-    ) -> None:
+    def _stable_configs(
+        self, consecutive_threshold: int = 3
+    ) -> List[NodeBalancerConfig]:
         """
         Wait for the list endpoint to consistently show the expected config
-        count. Workaround for API propagation behavior
+        count. Workaround for API propagation behavior.
         """
         successful_requests = 0
+        last_len = -1
+        last_configs: List[NodeBalancerConfig] = []
 
-        def _synced() -> bool:
-            nonlocal successful_requests
+        def _stable() -> bool:
+            nonlocal successful_requests, last_len, last_configs
             self._node_balancer.invalidate()
+            last_configs = list(self._node_balancer.configs)
 
-            if len(self._node_balancer.configs) != num_configs:
+            if len(last_configs) != last_len:
                 successful_requests = 0
+                last_len = len(last_configs)
+
                 return False
 
             successful_requests += 1
             return successful_requests >= consecutive_threshold
 
-        poll_condition(_synced, step=2, timeout=180)
+        poll_condition(_stable, step=2, timeout=180)
+
+        return last_configs
 
     def _plan_configs(self, new_configs: list[dict]) -> tuple[
         list[dict],
@@ -647,7 +652,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
     ]:
         """Partition desired configs into (create, update, delete) sets."""
 
-        remote_configs = set(self._node_balancer.configs)
+        remote_configs = set(self._stable_configs())
         to_create: list[dict] = []
         to_update: list[tuple[dict, NodeBalancerConfig]] = []
         to_delete = remote_configs
