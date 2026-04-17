@@ -90,6 +90,7 @@ Name | Description |
 [linode.cloud.lock_info](./docs/modules/lock_info.md)|Get info about a Linode Lock.|
 [linode.cloud.monitor_services_alert_definition_info](./docs/modules/monitor_services_alert_definition_info.md)|Get info about a Linode Alert Definition.|
 [linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode Node Balancer.|
+[linode.cloud.nodebalancer_vpc_info](./docs/modules/nodebalancer_vpc_info.md)|Get info about a Linode VPC Configuration.|
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.object_storage_quota_info](./docs/modules/object_storage_quota_info.md)|Get info about a Linode Object Storage Quota.|
 [linode.cloud.placement_group_info](./docs/modules/placement_group_info.md)|Get info about a Linode Placement Group.|
@@ -139,6 +140,7 @@ Name | Description |
 [linode.cloud.network_transfer_prices_list](./docs/modules/network_transfer_prices_list.md)|List and filter on Network Transfer Prices.|
 [linode.cloud.nodebalancer_list](./docs/modules/nodebalancer_list.md)|List and filter on Node Balancers.|
 [linode.cloud.nodebalancer_type_list](./docs/modules/nodebalancer_type_list.md)|List and filter on Node Balancer Types.|
+[linode.cloud.nodebalancer_vpc_list](./docs/modules/nodebalancer_vpc_list.md)|List and filter on Node Balancer VPC Configurations.|
 [linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.object_storage_endpoint_list](./docs/modules/object_storage_endpoint_list.md)|List and filter on Object Storage Endpoints.|
 [linode.cloud.object_storage_quota_list](./docs/modules/object_storage_quota_list.md)|List and filter on Object Storage Quotas.|

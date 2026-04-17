@@ -1,0 +1,146 @@
+- name: nodebalancer_frontend_vpc
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        ipv6:
+          - range: "/52"
+        description: test description
+        state: present
+      register: create_vpc
+
+    - name: Assert VPC created
+      assert:
+        that:
+          - create_vpc.changed
+          - create_vpc.vpc.label == 'ansible-test-{{ r }}'
+          - create_vpc.vpc.region == 'us-ord'
+          - create_vpc.vpc.description == 'test description'
+
+    - name: Create a subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet'
+        ipv4: '10.0.0.0/24'
+        ipv6:
+          - range: "auto"
+        state: present
+      register: create_subnet
+
+    - name: create nodebalancer with frontend vpc
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-frontend{{ r }}'
+        region: us-ord
+        state: present
+        type: premium
+        firewall_id: '{{ firewall_id }}'
+        frontend_vpcs:
+          - subnet_id: '{{ create_subnet.subnet.id }}'
+            ipv4_range: '10.0.0.4/30'
+            ipv6_range: '{{ create_subnet.subnet.ipv6[0].range }}'
+      register: create_nodebalancer_with_frontend_vpc
+
+    - name: Assert NodeBalancer with frontend VPC is created
+      assert:
+        that:
+          - create_nodebalancer_with_frontend_vpc.changed
+          - create_nodebalancer_with_frontend_vpc.node_balancer.frontend_address_type == 'vpc'
+          - create_nodebalancer_with_frontend_vpc.node_balancer.frontend_vpc_subnet_id == create_subnet.subnet.id
+          - create_nodebalancer_with_frontend_vpc.vpcs|length == 0
+          - create_nodebalancer_with_frontend_vpc.frontend_vpcs|length == 1
+          - create_nodebalancer_with_frontend_vpc.frontend_vpcs[0].subnet_id == create_subnet.subnet.id
+          - create_nodebalancer_with_frontend_vpc.frontend_vpcs[0].purpose == "frontend"
+
+    - name: Get info about the NodeBalancer by id
+      linode.cloud.nodebalancer_info:
+        id: '{{ create_nodebalancer_with_frontend_vpc.node_balancer.id }}'
+      register: nb_info_id
+
+    - name: Assert that info is valid
+      assert:
+        that:
+          - nb_info_id.node_balancer.id == create_nodebalancer_with_frontend_vpc.node_balancer.id
+          - nb_info_id.node_balancer.type == 'premium'        
+          - nb_info_id.node_balancer.frontend_address_type == 'vpc'        
+          - nb_info_id.node_balancer.frontend_vpc_subnet_id == create_subnet.subnet.id        
+          - nb_info_id.frontend_vpcs|length == 1        
+          - nb_info_id.frontend_vpcs[0].nodebalancer_id == create_nodebalancer_with_frontend_vpc.node_balancer.id
+          - nb_info_id.frontend_vpcs[0].subnet_id == create_subnet.subnet.id
+          - nb_info_id.frontend_vpcs[0].vpc_id == create_vpc.vpc.id
+          - nb_info_id.frontend_vpcs[0].ipv4_range != None
+          - nb_info_id.frontend_vpcs[0].ipv6_range != None
+          - nb_info_id.frontend_vpcs[0].purpose == "frontend"
+
+    - name: Get info about the NodeBalancer VPC config
+      linode.cloud.nodebalancer_vpc_info:
+        id: '{{ create_nodebalancer_with_frontend_vpc.node_balancer.id }}'
+        vpc_config_id: '{{ create_nodebalancer_with_frontend_vpc.frontend_vpcs[0].id }}'
+      register: nb_vpc_config_info
+
+    - name: Assert that VPC config info is valid
+      assert:
+        that:
+          - nb_vpc_config_info.vpc_config.id == create_nodebalancer_with_frontend_vpc.frontend_vpcs[0].id
+          - nb_vpc_config_info.vpc_config.nodebalancer_id == create_nodebalancer_with_frontend_vpc.node_balancer.id
+          - nb_vpc_config_info.vpc_config.subnet_id == create_subnet.subnet.id
+          - nb_vpc_config_info.vpc_config.vpc_id == create_vpc.vpc.id
+          - nb_vpc_config_info.vpc_config.ipv4_range != None
+          - nb_vpc_config_info.vpc_config.ipv6_range != None
+          - nb_vpc_config_info.vpc_config.purpose == "frontend"
+
+    - name: Attempt to update with no differences
+      linode.cloud.nodebalancer:
+        label: 'ansible-test-frontend{{ r }}'
+        region: us-ord
+        state: present
+        type: premium
+        frontend_vpcs:
+          - subnet_id: '{{ create_subnet.subnet.id }}'
+            ipv4_range: '10.0.0.4/30'
+            ipv6_range: '{{ create_subnet.subnet.ipv6[0].range }}'
+      register: update_nodebalancer_nochanges
+
+    - name: Assert NodeBalancer is not updated
+      assert:
+        that:
+          - update_nodebalancer_nochanges.changed == false
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete the NodeBalancer with frontend VPC
+          linode.cloud.nodebalancer:
+            label: '{{ create_nodebalancer_with_frontend_vpc.node_balancer.label }}'
+            state: absent
+          register: delete_nodebalancer_with_frontend_vpc
+
+        - name: Assert NodeBalancer with frontend VPC delete
+          assert:
+            that:
+              - delete_nodebalancer_with_frontend_vpc.changed
+              - delete_nodebalancer_with_frontend_vpc.node_balancer.id == create_nodebalancer_with_frontend_vpc.node_balancer.id
+            
+        - name: Delete a subnet
+          linode.cloud.vpc_subnet:
+            vpc_id: '{{ create_vpc.vpc.id }}'
+            label: 'test-subnet'
+            state: absent
+          register: delete_subnet
+
+        - name: Delete a VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

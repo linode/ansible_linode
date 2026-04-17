@@ -18,6 +18,7 @@
           - create_nodebalancer.changed
           - create_nodebalancer.configs|length == 0
           - create_nodebalancer.node_balancer.client_udp_sess_throttle == 3
+          - create_nodebalancer.node_balancer.type == 'common'
 
     - name: Add NodeBalancer config
       linode.cloud.nodebalancer:
@@ -71,6 +72,7 @@
           - nb_info.configs[0].udp_check_port == 1234
           - nb_info.configs[0].udp_session_timeout == 16
           - nb_info.node_balancer.client_udp_sess_throttle == 3
+          - nb_info.node_balancer.type == 'common'
 
   always:
     - ignore_errors: yes

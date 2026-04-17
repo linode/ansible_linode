@@ -17,6 +17,8 @@ result_nodebalancers_samples = ['''[
       "id": 12345,
       "ipv4": "203.0.113.1",
       "ipv6": null,
+      "frontend_address_type": "public",
+      "frontend_vpc_subnet_id": null,
       "label": "balancer12345",
       "region": "us-east",
       "tags": [
@@ -28,6 +30,7 @@ result_nodebalancers_samples = ['''[
         "out": 3.5487728118896484,
         "total": 32.46078109741211
       },
-      "updated": "2018-03-01T00:01:01"
+      "updated": "2018-03-01T00:01:01",
+      "type": "common"
     }
 ]''']

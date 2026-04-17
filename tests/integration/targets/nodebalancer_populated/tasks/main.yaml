@@ -93,6 +93,7 @@
         that:
           - create_populated_nodebalancer.changed
           - create_populated_nodebalancer.node_balancer.region == 'us-ord'
+          - create_populated_nodebalancer.node_balancer.type == 'common'
           - create_populated_nodebalancer.configs|length == 1
           - create_populated_nodebalancer.configs[0].port == 80
           - create_populated_nodebalancer.configs[0].protocol == 'http'
@@ -131,6 +132,7 @@
           - update_populated_config.configs[0].port == 81
           - update_populated_config.configs|length == 1
           - update_populated_config.nodes|length == 1
+          - update_populated_config.node_balancer.type == 'common'
 
     - name: Attempt to update with no differences
       linode.cloud.nodebalancer:
@@ -269,6 +271,7 @@
           - nb_info_id.configs|length == 1
           - nb_info_id.nodes|length == 1
           - nb_info_id.nodes[0] != None
+          - nb_info_id.node_balancer.type == 'common'
 
     - name: Get info about a NodeBalancer that doesn't exist
       linode.cloud.nodebalancer_info:

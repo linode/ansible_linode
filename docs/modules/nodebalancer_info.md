@@ -47,8 +47,11 @@ Get info about a Linode Node Balancer.
           "id": 12345,
           "ipv4": "12.34.56.78",
           "ipv6": null,
+          "frontend_address_type": "public",
+          "frontend_vpc_subnet_id": null,
           "label": "balancer12345",
           "region": "us-east",
+          "type": "common",
           "tags": [
             "example tag",
             "another example"
@@ -163,5 +166,43 @@ Get info about a Linode Node Balancer.
         ]
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-firewalls) for a list of returned fields
+
+
+- `vpcs` - The returned vpcs.
+
+    - Sample Response:
+        ```json
+        [
+          {
+            "id": 123,
+            "nodebalancer_id": 12345,
+            "subnet_id": 456,
+            "vpc_id": 789,
+            "ipv4_range": "10.0.0.4/30",
+            "ipv6_range": null,
+            "purpose": "backend"
+          }
+        ]
+        ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs) for a list of returned fields
+
+
+- `frontend_vpcs` - The returned frontend_vpcs.
+
+    - Sample Response:
+        ```json
+        [
+          {
+            "id": 123,
+            "nodebalancer_id": 12345,
+            "subnet_id": 456,
+            "vpc_id": 789,
+            "ipv4_range": "10.0.0.4/30",
+            "ipv6_range": "2001:db8:1234::/48",
+            "purpose": "frontend"
+          }
+        ]
+        ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-node-balancer-vpcs) for a list of returned fields
 
 
