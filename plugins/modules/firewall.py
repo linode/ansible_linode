@@ -348,20 +348,21 @@ class LinodeFirewall(LinodeModuleBase):
         if self._state != "update":
             return local_rules
 
-        # Add new local rules to remote rules if they don't exist
+        # Amend existing rules and append new local rules
         for direction in ["inbound", "outbound"]:
-            rlr = {
-                remote_rule["label"]
-                for remote_rule in remote_rules.get(direction, {})
+            remote_labeled = {
+                r["label"] for r in remote_rules.get(direction, [])
             }
-            for local_rule in local_rules.get(direction, {}):
-                if local_rule["label"] not in rlr:
-                    remote_rules[direction].append(local_rule)
-
-        for direction in ["inbound", "outbound"]:
-            local_rules[direction] = self._amend_rules(
-                remote_rules[direction], local_rules[direction]
+            # Start with amended existing remote rules
+            amended = self._amend_rules(
+                remote_rules.get(direction, []),
+                local_rules.get(direction, []),
             )
+            # Append any new local rules not present in remote
+            for local_rule in local_rules.get(direction, []):
+                if local_rule["label"] not in remote_labeled:
+                    amended.append(local_rule)
+            local_rules[direction] = amended
         return local_rules
 
     def _change_rules(self) -> Optional[dict]:

@@ -79,7 +79,7 @@
           - updated_firewall.firewall.rules.inbound | length == 1
           - (updated_firewall.firewall.rules.inbound[0].addresses['ipv4'] is defined)
           - (updated_firewall.firewall.rules.inbound[0].addresses['ipv6'] is not defined)
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -158,7 +158,7 @@
           - updated_firewall.firewall.rules.inbound | length == 1
           - (updated_firewall.firewall.rules.inbound[0].addresses['ipv4'] is not defined)
           - (updated_firewall.firewall.rules.inbound[0].addresses['ipv6'] is defined)
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -238,7 +238,7 @@
           - updated_firewall.firewall.rules.inbound | length == 1
           - (updated_firewall.firewall.rules.inbound[0].addresses['ipv4'] is defined) and (updated_firewall.firewall.rules.inbound[0].addresses['ipv4'] == ['0.0.0.0/0'])
           - (updated_firewall.firewall.rules.inbound[0].addresses['ipv6'] is defined) and (updated_firewall.firewall.rules.inbound[0].addresses['ipv6'] == ['ff00::/8'])
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -286,7 +286,7 @@
         that:
           - updated_firewall.changed
           - updated_firewall.firewall.status == 'disabled'
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -326,7 +326,7 @@
         that:
           - updated_firewall.changed
           - updated_firewall.firewall.status == 'enabled'
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -370,7 +370,7 @@
           - updated_firewall.changed
           - updated_firewall.firewall.rules.inbound_policy == 'ACCEPT'
           - updated_firewall.firewall.rules.outbound_policy == 'ACCEPT'
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -447,7 +447,7 @@
           - updated_firewall.firewall.rules.outbound_policy == 'DROP'
           - updated_firewall.firewall.rules.outbound[0].addresses['ipv4'] == ['0.0.0.0/0']
           - updated_firewall.firewall.rules.outbound[0].addresses['ipv6'] == ['ff00::/8']
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -507,7 +507,7 @@
           - updated_firewall.firewall.rules.outbound[0].ports == '80,443'
           - updated_firewall.firewall.rules.outbound[0].protocol == 'TCP'
           - updated_firewall.firewall.rules.outbound[0].action == 'ACCEPT'
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -570,7 +570,7 @@
           - updated_firewall.firewall.rules.outbound[0].protocol == 'TCP'
           - updated_firewall.firewall.rules.outbound[0].action == 'ACCEPT'
           - updated_firewall.firewall.rules.outbound_policy == 'DROP'
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -635,7 +635,7 @@
           - updated_firewall.firewall.rules.outbound[0].action == 'ACCEPT'
           - updated_firewall.firewall.rules.outbound[0].addresses['ipv4'] == ['0.0.0.0/0','8.8.8.8/32' ]
           - updated_firewall.firewall.rules.outbound_policy == 'DROP'
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -700,7 +700,7 @@
           - updated_firewall.firewall.rules.outbound[0].action == 'ACCEPT'
           - updated_firewall.firewall.rules.outbound[0].addresses['ipv4'] == ['0.0.0.0/0','8.8.8.8/32' ]
           - updated_firewall.firewall.rules.outbound_policy == 'DROP'
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -749,7 +749,7 @@
           - updated_firewall.changed
           - updated_firewall.firewall.rules.inbound[0].description == 'Amazing firewall rule.'
           - updated_firewall.firewall.rules.outbound[0].description == 'Amazing firewall rule.'
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -798,7 +798,7 @@
       assert:
         that:
           - firewall_info.devices|length == 0
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -847,7 +847,7 @@
       assert:
         that:
           - not updated_firewall.changed
-          
+
           - firewall_info.firewall.id == create.firewall.id
           - firewall_info.devices|length == updated_firewall.devices|length
           - firewall_info.firewall.status == updated_firewall.firewall.status
@@ -867,6 +867,30 @@
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].ports is not defined and updated_firewall.firewall.rules.outbound[0].ports is not defined) or (firewall_info.firewall.rules.outbound[0].ports == updated_firewall.firewall.rules.outbound[0].ports))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].protocol is not defined and updated_firewall.firewall.rules.outbound[0].protocol is not defined) or (firewall_info.firewall.rules.outbound[0].protocol == updated_firewall.firewall.rules.outbound[0].protocol))
           - (firewall_info.firewall.rules.outbound | length == 0 and updated_firewall.firewall.rules.outbound | length == 0) or ((firewall_info.firewall.rules.outbound[0].action is not defined and updated_firewall.firewall.rules.outbound[0].action is not defined) or (firewall_info.firewall.rules.outbound[0].action == updated_firewall.firewall.rules.outbound[0].action))
+
+    - name: Append a new inbound rule via update
+      linode.cloud.firewall:
+        state: update
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+        rules:
+          inbound:
+            - label: new_rule
+              action: ACCEPT
+              protocol: TCP
+              addresses:
+                ipv4: ['2.2.2.2/32']
+              description: 'appended rule'
+              ports: '8080'
+      register: append_rule
+
+    - name: Assert new rule was appended
+      assert:
+        that:
+          - append_rule.changed
+          - append_rule.firewall.rules.inbound | length >= 2
+          - append_rule.firewall.rules.inbound | selectattr('label', 'equalto', 'new_rule') | list | length == 1
+
   always:
     - ignore_errors: yes
       block:
