@@ -891,6 +891,46 @@
           - append_rule.firewall.rules.inbound | length >= 2
           - append_rule.firewall.rules.inbound | selectattr('label', 'equalto', 'new_rule') | list | length == 1
 
+    - name: Get firewall info after appending a new inbound rule
+      linode.cloud.firewall_info:
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+      register: append_rule_info
+
+    - name: Assert appended rule exists in remote firewall state
+      assert:
+        that:
+          - append_rule_info.firewall.rules.inbound | length >= 2
+          - append_rule_info.firewall.rules.inbound | selectattr('label', 'equalto', 'new_rule') | list | length == 1
+
+    - name: Re-run append update to verify idempotency
+      linode.cloud.firewall:
+        state: update
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+        rules:
+          inbound:
+            - label: new_rule
+              action: ACCEPT
+              protocol: TCP
+              addresses:
+                ipv4: ['2.2.2.2/32']
+              description: 'appended rule'
+              ports: '8080'
+      register: append_rule_again
+
+    - name: Get firewall info after idempotency check
+      linode.cloud.firewall_info:
+        api_version: v4beta
+        label: '{{ create.firewall.label }}'
+      register: append_rule_info_again
+
+    - name: Assert append update is idempotent
+      assert:
+        that:
+          - not append_rule_again.changed
+          - append_rule_info_again.firewall.rules.inbound | selectattr('label', 'equalto', 'new_rule') | list | length == 1
+
   always:
     - ignore_errors: yes
       block:
