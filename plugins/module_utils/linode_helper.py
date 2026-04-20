@@ -660,6 +660,32 @@ def retry_on_response_status(
     )
 
 
+def poll_for_response_status(
+    timeout_ctx: TimeoutContext, func: Callable[[], None], *statuses: int
+):
+    """
+    Polls a given function until it raises an ApiError with one of the
+    specified response statuses.
+    """
+
+    def __attempt() -> bool:
+        try:
+            func()
+        except ApiError as err:
+            if err.status in statuses:
+                return True
+
+            raise err
+
+        return False
+
+    poll_condition(
+        __attempt,
+        step=4,
+        timeout=timeout_ctx.seconds_remaining,
+    )
+
+
 def api_filter_constructor_for_aclp_monitor_services(
     params: Dict[str, Any],
 ) -> Dict[str, Any]:
@@ -694,3 +720,22 @@ def api_filter_constructor_for_aclp_monitor_services(
             value_filters = {"+and": result}
 
     return value_filters
+
+
+def generate_device_suffixes(max_device_limit: int) -> List[str]:
+    """
+    Generates a list of device suffixes. Currently supports up to 64 devices,
+    which is the maximum number of devices supported by Linode instances.
+    The suffixes are generated in the format of a, b, c, ..., z, aa, ab, ..., az, ba, bb, ..., bl.
+    """
+    result = []
+    for i in range(max_device_limit):
+        if i < 26:
+            result.append(chr(ord("a") + i))
+        else:
+            shifted = i - 26
+            first_letter = chr(ord("a") + (shifted // 26))
+            second_letter = chr(ord("a") + (shifted % 26))
+            result.append(first_letter + second_letter)
+
+    return result

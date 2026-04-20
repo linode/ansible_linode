@@ -19,7 +19,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info im
     InfoModuleResult,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
-    paginated_list_to_json,
     safe_find,
 )
 from ansible_specdoc.objects import FieldType
@@ -35,6 +34,17 @@ def _get_firewalls_data(
         firewall._api_get()
         firewalls_json.append(firewall._raw_json)
     return firewalls_json
+
+
+def _get_configs(
+    client: LinodeClient, nodebalancer: NodeBalancer, params: Dict[str, Any]
+) -> List[Any]:
+    configs = NodeBalancer(client, nodebalancer["id"]).configs
+    configs_json = []
+    for config in configs:
+        config._api_get()
+        configs_json.append(config._raw_json)
+    return configs_json
 
 
 def _get_nodes(
@@ -64,9 +74,7 @@ module = InfoModule(
             display_name="configs",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-node-balancer-configs",
             samples=docs_parent.result_configs_samples,
-            get=lambda client, nodebalancer, params: paginated_list_to_json(
-                NodeBalancer(client, nodebalancer["id"]).configs
-            ),
+            get=_get_configs,
         ),
         InfoModuleResult(
             field_name="nodes",

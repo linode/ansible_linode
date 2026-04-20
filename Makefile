@@ -135,10 +135,10 @@ endif
 inject:
 	@echo "Injecting documentation into source files"
 	find ./plugins/modules -maxdepth 1 -name '*.py' -print0 | \
-		xargs -I {} -0 -P 5 bash -c 'export TARGET="{}"; echo "$$TARGET" && ansible-specdoc -j -i "$$TARGET";'
+		xargs -I {} -0 -P 5 bash -c 'export TARGET="{}"; echo "$$TARGET" && ansible-specdoc -j -i "$$TARGET" --yes;'
 
 inject-clean:
 	@echo "Removing injected documentation from source files"
 	find ./plugins/modules -maxdepth 1 -name '*.py' -print0 | \
-		xargs -I {} -0 -P 5 bash -c 'export TARGET="{}"; echo "$$TARGET" && ansible-specdoc -jc -i "$$TARGET";'
+		xargs -I {} -0 -P 5 bash -c 'export TARGET="{}"; echo "$$TARGET" && ansible-specdoc -jc -i "$$TARGET" --yes;'
 

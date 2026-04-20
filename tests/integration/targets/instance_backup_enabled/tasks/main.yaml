@@ -3,12 +3,17 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
+    - name: Get account_settings
+      linode.cloud.account_settings:
+        state: 'present'
+      register: account_info
+
     - name: Create a Linode instance without set backup to be enabled
       linode.cloud.instance:
         label: 'ansible-test-not-set-backup-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/ubuntu22.04
+        image: linode/ubuntu24.04
         wait: false
         state: present
         firewall_id: '{{ firewall_id }}'
@@ -18,15 +23,15 @@
       assert:
         that:
           - create_no_set_backup.changed
-          - create_no_set_backup.instance.backups.enabled == False
+          - create_no_set_backup.instance.backups.enabled == account_info.account_settings.backups_enabled
 
     - name: Create a Linode instance with backups enabled
       linode.cloud.instance:
         label: 'ansible-test-backups-enabled-{{ r }}'
-        region: us-central
+        region: us-mia
         type: g6-standard-1
-        image: linode/ubuntu22.04
-        wait: false
+        image: linode/ubuntu24.04
+        wait: true
         state: present
         backups_enabled: true
         firewall_id: '{{ firewall_id }}'
@@ -41,31 +46,31 @@
     - name: Cancel backups on backups enabled linode
       linode.cloud.instance:
         label: '{{ create_backups_enabled.instance.label }}'
-        region: us-central
+        region: us-mia
         type: g6-standard-1
-        image: linode/ubuntu22.04
+        image: linode/ubuntu24.04
         wait: false
         state: present
         backups_enabled: False
       register: update_backups_canceled
-    
+
     - name: Assert instance updated
       assert:
         that:
           - update_backups_canceled.changed
           - update_backups_canceled.instance.backups.enabled == False
-    
-    - name: Cancel backups on backups enabled linode
+
+    - name: Re-enable backups on instance
       linode.cloud.instance:
         label: '{{ create_no_set_backup.instance.label }}'
-        region: us-central
+        region: us-mia
         type: g6-standard-1
-        image: linode/ubuntu22.04
+        image: linode/ubuntu24.04
         wait: false
         state: present
         backups_enabled: True
       register: update_backups_enabled
-    
+
     - name: Assert instance updated
       assert:
         that:

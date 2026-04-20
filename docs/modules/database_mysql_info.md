@@ -51,7 +51,7 @@ Get info about a Linode MySQL Managed Database.
           "engine": "mysql",
           "hosts": {
             "primary": "lin-123-456-mysql-mysql-primary.servers.linodedb.net",
-            "secondary": "lin-123-456-mysql-primary-private.servers.linodedb.net"
+            "standby": "lin-123-456-mysql-primary-private.servers.linodedb.net"
           },
           "id": 123,
           "label": "example-db",
@@ -73,22 +73,6 @@ Get info about a Linode MySQL Managed Database.
         }
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance) for a list of returned fields
-
-
-- `backups` - The database backups in JSON serialized form.
-
-    - Sample Response:
-        ```json
-        [
-           {
-              "created":"2022-01-01T00:01:01",
-              "id":123,
-              "label":"Scheduled - 02/04/22 11:11 UTC-XcCRmI",
-              "type":"auto"
-           }
-        ]
-        ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-databases-mysql-instance-backup) for a list of returned fields
 
 
 - `ssl_cert` - The SSL CA certificate for an accessible Managed MySQL Database.

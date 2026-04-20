@@ -1,4 +1,4 @@
-- name: vpc_basic
+- name: vpc_subnet
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -44,7 +44,7 @@
         ipv4: '10.0.0.0/24'
         state: present
       register: invalid_subnet
-      failed_when: "'Label must include only ASCII letters, numbers, and dashes' not in invalid_subnet.msg"
+      failed_when: "'Must only use ASCII letters, numbers, and dashes' not in invalid_subnet.msg"
 
     - name: List Subnets
       linode.cloud.vpc_subnet_list:

@@ -229,7 +229,7 @@ Manage Linode Instances, Configs, and Disks.
 | `image` | <center>`str`</center> | <center>Optional</center> | The image ID to deploy the instance disk from.  **(Conflicts With: `disks`,`configs`)** |
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
 | `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
-| `maintenance_policy` | <center>`str`</center> | <center>Optional</center> | The slug of the maintenance policy to apply during maintenance. NOTE: This field is under v4beta.  **(Choices: `linode/migrate`, `linode/power_off_on`)** |
+| `maintenance_policy` | <center>`str`</center> | <center>Optional</center> | The slug of the maintenance policy to apply during maintenance.  **(Choices: `linode/migrate`, `linode/power_off_on`)** |
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If not specified, one will be generated. This generated password will be available in the task success JSON.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
@@ -256,7 +256,7 @@ Manage Linode Instances, Configs, and Disks.
 | `tags` | <center>`list`</center> | <center>Optional</center> | An array of tags applied to this object. Tags are for organizational purposes only.  **(Updatable)** |
 | `capabilities` | <center>`list`</center> | <center>Optional</center> | Read-only. A list of capabilities this compute instance supports.   |
 | [`placement_group` (sub-options)](#placement_group) | <center>`dict`</center> | <center>Optional</center> | A Placement Group to create this Linode under.   |
-| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this Linode. NOTE: Disk encryption may not currently be available to all users.  **(Choices: `enabled`, `disabled`)** |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this Linode.  **(Choices: `enabled`, `disabled`)** |
 | `swap_size` | <center>`int`</center> | <center>Optional</center> | When deploying from an Image, this field is optional, otherwise it is ignored. This is used to set the swap disk size for the newly-created Linode.   |
 
 ### configs
@@ -286,6 +286,62 @@ Manage Linode Instances, Configs, and Disks.
 | [`sdf` (sub-options)](#sdf) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdf   |
 | [`sdg` (sub-options)](#sdg) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdg   |
 | [`sdh` (sub-options)](#sdh) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdh   |
+| [`sdi` (sub-options)](#sdi) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdi   |
+| [`sdj` (sub-options)](#sdj) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdj   |
+| [`sdk` (sub-options)](#sdk) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdk   |
+| [`sdl` (sub-options)](#sdl) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdl   |
+| [`sdm` (sub-options)](#sdm) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdm   |
+| [`sdn` (sub-options)](#sdn) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdn   |
+| [`sdo` (sub-options)](#sdo) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdo   |
+| [`sdp` (sub-options)](#sdp) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdp   |
+| [`sdq` (sub-options)](#sdq) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdq   |
+| [`sdr` (sub-options)](#sdr) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdr   |
+| [`sds` (sub-options)](#sds) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sds   |
+| [`sdt` (sub-options)](#sdt) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdt   |
+| [`sdu` (sub-options)](#sdu) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdu   |
+| [`sdv` (sub-options)](#sdv) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdv   |
+| [`sdw` (sub-options)](#sdw) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdw   |
+| [`sdx` (sub-options)](#sdx) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdx   |
+| [`sdy` (sub-options)](#sdy) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdy   |
+| [`sdz` (sub-options)](#sdz) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdz   |
+| [`sdaa` (sub-options)](#sdaa) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdaa   |
+| [`sdab` (sub-options)](#sdab) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdab   |
+| [`sdac` (sub-options)](#sdac) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdac   |
+| [`sdad` (sub-options)](#sdad) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdad   |
+| [`sdae` (sub-options)](#sdae) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdae   |
+| [`sdaf` (sub-options)](#sdaf) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdaf   |
+| [`sdag` (sub-options)](#sdag) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdag   |
+| [`sdah` (sub-options)](#sdah) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdah   |
+| [`sdai` (sub-options)](#sdai) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdai   |
+| [`sdaj` (sub-options)](#sdaj) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdaj   |
+| [`sdak` (sub-options)](#sdak) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdak   |
+| [`sdal` (sub-options)](#sdal) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdal   |
+| [`sdam` (sub-options)](#sdam) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdam   |
+| [`sdan` (sub-options)](#sdan) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdan   |
+| [`sdao` (sub-options)](#sdao) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdao   |
+| [`sdap` (sub-options)](#sdap) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdap   |
+| [`sdaq` (sub-options)](#sdaq) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdaq   |
+| [`sdar` (sub-options)](#sdar) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdar   |
+| [`sdas` (sub-options)](#sdas) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdas   |
+| [`sdat` (sub-options)](#sdat) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdat   |
+| [`sdau` (sub-options)](#sdau) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdau   |
+| [`sdav` (sub-options)](#sdav) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdav   |
+| [`sdaw` (sub-options)](#sdaw) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdaw   |
+| [`sdax` (sub-options)](#sdax) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdax   |
+| [`sday` (sub-options)](#sday) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sday   |
+| [`sdaz` (sub-options)](#sdaz) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdaz   |
+| [`sdba` (sub-options)](#sdba) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdba   |
+| [`sdbb` (sub-options)](#sdbb) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbb   |
+| [`sdbc` (sub-options)](#sdbc) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbc   |
+| [`sdbd` (sub-options)](#sdbd) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbd   |
+| [`sdbe` (sub-options)](#sdbe) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbe   |
+| [`sdbf` (sub-options)](#sdbf) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbf   |
+| [`sdbg` (sub-options)](#sdbg) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbg   |
+| [`sdbh` (sub-options)](#sdbh) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbh   |
+| [`sdbi` (sub-options)](#sdbi) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbi   |
+| [`sdbj` (sub-options)](#sdbj) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbj   |
+| [`sdbk` (sub-options)](#sdbk) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbk   |
+| [`sdbl` (sub-options)](#sdbl) | <center>`dict`</center> | <center>Optional</center> | The device to be mapped to /dev/sdbl   |
 
 ### sda
 
@@ -344,6 +400,454 @@ Manage Linode Instances, Configs, and Disks.
 | `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
 
 ### sdh
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdi
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdj
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdk
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdl
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdm
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdn
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdo
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdp
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdq
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdr
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sds
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdt
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdu
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdv
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdw
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdx
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdy
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdz
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdaa
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdab
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdac
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdad
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdae
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdaf
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdag
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdah
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdai
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdaj
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdak
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdal
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdam
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdan
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdao
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdap
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdaq
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdar
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdas
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdat
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdau
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdav
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdaw
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdax
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sday
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdaz
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdba
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbb
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbc
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbd
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbe
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbf
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbg
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbh
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbi
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbj
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbk
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `disk_label` | <center>`str`</center> | <center>Optional</center> | The label of the disk to attach to this Linode.   |
+| `disk_id` | <center>`int`</center> | <center>Optional</center> | The ID of the disk to attach to this Linode.   |
+| `volume_id` | <center>`int`</center> | <center>Optional</center> | The ID of the volume to attach to this Linode.   |
+
+### sdbl
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
@@ -410,7 +914,7 @@ Manage Linode Instances, Configs, and Disks.
 | `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
 | `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
 | `filesystem` | <center>`str`</center> | <center>Optional</center> | The filesystem to create this disk with.   |
-| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | **READ ONLY** The disk encryption status of this disk.NOTE: Disk encryption may not currently be available to all users and is set at the Linode Level.  **(Choices: `enabled`, `disabled`)** |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | **READ ONLY** The disk encryption status of this disk. This value is set at the Linode level.  **(Choices: `enabled`, `disabled`)** |
 | `image` | <center>`str`</center> | <center>Optional</center> | An Image ID to deploy the Disk from.   |
 | `root_pass` | <center>`str`</center> | <center>Optional</center> | The root user’s password on the newly-created Linode.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
@@ -535,6 +1039,7 @@ Manage Linode Instances, Configs, and Disks.
           "disk_encryption": "enabled",
           "lke_cluster_id": null,
           "maintenance_policy": "linode/migrate",
+          "locks": [],
           "placement_group": {
             "id": 123,
             "label": "test",
