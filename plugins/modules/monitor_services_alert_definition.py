@@ -368,6 +368,10 @@ class LinodeMonitorServicesAlertDefinition(LinodeModuleBase):
         if regions is not None:
             create_kwargs["regions"] = regions
 
+        entity_ids = params.get("entity_ids")
+        if entity_ids is not None:
+            create_kwargs["entity_ids"] = entity_ids
+
         try:
             self.register_action(
                 "Created alert definition for service type {0}".format(
