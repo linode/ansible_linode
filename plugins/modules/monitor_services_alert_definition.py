@@ -354,11 +354,14 @@ class LinodeMonitorServicesAlertDefinition(LinodeModuleBase):
             "service_type": service_type,
             "label": params.pop("label"),
             "severity": params.pop("severity"),
-            "description": params.pop("description"),
             "channel_ids": params.pop("channel_ids"),
             "rule_criteria": params.pop("rule_criteria"),
             "trigger_conditions": params.pop("trigger_conditions"),
         }
+
+        description = params.get("description")
+        if description is not None:
+            create_kwargs["description"] = description
 
         scope = params.get("scope")
         if scope is not None:
