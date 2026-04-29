@@ -36,14 +36,16 @@ reserved_ip_spec = {
         type=FieldType.string,
         description=[
             "The Region in which to reserve the IP address.",
-            "Required when creating a new reservation (state=present without an existing address).",
+            "Required when creating a new reservation (state=present "
+            "without an existing address).",
         ],
     ),
     "address": SpecField(
         type=FieldType.string,
         description=[
             "The reserved IPv4 address.",
-            "Required when deleting (state=absent) or updating an existing reserved IP.",
+            "Required when deleting (state=absent) or updating an existing "
+            "reserved IP.",
         ],
     ),
     "tags": SpecField(
