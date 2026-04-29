@@ -600,6 +600,16 @@ linode_instance_spec = {
         description=["Additional ipv4 addresses to allocate."],
         editable=False,
     ),
+    "ipv4": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "A list of reserved IPv4 addresses to assign to this Linode on creation.",
+            "The list should contain a single reserved, unassigned IPv4 address.",
+            "NOTE: This field is only used at creation time and changing it "
+            "will trigger recreation of the instance.",
+        ],
+    ),
     "rebooted": SpecField(
         type=FieldType.bool,
         description=[
@@ -1449,6 +1459,10 @@ class LinodeInstance(LinodeModuleBase):
                 "type",
                 "region",
                 "placement_group",
+                # "ipv4" is a create-only field; excluding it prevents
+                # handle_updates from comparing it against Instance.ipv4
+                # (the list of current IPs) and raising a RuntimeError.
+                "ipv4",
             )
         }
 

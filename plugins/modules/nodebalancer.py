@@ -271,6 +271,14 @@ linode_nodebalancer_spec = {
         type=FieldType.string,
         description=["The ID of the Region to create this NodeBalancer in."],
     ),
+    "ipv4": SpecField(
+        type=FieldType.string,
+        description=[
+            "A reserved IPv4 address to assign to this NodeBalancer on creation.",
+            "The address must be a reserved, unassigned IPv4 address owned by the account.",
+            "NOTE: This field is only used at creation time.",
+        ],
+    ),
     "firewall_id": SpecField(
         type=FieldType.integer,
         description=["The ID of the Firewall to assign this NodeBalancer to."],
@@ -431,7 +439,9 @@ class LinodeNodeBalancer(LinodeModuleBase):
                 "label",
                 "firewall_id",
                 "tags",
+                "ipv4",
             }
+            and v is not None
         }
 
         try:
@@ -687,6 +697,12 @@ class LinodeNodeBalancer(LinodeModuleBase):
         # "configs" is defined in NodeBalancer, but is a property method
         if "configs" in params.keys():
             params.pop("configs")
+
+        # "ipv4" is a create-only field; removing it prevents handle_updates
+        # from trying to compare it against the non-mutable NodeBalancer.ipv4
+        # property (an IPAddress object) and raising a RuntimeError.
+        if "ipv4" in params.keys():
+            params.pop("ipv4")
 
         if "firewall_id" in params.keys():
             firewall_id = params.pop("firewall_id")
