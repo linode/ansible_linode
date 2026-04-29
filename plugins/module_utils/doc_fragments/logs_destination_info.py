@@ -5,7 +5,7 @@ specdoc_examples = ['''
     id: 12345
 ''']
 
-result_logs_destinations_samples = ['''{
+result_logs_destination_samples = ['''{
   "created": "2025-07-20 09:45:13",
   "created_by": "John Q. Linode",
   "details": {

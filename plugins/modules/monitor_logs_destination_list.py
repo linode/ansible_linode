@@ -32,13 +32,12 @@ def custom_api_filter_constructor(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 module = ListModule(
-    result_display_name="Destinations",
-    result_field_name="destinations",
+    result_display_name="Logs Destinations",
+    result_field_name="logs_destinations",
     endpoint_template="/monitor/streams/destinations",
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-destinations",
     examples=docs.specdoc_examples,
     result_samples=docs.result_logs_destinations_samples,
-    requires_beta=False,
     custom_api_filter_constructor=custom_api_filter_constructor,
 )
 

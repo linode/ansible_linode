@@ -1,9 +1,24 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""This module allows users to manage ACLP logs destination."""
+
+from __future__ import absolute_import, division, print_function
+
 from typing import Any, Optional, List
 
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common import LinodeModuleBase
-from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import global_requirements, global_authors
-from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import filter_null_values, handle_updates
-
+import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.logs_destination as docs
+import polling
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
+    LinodeModuleBase,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
+    global_requirements,
+    global_authors,
+)
+from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
+    filter_null_values,
+    handle_updates,
+)
 from ansible_specdoc.objects import (
     FieldType,
     SpecDocMeta,
@@ -11,30 +26,71 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 from linode_api4 import LogsDestination
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.logs_destination as docs
-import polling
-
-details_spec: dict = {
-    "access_key_id": SpecField(
-
-    ),
-}
 
 spec: dict = {
-    #fixme REWRITE
-    "details": SpecField(
-        type=FieldType.dict,
-        required=True,
+    "access_key_id": SpecField(
+        type=FieldType.string,
         editable=True,
-        suboptions=details_spec,
+        description=[""],
+    ),
+    "access_key_secret": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[""],
+    ),
+    "bucket_name": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[""],
+    ),
+    "host": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[""],
+    ),
+    "path": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[""],
+    ),
+    "label": SpecField(
+        type=FieldType.string,
+        editable=True,
+    ),
+    "type": SpecField(
+        type=FieldType.string,
+        editable=True,
+        choices=["akamai_object_storage"],
         description=[
             ""
         ]
+    ),
+    "id": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The unique identifier assigned to the logs destination. "
+            "Run the List logs destinations operation and store the id "
+            "for the applicable logs destination. "
+            "Required for updating."
+        ],
+    ),
+    "state": SpecField(
+        type=FieldType.string,
+        description=["The desired state of the target."],
+        choices=["present", "absent"],
+        required=True,
     ),
     "wait": SpecField(
         type=FieldType.bool,
         default=False,
         description=["Wait for the logs destination ready"]
+    ),
+    "wait_timeout": SpecField(
+        type=FieldType.integer,
+        default=600,
+        description=[
+            "The amount of time, in seconds, to wait for the logs destination."
+        ]
     )
 }
 
@@ -56,10 +112,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-
 # Fields that can be updated on an existing Logs Destination
 MUTABLE_FIELDS = {
-    "details",
+    "access_key_id",
+    "access_key_secret",
+    "bucket_name",
+    "host",
+    "path",
     "label",
     "type"
 }
@@ -136,7 +195,7 @@ class LinodeLogsDestination(LinodeModuleBase):
                 access_key_secret=params.pop("access_key_secret"),
                 bucket_name=params.pop("bucket_name"),
                 host=params.pop("host"),
-                path=params.pop("path"),  # fixme path optional?
+                path=params.pop("path"),  # fixme path 1-255?
             )
         except Exception as exception:
             return self.fail(
@@ -165,7 +224,7 @@ class LinodeLogsDestination(LinodeModuleBase):
             self._logs_destination = self._get_logs_destination(destination_id)
 
         # Create logs destination if it does not already exist
-        if self.logs_destination is None:
+        if self._logs_destination is None:
             self._logs_destination = self._create_logs_destination()
             if params.get("wait"):
                 self._wait_for_logs_destination_ready(self._logs_destination)
@@ -199,10 +258,12 @@ class LinodeLogsDestination(LinodeModuleBase):
             return self.results
 
         self._handle_logs_destination()
+
         return self.results
 
 
 def main() -> None:
+    """Constructs and call the Linode Monitor Logs Destination module"""
     LinodeLogsDestination()
 
 

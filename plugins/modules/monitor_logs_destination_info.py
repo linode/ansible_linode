@@ -16,8 +16,8 @@ from linode_api4 import LogsDestination
 module = InfoModule(
     examples=docs.specdoc_examples,
     primary_result=InfoModuleResult(
-        display_name="Destinations",
-        field_name="destinations",
+        display_name="Logs Destination",
+        field_name="logs_destination",
         field_type=FieldType.dict,
         docs_url="https://techdocs.akamai.com/linode-api/reference/get-destination",
         samples=docs.result_logs_destination_samples,
