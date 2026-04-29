@@ -55,6 +55,19 @@ Manage Linode Instances, Configs, and Disks.
 ```
 
 ```yaml
+- name: Create a Linode Instance with a reserved IPv4 address.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-east
+    image: linode/ubuntu22.04
+    root_pass: verysecurepassword!!!
+    ipv4:
+      - "192.0.2.141"
+    state: present
+```
+
+```yaml
 - name: Create a Linode Instance with explicit configs and disks.
   linode.cloud.instance:
     label: 'my-complex-instance'
@@ -250,6 +263,7 @@ Manage Linode Instances, Configs, and Disks.
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status "running" before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `1500`)** |
 | [`additional_ipv4` (sub-options)](#additional_ipv4) | <center>`list`</center> | <center>Optional</center> | Additional ipv4 addresses to allocate.   |
+| `ipv4` | <center>`list`</center> | <center>Optional</center> | A list of reserved IPv4 addresses to assign to this Linode on creation. The list should contain a single reserved, unassigned IPv4 address. NOTE: This field is only used at creation time and changing it will trigger recreation of the instance.   |
 | `rebooted` | <center>`bool`</center> | <center>Optional</center> | If true, the Linode Instance will be rebooted. NOTE: The instance will only be rebooted if it was previously in a running state. To ensure your Linode will always be rebooted, consider also setting the `booted` field.  **(Default: `False`)** |
 | `migration_type` | <center>`str`</center> | <center>Optional</center> | The type of migration to use for Region and Type migrations.  **(Choices: `cold`, `warm`; Default: `cold`)** |
 | `auto_disk_resize` | <center>`bool`</center> | <center>Optional</center> | Whether implicitly created disks should be resized during a type change operation.  **(Default: `False`)** |
