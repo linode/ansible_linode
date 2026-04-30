@@ -91,6 +91,7 @@ class Module(LinodeModuleBase):
                 ),
                 exception=exception,
             )
+            return None
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for reserved_ip_info module"""

@@ -23,7 +23,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import ReservedIPAddress
+from linode_api4 import ApiError, ReservedIPAddress
 
 reserved_ip_spec = {
     "state": SpecField(
@@ -36,16 +36,14 @@ reserved_ip_spec = {
         type=FieldType.string,
         description=[
             "The Region in which to reserve the IP address.",
-            "Required when creating a new reservation (state=present "
-            "without an existing address).",
+            "Required when creating a new reservation (state=present without an existing address).",
         ],
     ),
     "address": SpecField(
         type=FieldType.string,
         description=[
             "The reserved IPv4 address.",
-            "Required when deleting (state=absent) or updating an existing "
-            "reserved IP.",
+            "Required when deleting (state=absent) or updating an existing reserved IP.",
         ],
     ),
     "tags": SpecField(
@@ -112,7 +110,23 @@ class ReservedIPModule(LinodeModuleBase):
             ip = ReservedIPAddress(self.client, address)
             ip._api_get()
             return ip
-        except Exception:
+        except ApiError as exception:
+            if exception.status == 404:
+                return None
+            self.fail(
+                msg="failed to get reserved IP address {0}: {1}".format(
+                    address, exception
+                ),
+                exception=exception,
+            )
+            return None
+        except Exception as exception:
+            self.fail(
+                msg="failed to get reserved IP address {0}: {1}".format(
+                    address, exception
+                ),
+                exception=exception,
+            )
             return None
 
     def _create_reserved_ip(self) -> Optional[ReservedIPAddress]:
@@ -126,9 +140,10 @@ class ReservedIPModule(LinodeModuleBase):
             )
 
         try:
-            return self.client.networking.reserved_ip_create(
-                region=region, tags=tags
-            )
+            create_kwargs = {"region": region}
+            if tags is not None:
+                create_kwargs["tags"] = tags
+            return self.client.networking.reserved_ip_create(**create_kwargs)
         except Exception as exception:
             return self.fail(msg=f"failed to create reserved IP: {exception}")
 

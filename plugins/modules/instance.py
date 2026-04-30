@@ -605,9 +605,8 @@ linode_instance_spec = {
         element_type=FieldType.string,
         description=[
             "A list of reserved IPv4 addresses to assign to this Linode on creation.",
-            "The list should contain a single reserved, unassigned IPv4 address.",
-            "NOTE: This field is only used at creation time and changing it "
-            "will trigger recreation of the instance.",
+            "The list must contain exactly one reserved, unassigned IPv4 address.",
+            "NOTE: This field is create-only. Changes after creation are ignored.",
         ],
     ),
     "rebooted": SpecField(
@@ -986,6 +985,14 @@ class LinodeInstance(LinodeModuleBase):
                     interface["firewall_id"] = ExplicitNullValue()
 
             params["interfaces"] = _linode_interfaces
+
+        ipv4 = params.get("ipv4")
+        if ipv4 is not None and len(ipv4) != 1:
+            self.fail(
+                msg="ipv4 must contain exactly one reserved IPv4 address, got {0}".format(
+                    len(ipv4)
+                )
+            )
 
         result = {"instance": None, "root_pass": ""}
 
