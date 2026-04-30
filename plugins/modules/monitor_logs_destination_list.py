@@ -15,11 +15,14 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 
 def custom_api_filter_constructor(params: Dict[str, Any]) -> Dict[str, Any]:
     """
-    fixme rename, should we leave custom constructor?
-    Customize a filter string for listing Monitor Service Alert Definitions,
-    because on the API side only the `+and` and `+or` operators are supported,
-    and you can't nest filter operators.
+    Ensures 'id' values in filters are integers.
     """
+    filters = params.get("filters")
+    if filters:
+        for f in filters:
+            if f.get("name") == "id":
+                # Convert all id values to int if possible
+                f["values"] = [int(v) if isinstance(v, str) and v.isdigit() else v for v in f["values"]]
     if params.get("order_by") is not None or params.get("order") is not None:
         module.warn(
             "order or order_by is currently not supported in "
@@ -27,13 +30,12 @@ def custom_api_filter_constructor(params: Dict[str, Any]) -> Dict[str, Any]:
             "and will be ignored if provided. "
             "Please refer to the API documentation for more information."
         )
-
     return api_filter_constructor_for_aclp_monitor_services(params)
 
 
 module = ListModule(
     result_display_name="Logs Destinations",
-    result_field_name="logs_destinations",
+    result_field_name="destinations",
     endpoint_template="/monitor/streams/destinations",
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-destinations",
     examples=docs.specdoc_examples,

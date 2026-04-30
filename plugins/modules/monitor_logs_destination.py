@@ -27,7 +27,7 @@ from ansible_specdoc.objects import (
 )
 from linode_api4 import LogsDestination
 
-spec: dict = {
+details_spec: dict = {
     "access_key_id": SpecField(
         type=FieldType.string,
         editable=True,
@@ -50,6 +50,15 @@ spec: dict = {
     ),
     "path": SpecField(
         type=FieldType.string,
+        editable=True,
+        description=[""],
+    ),
+}
+
+spec: dict = {
+    "details": SpecField(
+        type=FieldType.dict,
+        suboptions=details_spec,
         editable=True,
         description=[""],
     ),
@@ -114,11 +123,7 @@ SPECDOC_META = SpecDocMeta(
 
 # Fields that can be updated on an existing Logs Destination
 MUTABLE_FIELDS = {
-    "access_key_id",
-    "access_key_secret",
-    "bucket_name",
-    "host",
-    "path",
+    "details",
     "label",
     "type"
 }
@@ -188,19 +193,33 @@ class LinodeLogsDestination(LinodeModuleBase):
             self.register_action(
                 "Created logs destination"
             )
+
+            details = params.pop("details")
+
             return self.client.monitor.destination_create(
                 label=params.pop("label"),
                 type=params.pop("type"),
-                access_key_id=params.pop("access_key_id"),
-                access_key_secret=params.pop("access_key_secret"),
-                bucket_name=params.pop("bucket_name"),
-                host=params.pop("host"),
-                path=params.pop("path"),  # fixme path 1-255?
+                access_key_id=details.pop("access_key_id"),
+                access_key_secret=details.pop("access_key_secret"),
+                bucket_name=details.pop("bucket_name"),
+                host=details.pop("host"),
+                path=details.pop("path"),  # fixme path 1-255?
             )
         except Exception as exception:
             return self.fail(
                 msg="failed to create logs destination: {0}".format(exception)
             )
+
+    @staticmethod
+    def __details_diff_override(key, old_value, new_value):
+        result = new_value.copy()
+
+        changed = (
+            old_value.get("access_key_id") != new_value.get("access_key_id")
+            or old_value.get("access_key_secret") != new_value.get("access_key_secret")
+            or old_value != new_value
+        )
+        return changed, result
 
     def _update_logs_destination(self) -> None:
         """Handles all update functionality for the current Logs Destination"""
@@ -210,6 +229,9 @@ class LinodeLogsDestination(LinodeModuleBase):
             filter_null_values(self.module.params),
             MUTABLE_FIELDS,
             self.register_action,
+            diff_overrides={
+                "details": self.__details_diff_override
+            }
         )
 
         if self.module.params.get("wait"):

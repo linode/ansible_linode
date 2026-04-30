@@ -32,11 +32,12 @@
       linode.cloud.monitor_logs_destination:
         label: "test-logs-destination-{{ r }}"
         type: "akamai_object_storage"
-        access_key_id: "{{ access_key_id }}"
-        access_key_secret: "{{ access_key_secret }}"
-        bucket_name: "{{ bucket_name }}"
-        host: "{{ host }}"
-        #        path: "test-path"
+        details:
+          access_key_id: "{{ access_key_id }}"
+          access_key_secret: "{{ access_key_secret }}"
+          bucket_name: "{{ bucket_name }}"
+          host: "{{ host }}"
+          path: "test-path"
         state: present
         wait: yes
         wait_timeout: 600
@@ -48,18 +49,18 @@
           - create.logs_destination.label == 'test-logs-destination-{{ r }}'
           - create.logs_destination.details.bucket_name == bucket_name
           - create.logs_destination.details.host == host
-    #          - create.logs_destination.details.path == 'test-path'
+          - create.logs_destination.details.path == 'test-path'
 
     - name: Update logs destination
       linode.cloud.monitor_logs_destination:
         id: '{{ create.logs_destination.id }}'
         label: "test-logs-destination-{{ r }}-updated"
-        type: "akamai_object_storage"
-        access_key_id: "{{ access_key_id }}"
-        access_key_secret: "{{ access_key_secret }}"
-        bucket_name: "{{ bucket_name }}"
-        host: "{{ host }}"
-        #        path: "updated-path"
+        details:
+          access_key_id: "{{ access_key_id }}"
+          access_key_secret: "{{ access_key_secret }}"
+          bucket_name: "{{ bucket_name }}"
+          host: "{{ host }}"
+          path: "updated-path"
         state: present
         wait: yes
         wait_timeout: 600
@@ -70,7 +71,7 @@
         that:
           - update.changed
           - update.logs_destination.label == 'test-logs-destination-{{ r }}-updated'
-    #          - update.logs_destination.details.path == 'updated-path'
+          - update.logs_destination.details.path == 'updated-path'
 
     - name: Get logs destination information
       linode.cloud.monitor_logs_destination_info:
@@ -87,19 +88,19 @@
       linode.cloud.monitor_logs_destination_list:
         filters:
           - name: id
-            values: [ update.logs_destination.id ]
+            values: ['{{ update.logs_destination.id }}']
       register: list
 
     - name: Assert logs destinations list response
       assert:
         that:
-          - list.logs_destinations | length > 0
+          - list.destinations | length > 0
 
     - name: List available logs destinations and expect empty result with filter
       linode.cloud.monitor_logs_destination_list:
         filters:
           - name: id
-            values: [ update.logs_destination.id ]
+            values: ['{{ update.logs_destination.id }}']
           - name: label
             values: [ "some invalid label" ]
       register: list_empty
@@ -108,6 +109,16 @@
       assert:
         that:
           - list_empty.logs_destinations | length == 0
+
+    - name: Get logs destination history
+      linode.cloud.monitor_logs_destination_history:
+        id: '{{ update.logs_destination.id }}'
+      register: history
+
+    - name: Assert logs destination history response
+      assert:
+          that:
+              - history.logs_destination_history | length == 2
 
   always:
     - ignore_errors: yes
