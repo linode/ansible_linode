@@ -24,7 +24,8 @@ List and filter on Reserved IPs.
   linode.cloud.reserved_ip_list:
     filters:
       - name: tags
-        values: lb
+        values:
+          - lb
 ```
 
 

@@ -987,7 +987,9 @@ class LinodeInstance(LinodeModuleBase):
             params["interfaces"] = _linode_interfaces
 
         ipv4 = params.get("ipv4")
-        if ipv4 is not None and len(ipv4) != 1:
+        if ipv4 is None:
+            params.pop("ipv4", None)
+        elif len(ipv4) != 1:
             self.fail(
                 msg="ipv4 must contain exactly one reserved IPv4 address, got {0}".format(
                     len(ipv4)

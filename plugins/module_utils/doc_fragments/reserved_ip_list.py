@@ -9,7 +9,8 @@ reserved_ip_list_specdoc_examples = [
   linode.cloud.reserved_ip_list:
     filters:
       - name: tags
-        values: lb"""
+        values:
+          - lb"""
 ]
 
 result_reserved_ip_list_samples = [
