@@ -2,7 +2,12 @@
 
 specdoc_examples = ['''
 - name: List all of available logs destinations to the account
-'''] #fixme
+  linode.cloud.monitor_logs_destination_list: {}''', '''
+- name: List all of available logs destinations to the account with label filter
+  linode.cloud.monitor_logs_destination_list:
+    filters:
+      - name: label
+        values: my_logs_destination_label''']
 
 result_logs_destinations_samples = ['''[
     {

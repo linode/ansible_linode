@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from __future__ import absolute_import, division, print_function
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
@@ -11,7 +14,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info im
 )
 from ansible_specdoc.objects import FieldType
 from linode_api4 import LogsDestination
-
 
 module = InfoModule(
     examples=docs.specdoc_examples,

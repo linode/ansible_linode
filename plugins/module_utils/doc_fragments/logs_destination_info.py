@@ -1,9 +1,9 @@
 """Documentation fragments for the monitor_logs_destination_list module"""
 
 specdoc_examples = ['''
-- linode.cloud.monitor_logs_destination_info:
-    id: 12345
-''']
+- name: Get info about a logs destination
+  linode.cloud.monitor_logs_destination_info:
+    id: 12345''']
 
 result_logs_destination_samples = ['''{
   "created": "2025-07-20 09:45:13",

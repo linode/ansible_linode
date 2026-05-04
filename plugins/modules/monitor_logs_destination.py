@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""This module allows users to manage ACLP logs destination."""
+"""This module allows users to manage ACLP logs destinations."""
 
 from __future__ import absolute_import, division, print_function
 
@@ -31,27 +31,41 @@ details_spec: dict = {
     "access_key_id": SpecField(
         type=FieldType.string,
         editable=True,
-        description=[""],
+        description=[
+            "The unique identifier assigned to the Object Storage key required for authentication to the bucket. "
+            "Run the List Object Storage keys operation and store the id for the applicable key."
+        ],
     ),
     "access_key_secret": SpecField(
         type=FieldType.string,
         editable=True,
-        description=[""],
+        description=[
+            "The Object Storage key's secret key. "
+            "This is used as a password to validate the key."
+        ],
     ),
     "bucket_name": SpecField(
         type=FieldType.string,
         editable=True,
-        description=[""],
+        description=[
+            "The name of the Object Storage bucket. "
+            "Run the List Object Storage buckets operation and store the label for the target bucket."
+        ],
     ),
     "host": SpecField(
         type=FieldType.string,
         editable=True,
-        description=[""],
+        description=[
+            "The hostname where the Object Storage bucket can be accessed. "
+            "Run the List Object Storage buckets operation and store the hostname for the target bucket."
+        ],
     ),
     "path": SpecField(
         type=FieldType.string,
         editable=True,
-        description=[""],
+        description=[
+            "Include this object to set a custom path for audit log storage in your Object Storage bucket."
+        ],
     ),
 }
 
@@ -60,19 +74,28 @@ spec: dict = {
         type=FieldType.dict,
         suboptions=details_spec,
         editable=True,
-        description=[""],
+        description=[
+            "Settings used for an Object Storage-based destination for a stream. "
+            "You need an existing Object Storage bucket, configured to use Object Lock."
+        ],
     ),
     "label": SpecField(
         type=FieldType.string,
         editable=True,
+        description=[
+            "The name of the destination object. "
+            "Used for display purposes."
+        ],
     ),
     "type": SpecField(
         type=FieldType.string,
         editable=True,
         choices=["akamai_object_storage"],
         description=[
-            ""
-        ]
+            "The type of destination for logs data sync."
+            "Currently, only akamai_object_storage is supported for use. "
+            "This lets you use Akamai Object Storage as your destination."
+        ],
     ),
     "id": SpecField(
         type=FieldType.integer,
@@ -92,20 +115,19 @@ spec: dict = {
     "wait": SpecField(
         type=FieldType.bool,
         default=False,
-        description=["Wait for the logs destination ready"]
+        description=["Wait for the logs destination ready."],
     ),
     "wait_timeout": SpecField(
         type=FieldType.integer,
         default=600,
-        description=[
-            "The amount of time, in seconds, to wait for the logs destination."
-        ]
-    )
+        description=["The amount of time, in seconds, to wait for the logs destination."],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
     description=[
-        "" #fixme
+        "Manage logs destination that sevres as a sync point for logs data. "
+        "It can only be accessed by account users with unrestricted access. "
     ],
     requirements=global_requirements,
     author=global_authors,
@@ -113,8 +135,8 @@ SPECDOC_META = SpecDocMeta(
     examples=docs.specdoc_examples,
     return_values={
         "logs_destination": SpecReturnValue(
-            description="", #fixme
-            docs_url="",
+            description="The logs destination in JSON serialized form.",
+            docs_url="https://techdocs.akamai.com/linode-api/reference/get-destination",
             type=FieldType.dict,
             sample=docs.result_logs_destination_sample,
         ),

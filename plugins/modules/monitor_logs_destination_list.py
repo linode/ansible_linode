@@ -1,9 +1,12 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from __future__ import absolute_import, division, print_function
 
 from typing import Any, Dict
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
-    logs_destinations_list as docs,
+    logs_destination_list as docs,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list import (
     ListModule,
@@ -13,9 +16,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 )
 
 
-def api_filter_for_aclp_logs_services(
-    params: Dict[str, Any]
-) -> Dict[str, Any]:
+def api_filter_for_aclp_logs_services(params: Dict[str, Any]) -> Dict[str, Any]:
     """
     Customize a filter string for listing ACLP Monitor Logs Services,
     because on the API side nested filter operators are not supported.

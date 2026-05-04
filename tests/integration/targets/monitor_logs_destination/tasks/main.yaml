@@ -1,11 +1,11 @@
 - name: monitor_logs_destination
   block:
     - set_fact:
-        r: "{{ 1000000000 | random }}"
+        r: '{{ 1000000000 | random }}'
 
     - name: Create an Object Storage key
       linode.cloud.object_keys:
-        label: "test-logs-key-{{ r }}"
+        label: 'test-logs-key-{{ r }}'
         regions:
           - us-mia
         state: present
@@ -13,32 +13,32 @@
 
     - name: Create a test bucket
       amazon.aws.s3_bucket:
-        endpoint_url: "https://{{ create_key.key.regions[0].s3_endpoint }}/"
-        aws_access_key: "{{ create_key.key.access_key }}"
-        aws_secret_key: "{{ create_key.key.secret_key }}"
-        name: "test-logs-bucket-{{ r }}"
+        endpoint_url: 'https://{{ create_key.key.regions[0].s3_endpoint }}/'
+        aws_access_key: '{{ create_key.key.access_key }}'
+        aws_secret_key: '{{ create_key.key.secret_key }}'
+        name: 'test-logs-bucket-{{ r }}'
         state: present
         ceph: true
-        region: "default"
+        region: 'default'
       register: create_bucket
 
     - set_fact:
-        access_key_id: "{{ create_key.key.access_key }}"
-        access_key_secret: "{{ create_key.key.secret_key }}"
-        bucket_name: "{{ create_bucket.name }}"
-        host: "{{ create_key.key.regions[0].s3_endpoint }}"
+        access_key_id: '{{ create_key.key.access_key }}'
+        access_key_secret: '{{ create_key.key.secret_key }}'
+        bucket_name: '{{ create_bucket.name }}'
+        host: '{{ create_key.key.regions[0].s3_endpoint }}'
     - name: Create first logs destination
       block:
         - name: Create logs destination
           linode.cloud.monitor_logs_destination:
-            label: "test-logs-destination-{{ r }}"
-            type: "akamai_object_storage"
+            label: 'test-logs-destination-{{ r }}'
+            type: 'akamai_object_storage'
             details:
-              access_key_id: "{{ access_key_id }}"
-              access_key_secret: "{{ access_key_secret }}"
-              bucket_name: "{{ bucket_name }}"
-              host: "{{ host }}"
-              path: "test-path"
+              access_key_id: '{{ access_key_id }}'
+              access_key_secret: '{{ access_key_secret }}'
+              bucket_name: '{{ bucket_name }}'
+              host: '{{ host }}'
+              path: 'test-path'
             state: present
             wait: yes
             wait_timeout: 600
@@ -55,13 +55,13 @@
         - name: Update logs destination
           linode.cloud.monitor_logs_destination:
             id: '{{ create.logs_destination.id }}'
-            label: "test-logs-destination-{{ r }}-updated"
+            label: 'test-logs-destination-{{ r }}-updated'
             details:
-              access_key_id: "{{ access_key_id }}"
-              access_key_secret: "{{ access_key_secret }}"
-              bucket_name: "{{ bucket_name }}"
-              host: "{{ host }}"
-              path: "updated-path"
+              access_key_id: '{{ access_key_id }}'
+              access_key_secret: '{{ access_key_secret }}'
+              bucket_name: '{{ bucket_name }}'
+              host: '{{ host }}'
+              path: 'updated-path'
             state: present
             wait: yes
             wait_timeout: 600
@@ -103,7 +103,7 @@
               - name: id
                 values: ['{{ update.logs_destination.id }}']
               - name: label
-                values: [ "some invalid label" ]
+                values: [ 'some invalid label' ]
           register: list_empty
 
         - name: Assert logs destinations list empty response
@@ -136,14 +136,14 @@
       block:
         - name: Create logs destination
           linode.cloud.monitor_logs_destination:
-            label: "test-logs-destination-2-{{ r }}"
-            type: "akamai_object_storage"
+            label: 'test-logs-destination-2-{{ r }}'
+            type: 'akamai_object_storage'
             details:
-              access_key_id: "{{ access_key_id }}"
-              access_key_secret: "{{ access_key_secret }}"
-              bucket_name: "{{ bucket_name }}"
-              host: "{{ host }}"
-              path: "test-path-2"
+              access_key_id: '{{ access_key_id }}'
+              access_key_secret: '{{ access_key_secret }}'
+              bucket_name: '{{ bucket_name }}'
+              host: '{{ host }}'
+              path: 'test-path-2'
             state: present
             wait: yes
             wait_timeout: 600
@@ -198,13 +198,13 @@
               - delete_second.logs_destination.id == create_second.logs_destination.id
         - name: Delete test bucket
           amazon.aws.s3_bucket:
-            endpoint_url: "https://{{ create_key.key.regions[0].s3_endpoint }}/"
-            aws_access_key: "{{ create_key.key.access_key }}"
-            aws_secret_key: "{{ create_key.key.secret_key }}"
-            name: "{{ create_bucket.name }}"
+            endpoint_url: 'https://{{ create_key.key.regions[0].s3_endpoint }}/'
+            aws_access_key: '{{ create_key.key.access_key }}'
+            aws_secret_key: '{{ create_key.key.secret_key }}'
+            name: '{{ create_bucket.name }}'
             state: absent
             ceph: true
-            region: "default"
+            region: 'default'
             force: true
           register: delete_bucket
         - name: Assert test bucket is deleted
@@ -213,7 +213,7 @@
               - delete_bucket.changed
         - name: Delete object storage key
           linode.cloud.object_keys:
-            label: "{{ create_key.key.label }}"
+            label: '{{ create_key.key.label }}'
             state: absent
           register: delete_key
         - name: Assert object storage key is deleted
