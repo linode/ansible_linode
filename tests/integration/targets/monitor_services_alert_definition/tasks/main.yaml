@@ -19,6 +19,8 @@
             description: 'An alert definition for ansible test'
             label: '{{ label }}'
             severity: 1
+            scope: 'entity'
+            regions: []
             rule_criteria:
               rules:
                 - aggregate_function: 'avg'
@@ -45,6 +47,9 @@
               - create.alert_definition.description == 'An alert definition for ansible test'
               - create.alert_definition.label == label
               - create.alert_definition.severity == 1
+              - create.alert_definition.scope == 'entity'
+              - create.alert_definition.regions is defined
+              - create.alert_definition.entities is not none
               - create.alert_definition.rule_criteria.rules[0].aggregate_function == 'avg'
               - create.alert_definition.rule_criteria.rules[0].dimension_filters[0].dimension_label == 'node_type'
               - create.alert_definition.trigger_conditions.criteria_condition == 'ALL'
