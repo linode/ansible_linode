@@ -180,7 +180,7 @@ class LinodeLogsDestination(LinodeModuleBase):
     def _wait_for_logs_destination_ready(self, logs_destination: LogsDestination) -> None:
         def poll_func() -> bool:
             logs_destination._api_get()
-            return logs_destination.status not in ["inactive"] #fixme?
+            return logs_destination.status not in ["inactive"]
 
         # Initial attempt
         if poll_func():
@@ -225,7 +225,7 @@ class LinodeLogsDestination(LinodeModuleBase):
                 access_key_secret=details.pop("access_key_secret"),
                 bucket_name=details.pop("bucket_name"),
                 host=details.pop("host"),
-                path=details.pop("path"),  # fixme path 1-255?
+                path=details.pop("path"),
             )
         except Exception as exception:
             return self.fail(
