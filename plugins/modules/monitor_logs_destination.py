@@ -25,15 +25,107 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import LogsDestination
+from linode_api4 import (
+    LogsDestination, 
+    AkamaiObjectStorageLogsDestinationDetails, 
+    CustomHTTPSLogsDestinationDetails,
+    DestinationAuthentication,
+    BasicAuthenticationDetails,
+    ClientCertificateDetails,
+    CustomHeader,
+)
+
+authentication_details_spec: dict = {
+    "basic_authentication_password": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=["The password tied to the basic_authentication_user, for basic authentication."],
+    ),
+    "basic_authentication_user": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=["The user name for basic authentication."],
+    ),
+}
+
+authentication_spec: dict = {
+    "details": SpecField(
+        type=FieldType.dict,
+        suboptions=authentication_details_spec,
+        editable=True,
+        description=[
+            "Includes additional parameters necessary to define basic authentication."
+            "If type is set to none, leave this object empty or out of a request."
+        ],
+    ),
+    "type": SpecField(
+        type=FieldType.string,
+        editable=True,
+        choices=["none", "basic"],
+        description=[
+            "The type of authentication in use. This can be None for no authentication, "
+            "or basic for authentication using a username and password, set using the details parameters."
+        ],
+    ),
+}
+
+client_certificate_details_spec: dict = {
+    "client_ca_certificate": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[
+            "The certificate authority (CA) certificate used to verify a requesting server's identity."
+        ],
+    ),
+    "client_certificate": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[
+            "The PEM-formatted digital certificate you want to authenticate requests to your destination with."
+        ],
+    ),
+    "client_private_key": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[
+            "The private key in the non-encrypted PKCS8 format that authenticates with the back-end server. "
+            "If you want to use mutual authentication, you need to provide both the client_certificate and the client_private_key."
+        ],
+    ),
+    "tls_hostname": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=[
+            "The hostname that verifies the server's certificate and matches the Subject Alternative Names (SANs) in the certificate. "
+            "If not provided, the API fetches the hostname from the endpoint_url."
+        ],
+    ),
+}
+
+custom_headers_spec: dict = {
+    "name": SpecField(
+        type=FieldType.string,
+        editable=True,
+        required=True,
+        description=["The name of the custom header to include in the request."],
+    ),
+    "value": SpecField(
+        type=FieldType.string,
+        editable=True,
+        required=True,
+        description=["The body content for the custom header to include in the request."],
+    ),
+}
 
 details_spec: dict = {
+    # --- akamai_object_storage fields ---
     "access_key_id": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
             "The unique identifier assigned to the Object Storage key required for authentication to the bucket. "
-            "Run the List Object Storage keys operation and store the id for the applicable key."
+            "Run the List Object Storage keys operation and store the id for the applicable key. "
+            "(Required for type: akamai_object_storage)"
         ],
     ),
     "access_key_secret": SpecField(
@@ -41,7 +133,8 @@ details_spec: dict = {
         editable=True,
         description=[
             "The Object Storage key's secret key. "
-            "This is used as a password to validate the key."
+            "This is used as a password to validate the key. "
+            "(Required for type: akamai_object_storage)"
         ],
     ),
     "bucket_name": SpecField(
@@ -49,7 +142,8 @@ details_spec: dict = {
         editable=True,
         description=[
             "The name of the Object Storage bucket. "
-            "Run the List Object Storage buckets operation and store the label for the target bucket."
+            "Run the List Object Storage buckets operation and store the label for the target bucket. "
+            "(Required for type: akamai_object_storage)"
         ],
     ),
     "host": SpecField(
@@ -57,15 +151,69 @@ details_spec: dict = {
         editable=True,
         description=[
             "The hostname where the Object Storage bucket can be accessed. "
-            "Run the List Object Storage buckets operation and store the hostname for the target bucket."
+            "Run the List Object Storage buckets operation and store the hostname for the target bucket. "
+            "(Required for type: akamai_object_storage)"
         ],
     ),
     "path": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
-            "Include this object to set a custom path for audit log storage in your Object Storage bucket."
+            "Include this object to set a custom path for audit log storage in your Object Storage bucket. "
+            "(Optional for type: akamai_object_storage)"
         ],
+    ),
+    # --- custom_https_object fields ---
+    "authentication": SpecField(
+        type=FieldType.dict,
+        suboptions=authentication_spec,
+        editable=True,
+        description=[
+            "Authentication details required to access the endpoint_url. "
+            "(Used for type: custom_https_object)"
+        ],
+    ),
+    "client_certificate_details": SpecField(
+        type=FieldType.dict,
+        suboptions=client_certificate_details_spec,
+        editable=True,
+        description=[
+            "Contains transport layer security (TLS) client certificate information to additionally secure the connection for the request. "
+            "(Used for type: custom_https_object)"
+        ],
+    ),
+    "content_type": SpecField(
+        type=FieldType.string,
+        editable=True,
+        choices=["application/json", "application/json; charset=utf-8"],
+        description=[
+            "The content type for requests to the endpoint_url. "
+            "This can be application/json for request bodies formatted as JSON, "
+            "or application/json; charset=utf-8 for JSON-format content encoded using UTF-8."
+        ]
+    ),
+    "custom_headers": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=custom_headers_spec,
+        editable=True,
+        description=[
+            "Pairs of parameters used to optionally include custom headers in the request."
+        ],
+    ),
+    "data_compression": SpecField(
+        type=FieldType.string,
+        editable=True,
+        choices=["gzip", "None"],
+        description=[
+            "Specifies whether data compression is applied to files included in a request. "
+            "This can be gzip to apply this compression format or None."
+        ]
+    ),
+    "endpoint_url": SpecField(
+        type=FieldType.string,
+        editable=True,
+        description=["The URL where the request will be sent."],
     ),
 }
 
@@ -75,8 +223,9 @@ spec: dict = {
         suboptions=details_spec,
         editable=True,
         description=[
-            "Settings used for an Object Storage-based destination for a stream. "
-            "You need an existing Object Storage bucket, configured to use Object Lock."
+            "Settings for the destination. "
+            "For type 'akamai_object_storage': provide access_key_id, access_key_secret, bucket_name, host, and optionally path. "
+            "For type 'custom_https_object': (fields to be added later)."
         ],
     ),
     "label": SpecField(
@@ -90,11 +239,10 @@ spec: dict = {
     "type": SpecField(
         type=FieldType.string,
         editable=True,
-        choices=["akamai_object_storage"],
+        choices=["akamai_object_storage", "custom_https"],
         description=[
-            "The type of destination for logs data sync."
-            "Currently, only akamai_object_storage is supported for use. "
-            "This lets you use Akamai Object Storage as your destination."
+            "The type of destination for log data sync, either akamai_object_storage if Object Storage is the destination, "
+            "or custom_https for a unique URL"
         ],
     ),
     "id": SpecField(
@@ -127,7 +275,7 @@ spec: dict = {
 SPECDOC_META = SpecDocMeta(
     description=[
         "Manage logs destination that sevres as a sync point for logs data. "
-        "It can only be accessed by account users with unrestricted access. "
+        "You need read_write access to the scope to call this operation."
     ],
     requirements=global_requirements,
     author=global_authors,
@@ -180,7 +328,9 @@ class LinodeLogsDestination(LinodeModuleBase):
     def _wait_for_logs_destination_ready(self, logs_destination: LogsDestination) -> None:
         def poll_func() -> bool:
             logs_destination._api_get()
-            return logs_destination.status not in ["inactive"]
+            if logs_destination.status == "inactive":
+                self.fail("Logs destination is inactive. Please verify that your credentials, host, and bucket details are correct.")
+            return logs_destination.status == "active"
 
         # Initial attempt
         if poll_func():
@@ -216,32 +366,91 @@ class LinodeLogsDestination(LinodeModuleBase):
                 "Created logs destination"
             )
 
-            details = params.pop("details")
+            storage_type = params.pop("type")
+            if storage_type == "akamai_object_storage":
+                details = params.pop("details")
+                return self.client.monitor.destination_create(
+                    label=params.pop("label"),
+                    type=storage_type,
+                    details=AkamaiObjectStorageLogsDestinationDetails(
+                        access_key_id=details.pop("access_key_id"),
+                        access_key_secret=details.pop("access_key_secret"),
+                        bucket_name=details.pop("bucket_name"),
+                        host=details.pop("host"),
+                        path=details.pop("path"),
+                    )
+                )
 
-            return self.client.monitor.destination_create(
-                label=params.pop("label"),
-                type=params.pop("type"),
-                access_key_id=details.pop("access_key_id"),
-                access_key_secret=details.pop("access_key_secret"),
-                bucket_name=details.pop("bucket_name"),
-                host=details.pop("host"),
-                path=details.pop("path"),
-            )
+            if storage_type == "custom_https":
+                return self._create_custom_https_logs_destination()
+
+            self.fail(msg="invalid details: missing required fields for supported logs destination types")
+
         except Exception as exception:
             return self.fail(
                 msg="failed to create logs destination: {0}".format(exception)
             )
 
+    def _create_custom_https_logs_destination(self) -> Optional[LogsDestination]:
+        params = self.module.params
+        details = params.pop("details")
+        authentication = details.pop("authentication")
+        
+        authentication_details = authentication.pop("details")
+        client_cert_details = details.pop("client_certificate_details")
+        
+        custom_headers = [CustomHeader(name=h.get("name"), value=h.get("value")) for h in (details.pop("custom_headers", None) or [])] or None
+
+        return self.client.monitor.destination_create(
+            label=params.pop("label"),
+            type=params.pop("type"),
+            details=CustomHTTPSLogsDestinationDetails(
+                endpoint_url=details.pop("endpoint_url"),
+                authentication=DestinationAuthentication(
+                    type=authentication.pop("type"),
+                    details=BasicAuthenticationDetails(
+                        basic_authentication_user=authentication_details.pop("basic_authentication_user"),
+                        basic_authentication_password=authentication_details.pop("basic_authentication_password"),
+                    )
+                ),
+                data_compression=details.pop("data_compression"),
+                content_type=details.pop("content_type"),
+                custom_headers=custom_headers,
+                client_certificate_details=ClientCertificateDetails(
+                    client_ca_certificate=client_cert_details.pop("client_ca_certificate"),
+                    client_certificate=client_cert_details.pop("client_certificate"),
+                    client_private_key=client_cert_details.pop("client_private_key"),
+                    tls_hostname=client_cert_details.pop("tls_hostname"),
+                ),
+            )
+        )
+
     @staticmethod
     def __details_diff_override(key, old_value, new_value):
-        result = new_value.copy()
+        def _merge_and_diff(old_dict, new_dict):
+            merged = old_dict.copy() if isinstance(old_dict, dict) else {}
+            has_changed = False
+            for k, v in new_dict.items():
+                if v is None:
+                    continue
+                
+                if isinstance(v, dict):
+                    sub_changed, sub_merged = _merge_and_diff(merged.get(k, {}), v)
+                    if sub_changed:
+                        has_changed = True
+                    merged[k] = sub_merged
+                elif isinstance(v, list):
+                    if merged.get(k) != v:
+                        has_changed = True
+                    merged[k] = v
+                else:
+                    if merged.get(k) != v:
+                        has_changed = True
+                    merged[k] = v
+                
+            return has_changed, merged
 
-        changed = (
-            old_value.get("access_key_id") != new_value.get("access_key_id")
-            or old_value.get("access_key_secret") != new_value.get("access_key_secret")
-            or old_value != new_value
-        )
-        return changed, result
+        return _merge_and_diff(old_value, new_value)
 
     def _update_logs_destination(self) -> None:
         """Handles all update functionality for the current Logs Destination"""
