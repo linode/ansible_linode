@@ -3,11 +3,14 @@
 
 from __future__ import absolute_import, division, print_function
 
-from ansible_specdoc.objects import FieldType
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     logs_destination_history as docs,
 )
-from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list import ListModule, ListModuleParam
+from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list import (
+    ListModule,
+    ListModuleParam,
+)
+from ansible_specdoc.objects import FieldType
 
 module = ListModule(
     result_display_name="Logs Destination History",

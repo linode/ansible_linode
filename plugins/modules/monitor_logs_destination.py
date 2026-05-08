@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, Optional, List
+from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.logs_destination as docs
 import polling
@@ -12,8 +12,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common import 
     LinodeModuleBase,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
-    global_requirements,
     global_authors,
+    global_requirements,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
@@ -26,20 +26,22 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 from linode_api4 import (
-    LogsDestination, 
-    AkamaiObjectStorageLogsDestinationDetails, 
-    CustomHTTPSLogsDestinationDetails,
-    DestinationAuthentication,
+    AkamaiObjectStorageLogsDestinationDetails,
     BasicAuthenticationDetails,
     ClientCertificateDetails,
     CustomHeader,
+    CustomHTTPSLogsDestinationDetails,
+    DestinationAuthentication,
+    LogsDestination,
 )
 
 authentication_details_spec: dict = {
     "basic_authentication_password": SpecField(
         type=FieldType.string,
         editable=True,
-        description=["The password tied to the basic_authentication_user, for basic authentication."],
+        description=[
+            "The password tied to the basic_authentication_user, for basic authentication."
+        ],
     ),
     "basic_authentication_user": SpecField(
         type=FieldType.string,
@@ -107,13 +109,17 @@ custom_headers_spec: dict = {
         type=FieldType.string,
         editable=True,
         required=True,
-        description=["The name of the custom header to include in the request."],
+        description=[
+            "The name of the custom header to include in the request."
+        ],
     ),
     "value": SpecField(
         type=FieldType.string,
         editable=True,
         required=True,
-        description=["The body content for the custom header to include in the request."],
+        description=[
+            "The body content for the custom header to include in the request."
+        ],
     ),
 }
 
@@ -190,7 +196,7 @@ details_spec: dict = {
             "The content type for requests to the endpoint_url. "
             "This can be application/json for request bodies formatted as JSON, "
             "or application/json; charset=utf-8 for JSON-format content encoded using UTF-8."
-        ]
+        ],
     ),
     "custom_headers": SpecField(
         type=FieldType.list,
@@ -208,7 +214,7 @@ details_spec: dict = {
         description=[
             "Specifies whether data compression is applied to files included in a request. "
             "This can be gzip to apply this compression format or None."
-        ]
+        ],
     ),
     "endpoint_url": SpecField(
         type=FieldType.string,
@@ -232,8 +238,7 @@ spec: dict = {
         type=FieldType.string,
         editable=True,
         description=[
-            "The name of the destination object. "
-            "Used for display purposes."
+            "The name of the destination object. Used for display purposes."
         ],
     ),
     "type": SpecField(
@@ -268,7 +273,9 @@ spec: dict = {
     "wait_timeout": SpecField(
         type=FieldType.integer,
         default=600,
-        description=["The amount of time, in seconds, to wait for the logs destination."],
+        description=[
+            "The amount of time, in seconds, to wait for the logs destination."
+        ],
     ),
 }
 
@@ -292,11 +299,7 @@ SPECDOC_META = SpecDocMeta(
 )
 
 # Fields that can be updated on an existing Logs Destination
-MUTABLE_FIELDS = {
-    "details",
-    "label",
-    "type"
-}
+MUTABLE_FIELDS = {"details", "label", "type"}
 
 DOCUMENTATION = r"""
 """
@@ -325,11 +328,15 @@ class LinodeLogsDestination(LinodeModuleBase):
             required_one_of=self.required_one_of,
         )
 
-    def _wait_for_logs_destination_ready(self, logs_destination: LogsDestination) -> None:
+    def _wait_for_logs_destination_ready(
+        self, logs_destination: LogsDestination
+    ) -> None:
         def poll_func() -> bool:
             logs_destination._api_get()
             if logs_destination.status == "inactive":
-                self.fail("Logs destination is inactive. Please verify that your credentials, host, and bucket details are correct.")
+                self.fail(
+                    "Logs destination is inactive. Please verify that your credentials, host, and bucket details are correct."
+                )
             return logs_destination.status == "active"
 
         # Initial attempt
@@ -347,7 +354,8 @@ class LinodeLogsDestination(LinodeModuleBase):
                 "failed to wait for logs destination status: timeout period expired"
             )
 
-    def _get_logs_destination(self, destination_id: int
+    def _get_logs_destination(
+        self, destination_id: int
     ) -> Optional[LogsDestination]:
         try:
             return self.client.load(LogsDestination, destination_id)
@@ -362,9 +370,7 @@ class LinodeLogsDestination(LinodeModuleBase):
         params = self.module.params
 
         try:
-            self.register_action(
-                "Created logs destination"
-            )
+            self.register_action("Created logs destination")
 
             storage_type = params.pop("type")
             if storage_type == "akamai_object_storage":
@@ -378,28 +384,35 @@ class LinodeLogsDestination(LinodeModuleBase):
                         bucket_name=details.pop("bucket_name"),
                         host=details.pop("host"),
                         path=details.pop("path"),
-                    )
+                    ),
                 )
 
             if storage_type == "custom_https":
                 return self._create_custom_https_logs_destination()
 
-            self.fail(msg="invalid details: missing required fields for supported logs destination types")
+            self.fail(
+                msg="invalid details: missing required fields for supported logs destination types"
+            )
 
         except Exception as exception:
             return self.fail(
                 msg="failed to create logs destination: {0}".format(exception)
             )
 
-    def _create_custom_https_logs_destination(self) -> Optional[LogsDestination]:
+    def _create_custom_https_logs_destination(
+        self,
+    ) -> Optional[LogsDestination]:
         params = self.module.params
         details = params.pop("details")
         authentication = details.pop("authentication")
-        
+
         authentication_details = authentication.pop("details")
         client_cert_details = details.pop("client_certificate_details")
-        
-        custom_headers = [CustomHeader(name=h.get("name"), value=h.get("value")) for h in (details.pop("custom_headers", None) or [])] or None
+
+        custom_headers = [
+            CustomHeader(name=h.get("name"), value=h.get("value"))
+            for h in (details.pop("custom_headers", None) or [])
+        ] or None
 
         return self.client.monitor.destination_create(
             label=params.pop("label"),
@@ -409,48 +422,31 @@ class LinodeLogsDestination(LinodeModuleBase):
                 authentication=DestinationAuthentication(
                     type=authentication.pop("type"),
                     details=BasicAuthenticationDetails(
-                        basic_authentication_user=authentication_details.pop("basic_authentication_user"),
-                        basic_authentication_password=authentication_details.pop("basic_authentication_password"),
-                    )
+                        basic_authentication_user=authentication_details.pop(
+                            "basic_authentication_user"
+                        ),
+                        basic_authentication_password=authentication_details.pop(
+                            "basic_authentication_password"
+                        ),
+                    ),
                 ),
                 data_compression=details.pop("data_compression"),
                 content_type=details.pop("content_type"),
                 custom_headers=custom_headers,
                 client_certificate_details=ClientCertificateDetails(
-                    client_ca_certificate=client_cert_details.pop("client_ca_certificate"),
-                    client_certificate=client_cert_details.pop("client_certificate"),
-                    client_private_key=client_cert_details.pop("client_private_key"),
+                    client_ca_certificate=client_cert_details.pop(
+                        "client_ca_certificate"
+                    ),
+                    client_certificate=client_cert_details.pop(
+                        "client_certificate"
+                    ),
+                    client_private_key=client_cert_details.pop(
+                        "client_private_key"
+                    ),
                     tls_hostname=client_cert_details.pop("tls_hostname"),
                 ),
-            )
+            ),
         )
-
-    @staticmethod
-    def __details_diff_override(key, old_value, new_value):
-        def _merge_and_diff(old_dict, new_dict):
-            merged = old_dict.copy() if isinstance(old_dict, dict) else {}
-            has_changed = False
-            for k, v in new_dict.items():
-                if v is None:
-                    continue
-                
-                if isinstance(v, dict):
-                    sub_changed, sub_merged = _merge_and_diff(merged.get(k, {}), v)
-                    if sub_changed:
-                        has_changed = True
-                    merged[k] = sub_merged
-                elif isinstance(v, list):
-                    if merged.get(k) != v:
-                        has_changed = True
-                    merged[k] = v
-                else:
-                    if merged.get(k) != v:
-                        has_changed = True
-                    merged[k] = v
-                
-            return has_changed, merged
-
-        return _merge_and_diff(old_value, new_value)
 
     def _update_logs_destination(self) -> None:
         """Handles all update functionality for the current Logs Destination"""
@@ -460,13 +456,28 @@ class LinodeLogsDestination(LinodeModuleBase):
             filter_null_values(self.module.params),
             MUTABLE_FIELDS,
             self.register_action,
-            diff_overrides={
-                "details": self.__details_diff_override
-            }
+            diff_overrides={"details": self.__details_diff_override},
         )
 
         if self.module.params.get("wait"):
             self._wait_for_logs_destination_ready(self._logs_destination)
+
+    @staticmethod
+    def __details_diff_override(key, old_value, new_value):
+        result = new_value.copy()
+
+        # Standard diff for custom_https
+        if "endpoint_url" in new_value:
+            return old_value != new_value, result
+
+        # Custom diff for akamai_object_storage to handle access_key_secret
+        changed = (
+            old_value.get("access_key_id") != new_value.get("access_key_id")
+            or old_value.get("access_key_secret")
+            != new_value.get("access_key_secret")
+            or old_value != new_value
+        )
+        return changed, result
 
     def _handle_logs_destination(self) -> None:
         params = self.module.params

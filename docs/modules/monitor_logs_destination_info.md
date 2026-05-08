@@ -50,7 +50,36 @@ Get info about a Linode Logs Destination.
           "updated_by": "Jane Q. Linode",
           "version": 1
         }
-        
+        ```
+        ```json
+        {
+          "created": "2025-07-20T09:45:13",
+          "created_by": "John Q. Linode",
+          "details": {
+            "authentication": {
+              "details": {
+                "basic_authentication_password": "p@$$w0Rd",
+                "basic_authentication_user": "John_Q"
+              },
+              "type": "basic"
+            },
+            "client_certificate_details": {},
+            "content_type": "application/json",
+            "custom_headers": [
+              {
+                "name": "Cache-Control",
+                "value": "max-age=0"
+              }
+            ],
+            "data_compression": "gzip",
+            "endpoint_url": "https://my-site.com/log-storage/database-info"
+          },
+          "id": 12346,
+          "label": "custom_logs_destination",
+          "type": "custom_https",
+          "updated": "2025-07-21T12:41:09",
+          "updated_by": "Jane Q. Linode"
+        }
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-destination) for a list of returned fields
 

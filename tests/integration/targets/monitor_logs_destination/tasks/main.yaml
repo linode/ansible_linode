@@ -6,8 +6,6 @@
     - name: Create an Object Storage key
       linode.cloud.object_keys:
         label: 'test-logs-key-{{ r }}'
-        regions:
-          - us-mia
         state: present
       register: create_key
 

@@ -27,7 +27,10 @@ def api_filter_for_aclp_logs_services(params: Dict[str, Any]) -> Dict[str, Any]:
     if filters:
         for f in filters:
             if f.get("name") == "id":
-                f["values"] = [int(v) if isinstance(v, str) and v.isdigit() else v for v in f["values"]]
+                f["values"] = [
+                    int(v) if isinstance(v, str) and v.isdigit() else v
+                    for v in f["values"]
+                ]
     value_filters = api_filter_constructor_for_aclp_monitor_services(params)
     order_by = params.get("order_by")
     order = params.get("order")
