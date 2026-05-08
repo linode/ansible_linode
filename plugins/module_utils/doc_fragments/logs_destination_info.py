@@ -1,4 +1,4 @@
-"""Documentation fragments for the monitor_logs_destination_list module"""
+"""Documentation fragments for the monitor_logs_destination_info module"""
 
 specdoc_examples = ['''
 - name: Get info about a logs destination

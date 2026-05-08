@@ -17,8 +17,8 @@ module = ListModule(
     result_field_name="logs_destination_history",
     endpoint_template="/monitor/streams/destinations/{id}/history",
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-destination-history",
-    result_samples=docs.specdoc_examples,
-    examples=docs.result_logs_destination_history_samples,
+    examples=docs.specdoc_examples,
+    result_samples=docs.result_logs_destination_history_samples,
     params=[
         ListModuleParam(
             display_name="ID",

@@ -138,6 +138,7 @@ details_spec: dict = {
     "access_key_secret": SpecField(
         type=FieldType.string,
         editable=True,
+        no_log=True,
         description=[
             "The Object Storage key's secret key. "
             "This is used as a password to validate the key. "
@@ -170,14 +171,14 @@ details_spec: dict = {
             "(Optional for type: akamai_object_storage)"
         ],
     ),
-    # --- custom_https_object fields ---
+    # --- custom_https fields ---
     "authentication": SpecField(
         type=FieldType.dict,
         suboptions=authentication_spec,
         editable=True,
         description=[
             "Authentication details required to access the endpoint_url. "
-            "(Used for type: custom_https_object)"
+            "(Used for type: custom_https)"
         ],
     ),
     "client_certificate_details": SpecField(
@@ -186,7 +187,7 @@ details_spec: dict = {
         editable=True,
         description=[
             "Contains transport layer security (TLS) client certificate information to additionally secure the connection for the request. "
-            "(Used for type: custom_https_object)"
+            "(Used for type: custom_https)"
         ],
     ),
     "content_type": SpecField(
@@ -197,6 +198,7 @@ details_spec: dict = {
             "The content type for requests to the endpoint_url. "
             "This can be application/json for request bodies formatted as JSON, "
             "or application/json; charset=utf-8 for JSON-format content encoded using UTF-8."
+            "(Used for type: custom_https)"
         ],
     ),
     "custom_headers": SpecField(
@@ -206,6 +208,7 @@ details_spec: dict = {
         editable=True,
         description=[
             "Pairs of parameters used to optionally include custom headers in the request."
+            "(Used for type: custom_https)"
         ],
     ),
     "data_compression": SpecField(
@@ -215,12 +218,15 @@ details_spec: dict = {
         description=[
             "Specifies whether data compression is applied to files included in a request. "
             "This can be gzip to apply this compression format or None."
+            "(Used for type: custom_https)"
         ],
     ),
     "endpoint_url": SpecField(
         type=FieldType.string,
         editable=True,
-        description=["The URL where the request will be sent."],
+        description=[
+            "The URL where the request will be sent. (Used for type: custom_https)"
+        ],
     ),
 }
 
@@ -232,7 +238,7 @@ spec: dict = {
         description=[
             "Settings for the destination. "
             "For type 'akamai_object_storage': provide access_key_id, access_key_secret, bucket_name, host and optionally path. "
-            "For type 'custom_https_object': provide authentication, client_certificate_details, content_type, data_compression, endpoint_url and optionally custom_headers."
+            "For type 'custom_https': provide authentication, client_certificate_details, content_type, data_compression, endpoint_url and optionally custom_headers."
         ],
     ),
     "label": SpecField(
@@ -282,7 +288,7 @@ spec: dict = {
 
 SPECDOC_META = SpecDocMeta(
     description=[
-        "Manage logs destination that sevres as a sync point for logs data. "
+        "Manage logs destination that serves as a sync point for logs data. "
         "You need read_write access to the scope to call this operation."
     ],
     requirements=global_requirements,
@@ -375,21 +381,11 @@ class LinodeLogsDestination(LinodeModuleBase):
 
             storage_type = params.pop("type")
             if storage_type == "akamai_object_storage":
-                details = params.pop("details")
-                return self.client.monitor.destination_create(
-                    label=params.pop("label"),
-                    type=storage_type,
-                    details=AkamaiObjectStorageLogsDestinationDetails(
-                        access_key_id=details.pop("access_key_id"),
-                        access_key_secret=details.pop("access_key_secret"),
-                        bucket_name=details.pop("bucket_name"),
-                        host=details.pop("host"),
-                        path=details.pop("path"),
-                    ),
+                return self._create_akamai_object_storage_logs_destination(
+                    storage_type
                 )
-
-            if storage_type == "custom_https":
-                return self._create_custom_https_logs_destination()
+            elif storage_type == "custom_https":
+                return self._create_custom_https_logs_destination(storage_type)
 
             self.fail(
                 msg="invalid details: missing required fields for supported logs destination types"
@@ -400,14 +396,32 @@ class LinodeLogsDestination(LinodeModuleBase):
                 msg="failed to create logs destination: {0}".format(exception)
             )
 
+    def _create_akamai_object_storage_logs_destination(
+        self, storage_type: str
+    ) -> Optional[LogsDestination]:
+        params = self.module.params
+
+        details = params.pop("details")
+        return self.client.monitor.destination_create(
+            label=params.pop("label"),
+            type=storage_type,
+            details=AkamaiObjectStorageLogsDestinationDetails(
+                access_key_id=details.pop("access_key_id"),
+                access_key_secret=details.pop("access_key_secret"),
+                bucket_name=details.pop("bucket_name"),
+                host=details.pop("host"),
+                path=details.pop("path"),
+            ),
+        )
+
     def _create_custom_https_logs_destination(
-        self,
+        self, storage_type: str
     ) -> Optional[LogsDestination]:
         params = self.module.params
         details = params.pop("details")
         authentication = details.pop("authentication")
 
-        authentication_details = authentication.pop("details")
+        authentication_details = authentication.pop("authentication_details")
         client_cert_details = details.pop("client_certificate_details")
 
         custom_headers = [
@@ -417,7 +431,7 @@ class LinodeLogsDestination(LinodeModuleBase):
 
         return self.client.monitor.destination_create(
             label=params.pop("label"),
-            type=params.pop("type"),
+            type=storage_type,
             details=CustomHTTPSLogsDestinationDetails(
                 endpoint_url=details.pop("endpoint_url"),
                 authentication=DestinationAuthentication(
@@ -467,18 +481,18 @@ class LinodeLogsDestination(LinodeModuleBase):
     def __details_diff_override(key, old_value, new_value):
         result = new_value.copy()
 
-        # Standard diff for custom_https
-        if "endpoint_url" in new_value:
-            return old_value != new_value, result
+        # Remove write-only secrets before comparing
+        compare_new_value = new_value.copy()
+        if "access_key_secret" in compare_new_value:
+            del compare_new_value["access_key_secret"]
 
-        # Custom diff for akamai_object_storage to handle access_key_secret
-        changed = (
-            old_value.get("access_key_id") != new_value.get("access_key_id")
-            or old_value.get("access_key_secret")
-            != new_value.get("access_key_secret")
-            or old_value != new_value
+        compare_old_value = (
+            old_value.copy() if isinstance(old_value, dict) else {}
         )
-        return changed, result
+        if "access_key_secret" in compare_old_value:
+            del compare_old_value["access_key_secret"]
+
+        return compare_old_value != compare_new_value, result
 
     def _handle_logs_destination(self) -> None:
         params = self.module.params

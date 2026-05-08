@@ -1,6 +1,6 @@
 # monitor_logs_destination
 
-Manage logs destination that sevres as a sync point for logs data. You need read_write access to the scope to call this operation.
+Manage logs destination that serves as a sync point for logs data. You need read_write access to the scope to call this operation.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -39,17 +39,17 @@ Manage logs destination that sevres as a sync point for logs data. You need read
         details:
           basic_authentication_user: '{{ basic_authentication_user }}'
           basic_authentication_password: '{{ basic_authentication_password }}'
-        client_certificate_details: 
-          client_certificate: '{{ client_certificate }}'
-          client_ca_certificate: '{{ client_ca_certificate }}'
-          client_private_key: '{{ client_private_key }}'
-          tls_hostname: 'my-site.com'
-        content_type: 'application/json'
-        custom_headers:
-            - name: 'Cache-Control'
-                value: 'max-age=0'
-        data_compression: 'gzip'
-        endpoint_url: 'https://my-site.com/log-storage/database-info'
+      client_certificate_details: 
+        client_certificate: '{{ client_certificate }}'
+        client_ca_certificate: '{{ client_ca_certificate }}'
+        client_private_key: '{{ client_private_key }}'
+        tls_hostname: 'my-site.com'
+      content_type: 'application/json'
+      custom_headers:
+        - name: 'Cache-Control'
+          value: 'max-age=0'
+      data_compression: 'gzip'
+      endpoint_url: 'https://my-site.com/log-storage/basicAuth'
     state: present
 ```
 
@@ -66,7 +66,7 @@ Manage logs destination that sevres as a sync point for logs data. You need read
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
-| [`details` (sub-options)](#details) | <center>`dict`</center> | <center>Optional</center> | Settings for the destination. For type 'akamai_object_storage': provide access_key_id, access_key_secret, bucket_name, host and optionally path. For type 'custom_https_object': provide authentication, client_certificate_details, content_type, data_compression, endpoint_url and optionally custom_headers.  **(Updatable)** |
+| [`details` (sub-options)](#details) | <center>`dict`</center> | <center>Optional</center> | Settings for the destination. For type 'akamai_object_storage': provide access_key_id, access_key_secret, bucket_name, host and optionally path. For type 'custom_https': provide authentication, client_certificate_details, content_type, data_compression, endpoint_url and optionally custom_headers.  **(Updatable)** |
 | `label` | <center>`str`</center> | <center>Optional</center> | The name of the destination object. Used for display purposes.  **(Updatable)** |
 | `type` | <center>`str`</center> | <center>Optional</center> | The type of destination for log data sync, either akamai_object_storage if Object Storage is the destination, or custom_https for a unique URL  **(Choices: `akamai_object_storage`, `custom_https`; Updatable)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The unique identifier assigned to the logs destination. Run the List logs destinations operation and store the id for the applicable logs destination. Required for updating.   |
@@ -82,12 +82,12 @@ Manage logs destination that sevres as a sync point for logs data. You need read
 | `bucket_name` | <center>`str`</center> | <center>Optional</center> | The name of the Object Storage bucket. Run the List Object Storage buckets operation and store the label for the target bucket. (Required for type: akamai_object_storage)  **(Updatable)** |
 | `host` | <center>`str`</center> | <center>Optional</center> | The hostname where the Object Storage bucket can be accessed. Run the List Object Storage buckets operation and store the hostname for the target bucket. (Required for type: akamai_object_storage)  **(Updatable)** |
 | `path` | <center>`str`</center> | <center>Optional</center> | Include this object to set a custom path for audit log storage in your Object Storage bucket. (Optional for type: akamai_object_storage)  **(Updatable)** |
-| [`authentication` (sub-options)](#authentication) | <center>`dict`</center> | <center>Optional</center> | Authentication details required to access the endpoint_url. (Used for type: custom_https_object)  **(Updatable)** |
-| [`client_certificate_details` (sub-options)](#client_certificate_details) | <center>`dict`</center> | <center>Optional</center> | Contains transport layer security (TLS) client certificate information to additionally secure the connection for the request. (Used for type: custom_https_object)  **(Updatable)** |
-| `content_type` | <center>`str`</center> | <center>Optional</center> | The content type for requests to the endpoint_url. This can be application/json for request bodies formatted as JSON, or application/json; charset=utf-8 for JSON-format content encoded using UTF-8.  **(Choices: `application/json`, `application/json; charset=utf-8`; Updatable)** |
-| [`custom_headers` (sub-options)](#custom_headers) | <center>`list`</center> | <center>Optional</center> | Pairs of parameters used to optionally include custom headers in the request.  **(Updatable)** |
-| `data_compression` | <center>`str`</center> | <center>Optional</center> | Specifies whether data compression is applied to files included in a request. This can be gzip to apply this compression format or None.  **(Choices: `gzip`, `None`; Updatable)** |
-| `endpoint_url` | <center>`str`</center> | <center>Optional</center> | The URL where the request will be sent.  **(Updatable)** |
+| [`authentication` (sub-options)](#authentication) | <center>`dict`</center> | <center>Optional</center> | Authentication details required to access the endpoint_url. (Used for type: custom_https)  **(Updatable)** |
+| [`client_certificate_details` (sub-options)](#client_certificate_details) | <center>`dict`</center> | <center>Optional</center> | Contains transport layer security (TLS) client certificate information to additionally secure the connection for the request. (Used for type: custom_https)  **(Updatable)** |
+| `content_type` | <center>`str`</center> | <center>Optional</center> | The content type for requests to the endpoint_url. This can be application/json for request bodies formatted as JSON, or application/json; charset=utf-8 for JSON-format content encoded using UTF-8.(Used for type: custom_https)  **(Choices: `application/json`, `application/json; charset=utf-8`; Updatable)** |
+| [`custom_headers` (sub-options)](#custom_headers) | <center>`list`</center> | <center>Optional</center> | Pairs of parameters used to optionally include custom headers in the request.(Used for type: custom_https)  **(Updatable)** |
+| `data_compression` | <center>`str`</center> | <center>Optional</center> | Specifies whether data compression is applied to files included in a request. This can be gzip to apply this compression format or None.(Used for type: custom_https)  **(Choices: `gzip`, `None`; Updatable)** |
+| `endpoint_url` | <center>`str`</center> | <center>Optional</center> | The URL where the request will be sent. (Used for type: custom_https)  **(Updatable)** |
 
 ### authentication
 

@@ -16,12 +16,14 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
 )
 
 
-def api_filter_for_aclp_logs_services(params: Dict[str, Any]) -> Dict[str, Any]:
+def api_filter_for_logs_destination_services(
+    params: Dict[str, Any],
+) -> Dict[str, Any]:
     """
-    Customize a filter string for listing ACLP Monitor Logs Services,
+    Customize a filter string for listing Logs Destinations,
     because on the API side nested filter operators are not supported.
     Contrary to C(api_filter_constructor_for_aclp_monitor_services), `order_by` and `order` are supported.
-    Converts 'id' strings to integers to meet type requirements for the ACLP Logs API.
+    Converts 'id' strings to integers to meet type requirements for the Logs Destination API.
     """
     filters = params.get("filters")
     if filters:
@@ -49,7 +51,7 @@ module = ListModule(
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-destinations",
     examples=docs.specdoc_examples,
     result_samples=docs.result_logs_destinations_samples,
-    custom_api_filter_constructor=api_filter_for_aclp_logs_services,
+    custom_api_filter_constructor=api_filter_for_logs_destination_services,
 )
 
 SPECDOC_META = module.spec

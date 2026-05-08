@@ -24,7 +24,8 @@ List and filter on Logs Destinations.
   linode.cloud.monitor_logs_destination_list:
     filters:
       - name: label
-        values: my_logs_destination_label
+        values: 
+          - my_logs_destination_label
 ```
 
 

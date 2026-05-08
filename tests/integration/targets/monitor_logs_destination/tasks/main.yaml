@@ -25,6 +25,7 @@
         access_key_secret: '{{ create_key.key.secret_key }}'
         bucket_name: '{{ create_bucket.name }}'
         host: '{{ create_key.key.regions[0].s3_endpoint }}'
+
     - name: Create first logs destination
       block:
         - name: Create logs destination
@@ -36,7 +37,6 @@
               access_key_secret: '{{ access_key_secret }}'
               bucket_name: '{{ bucket_name }}'
               host: '{{ host }}'
-              path: 'test-path'
             state: present
             wait: yes
             wait_timeout: 600
@@ -48,7 +48,6 @@
               - create.logs_destination.label == 'test-logs-destination-{{ r }}'
               - create.logs_destination.details.bucket_name == bucket_name
               - create.logs_destination.details.host == host
-              - create.logs_destination.details.path == 'test-path'
 
         - name: Update logs destination
           linode.cloud.monitor_logs_destination:
@@ -87,7 +86,8 @@
           linode.cloud.monitor_logs_destination_list:
             filters:
               - name: id
-                values: ['{{ update.logs_destination.id }}']
+                values:
+                  - '{{ update.logs_destination.id }}'
           register: list
 
         - name: Assert logs destinations list response
@@ -132,7 +132,7 @@
 
     - name: Create second logs destination
       block:
-        - name: Create logs destination
+        - name: Create second logs destination
           linode.cloud.monitor_logs_destination:
             label: 'test-logs-destination-2-{{ r }}'
             type: 'akamai_object_storage'
@@ -154,6 +154,38 @@
               - create_second.logs_destination.details.bucket_name == bucket_name
               - create_second.logs_destination.details.host == host
               - create_second.logs_destination.details.path == 'test-path-2'
+
+        - name: Create second logs bucket
+          amazon.aws.s3_bucket:
+            endpoint_url: 'https://{{ create_key.key.regions[0].s3_endpoint }}/'
+            aws_access_key: '{{ create_key.key.access_key }}'
+            aws_secret_key: '{{ create_key.key.secret_key }}'
+            name: 'test-logs-bucket-{{ r }}-2'
+            state: present
+            ceph: true
+            region: 'default'
+          register: create_bucket_second
+
+        - name: Update second logs destination to point to a new bucket
+          linode.cloud.monitor_logs_destination:
+            id: '{{ create_second.logs_destination.id }}'
+            label: 'test-logs-destination-2-{{ r }}'
+            details:
+              access_key_id: '{{ access_key_id }}'
+              access_key_secret: '{{ access_key_secret }}'
+              bucket_name: '{{ create_bucket_second.name }}'
+              host: '{{ host }}'
+            state: present
+            wait: yes
+            wait_timeout: 600
+          register: update_second
+
+        - name: Assert second logs destination is updated with new bucket
+          assert:
+            that:
+              - update_second.changed
+              - update_second.logs_destination.id == create_second.logs_destination.id
+              - update_second.logs_destination.details.bucket_name == create_bucket_second.name
 
         - name: List available logs destinations ordered by id desc and assert order
           linode.cloud.monitor_logs_destination_list:
@@ -209,6 +241,21 @@
           assert:
             that:
               - delete_bucket.changed
+        - name: Delete second test bucket
+          amazon.aws.s3_bucket:
+            endpoint_url: 'https://{{ create_key.key.regions[0].s3_endpoint }}/'
+            aws_access_key: '{{ create_key.key.access_key }}'
+            aws_secret_key: '{{ create_key.key.secret_key }}'
+            name: '{{ create_bucket_second.name }}'
+            state: absent
+            ceph: true
+            region: 'default'
+            force: true
+          register: delete_bucket_second
+        - name: Assert second test bucket is deleted
+          assert:
+            that:
+              - delete_bucket_second.changed
         - name: Delete object storage key
           linode.cloud.object_keys:
             label: '{{ create_key.key.label }}'

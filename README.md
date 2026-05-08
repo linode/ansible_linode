@@ -43,7 +43,7 @@ Name | Description |
 [linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|Manage Linode LKE clusters.|
 [linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|Manage Linode LKE cluster node pools.|
 [linode.cloud.lock](./docs/modules/lock.md)|Create and delete Linode resource locks.|
-[linode.cloud.monitor_logs_destination](./docs/modules/monitor_logs_destination.md)|Manage logs destination that sevres as a sync point for logs data. You need read_write access to the scope to call this operation.|
+[linode.cloud.monitor_logs_destination](./docs/modules/monitor_logs_destination.md)|Manage logs destination that serves as a sync point for logs data. You need read_write access to the scope to call this operation.|
 [linode.cloud.monitor_logs_destination_history](./docs/modules/monitor_logs_destination_history.md)|List and filter on Logs Destination History.|
 [linode.cloud.monitor_services_alert_definition](./docs/modules/monitor_services_alert_definition.md)|Manage an alert definition for a specific service type. Akamai refers to these as user alerts. You need read_only access to the scope for the selected serviceType. |
 [linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|Manage a Linode NodeBalancer.|

@@ -22,17 +22,17 @@ specdoc_examples = ['''
         details:
           basic_authentication_user: '{{ basic_authentication_user }}'
           basic_authentication_password: '{{ basic_authentication_password }}'
-        client_certificate_details: 
-          client_certificate: '{{ client_certificate }}'
-          client_ca_certificate: '{{ client_ca_certificate }}'
-          client_private_key: '{{ client_private_key }}'
-          tls_hostname: 'my-site.com'
-        content_type: 'application/json'
-        custom_headers:
-            - name: 'Cache-Control'
-                value: 'max-age=0'
-        data_compression: 'gzip'
-        endpoint_url: 'https://my-site.com/log-storage/database-info'
+      client_certificate_details: 
+        client_certificate: '{{ client_certificate }}'
+        client_ca_certificate: '{{ client_ca_certificate }}'
+        client_private_key: '{{ client_private_key }}'
+        tls_hostname: 'my-site.com'
+      content_type: 'application/json'
+      custom_headers:
+        - name: 'Cache-Control'
+          value: 'max-age=0'
+      data_compression: 'gzip'
+      endpoint_url: 'https://my-site.com/log-storage/basicAuth'
     state: present''', '''
 - name: Delete logs destination
   linode.cloud.monitor_logs_destination:

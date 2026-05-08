@@ -7,7 +7,8 @@ specdoc_examples = ['''
   linode.cloud.monitor_logs_destination_list:
     filters:
       - name: label
-        values: my_logs_destination_label''']
+        values: 
+          - my_logs_destination_label''']
 
 result_logs_destinations_samples = ['''[
     {
