@@ -51,8 +51,9 @@ authentication_details_spec: dict = {
 }
 
 authentication_spec: dict = {
-    "details": SpecField(
+    "authentication_details": SpecField(
         type=FieldType.dict,
+        aliases=["details"],
         suboptions=authentication_details_spec,
         editable=True,
         description=[
@@ -230,8 +231,8 @@ spec: dict = {
         editable=True,
         description=[
             "Settings for the destination. "
-            "For type 'akamai_object_storage': provide access_key_id, access_key_secret, bucket_name, host, and optionally path. "
-            "For type 'custom_https_object': (fields to be added later)."
+            "For type 'akamai_object_storage': provide access_key_id, access_key_secret, bucket_name, host and optionally path. "
+            "For type 'custom_https_object': provide authentication, client_certificate_details, content_type, data_compression, endpoint_url and optionally custom_headers."
         ],
     ),
     "label": SpecField(
