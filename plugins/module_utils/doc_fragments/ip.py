@@ -5,6 +5,11 @@ specdoc_examples = ['''
     linode_id: 123
     public: true
     type: ipv4
+    state: present''', '''
+- name: Promote an existing IP to reserved
+  linode.cloud.ip:
+    address: "97.107.143.141"
+    reserved: true
     state: present''']
 
 result_ip_samples = ['''{

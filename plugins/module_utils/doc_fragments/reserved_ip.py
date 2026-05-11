@@ -2,6 +2,9 @@
 
 specdoc_examples = [
     """
+# WARNING: This task is NOT idempotent. Re-running it will allocate
+# a new billable reserved IP each time. Specify 'address' to manage
+# an existing reservation idempotently.
 - name: Reserve an IP in us-east
   linode.cloud.reserved_ip:
     region: us-east

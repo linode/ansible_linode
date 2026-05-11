@@ -28,6 +28,32 @@
           - allocate_ip.ip.type == 'ipv4'
           - allocate_ip.ip.region == create_instance.instance.region
 
+    - name: Promote allocated IP to reserved
+      linode.cloud.ip:
+        address: '{{ allocate_ip.ip.address }}'
+        reserved: true
+        state: present
+      register: promote_ip
+
+    - name: Assert IP was promoted to reserved
+      assert:
+        that:
+          - promote_ip.changed
+          - promote_ip.ip.address == allocate_ip.ip.address
+          - promote_ip.ip.reserved == true
+
+    - name: Promote again (idempotency check)
+      linode.cloud.ip:
+        address: '{{ allocate_ip.ip.address }}'
+        reserved: true
+        state: present
+      register: promote_ip_again
+
+    - name: Assert no change on second promotion
+      assert:
+        that:
+          - not promote_ip_again.changed
+
 #    - name: Delete an IP
 #      linode.cloud.ip:
 #        address: allocate_ip.ip.address
