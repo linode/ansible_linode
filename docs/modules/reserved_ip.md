@@ -4,6 +4,8 @@ Manage a Linode Reserved IPv4 Address.
 
 NOTE: Reserved IP feature may not currently be available to all users.
 
+NOTE: When creating a reservation by region (without specifying an address), this module is NOT idempotent — each run will allocate a new billable reserved IP address. To manage an existing reservation idempotently, specify the address parameter.
+
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
 - [Parameters](#parameters)
@@ -17,6 +19,9 @@ NOTE: Reserved IP feature may not currently be available to all users.
 ## Examples
 
 ```yaml
+# WARNING: This task is NOT idempotent. Re-running it will allocate
+# a new billable reserved IP each time. Specify 'address' to manage
+# an existing reservation idempotently.
 - name: Reserve an IP in us-east
   linode.cloud.reserved_ip:
     region: us-east

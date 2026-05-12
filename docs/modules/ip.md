@@ -1,6 +1,8 @@
 # ip
 
-Allocates a new IPv4 Address on your Account. The Linode must be configured to support additional addresses - please Open a support ticket requesting additional addresses before attempting allocation.
+Allocates a new IPv4 Address on your Account, or updates an existing one. To allocate, the Linode must be configured to support additional addresses - please open a support ticket requesting additional addresses before attempting allocation.
+
+To promote an existing IP to reserved, provide the address and set reserved=true.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -23,6 +25,14 @@ Allocates a new IPv4 Address on your Account. The Linode must be configured to s
     state: present
 ```
 
+```yaml
+- name: Promote an existing IP to reserved
+  linode.cloud.ip:
+    address: "97.107.143.141"
+    reserved: true
+    state: present
+```
+
 
 ## Parameters
 
@@ -32,7 +42,36 @@ Allocates a new IPv4 Address on your Account. The Linode must be configured to s
 | `linode_id` | <center>`int`</center> | <center>Optional</center> | The ID of a Linode you have access to that this address will be allocated to.   |
 | `public` | <center>`bool`</center> | <center>Optional</center> | Whether to create a public or private IPv4 address.   |
 | `type` | <center>`str`</center> | <center>Optional</center> | The type of address you are requesting. Only IPv4 addresses may be allocated through this operation.  **(Choices: `ipv4`)** |
-| `address` | <center>`str`</center> | <center>Optional</center> | The IP address to delete.  **(Conflicts With: `linode_id`,`public`,`type`)** |
+| `address` | <center>`str`</center> | <center>Optional</center> | The IP address to update or delete. Required when updating an existing IP (e.g., promoting to reserved) or when deleting (state=absent).  **(Conflicts With: `linode_id`,`public`,`type`)** |
+| `reserved` | <center>`bool`</center> | <center>Optional</center> | Whether this IP address should be reserved. Setting to true promotes an existing allocated IP to a reserved IP via PUT /networking/ips/{address}. Requires the address parameter.   |
 
 ## Return Values
+
+- `ip` - The IP address in JSON serialized form.
+
+    - Sample Response:
+        ```json
+        {
+          "address": "97.107.143.141",
+          "assigned_entity": null,
+          "gateway": "97.107.143.1",
+          "interface_id": null,
+          "linode_id": 123,
+          "prefix": 24,
+          "public": true,
+          "rdns": "test.example.org",
+          "region": "us-east",
+          "reserved": false,
+          "subnet_mask": "255.255.255.0",
+          "tags": [],
+          "type": "ipv4",
+          "vpc_nat_1_1": {
+            "vpc_id": 242,
+            "subnet_id": 194,
+            "address": "139.144.244.36"
+          }
+        }
+        ```
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-ip) for a list of returned fields
+
 

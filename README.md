@@ -36,7 +36,7 @@ Name | Description |
 [linode.cloud.image_share_group_token](./docs/modules/image_share_group_token.md)|Manage an Image Share Group Token.|
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
 [linode.cloud.instance_interface_settings](./docs/modules/instance_interface_settings.md)|Create, read, and update the interface settings for a Linode instance.|
-[linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account. The Linode must be configured to support additional addresses - please Open a support ticket requesting additional addresses before attempting allocation.|
+[linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account, or updates an existing one. To allocate, the Linode must be configured to support additional addresses - please open a support ticket requesting additional addresses before attempting allocation.|
 [linode.cloud.ip_assign](./docs/modules/ip_assign.md)|Assign IPs to Linodes in a given Region.|
 [linode.cloud.ip_rdns](./docs/modules/ip_rdns.md)|Manage a Linode IP address's rDNS.|
 [linode.cloud.ip_share](./docs/modules/ip_share.md)|Manage the Linode shared IPs.|
