@@ -146,6 +146,13 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
+DOCUMENTATION = r"""
+"""
+EXAMPLES = r"""
+"""
+RETURN = r"""
+"""
+
 REQUIRED_PRESENT: Set[str] = {"label", "type", "destinations"}
 
 
@@ -312,6 +319,11 @@ class LinodeMonitorLogsStream(LinodeModuleBase):
         params = self.module.params
         stream_id = params.get("id")
         label = params.get("label")
+
+        if not stream_id and not label:
+            self.fail(
+                msg="One of 'id' or 'label' is required for state=absent."
+            )
 
         stream = self._get_stream(stream_id, label)
 
