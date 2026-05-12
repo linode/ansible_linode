@@ -1,0 +1,334 @@
+---
+- name: Monitor Logs Stream Integration Tests
+  block:
+    - name: Set randomized labels to prevent collisions
+      set_fact:
+        stream_label: "ansible-test-stream-{{ 99999999 | random }}"
+        stream_label_updated: "ansible-test-stream-upd-{{ 99999999 | random }}"
+        dest_label: "ansible-test-dest-{{ 99999999 | random }}"
+        dest_label_sec: "ansible-test-dest-sec-{{ 99999999 | random }}"
+
+    - name: Setup, Execute, and Cleanup
+      block:
+        # SETUP PREREQUISITES
+        - name: Create Object Storage Key
+          linode.cloud.object_keys:
+            label: "{{ dest_label }}"
+            state: present
+          register: obj_key
+
+        - name: Create Primary Object Storage Bucket
+          amazon.aws.s3_bucket:
+            endpoint_url: "https://{{ obj_key.key.regions[0].s3_endpoint }}/"
+            aws_access_key: "{{ obj_key.key.access_key }}"
+            aws_secret_key: "{{ obj_key.key.secret_key }}"
+            name: "{{ dest_label }}"
+            state: present
+            ceph: true
+            force: true
+            region: "default"
+          register: obj_bucket
+
+
+        - name: Create Primary Logs Destination
+          linode.cloud.monitor_logs_destination:
+            label: "{{ dest_label }}"
+            type: "akamai_object_storage"
+            details:
+              access_key_id: "{{ obj_key.key.access_key }}"
+              access_key_secret: "{{ obj_key.key.secret_key }}"
+              bucket_name: "{{ obj_bucket.name }}"
+              host: "{{ obj_key.key.regions[0].s3_endpoint }}"
+            state: present
+            wait: true
+            wait_timeout: 600
+          register: logs_dest
+
+        - name: Create Secondary Logs Destination
+          linode.cloud.monitor_logs_destination:
+            label: "{{ dest_label_sec }}"
+            type: "akamai_object_storage"
+            details:
+              access_key_id: "{{ obj_key.key.access_key }}"
+              access_key_secret: "{{ obj_key.key.secret_key }}"
+              bucket_name: "{{ obj_bucket.name }}"
+              host: "{{ obj_key.key.regions[0].s3_endpoint }}"
+            state: present
+            wait: true
+            wait_timeout: 600
+          register: logs_dest_sec
+
+        - name: Test lke_audit_logs stream creation in check mode
+          linode.cloud.monitor_logs_stream:
+            label: "{{ stream_label }}"
+            type: "lke_audit_logs"
+            details:
+              cluster_ids: [ 1111, 2222 ]
+              is_auto_add_all_clusters_enabled: false
+            destinations:
+              - "{{ logs_dest.logs_destination.id }}"
+            state: present
+          check_mode: true
+          register: stream_creation_check
+
+        - name: Test stream creation in check mode
+          linode.cloud.monitor_logs_stream:
+            label: "{{ stream_label }}"
+            type: "audit_logs"
+            destinations:
+              - "{{ logs_dest.logs_destination.id }}"
+            state: present
+          check_mode: true
+          register: stream_creation_check
+
+        - name: Assert creation in check mode
+          assert:
+            that:
+              - stream_creation_check.changed
+
+        - name: Test stream creation
+          linode.cloud.monitor_logs_stream:
+            label: "{{ stream_label }}"
+            type: "audit_logs"
+            destinations:
+              - "{{ logs_dest.logs_destination.id }}"
+            state: present
+            wait: true
+            wait_timeout: 3600 # Stream provisioning can take up to 60 minutes to finish.
+          register: stream_creation
+
+        - name: Assert stream creation
+          assert:
+            that:
+              - stream_creation.changed
+              - stream_creation.stream.label == stream_label
+              - stream_creation.stream.status in ['active', 'inactive']
+              - stream_creation.stream.destinations | length == 1
+              - stream_creation.stream.destinations[0].id == (logs_dest.logs_destination.id | int)
+
+        - name: Test stream creation idempotency
+          linode.cloud.monitor_logs_stream:
+            label: "{{ stream_label }}"
+            type: "audit_logs"
+            destinations:
+              - "{{ logs_dest.logs_destination.id }}"
+            state: present
+          register: stream_creation_idempotency
+
+        - name: Assert stream creation idempotency
+          assert:
+            that:
+              - not stream_creation_idempotency.changed
+
+        - name: Get stream info by ID
+          linode.cloud.monitor_logs_stream_info:
+            id: "{{ stream_creation.stream.id }}"
+          register: stream_info_id
+
+        - name: Assert stream info by ID
+          assert:
+            that:
+              - stream_info_id.stream.id == stream_creation.stream.id
+              - stream_info_id.stream.label == stream_label
+              - stream_info_id.stream.status in ['active', 'inactive']
+              - stream_info_id.stream.destinations | length == 1
+
+        - name: Get stream info by Label
+          linode.cloud.monitor_logs_stream_info:
+            label: "{{ stream_label }}"
+          register: stream_info_label
+
+        - name: Assert stream info by Label
+          assert:
+            that:
+              - stream_info_label.stream.id == stream_creation.stream.id
+
+        - name: List streams
+          linode.cloud.monitor_logs_stream_list:
+          register: stream_list
+
+        - name: Assert list streams
+          assert:
+            that:
+              - stream_list.streams | selectattr('id', 'equalto', stream_creation.stream.id) | list | length == 1
+
+        - name: List streams with filter
+          linode.cloud.monitor_logs_stream_list:
+            filters:
+              - name: id
+                values:
+                  - "{{ stream_creation.stream.id | int }}"
+          register: stream_list_filtered
+
+        - name: Assert list streams with filter
+          assert:
+            that:
+              - stream_list_filtered.streams | length == 1
+              - stream_list_filtered.streams[0].id == stream_creation.stream.id
+
+        - name: List streams with ordering
+          linode.cloud.monitor_logs_stream_list:
+            order_by: "id"
+            order: "desc"
+          register: stream_list_ordered
+
+        - name: Assert list streams with ordering
+          assert:
+            that:
+              - stream_list_ordered is not failed
+              - stream_list_ordered.streams is defined
+              - stream_list_ordered.streams | type_debug == 'list'
+              - stream_list_ordered.streams | selectattr('id', 'equalto', stream_creation.stream.id) | list | length == 1
+
+        - name: Update stream label and destinations
+          linode.cloud.monitor_logs_stream:
+            id: "{{ stream_creation.stream.id }}"
+            label: "{{ stream_label_updated }}"
+            destinations:
+              - "{{ logs_dest_sec.logs_destination.id }}"
+            state: present
+            wait: true
+            wait_timeout: 3600
+          register: stream_update
+
+        - name: Assert stream update
+          assert:
+            that:
+              - stream_update.changed
+              - stream_update.stream.label == stream_label_updated
+              - stream_update.stream.destinations | length == 1
+              - stream_update.stream.destinations[0].id == (logs_dest_sec.logs_destination.id | int)
+
+        - name: Get logs stream history
+          linode.cloud.monitor_logs_stream_history:
+            id: "{{ stream_creation.stream.id }}"
+            order_by: "version"
+            order: "desc"
+          register: stream_history
+
+        - name: Assert logs stream history ordering and versions
+          assert:
+            that:
+              - stream_history.logs_stream_history is defined
+              - stream_history.logs_stream_history | type_debug == 'list'
+              - stream_history.logs_stream_history | length >= 2
+              - stream_history.logs_stream_history[0].version > stream_history.logs_stream_history[1].version
+              - stream_history.logs_stream_history[0].label == stream_label_updated
+              - stream_history.logs_stream_history[0].destinations[0].id == (logs_dest_sec.logs_destination.id | int)
+              - stream_history.logs_stream_history[-1].label == stream_label
+              - stream_history.logs_stream_history[-1].destinations[0].id == (logs_dest.logs_destination.id | int)
+
+
+      # CLEANUP
+      always:
+        - name: Wait for stream to become active before deletion
+          linode.cloud.monitor_logs_stream_info:
+            id: "{{ stream_creation.stream.id }}"
+          register: stream_wait_delete
+          until: stream_wait_delete.stream.status in ['active', 'inactive']
+          retries: 60
+          delay: 10
+          ignore_errors: true
+          when: stream_creation is defined and 'stream' in stream_creation
+
+        - name: Delete stream in check mode
+          linode.cloud.monitor_logs_stream:
+            id: "{{ stream_creation.stream.id }}"
+            state: absent
+          check_mode: true
+          register: stream_deletion_check
+          ignore_errors: true
+          when: stream_creation is defined and 'stream' in stream_creation
+
+        - name: Assert stream deletion check mode
+          assert:
+            that:
+              - stream_deletion_check.changed
+          ignore_errors: true
+          when: stream_creation is defined and 'stream' in stream_creation
+
+        - name: Delete stream
+          linode.cloud.monitor_logs_stream:
+            id: "{{ stream_creation.stream.id }}"
+            state: absent
+          register: stream_deletion
+          ignore_errors: true
+          when: stream_creation is defined and 'stream' in stream_creation
+
+        - name: Assert stream deletion
+          assert:
+            that:
+              - stream_deletion.changed
+          ignore_errors: true
+          when: stream_creation is defined and 'stream' in stream_creation
+
+        # Wait until the stream is fully gone before allowing destination cleanup,
+        # otherwise destination delete requests may be rejected while the stream still holds a reference.
+        - name: Wait for stream to be fully removed before cleaning up destinations
+          linode.cloud.monitor_logs_stream_list:
+            filters:
+              - name: id
+                values:
+                  - "{{ stream_creation.stream.id | int }}"
+          register: stream_gone_wait
+          until: stream_gone_wait.streams | length == 0
+          retries: 90
+          delay: 30
+          ignore_errors: true
+          when: stream_creation is defined and 'stream' in stream_creation
+
+        - name: Delete stream idempotency
+          linode.cloud.monitor_logs_stream:
+            id: "{{ stream_creation.stream.id }}"
+            state: absent
+          register: stream_deletion_idempotency
+          ignore_errors: true
+          when: stream_creation is defined and 'stream' in stream_creation
+
+        - name: Assert stream deletion idempotency
+          assert:
+            that:
+              - not stream_deletion_idempotency.changed
+          ignore_errors: true
+          when: stream_creation is defined and 'stream' in stream_creation
+
+        - name: Delete Secondary Logs Destination
+          linode.cloud.monitor_logs_destination:
+            id: "{{ logs_dest_sec.logs_destination.id }}"
+            state: absent
+          ignore_errors: true
+          when: logs_dest_sec is defined and 'logs_destination' in logs_dest_sec
+
+        - name: Delete Primary Logs Destination
+          linode.cloud.monitor_logs_destination:
+            id: "{{ logs_dest.logs_destination.id }}"
+            state: absent
+          ignore_errors: true
+          when: logs_dest is defined and 'logs_destination' in logs_dest
+
+        - name: Delete Primary Object Storage Bucket
+          amazon.aws.s3_bucket:
+            endpoint_url: "https://{{ obj_key.key.regions[0].s3_endpoint }}/"
+            aws_access_key: "{{ obj_key.key.access_key }}"
+            aws_secret_key: "{{ obj_key.key.secret_key }}"
+            name: "{{ dest_label }}"
+            state: absent
+            ceph: true
+            force: true
+            region: "default"
+          ignore_errors: true
+          when: obj_bucket is defined and 'name' in obj_bucket and obj_key is defined
+
+        - name: Delete Object Storage Key
+          linode.cloud.object_keys:
+            label: "{{ obj_key.key.label }}"
+            state: absent
+          ignore_errors: true
+          when: obj_key is defined and 'key' in obj_key
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
