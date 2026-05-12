@@ -29,7 +29,6 @@
             region: "default"
           register: obj_bucket
 
-
         - name: Create Primary Logs Destination
           linode.cloud.monitor_logs_destination:
             label: "{{ dest_label }}"
@@ -217,7 +216,6 @@
               - stream_history.logs_stream_history[0].destinations[0].id == (logs_dest_sec.logs_destination.id | int)
               - stream_history.logs_stream_history[-1].label == stream_label
               - stream_history.logs_stream_history[-1].destinations[0].id == (logs_dest.logs_destination.id | int)
-
 
       # CLEANUP
       always:
