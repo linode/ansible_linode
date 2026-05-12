@@ -27,7 +27,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4.objects.monitor import LogsStream, LogsStreamDetails
+from linode_api4 import ApiError, LogsStream, LogsStreamDetails
 
 linode_monitor_logs_stream_spec = {
     "id": SpecField(
@@ -50,8 +50,8 @@ linode_monitor_logs_stream_spec = {
         choices=["audit_logs", "lke_audit_logs"],
         description=[
             "The type of stream.",
-            "This can be C(audit_logs) for logs consisting of all of the control plane"
-            "operations for the services in your Linodes, or C(lke_audit_logs) for log data"
+            "This can be C(audit_logs) for logs consisting of all of the control plane "
+            "operations for the services in your Linodes, or C(lke_audit_logs) for log data "
             "for your Linode Kubernetes Engine (LKE) enterprise clusters.",
         ],
     ),
@@ -76,7 +76,7 @@ linode_monitor_logs_stream_spec = {
                 required=False,
                 default=False,
                 description=[
-                    "When set to C(true), newly added LKE enterprise clusters on your account"
+                    "When set to C(true), newly added LKE enterprise clusters on your account "
                     "will be included in the stream. "
                     "If C(false), only existing LKE enterprise clusters are included."
                 ],
@@ -146,7 +146,6 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-MUTABLE_FIELDS: Set[str] = {"label", "status"}
 REQUIRED_PRESENT: Set[str] = {"label", "type", "destinations"}
 
 
@@ -181,10 +180,10 @@ class LinodeMonitorLogsStream(LinodeModuleBase):
                     return streams[0]
 
             return None
-        except Exception as e:
-            if "404" not in str(e):
-                self.fail(msg=f"Failed to get monitor logs stream: {e}")
-            return None
+        except ApiError as err:
+            if err.status == 404:
+                return None
+            self.fail(msg=f"Failed to get monitor logs stream: {err}")
 
     def _create_stream(self) -> Any:
         params = self.module.params
@@ -216,7 +215,7 @@ class LinodeMonitorLogsStream(LinodeModuleBase):
 
         return None
 
-    def _update_stream(self, stream: Any) -> None:
+    def _update_stream(self, stream: Any) -> Any:
         params = self.module.params
         label = params.get("label")
         status = params.get("status")

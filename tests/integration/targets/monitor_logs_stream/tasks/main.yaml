@@ -72,7 +72,12 @@
               - "{{ logs_dest.logs_destination.id }}"
             state: present
           check_mode: true
-          register: stream_creation_check
+          register: lke_stream_creation_check
+
+        - name: Assert lke_audit_logs creation in check mode
+          assert:
+            that:
+              - lke_stream_creation_check.changed
 
         - name: Test stream creation in check mode
           linode.cloud.monitor_logs_stream:

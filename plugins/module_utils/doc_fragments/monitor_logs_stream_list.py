@@ -9,7 +9,8 @@ specdoc_examples = ['''
   linode.cloud.monitor_logs_stream_list:
     filters:
       - name: status
-        values: active
+        values:
+          - active
   register: active_streams
 ''']
 
