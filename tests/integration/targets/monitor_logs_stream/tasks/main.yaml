@@ -1,4 +1,8 @@
 ---
+- name: Check RUN_ACLP_LOGS_STREAM_TESTS guard
+  ansible.builtin.meta: end_play
+  when: run_aclp_logs_stream_tests | default('false') | lower not in ['true', 'yes']
+
 - name: Monitor Logs Stream Integration Tests
   block:
     - name: Set randomized labels to prevent collisions
