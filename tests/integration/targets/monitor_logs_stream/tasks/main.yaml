@@ -227,6 +227,33 @@
               - stream_history.logs_stream_history[-1].label == stream_label
               - stream_history.logs_stream_history[-1].destinations[0].id == (logs_dest.logs_destination.id | int)
 
+        - name: Attempt to create stream without required 'type' field
+          linode.cloud.monitor_logs_stream:
+            label: "{{ stream_label }}"
+            destinations:
+              - "{{ logs_dest.logs_destination.id }}"
+            state: present
+          register: missing_type
+          failed_when: '"[400] type: type is required" not in missing_type.msg'
+
+        - name: Attempt to delete stream without id or label
+          linode.cloud.monitor_logs_stream:
+            state: absent
+          register: absent_no_id
+          failed_when: '"One of ''id'' or ''label'' is required for state=absent" not in absent_no_id.msg'
+
+        - name: Attempt to get stream info with non-existent ID
+          linode.cloud.monitor_logs_stream_info:
+            id: 999999999
+          register: invalid_id_info
+          failed_when: '"[404]" not in invalid_id_info.msg'
+
+        - name: Attempt to get stream info with non-existent label
+          linode.cloud.monitor_logs_stream_info:
+            label: "this-label-does-not-exist"
+          register: invalid_label_info
+          failed_when: '"No matching resource found." not in invalid_label_info.msg'
+
       # CLEANUP
       always:
         - name: Wait for stream to become active before deletion

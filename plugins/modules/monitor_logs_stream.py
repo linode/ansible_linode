@@ -40,6 +40,7 @@ linode_monitor_logs_stream_spec = {
     "label": SpecField(
         type=FieldType.string,
         required=False,
+        editable=True,
         description=[
             "The name of the stream. This is used for display purposes in Akamai Cloud Manager."
         ],
@@ -58,6 +59,7 @@ linode_monitor_logs_stream_spec = {
     "details": SpecField(
         type=FieldType.dict,
         required=False,
+        editable=True,
         description=[
             "Additional details for the stream, based on the selected type.",
             "Currently, this only applies to streams with a type of ``lke_audit_logs``.",
@@ -86,6 +88,7 @@ linode_monitor_logs_stream_spec = {
     "status": SpecField(
         type=FieldType.string,
         required=False,
+        editable=True,
         choices=["active", "inactive"],
         description=[
             "The availability status of the stream.",
@@ -97,6 +100,7 @@ linode_monitor_logs_stream_spec = {
         type=FieldType.list,
         element_type=FieldType.integer,
         required=False,
+        editable=True,
         description=[
             "List of unique identifiers for the sync points that will receive logs data.",
             "At the moment only a single destination is supported by the API.",

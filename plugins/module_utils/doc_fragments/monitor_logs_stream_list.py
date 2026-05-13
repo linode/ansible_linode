@@ -2,17 +2,13 @@
 
 specdoc_examples = ['''
 - name: List all logs streams
-  linode.cloud.monitor_logs_stream_list:
-  register: all_streams
-
+  linode.cloud.monitor_logs_stream_list:''', '''
 - name: List logs streams with active status
   linode.cloud.monitor_logs_stream_list:
     filters:
       - name: status
         values:
-          - active
-  register: active_streams
-''']
+          - active''']
 
 result_streams_samples = [
     '''[

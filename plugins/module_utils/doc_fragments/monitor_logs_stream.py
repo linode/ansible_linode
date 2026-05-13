@@ -8,21 +8,18 @@ specdoc_examples = ['''
     status: "active"
     destinations:
       - 12345
-    state: present
-
+    state: present''', '''
 - name: Update an existing stream's destinations
   linode.cloud.monitor_logs_stream:
     id: 9876
     label: "my-audit-logs-updated"
     destinations:
       - 54321
-    state: present
-
+    state: present''', '''
 - name: Delete a monitor logs stream
   linode.cloud.monitor_logs_stream:
     id: 9876
-    state: absent
-''']
+    state: absent''']
 
 result_stream_samples = [
     '''{

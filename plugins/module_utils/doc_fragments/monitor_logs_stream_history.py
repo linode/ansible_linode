@@ -3,16 +3,12 @@
 specdoc_examples = ['''
 - name: List all logs stream history for a stream
   linode.cloud.monitor_logs_stream_history:
-    id: 12345
-  register: stream_history
-  
+    id: 12345''', '''
 - name: List logs stream history for a stream and order by version
   linode.cloud.monitor_logs_stream_history:
     id: "{{ stream_creation.stream.id }}"
     order_by: "version"
-    order: "desc"
-  register: stream_history
-''']
+    order: "desc"''']
 
 result_streams_samples = [
     '''[

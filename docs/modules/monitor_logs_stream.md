@@ -25,7 +25,9 @@ A stream defines a flow of logs (like audit logs) to a specific destination.
     destinations:
       - 12345
     state: present
+```
 
+```yaml
 - name: Update an existing stream's destinations
   linode.cloud.monitor_logs_stream:
     id: 9876
@@ -33,12 +35,13 @@ A stream defines a flow of logs (like audit logs) to a specific destination.
     destinations:
       - 54321
     state: present
+```
 
+```yaml
 - name: Delete a monitor logs stream
   linode.cloud.monitor_logs_stream:
     id: 9876
     state: absent
-
 ```
 
 
@@ -48,11 +51,11 @@ A stream defines a flow of logs (like audit logs) to a specific destination.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the logs stream.  **(Choices: `present`, `absent`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the logs stream. Used to identify an existing stream to update or delete.   |
-| `label` | <center>`str`</center> | <center>Optional</center> | The name of the stream. This is used for display purposes in Akamai Cloud Manager.   |
+| `label` | <center>`str`</center> | <center>Optional</center> | The name of the stream. This is used for display purposes in Akamai Cloud Manager.  **(Updatable)** |
 | `type` | <center>`str`</center> | <center>Optional</center> | The type of stream. This can be ``audit_logs`` for logs consisting of all of the control plane operations for the services in your Linodes, or ``lke_audit_logs`` for log data for your Linode Kubernetes Engine (LKE) enterprise clusters.  **(Choices: `audit_logs`, `lke_audit_logs`)** |
-| [`details` (sub-options)](#details) | <center>`dict`</center> | <center>Optional</center> | Additional details for the stream, based on the selected type. Currently, this only applies to streams with a type of ``lke_audit_logs``.   |
-| `status` | <center>`str`</center> | <center>Optional</center> | The availability status of the stream. While creating or updating, you can pass ``active`` or ``inactive``. Note that the API might return ``provisioning`` while it is being set up.  **(Choices: `active`, `inactive`)** |
-| `destinations` | <center>`list`</center> | <center>Optional</center> | List of unique identifiers for the sync points that will receive logs data. At the moment only a single destination is supported by the API.   |
+| [`details` (sub-options)](#details) | <center>`dict`</center> | <center>Optional</center> | Additional details for the stream, based on the selected type. Currently, this only applies to streams with a type of ``lke_audit_logs``.  **(Updatable)** |
+| `status` | <center>`str`</center> | <center>Optional</center> | The availability status of the stream. While creating or updating, you can pass ``active`` or ``inactive``. Note that the API might return ``provisioning`` while it is being set up.  **(Choices: `active`, `inactive`; Updatable)** |
+| `destinations` | <center>`list`</center> | <center>Optional</center> | List of unique identifiers for the sync points that will receive logs data. At the moment only a single destination is supported by the API.  **(Updatable)** |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the stream to finish provisioning before returning.  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | Time in seconds to wait for the stream to finish provisioning.  **(Default: `600`)** |
 

@@ -17,16 +17,15 @@ List and filter on Monitor Logs Streams.
 ```yaml
 - name: List all logs streams
   linode.cloud.monitor_logs_stream_list:
-  register: all_streams
+```
 
+```yaml
 - name: List logs streams with active status
   linode.cloud.monitor_logs_stream_list:
     filters:
       - name: status
         values:
           - active
-  register: active_streams
-
 ```
 
 
