@@ -50,8 +50,8 @@ linode_monitor_logs_stream_spec = {
         choices=["audit_logs", "lke_audit_logs"],
         description=[
             "The type of stream.",
-            "This can be C(audit_logs) for logs consisting of all of the control plane "
-            "operations for the services in your Linodes, or C(lke_audit_logs) for log data "
+            "This can be ``audit_logs`` for logs consisting of all of the control plane "
+            "operations for the services in your Linodes, or ``lke_audit_logs`` for log data "
             "for your Linode Kubernetes Engine (LKE) enterprise clusters.",
         ],
     ),
@@ -60,7 +60,7 @@ linode_monitor_logs_stream_spec = {
         required=False,
         description=[
             "Additional details for the stream, based on the selected type.",
-            "Currently, this only applies to streams with a type of C(lke_audit_logs).",
+            "Currently, this only applies to streams with a type of ``lke_audit_logs``.",
         ],
         suboptions={
             "cluster_ids": SpecField(
@@ -76,9 +76,9 @@ linode_monitor_logs_stream_spec = {
                 required=False,
                 default=False,
                 description=[
-                    "When set to C(true), newly added LKE enterprise clusters on your account "
+                    "When set to ``true``, newly added LKE enterprise clusters on your account "
                     "will be included in the stream. "
-                    "If C(false), only existing LKE enterprise clusters are included."
+                    "If ``false``, only existing LKE enterprise clusters are included."
                 ],
             ),
         },
@@ -89,8 +89,8 @@ linode_monitor_logs_stream_spec = {
         choices=["active", "inactive"],
         description=[
             "The availability status of the stream.",
-            "While creating or updating, you can pass C(active) or C(inactive).",
-            "Note that the API might return C(provisioning) while it is being set up.",
+            "While creating or updating, you can pass ``active`` or ``inactive``.",
+            "Note that the API might return ``provisioning`` while it is being set up.",
         ],
     ),
     "destinations": SpecField(

@@ -49,9 +49,9 @@ A stream defines a flow of logs (like audit logs) to a specific destination.
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the logs stream.  **(Choices: `present`, `absent`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the logs stream. Used to identify an existing stream to update or delete.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The name of the stream. This is used for display purposes in Akamai Cloud Manager.   |
-| `type` | <center>`str`</center> | <center>Optional</center> | The type of stream. This can be C(audit_logs) for logs consisting of all of the control plane operations for the services in your Linodes, or C(lke_audit_logs) for log data for your Linode Kubernetes Engine (LKE) enterprise clusters.  **(Choices: `audit_logs`, `lke_audit_logs`)** |
-| [`details` (sub-options)](#details) | <center>`dict`</center> | <center>Optional</center> | Additional details for the stream, based on the selected type. Currently, this only applies to streams with a type of C(lke_audit_logs).   |
-| `status` | <center>`str`</center> | <center>Optional</center> | The availability status of the stream. While creating or updating, you can pass C(active) or C(inactive). Note that the API might return C(provisioning) while it is being set up.  **(Choices: `active`, `inactive`)** |
+| `type` | <center>`str`</center> | <center>Optional</center> | The type of stream. This can be ``audit_logs`` for logs consisting of all of the control plane operations for the services in your Linodes, or ``lke_audit_logs`` for log data for your Linode Kubernetes Engine (LKE) enterprise clusters.  **(Choices: `audit_logs`, `lke_audit_logs`)** |
+| [`details` (sub-options)](#details) | <center>`dict`</center> | <center>Optional</center> | Additional details for the stream, based on the selected type. Currently, this only applies to streams with a type of ``lke_audit_logs``.   |
+| `status` | <center>`str`</center> | <center>Optional</center> | The availability status of the stream. While creating or updating, you can pass ``active`` or ``inactive``. Note that the API might return ``provisioning`` while it is being set up.  **(Choices: `active`, `inactive`)** |
 | `destinations` | <center>`list`</center> | <center>Optional</center> | List of unique identifiers for the sync points that will receive logs data. At the moment only a single destination is supported by the API.   |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the stream to finish provisioning before returning.  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | Time in seconds to wait for the stream to finish provisioning.  **(Default: `600`)** |
@@ -61,7 +61,7 @@ A stream defines a flow of logs (like audit logs) to a specific destination.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `cluster_ids` | <center>`list`</center> | <center>Optional</center> | The unique identifiers for each LKE enterprise cluster.   |
-| `is_auto_add_all_clusters_enabled` | <center>`bool`</center> | <center>Optional</center> | When set to C(true), newly added LKE enterprise clusters on your account will be included in the stream. If C(false), only existing LKE enterprise clusters are included.  **(Default: `False`)** |
+| `is_auto_add_all_clusters_enabled` | <center>`bool`</center> | <center>Optional</center> | When set to ``true``, newly added LKE enterprise clusters on your account will be included in the stream. If ``false``, only existing LKE enterprise clusters are included.  **(Default: `False`)** |
 
 ## Return Values
 
