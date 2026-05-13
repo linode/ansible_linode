@@ -15,9 +15,15 @@ Get info about a Linode Logs Destination.
 ## Examples
 
 ```yaml
-- name: Get info about a logs destination
+- name: Get info about a logs destination by ID
   linode.cloud.monitor_logs_destination_info:
     id: 12345
+```
+
+```yaml
+- name: Get info about a logs destination by label
+  linode.cloud.monitor_logs_destination_info:
+    label: 'OBJ_logs_destination
 ```
 
 
@@ -25,7 +31,8 @@ Get info about a Linode Logs Destination.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `id` | <center>`int`</center> | <center>**Required**</center> | The ID of the Logs Destination to resolve.   |
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the Logs Destination to resolve.  **(Conflicts With: `label`)** |
+| `label` | <center>`str`</center> | <center>Optional</center> | The label of the Logs Destination to resolve.  **(Conflicts With: `id`)** |
 
 ## Return Values
 

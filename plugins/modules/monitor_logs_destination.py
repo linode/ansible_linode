@@ -67,7 +67,8 @@ authentication_spec: dict = {
         choices=["none", "basic"],
         description=[
             "The type of authentication in use. This can be None for no authentication, "
-            "or basic for authentication using a username and password, set using the details parameters."
+            "or basic for authentication using a username and password, "
+            "set using the details parameters."
         ],
     ),
 }
@@ -77,29 +78,33 @@ client_certificate_details_spec: dict = {
         type=FieldType.string,
         editable=True,
         description=[
-            "The certificate authority (CA) certificate used to verify a requesting server's identity."
+            "The certificate authority (CA) certificate used "
+            "to verify a requesting server's identity."
         ],
     ),
     "client_certificate": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
-            "The PEM-formatted digital certificate you want to authenticate requests to your destination with."
+            "The PEM-formatted digital certificate you want to "
+            "authenticate requests to your destination with."
         ],
     ),
     "client_private_key": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
-            "The private key in the non-encrypted PKCS8 format that authenticates with the back-end server. "
-            "If you want to use mutual authentication, you need to provide both the client_certificate and the client_private_key."
+            "The private key in the non-encrypted PKCS8 format that authenticates "
+            "with the back-end server. If you want to use mutual authentication, "
+            "you need to provide both the client_certificate and the client_private_key."
         ],
     ),
     "tls_hostname": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
-            "The hostname that verifies the server's certificate and matches the Subject Alternative Names (SANs) in the certificate. "
+            "The hostname that verifies the server's certificate "
+            "and matches the Subject Alternative Names (SANs) in the certificate. "
             "If not provided, the API fetches the hostname from the endpoint_url."
         ],
     ),
@@ -130,7 +135,8 @@ details_spec: dict = {
         type=FieldType.string,
         editable=True,
         description=[
-            "The unique identifier assigned to the Object Storage key required for authentication to the bucket. "
+            "The unique identifier assigned to the Object Storage key required "
+            "for authentication to the bucket. "
             "Run the List Object Storage keys operation and store the id for the applicable key. "
             "(Required for type: akamai_object_storage)"
         ],
@@ -150,8 +156,8 @@ details_spec: dict = {
         editable=True,
         description=[
             "The name of the Object Storage bucket. "
-            "Run the List Object Storage buckets operation and store the label for the target bucket. "
-            "(Required for type: akamai_object_storage)"
+            "Run the List Object Storage buckets operation and store the label "
+            "for the target bucket. (Required for type: akamai_object_storage)"
         ],
     ),
     "host": SpecField(
@@ -159,16 +165,16 @@ details_spec: dict = {
         editable=True,
         description=[
             "The hostname where the Object Storage bucket can be accessed. "
-            "Run the List Object Storage buckets operation and store the hostname for the target bucket. "
-            "(Required for type: akamai_object_storage)"
+            "Run the List Object Storage buckets operation and store the hostname "
+            "for the target bucket. (Required for type: akamai_object_storage)"
         ],
     ),
     "path": SpecField(
         type=FieldType.string,
         editable=True,
         description=[
-            "Include this object to set a custom path for audit log storage in your Object Storage bucket. "
-            "(Optional for type: akamai_object_storage)"
+            "Include this object to set a custom path for audit log storage "
+            "in your Object Storage bucket. (Optional for type: akamai_object_storage)"
         ],
     ),
     # --- custom_https fields ---
@@ -186,7 +192,8 @@ details_spec: dict = {
         suboptions=client_certificate_details_spec,
         editable=True,
         description=[
-            "Contains transport layer security (TLS) client certificate information to additionally secure the connection for the request. "
+            "Contains transport layer security (TLS) client certificate information to "
+            "additionally secure the connection for the request. "
             "(Used for type: custom_https)"
         ],
     ),
@@ -237,8 +244,10 @@ spec: dict = {
         editable=True,
         description=[
             "Settings for the destination. "
-            "For type 'akamai_object_storage': provide access_key_id, access_key_secret, bucket_name, host and optionally path. "
-            "For type 'custom_https': provide authentication, client_certificate_details, content_type, data_compression, endpoint_url and optionally custom_headers."
+            "For type 'akamai_object_storage': provide access_key_id, access_key_secret, "
+            "bucket_name, host and optionally path. "
+            "For type 'custom_https': provide authentication, client_certificate_details, "
+            "content_type, data_compression, endpoint_url and optionally custom_headers."
         ],
     ),
     "label": SpecField(
@@ -253,7 +262,8 @@ spec: dict = {
         editable=True,
         choices=["akamai_object_storage", "custom_https"],
         description=[
-            "The type of destination for log data sync, either akamai_object_storage if Object Storage is the destination, "
+            "The type of destination for log data sync, "
+            "either akamai_object_storage if Object Storage is the destination, "
             "or custom_https for a unique URL"
         ],
     ),
@@ -342,7 +352,8 @@ class LinodeLogsDestination(LinodeModuleBase):
             logs_destination._api_get()
             if logs_destination.status == "inactive":
                 self.fail(
-                    "Logs destination is inactive. Please verify that your credentials, host, and bucket details are correct."
+                    "Logs destination is inactive. Please verify that your credentials, "
+                    "host and bucket details are correct."
                 )
             return logs_destination.status == "active"
 
@@ -384,7 +395,7 @@ class LinodeLogsDestination(LinodeModuleBase):
                 return self._create_akamai_object_storage_logs_destination(
                     storage_type
                 )
-            elif storage_type == "custom_https":
+            if storage_type == "custom_https":
                 return self._create_custom_https_logs_destination(storage_type)
 
             self.fail(

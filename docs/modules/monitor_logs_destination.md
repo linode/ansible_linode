@@ -54,6 +54,14 @@ Manage logs destination that serves as a sync point for logs data. You need read
 ```
 
 ```yaml
+- name: Update logs destination
+  linode.cloud.monitor_logs_destination:
+    id: 12345
+    label: 'test-logs-updated'
+    state: present
+```
+
+```yaml
 - name: Delete logs destination
   linode.cloud.monitor_logs_destination:
     id: 12345

@@ -20,6 +20,14 @@ List and filter on Logs Destination History.
     id: 12345
 ```
 
+```yaml
+- name: List all of the logs destination history for a logs destination ordered by version
+  linode.cloud.monitor_logs_destination_history:
+    id: 12345
+    order_by: version
+    order: desc
+```
+
 
 ## Parameters
 

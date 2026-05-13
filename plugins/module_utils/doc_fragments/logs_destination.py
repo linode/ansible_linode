@@ -33,6 +33,11 @@ specdoc_examples = ['''
           value: 'max-age=0'
       data_compression: 'gzip'
       endpoint_url: 'https://my-site.com/log-storage/basicAuth'
+    state: present''','''
+- name: Update logs destination
+  linode.cloud.monitor_logs_destination:
+    id: 12345
+    label: 'test-logs-updated'
     state: present''', '''
 - name: Delete logs destination
   linode.cloud.monitor_logs_destination:
