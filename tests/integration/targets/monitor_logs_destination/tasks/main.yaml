@@ -149,12 +149,17 @@
         - name: Get logs destination history
           linode.cloud.monitor_logs_destination_history:
             id: '{{ update.logs_destination.id }}'
+            order_by: "version"
+            order: desc
           register: history
 
         - name: Assert logs destination history response
           assert:
             that:
               - history.logs_destination_history | length == 2
+              - history.logs_destination_history[0].version > history.logs_destination_history[1].version
+              - history.logs_destination_history[0].label == update.logs_destination.label
+              - history.logs_destination_history[1].label == create.logs_destination.label
 
     - name: Create second logs destination
       block:

@@ -722,6 +722,33 @@ def api_filter_constructor_for_aclp_monitor_services(
     return value_filters
 
 
+def api_filter_for_aclp_logs_services(params: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Customize a filter string for listing ACLP Monitor Logs Services,
+    because on the API side nested filter operators are not supported.
+    Contrary to C(api_filter_constructor_for_aclp_monitor_services), `order_by`
+    and `order` are supported.
+    Converts 'id' strings to integers to meet type requirements for the ACLP Logs API.
+    """
+    filters = params.get("filters")
+    if filters:
+        for f in filters:
+            if f.get("name") == "id":
+                f["values"] = [
+                    int(v) if isinstance(v, str) and v.isdigit() else v
+                    for v in f["values"]
+                ]
+    value_filters = api_filter_constructor_for_aclp_monitor_services(params)
+    order_by = params.get("order_by")
+    order = params.get("order")
+    if order_by:
+        value_filters["+order_by"] = order_by
+        if order:
+            value_filters["+order"] = order
+
+    return value_filters
+
+
 def generate_device_suffixes(max_device_limit: int) -> List[str]:
     """
     Generates a list of device suffixes. Currently supports up to 64 devices,

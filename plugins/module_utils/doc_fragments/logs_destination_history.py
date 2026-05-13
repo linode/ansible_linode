@@ -3,7 +3,12 @@
 specdoc_examples = ['''
 - name: List all of the logs destination history for a logs destination
   linode.cloud.monitor_logs_destination_history:
-    id: 12345''']
+    id: 12345''','''
+- name: List all of the logs destination history for a logs destination ordered by version
+  linode.cloud.monitor_logs_destination_history:
+    id: 12345
+    order_by: version
+    order: desc''']
 
 result_logs_destination_history_samples = ['''[
     {
