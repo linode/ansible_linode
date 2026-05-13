@@ -246,6 +246,45 @@
               - info_multiple.logs_destination.id == update.logs_destination.id or info_multiple.logs_destination.id == update_second.logs_destination.id
               - info_multiple.logs_destination.label == update.logs_destination.label
 
+    - name: Invalid logs destination creation
+      block:
+        - name: Attempt to create logs destination with invalid type
+          linode.cloud.monitor_logs_destination:
+            label: 'test-logs-destination-invalid-{{ r }}'
+            details:
+              access_key_id: '{{ access_key_id }}'
+              access_key_secret: '{{ access_key_secret }}'
+              bucket_name: '{{ bucket_name }}'
+              host: '{{ host }}'
+            state: present
+          register: invalid_create
+          failed_when: '"invalid type or type not provided for logs destination" not in invalid_create.msg'
+
+        - name: Attempt to delete logs destination with invalid id
+          linode.cloud.monitor_logs_destination:
+            id: 999999999
+            state: absent
+          register: invalid_delete
+          failed_when: invalid_delete is succeeded
+
+        - name: Attempt to get logs destination info with invalid id
+          linode.cloud.monitor_logs_destination_info:
+            id: 999999999
+          register: invalid_id_info
+          failed_when: '"[404]" not in invalid_id_info.msg'
+
+        - name: Attempt to get logs destination info with invalid label
+          linode.cloud.monitor_logs_destination_info:
+              label: 'some invalid label'
+          register: invalid_label_info
+          failed_when: '"No matching resource found." not in invalid_label_info.msg'
+
+        - name: Attempt to get logs destination history with invalid id
+          linode.cloud.monitor_logs_destination_history:
+            id: 999999999
+          register: invalid_history
+          failed_when: '"[404]" not in invalid_history.msg'
+
   always:
     - ignore_errors: yes
       block:

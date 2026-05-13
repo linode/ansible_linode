@@ -399,7 +399,7 @@ class LinodeLogsDestination(LinodeModuleBase):
                 return self._create_custom_https_logs_destination(storage_type)
 
             return self.fail(
-                msg="invalid details: missing required fields for supported logs destination types"
+                msg="invalid type or type not provided for logs destination"
             )
 
         except Exception as exception:
