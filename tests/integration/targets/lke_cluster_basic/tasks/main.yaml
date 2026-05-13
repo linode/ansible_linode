@@ -190,6 +190,7 @@
         node_pools:
           - type: g6-standard-1
             count: 3
+            disk_encryption: enabled
         skip_polling: true
         state: present
       register: create_cluster_disk_encryption
@@ -211,7 +212,7 @@
           linode.cloud.lke_cluster:
             label: '{{ create_cluster_disk_encryption.cluster.label }}'
             state: absent
-      
+
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'

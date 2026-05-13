@@ -183,6 +183,15 @@ linode_lke_cluster_node_pool_spec = {
         description=["Firewall ID for the Node Pool."],
         required=False,
     ),
+    "disk_encryption": SpecField(
+        type=FieldType.string,
+        editable=False,
+        choices=["disabled", "enabled"],
+        description=[
+            "Local disk encryption setting for this LKE node pool.",
+            "This option can only be set during creation.",
+        ],
+    ),
 }
 
 linode_lke_cluster_spec = {
