@@ -71,7 +71,21 @@
               - update.logs_destination.label == 'test-logs-destination-{{ r }}-updated'
               - update.logs_destination.details.path == 'updated-path'
 
-        - name: Get logs destination information
+        - name: Test logs destination idempotency
+          linode.cloud.monitor_logs_destination:
+            id: '{{ create.logs_destination.id }}'
+            label: 'test-logs-destination-{{ r }}-updated'
+            state: present
+            wait: yes
+            wait_timeout: 600
+          register: idempotency
+
+        - name: Assert logs destination is idempotent
+          assert:
+            that:
+              - not idempotency.changed
+
+        - name: Get logs destination information by id
           linode.cloud.monitor_logs_destination_info:
             id: '{{ update.logs_destination.id }}'
           register: info
@@ -81,6 +95,17 @@
             that:
               - info.logs_destination.id == update.logs_destination.id
               - info.logs_destination.label == update.logs_destination.label
+
+        - name: Get logs destination information by label
+          linode.cloud.monitor_logs_destination_info:
+            label: '{{ update.logs_destination.label }}'
+          register: info_by_label
+
+        - name: Assert logs destination info by label response
+          assert:
+            that:
+              - info_by_label.logs_destination.id == update.logs_destination.id
+              - info_by_label.logs_destination.label == update.logs_destination.label
 
         - name: List available logs destinations
           linode.cloud.monitor_logs_destination_list:
@@ -94,12 +119,13 @@
           assert:
             that:
               - list.logs_destinations | length == 1
+              - list.logs_destinations[0].id == update.logs_destination.id
 
         - name: List available logs destinations and expect empty result with filter
           linode.cloud.monitor_logs_destination_list:
             filters:
               - name: id
-                values: ['{{ update.logs_destination.id }}']
+                values: [ '{{ update.logs_destination.id }}' ]
               - name: label
                 values: [ 'some invalid label' ]
           register: list_empty
@@ -127,8 +153,8 @@
 
         - name: Assert logs destination history response
           assert:
-              that:
-                  - history.logs_destination_history | length == 2
+            that:
+              - history.logs_destination_history | length == 2
 
     - name: Create second logs destination
       block:
@@ -169,7 +195,7 @@
         - name: Update second logs destination to point to a new bucket
           linode.cloud.monitor_logs_destination:
             id: '{{ create_second.logs_destination.id }}'
-            label: 'test-logs-destination-2-{{ r }}'
+            label: '{{ update.logs_destination.label }}'
             details:
               access_key_id: '{{ access_key_id }}'
               access_key_secret: '{{ access_key_secret }}'
@@ -186,6 +212,7 @@
               - update_second.changed
               - update_second.logs_destination.id == create_second.logs_destination.id
               - update_second.logs_destination.details.bucket_name == create_bucket_second.name
+              - update_second.logs_destination.label == update.logs_destination.label
 
         - name: List available logs destinations ordered by id desc and assert order
           linode.cloud.monitor_logs_destination_list:
@@ -193,7 +220,7 @@
             order: desc
             filters:
               - name: id
-                values: ['{{ create.logs_destination.id }}', '{{ create_second.logs_destination.id }}']
+                values: [ '{{ create.logs_destination.id }}', '{{ create_second.logs_destination.id }}' ]
           register: list_ordered
 
         - name: Assert logs destinations list ordered response
@@ -202,6 +229,17 @@
               - list_ordered.logs_destinations | length == 2
               - list_ordered.logs_destinations[0].id == create_second.logs_destination.id
               - list_ordered.logs_destinations[1].id == create.logs_destination.id
+
+        - name: Get logs destination info by label when there are multiple matches
+          linode.cloud.monitor_logs_destination_info:
+            label: '{{ update.logs_destination.label }}'
+          register: info_multiple
+
+        - name: Asserts only single logs destination is returned when multiple have the same label
+          assert:
+            that:
+              - info_multiple.logs_destination.id == update.logs_destination.id or info_multiple.logs_destination.id == update_second.logs_destination.id
+              - info_multiple.logs_destination.label == update.logs_destination.label
 
   always:
     - ignore_errors: yes

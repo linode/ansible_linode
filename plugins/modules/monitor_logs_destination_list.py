@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+"""This module contains all the functionality for listing ACLP Monitor Service Logs Destinations."""
+
 from __future__ import absolute_import, division, print_function
 
 from typing import Any, Dict
