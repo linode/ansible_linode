@@ -398,7 +398,7 @@ class LinodeLogsDestination(LinodeModuleBase):
             if storage_type == "custom_https":
                 return self._create_custom_https_logs_destination(storage_type)
 
-            self.fail(
+            return self.fail(
                 msg="invalid details: missing required fields for supported logs destination types"
             )
 
@@ -489,7 +489,9 @@ class LinodeLogsDestination(LinodeModuleBase):
             self._wait_for_logs_destination_ready(self._logs_destination)
 
     @staticmethod
-    def __details_diff_override(key, old_value, new_value):
+    def __details_diff_override(
+        key: str, old_value: Any, new_value: Any
+    ) -> tuple[bool, Any]:
         result = new_value.copy()
 
         # Remove write-only secrets before comparing
