@@ -150,6 +150,7 @@
           assert:
             that:
               - stream_info_label.stream.id == stream_creation.stream.id
+              - stream_info_label.stream.label == stream_label
 
         - name: List streams
           linode.cloud.monitor_logs_stream_list:
@@ -219,7 +220,7 @@
             that:
               - stream_history.logs_stream_history is defined
               - stream_history.logs_stream_history | type_debug == 'list'
-              - stream_history.logs_stream_history | length >= 2
+              - stream_history.logs_stream_history | length == 3
               - stream_history.logs_stream_history[0].version > stream_history.logs_stream_history[1].version
               - stream_history.logs_stream_history[0].label == stream_label_updated
               - stream_history.logs_stream_history[0].destinations[0].id == (logs_dest_sec.logs_destination.id | int)
