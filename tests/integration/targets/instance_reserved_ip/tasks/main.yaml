@@ -18,7 +18,7 @@
         label: "ansible-test-inst-{{ r }}"
         region: us-ord
         type: g6-nanode-1
-        image: linode/alpine3.19
+        image: linode/alpine3.23
         ipv4:
           - "{{ reserve_ip.reserved_ip.address }}"
         wait: false

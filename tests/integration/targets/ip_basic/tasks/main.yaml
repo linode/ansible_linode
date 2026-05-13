@@ -8,7 +8,7 @@
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         type: g6-standard-1
-        image: linode/alpine3.19
+        image: linode/alpine3.23
         state: present
         firewall_id: '{{ firewall_id }}'
       register: create_instance
@@ -54,6 +54,33 @@
         that:
           - not promote_ip_again.changed
 
+    - name: Apply tags to the reserved IP
+      linode.cloud.ip:
+        address: '{{ allocate_ip.ip.address }}'
+        tags:
+          - test-tag
+        state: present
+      register: tag_ip
+
+    - name: Assert tags were applied
+      assert:
+        that:
+          - tag_ip.changed
+          - "'test-tag' in tag_ip.ip.tags"
+
+    - name: Apply tags again (idempotency check)
+      linode.cloud.ip:
+        address: '{{ allocate_ip.ip.address }}'
+        tags:
+          - test-tag
+        state: present
+      register: tag_ip_again
+
+    - name: Assert no change on second tag apply
+      assert:
+        that:
+          - not tag_ip_again.changed
+
 #    - name: Delete an IP
 #      linode.cloud.ip:
 #        address: allocate_ip.ip.address
@@ -63,6 +90,12 @@
   always:
     - ignore_errors: true
       block:
+        - name: Delete the reserved IP
+          linode.cloud.reserved_ip:
+            address: '{{ allocate_ip.ip.address }}'
+            state: absent
+          when: allocate_ip is defined and allocate_ip.ip is defined
+
         - name: Delete instance
           linode.cloud.instance:
             label: '{{ create_instance.instance.label }}'

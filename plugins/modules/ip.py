@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, Optional
+from typing import Any, Optional, Set
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
@@ -16,6 +16,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
+    handle_updates,
 )
 from ansible_specdoc.objects import FieldType, SpecDocMeta, SpecField, SpecReturnValue
 from linode_api4 import ApiError, IPAddress
@@ -58,6 +59,25 @@ spec: dict = {
             "Requires the address parameter.",
         ],
     ),
+    "tags": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        editable=True,
+        description=[
+            "Tags to apply to this IP address.",
+            "NOTE: Tags are replaced entirely on update, not appended.",
+            "Only applicable when updating an existing IP via the address parameter.",
+        ],
+    ),
+    "region": SpecField(
+        type=FieldType.string,
+        description=[
+            "The region in which to allocate a new reserved IP address.",
+            "Required when allocating a new reserved IP (reserved=true) without "
+            "specifying an existing address.",
+        ],
+        conflicts_with=["linode_id", "public", "address"],
+    ),
     "state": SpecField(
         type=FieldType.string,
         choices=["present", "absent"],
@@ -73,6 +93,7 @@ SPECDOC_META = SpecDocMeta(
         "additional addresses - "
         "please open a support ticket "
         "requesting additional addresses before attempting allocation.",
+        "To allocate a new reserved IP, provide region, type, and set reserved=true.",
         "To promote an existing IP to reserved, provide the address and set reserved=true.",
     ],
     requirements=global_requirements,
@@ -88,6 +109,8 @@ SPECDOC_META = SpecDocMeta(
         ),
     },
 )
+
+MUTABLE_FIELDS: Set[str] = {"tags"}
 
 DOCUMENTATION = r"""
 """
@@ -139,7 +162,7 @@ class Module(LinodeModuleBase):
         address = params.get("address")
 
         if address is not None:
-            # Update existing IP (e.g., promote to reserved)
+            # Update existing IP (e.g., promote to reserved, update tags)
             ip = self._get_ip(address)
             if ip is None:
                 self.fail(msg=f"IP address {address} not found")
@@ -161,11 +184,42 @@ class Module(LinodeModuleBase):
                     )
                 ip._api_get()
 
+            if any(
+                self.module.params.get(f) is not None for f in MUTABLE_FIELDS
+            ):
+                handle_updates(
+                    ip,
+                    self.module.params,
+                    MUTABLE_FIELDS,
+                    self.register_action,
+                )
+                ip._api_get()
+
             self.results["ip"] = ip._raw_json
             return
 
         linode_id = params.get("linode_id")
         public = params.get("public")
+        region = params.get("region")
+        reserved = params.get("reserved")
+
+        if region is not None and reserved:
+            # Allocate a new reserved IP via POST /networking/ips
+            ip_type = params.get("type", "ipv4")
+            try:
+                result = self.client.post(
+                    "/networking/ips",
+                    data={"type": ip_type, "region": region, "reserved": True},
+                )
+                self.register_action(
+                    f"Allocated new reserved IP in region {region}."
+                )
+            except Exception as exc:
+                self.fail(msg=f"failed to allocate reserved IP in region {region}: {exc}")
+                return
+
+            self.results["ip"] = result
+            return
 
         if linode_id is None:
             self.fail(

@@ -10,6 +10,12 @@ specdoc_examples = ['''
   linode.cloud.ip:
     address: "97.107.143.141"
     reserved: true
+    state: present''', '''
+- name: Allocate a new reserved IP in a region
+  linode.cloud.ip:
+    region: us-east
+    type: ipv4
+    reserved: true
     state: present''']
 
 result_ip_samples = ['''{

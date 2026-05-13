@@ -2,6 +2,8 @@
 
 Allocates a new IPv4 Address on your Account, or updates an existing one. To allocate, the Linode must be configured to support additional addresses - please open a support ticket requesting additional addresses before attempting allocation.
 
+To allocate a new reserved IP, provide region, type, and set reserved=true.
+
 To promote an existing IP to reserved, provide the address and set reserved=true.
 
 - [Minimum Required Fields](#minimum-required-fields)
@@ -33,6 +35,15 @@ To promote an existing IP to reserved, provide the address and set reserved=true
     state: present
 ```
 
+```yaml
+- name: Allocate a new reserved IP in a region
+  linode.cloud.ip:
+    region: us-east
+    type: ipv4
+    reserved: true
+    state: present
+```
+
 
 ## Parameters
 
@@ -44,6 +55,8 @@ To promote an existing IP to reserved, provide the address and set reserved=true
 | `type` | <center>`str`</center> | <center>Optional</center> | The type of address you are requesting. Only IPv4 addresses may be allocated through this operation.  **(Choices: `ipv4`)** |
 | `address` | <center>`str`</center> | <center>Optional</center> | The IP address to update or delete. Required when updating an existing IP (e.g., promoting to reserved) or when deleting (state=absent).  **(Conflicts With: `linode_id`,`public`,`type`)** |
 | `reserved` | <center>`bool`</center> | <center>Optional</center> | Whether this IP address should be reserved. Setting to true promotes an existing allocated IP to a reserved IP via PUT /networking/ips/{address}. Requires the address parameter.   |
+| `tags` | <center>`list`</center> | <center>Optional</center> | Tags to apply to this IP address. NOTE: Tags are replaced entirely on update, not appended. Only applicable when updating an existing IP via the address parameter.  **(Updatable)** |
+| `region` | <center>`str`</center> | <center>Optional</center> | The region in which to allocate a new reserved IP address. Required when allocating a new reserved IP (reserved=true) without specifying an existing address.  **(Conflicts With: `linode_id`,`public`,`address`)** |
 
 ## Return Values
 
