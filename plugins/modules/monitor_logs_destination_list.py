@@ -3,7 +3,6 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, Dict
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     logs_destination_list as docs,
@@ -14,7 +13,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list im
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     api_filter_for_aclp_logs_services,
 )
-
 
 module = ListModule(
     result_display_name="Logs Destinations",
