@@ -6,8 +6,10 @@ from __future__ import absolute_import, division, print_function
 
 from typing import Any, List, Optional
 
-import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.logs_destination as docs
 import polling
+from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
+    monitor_logs_destination as docs,
+)
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     LinodeModuleBase,
 )
