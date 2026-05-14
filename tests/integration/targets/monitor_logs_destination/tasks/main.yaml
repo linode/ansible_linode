@@ -1,0 +1,356 @@
+- name: monitor_logs_destination
+  block:
+    - set_fact:
+        r: '{{ 1000000000 | random }}'
+
+    - name: Create an Object Storage key
+      linode.cloud.object_keys:
+        label: 'test-logs-key-{{ r }}'
+        state: present
+      register: create_key
+
+    - name: Create a test bucket
+      amazon.aws.s3_bucket:
+        endpoint_url: 'https://{{ create_key.key.regions[0].s3_endpoint }}/'
+        aws_access_key: '{{ create_key.key.access_key }}'
+        aws_secret_key: '{{ create_key.key.secret_key }}'
+        name: 'test-logs-bucket-{{ r }}'
+        state: present
+        ceph: true
+        region: 'default'
+      register: create_bucket
+
+    - set_fact:
+        access_key_id: '{{ create_key.key.access_key }}'
+        access_key_secret: '{{ create_key.key.secret_key }}'
+        bucket_name: '{{ create_bucket.name }}'
+        host: '{{ create_key.key.regions[0].s3_endpoint }}'
+
+    - name: Create first logs destination
+      block:
+        - name: Create logs destination
+          linode.cloud.monitor_logs_destination:
+            label: 'test-logs-destination-{{ r }}'
+            type: 'akamai_object_storage'
+            details:
+              access_key_id: '{{ access_key_id }}'
+              access_key_secret: '{{ access_key_secret }}'
+              bucket_name: '{{ bucket_name }}'
+              host: '{{ host }}'
+            state: present
+            wait: yes
+            wait_timeout: 600
+          register: create
+
+        - name: Assert logs destination is created
+          assert:
+            that:
+              - create.logs_destination.label == 'test-logs-destination-{{ r }}'
+              - create.logs_destination.details.bucket_name == bucket_name
+              - create.logs_destination.details.host == host
+
+        - name: Update logs destination
+          linode.cloud.monitor_logs_destination:
+            id: '{{ create.logs_destination.id }}'
+            label: 'test-logs-destination-{{ r }}-updated'
+            details:
+              access_key_id: '{{ access_key_id }}'
+              access_key_secret: '{{ access_key_secret }}'
+              bucket_name: '{{ bucket_name }}'
+              host: '{{ host }}'
+              path: 'updated-path'
+            state: present
+            wait: yes
+            wait_timeout: 600
+          register: update
+
+        - name: Assert logs destination is updated
+          assert:
+            that:
+              - update.changed
+              - update.logs_destination.label == 'test-logs-destination-{{ r }}-updated'
+              - update.logs_destination.details.path == 'updated-path'
+
+        - name: Test logs destination idempotency
+          linode.cloud.monitor_logs_destination:
+            id: '{{ create.logs_destination.id }}'
+            label: 'test-logs-destination-{{ r }}-updated'
+            state: present
+            wait: yes
+            wait_timeout: 600
+          register: idempotency
+
+        - name: Assert logs destination is idempotent
+          assert:
+            that:
+              - not idempotency.changed
+
+        - name: Get logs destination information by id
+          linode.cloud.monitor_logs_destination_info:
+            id: '{{ update.logs_destination.id }}'
+          register: info
+
+        - name: Assert logs destination info response
+          assert:
+            that:
+              - info.logs_destination.id == update.logs_destination.id
+              - info.logs_destination.label == update.logs_destination.label
+
+        - name: Get logs destination information by label
+          linode.cloud.monitor_logs_destination_info:
+            label: '{{ update.logs_destination.label }}'
+          register: info_by_label
+
+        - name: Assert logs destination info by label response
+          assert:
+            that:
+              - info_by_label.logs_destination.id == update.logs_destination.id
+              - info_by_label.logs_destination.label == update.logs_destination.label
+
+        - name: List available logs destinations
+          linode.cloud.monitor_logs_destination_list:
+            filters:
+              - name: id
+                values:
+                  - '{{ update.logs_destination.id }}'
+          register: list
+
+        - name: Assert logs destinations list response
+          assert:
+            that:
+              - list.logs_destinations | length == 1
+              - list.logs_destinations[0].id == update.logs_destination.id
+
+        - name: List available logs destinations and expect empty result with filter
+          linode.cloud.monitor_logs_destination_list:
+            filters:
+              - name: id
+                values: [ '{{ update.logs_destination.id }}' ]
+              - name: label
+                values: [ 'some invalid label' ]
+          register: list_empty
+
+        - name: Assert logs destinations list empty response
+          assert:
+            that:
+              - list_empty.logs_destinations | length == 0
+
+        - name: List available logs destinations ordered without filters
+          linode.cloud.monitor_logs_destination_list:
+            order_by: label
+            order: desc
+          register: list_ordered_unfiltered
+
+        - name: Assert logs destinations list ordered response
+          assert:
+            that:
+              - list_ordered_unfiltered.logs_destinations | length > 0
+
+        - name: Get logs destination history
+          linode.cloud.monitor_logs_destination_history:
+            id: '{{ update.logs_destination.id }}'
+            order_by: "version"
+            order: desc
+          register: history
+
+        - name: Assert logs destination history response
+          assert:
+            that:
+              - history.logs_destination_history | length == 2
+              - history.logs_destination_history[0].version > history.logs_destination_history[1].version
+              - history.logs_destination_history[0].label == update.logs_destination.label
+              - history.logs_destination_history[1].label == create.logs_destination.label
+
+    - name: Create second logs destination
+      block:
+        - name: Create second logs destination
+          linode.cloud.monitor_logs_destination:
+            label: 'test-logs-destination-2-{{ r }}'
+            type: 'akamai_object_storage'
+            details:
+              access_key_id: '{{ access_key_id }}'
+              access_key_secret: '{{ access_key_secret }}'
+              bucket_name: '{{ bucket_name }}'
+              host: '{{ host }}'
+              path: 'test-path-2'
+            state: present
+            wait: yes
+            wait_timeout: 600
+          register: create_second
+
+        - name: Assert logs destination is created
+          assert:
+            that:
+              - create_second.logs_destination.label == 'test-logs-destination-2-{{ r }}'
+              - create_second.logs_destination.details.bucket_name == bucket_name
+              - create_second.logs_destination.details.host == host
+              - create_second.logs_destination.details.path == 'test-path-2'
+
+        - name: Create second logs bucket
+          amazon.aws.s3_bucket:
+            endpoint_url: 'https://{{ create_key.key.regions[0].s3_endpoint }}/'
+            aws_access_key: '{{ create_key.key.access_key }}'
+            aws_secret_key: '{{ create_key.key.secret_key }}'
+            name: 'test-logs-bucket-{{ r }}-2'
+            state: present
+            ceph: true
+            region: 'default'
+          register: create_bucket_second
+
+        - name: Update second logs destination to point to a new bucket
+          linode.cloud.monitor_logs_destination:
+            id: '{{ create_second.logs_destination.id }}'
+            label: '{{ update.logs_destination.label }}'
+            details:
+              access_key_id: '{{ access_key_id }}'
+              access_key_secret: '{{ access_key_secret }}'
+              bucket_name: '{{ create_bucket_second.name }}'
+              host: '{{ host }}'
+            state: present
+            wait: yes
+            wait_timeout: 600
+          register: update_second
+
+        - name: Assert second logs destination is updated with new bucket
+          assert:
+            that:
+              - update_second.changed
+              - update_second.logs_destination.id == create_second.logs_destination.id
+              - update_second.logs_destination.details.bucket_name == create_bucket_second.name
+              - update_second.logs_destination.label == update.logs_destination.label
+
+        - name: List available logs destinations ordered by id desc and assert order
+          linode.cloud.monitor_logs_destination_list:
+            order_by: id
+            order: desc
+            filters:
+              - name: id
+                values: [ '{{ create.logs_destination.id }}', '{{ create_second.logs_destination.id }}' ]
+          register: list_ordered
+
+        - name: Assert logs destinations list ordered response
+          assert:
+            that:
+              - list_ordered.logs_destinations | length == 2
+              - list_ordered.logs_destinations[0].id == create_second.logs_destination.id
+              - list_ordered.logs_destinations[1].id == create.logs_destination.id
+
+        - name: Get logs destination info by label when there are multiple matches
+          linode.cloud.monitor_logs_destination_info:
+            label: '{{ update.logs_destination.label }}'
+          register: info_multiple
+
+        - name: Asserts only single logs destination is returned when multiple have the same label
+          assert:
+            that:
+              - info_multiple.logs_destination.id == update.logs_destination.id or info_multiple.logs_destination.id == update_second.logs_destination.id
+              - info_multiple.logs_destination.label == update.logs_destination.label
+
+    - name: Invalid logs destination creation
+      block:
+        - name: Attempt to create logs destination with invalid type
+          linode.cloud.monitor_logs_destination:
+            label: 'test-logs-destination-invalid-{{ r }}'
+            details:
+              access_key_id: '{{ access_key_id }}'
+              access_key_secret: '{{ access_key_secret }}'
+              bucket_name: '{{ bucket_name }}'
+              host: '{{ host }}'
+            state: present
+          register: invalid_create
+          failed_when: '"invalid type or type not provided for logs destination" not in invalid_create.msg'
+
+        - name: Attempt to delete logs destination with invalid id
+          linode.cloud.monitor_logs_destination:
+            id: 999999999
+            state: absent
+          register: invalid_delete
+          failed_when: invalid_delete is succeeded
+
+        - name: Attempt to get logs destination info with invalid id
+          linode.cloud.monitor_logs_destination_info:
+            id: 999999999
+          register: invalid_id_info
+          failed_when: '"[404]" not in invalid_id_info.msg'
+
+        - name: Attempt to get logs destination info with invalid label
+          linode.cloud.monitor_logs_destination_info:
+              label: 'some invalid label'
+          register: invalid_label_info
+          failed_when: '"No matching resource found." not in invalid_label_info.msg'
+
+        - name: Attempt to get logs destination history with invalid id
+          linode.cloud.monitor_logs_destination_history:
+            id: 999999999
+          register: invalid_history
+          failed_when: '"[404]" not in invalid_history.msg'
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete logs destination
+          linode.cloud.monitor_logs_destination:
+            id: '{{ create.logs_destination.id }}'
+            state: absent
+          register: delete
+        - name: Assert logs destination is deleted
+          assert:
+            that:
+              - delete.changed
+              - delete.logs_destination.id == create.logs_destination.id
+        - name: Delete second logs destination
+          linode.cloud.monitor_logs_destination:
+            id: '{{ create_second.logs_destination.id }}'
+            state: absent
+          register: delete_second
+        - name: Assert logs destination is deleted
+          assert:
+            that:
+              - delete_second.changed
+              - delete_second.logs_destination.id == create_second.logs_destination.id
+        - name: Delete test bucket
+          amazon.aws.s3_bucket:
+            endpoint_url: 'https://{{ create_key.key.regions[0].s3_endpoint }}/'
+            aws_access_key: '{{ create_key.key.access_key }}'
+            aws_secret_key: '{{ create_key.key.secret_key }}'
+            name: '{{ create_bucket.name }}'
+            state: absent
+            ceph: true
+            region: 'default'
+            force: true
+          register: delete_bucket
+        - name: Assert test bucket is deleted
+          assert:
+            that:
+              - delete_bucket.changed
+        - name: Delete second test bucket
+          amazon.aws.s3_bucket:
+            endpoint_url: 'https://{{ create_key.key.regions[0].s3_endpoint }}/'
+            aws_access_key: '{{ create_key.key.access_key }}'
+            aws_secret_key: '{{ create_key.key.secret_key }}'
+            name: '{{ create_bucket_second.name }}'
+            state: absent
+            ceph: true
+            region: 'default'
+            force: true
+          register: delete_bucket_second
+        - name: Assert second test bucket is deleted
+          assert:
+            that:
+              - delete_bucket_second.changed
+        - name: Delete object storage key
+          linode.cloud.object_keys:
+            label: '{{ create_key.key.label }}'
+            state: absent
+          register: delete_key
+        - name: Assert object storage key is deleted
+          assert:
+            that:
+              - delete_key.changed
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
