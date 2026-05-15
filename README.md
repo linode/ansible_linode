@@ -142,6 +142,7 @@ Name | Description |
 [linode.cloud.monitor_alert_channel_list](./docs/modules/monitor_alert_channel_list.md)|List and filter on Alert Channels.|
 [linode.cloud.monitor_logs_destination_list](./docs/modules/monitor_logs_destination_list.md)|List and filter on Logs Destinations.|
 [linode.cloud.monitor_logs_stream_list](./docs/modules/monitor_logs_stream_list.md)|List and filter on Monitor Logs Streams.|
+[linode.cloud.monitor_alert_definition_entities_list](./docs/modules/monitor_alert_definition_entities_list.md)|List and filter on Alert Definition Entities.|
 [linode.cloud.monitor_services_alert_definition_by_service_type_list](./docs/modules/monitor_services_alert_definition_by_service_type_list.md)|The return alert definitions by service type. **Note: filters and order are currently NOT supported by this endpoint.|
 [linode.cloud.monitor_services_alert_definition_list](./docs/modules/monitor_services_alert_definition_list.md)|List and filter on Alert Definitions.|
 [linode.cloud.network_transfer_prices_list](./docs/modules/network_transfer_prices_list.md)|List and filter on Network Transfer Prices.|
