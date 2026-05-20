@@ -136,24 +136,27 @@
              else 'linode/migrate' }}
           
     - set_fact:
-        updated_label: '{{ create.instance.label }}-updated'
+        instance_tags: ["testing", "ansible-test"]
 
     - name: Update the instance
       linode.cloud.instance:
-        label: '{{ updated_label }}'
+        label: '{{ create.instance.label }}'
         region: '{{ pg_region }}'
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
         maintenance_policy: '{{ toggled_maintenance_policy }}'
         state: present
+        tags: '{{ instance_tags }}'
       register: update
 
     - name: Assert update
       assert:
         that:
+          - update.changed
           - update.instance.maintenance_policy == toggled_maintenance_policy
-          - update.instance.label == updated_label
+          - update.instance.tags[0] == 'ansible-test'
+          - update.instance.tags[1] == 'testing'
 
     - name: Get info about the instance by id
       linode.cloud.instance_info:
@@ -168,11 +171,13 @@
           - info_id.configs|length == 1
           - info_id.networking.ipv4.public[0].address != None
           - info_id.instance.capabilities == create.instance.capabilities
-          - info_id.instance.maintenance_policy == account_info.account_settings.maintenance_policy
+          - info_id.instance.maintenance_policy == toggled_maintenance_policy
+          - info_id.instance.tags[0] == 'ansible-test'
+          - info_id.instance.tags[1] == 'testing'
 
     - name: Get info about the instance by label
       linode.cloud.instance_info:
-        label: '{{ updated_label }}'
+        label: '{{ create.instance.label }}'
       register: info_label
 
     - name: Assert instance info
@@ -212,7 +217,7 @@
       block:
         - name: Delete a Linode instance
           linode.cloud.instance:
-            label: '{{ update.instance.label }}'
+            label: '{{ create.instance.label }}'
             state: absent
           register: delete_nopass
 
