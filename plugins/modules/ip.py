@@ -16,10 +16,14 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_docs import (
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     filter_null_values,
-    handle_updates,
 )
-from ansible_specdoc.objects import FieldType, SpecDocMeta, SpecField, SpecReturnValue
-from linode_api4 import ApiError, IPAddress
+from ansible_specdoc.objects import (
+    FieldType,
+    SpecDocMeta,
+    SpecField,
+    SpecReturnValue,
+)
+from linode_api4 import ApiError, IPAddress, ReservedIPAddress
 
 spec: dict = {
     "linode_id": SpecField(
@@ -157,45 +161,78 @@ class Module(LinodeModuleBase):
             )
             return None
 
+    def _update_tags(self, address: str, ip: IPAddress) -> Optional[list]:
+        """Update tags for an IP via the reserved-IPs endpoint.
+
+        Returns the current tags list, or None if tags were not requested.
+        Tags can only be managed on reserved IPs.
+        """
+        new_tags = self.module.params.get("tags")
+        if new_tags is None:
+            return None
+
+        try:
+            reserved_ip = ReservedIPAddress(self.client, address)
+            reserved_ip._api_get()
+            old_tags = list(reserved_ip.tags or [])
+        except ApiError as exc:
+            if exc.status == 404:
+                self.fail(
+                    msg=f"tags can only be set on reserved IPs; "
+                    f"{address} is not a reserved IP"
+                )
+                return None
+            self.fail(msg=f"failed to fetch tags for IP {address}: {exc}")
+            return None
+
+        if set(new_tags) == set(old_tags):
+            return old_tags
+
+        try:
+            self.client.put(
+                f"/networking/reserved/ips/{address}",
+                data={"tags": new_tags},
+            )
+            self.register_action(f'Updated tags: "{old_tags}" -> "{new_tags}"')
+            self.results["changed"] = True
+        except Exception as exc:
+            self.fail(msg=f"failed to update tags for IP {address}: {exc}")
+
+        return new_tags
+
+    def _handle_update_existing_ip(self, address: str, params: dict) -> None:
+        """Handle updates to an existing IP (reserved promotion and tags)."""
+        ip = self._get_ip(address)
+        if ip is None:
+            self.fail(msg=f"IP address {address} not found")
+            return
+
+        reserved = params.get("reserved")
+        if reserved is not None and ip._raw_json.get("reserved") != reserved:
+            try:
+                self.client.put(
+                    f"/networking/ips/{address}",
+                    data={"reserved": reserved},
+                )
+                self.register_action(
+                    f"Updated reserved status of IP {address} to {reserved}"
+                )
+            except Exception as exc:
+                self.fail(msg=f"failed to update IP {address}: {exc}")
+            ip._api_get()
+
+        current_tags = self._update_tags(address, ip)
+        ip_data: dict = ip._raw_json
+        if current_tags is not None:
+            ip_data["tags"] = current_tags
+        self.results["ip"] = ip_data
+
     def _handle_present(self) -> None:
         params = filter_null_values(self.module.params)
         address = params.get("address")
 
         if address is not None:
-            # Update existing IP (e.g., promote to reserved, update tags)
-            ip = self._get_ip(address)
-            if ip is None:
-                self.fail(msg=f"IP address {address} not found")
-                return
-
-            reserved = params.get("reserved")
-            if reserved is not None and ip._raw_json.get("reserved") != reserved:
-                try:
-                    self.client.put(
-                        f"/networking/ips/{address}",
-                        data={"reserved": reserved},
-                    )
-                    self.register_action(
-                        f"Updated reserved status of IP {address} to {reserved}"
-                    )
-                except Exception as exc:
-                    self.fail(
-                        msg=f"failed to update IP {address}: {exc}"
-                    )
-                ip._api_get()
-
-            if any(
-                self.module.params.get(f) is not None for f in MUTABLE_FIELDS
-            ):
-                handle_updates(
-                    ip,
-                    self.module.params,
-                    MUTABLE_FIELDS,
-                    self.register_action,
-                )
-                ip._api_get()
-
-            self.results["ip"] = ip._raw_json
+            self._handle_update_existing_ip(address, params)
             return
 
         linode_id = params.get("linode_id")
@@ -209,13 +246,20 @@ class Module(LinodeModuleBase):
             try:
                 result = self.client.post(
                     "/networking/ips",
-                    data={"type": ip_type, "region": region, "reserved": True},
+                    data={
+                        "type": ip_type,
+                        "public": True,
+                        "region": region,
+                        "reserved": True,
+                    },
                 )
                 self.register_action(
                     f"Allocated new reserved IP in region {region}."
                 )
             except Exception as exc:
-                self.fail(msg=f"failed to allocate reserved IP in region {region}: {exc}")
+                self.fail(
+                    msg=f"failed to allocate reserved IP in region {region}: {exc}"
+                )
                 return
 
             self.results["ip"] = result
