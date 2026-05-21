@@ -207,6 +207,21 @@ spec: dict = {
             "Required for updating."
         ],
     ),
+    "scope": SpecField(
+        type=FieldType.string,
+        choices=["account", "entity", "region"],
+        description=[
+            "The alert scope. "
+            "Supported values include account, entity, and region. "
+            "Defaults to entity."
+        ],
+    ),
+    "regions": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        editable=True,
+        description=["The regions to monitor for this alert definition."],
+    ),
     "status": SpecField(
         type=FieldType.string,
         editable=True,
@@ -259,6 +274,7 @@ MUTABLE_FIELDS = {
     "description",
     "entity_ids",
     "label",
+    "regions",
     "rule_criteria",
     "severity",
     "status",
@@ -334,21 +350,38 @@ class LinodeMonitorServicesAlertDefinition(LinodeModuleBase):
         params = self.module.params
         service_type = params.pop("service_type")
 
+        create_kwargs: dict = {
+            "service_type": service_type,
+            "label": params.pop("label"),
+            "severity": params.pop("severity"),
+            "channel_ids": params.pop("channel_ids"),
+            "rule_criteria": params.pop("rule_criteria"),
+            "trigger_conditions": params.pop("trigger_conditions"),
+        }
+
+        description = params.get("description")
+        if description is not None:
+            create_kwargs["description"] = description
+
+        scope = params.get("scope")
+        if scope is not None:
+            create_kwargs["scope"] = scope
+
+        regions = params.get("regions")
+        if regions is not None:
+            create_kwargs["regions"] = regions
+
+        entity_ids = params.get("entity_ids")
+        if entity_ids is not None:
+            create_kwargs["entity_ids"] = entity_ids
+
         try:
             self.register_action(
                 "Created alert definition for service type {0}".format(
                     service_type
                 )
             )
-            return self.client.monitor.create_alert_definition(
-                service_type=service_type,
-                label=params.pop("label"),
-                severity=params.pop("severity"),
-                description=params.pop("description"),
-                channel_ids=params.pop("channel_ids"),
-                rule_criteria=params.pop("rule_criteria"),
-                trigger_conditions=params.pop("trigger_conditions"),
-            )
+            return self.client.monitor.create_alert_definition(**create_kwargs)
         except Exception as exception:
             return self.fail(
                 msg="failed to create alert definition: {0}".format(exception)
