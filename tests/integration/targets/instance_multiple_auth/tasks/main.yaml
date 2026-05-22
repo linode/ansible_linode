@@ -1,0 +1,157 @@
+- name: instance_multiple_auth
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+        ssh_pub_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCloBr83q7v2/kipfpChnN1cPr+DA++JN3RdLBid3tFjy5UmAelpRmKO9Uhija7ElC9/x187t13smc35NGaDOG+s+zrSMlSfygqA6pf8njEPDRBhvyp12Fjwb8i+ILFXiU1GYaVprbQwpgdApwqieoCZ4pathc/HdPvznX/Aqgyiq+5+dSRa5GUftAPWrt3ScFXttlfihU+0wIanyxoxnrtPcqNshs39dRg8UP2zrB5aK+9nPurO/6qSWDqVnIVlparlqXxZdwKl+Gfiq93pGicrPgVEy49Tbl75Y8Nxj7zDsJsQuO0UlRk9IUoe1asAy5DXqQ6foOb6vR9rld6owqRHCG/tjYDpuw1uYCYj5xm+DDfkNRowWJktIgnajzaYqZ3ytWzg31m8a7X2Wol8foxlFrUqqqesJ05I28A3JvLIU5s4vSzi1hK4cWKSi15UFdxX1f1a+pRsRgY446k+i3uWcFZVybzp5tDRdjUMRO6XQrbjrxFnKurRY0+S1NeRF0="
+
+    - name: Upload ssh key
+      linode.cloud.ssh_key:
+        api_token: "{{ api_token }}"
+        ua_prefix: "{{ ua_prefix }}"
+        state: present
+        label: "test-key-{{ r }}"
+        ssh_key: "{{ ssh_pub_key }}"
+      register: create_ssh_key
+
+    - name: Assert ssh key uploaded
+      assert:
+        that:
+          - create_ssh_key.changed
+          - create_ssh_key.ssh_key.label == "test-key-" ~ r
+          - create_ssh_key.ssh_key.ssh_key == ssh_pub_key
+
+    - name: Attempt to create a Linode instance without authentication (should fail)
+      linode.cloud.instance:
+        label: "ansible-test-no-auth-{{ r }}"
+        region: us-ord
+        type: g6-standard-1
+        image: linode/debian12
+        kernel: linode/6.15.7-x86_64-linode169
+        boot_size: 9000
+        state: present
+        firewall_id: "{{ firewall_id }}"
+      register: create_no_auth_attempt
+      failed_when: false
+
+    - name: Assert instance creation without authentication fails
+      assert:
+        that:
+          - create_no_auth_attempt.msg is defined
+          - "'root_pass' in create_no_auth_attempt.msg"
+          - "'authorized_users' in create_no_auth_attempt.msg"
+          - "'authorized_keys' in create_no_auth_attempt.msg"
+
+    - name: Create a Linode instance with a root_pass
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-ord
+        type: g6-standard-1
+        image: linode/debian12
+        root_pass: Fn$$oobar123
+        kernel: linode/6.15.7-x86_64-linode169
+        boot_size: 9000
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: create_root_pass
+
+    - name: Assert instance with only root_pass was created
+      assert:
+        that:
+          - create_root_pass.changed
+          - create_root_pass.instance.id is defined
+
+    - name: Create a Linode instance with only authorized_keys
+      linode.cloud.instance:
+        label: "ansible-test-auth-keys-{{ r }}"
+        region: us-ord
+        type: g6-standard-1
+        image: linode/debian12
+        authorized_keys:
+          - "{{ ssh_pub_key }}"
+        kernel: linode/6.15.7-x86_64-linode169
+        boot_size: 9000
+        state: present
+        firewall_id: "{{ firewall_id }}"
+      register: create_authorized_keys
+
+    - name: Assert instance with only authorized_keys was created
+      assert:
+        that:
+          - create_authorized_keys.changed
+          - create_authorized_keys.instance.id is defined
+
+    - name: Create a Linode instance with both root_pass and authorized_keys
+      linode.cloud.instance:
+        label: "ansible-test-both-auth-{{ r }}"
+        region: us-ord
+        type: g6-standard-1
+        image: linode/debian12
+        root_pass: Fn$$oobar123
+        authorized_keys:
+          - "{{ ssh_pub_key }}"
+        kernel: linode/6.15.7-x86_64-linode169
+        boot_size: 9000
+        state: present
+        firewall_id: "{{ firewall_id }}"
+      register: create_multi_auth
+
+    - name: Assert instance with multiple auth methods was created
+      assert:
+        that:
+          - create_multi_auth.changed
+          - create_multi_auth.instance.id is defined
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create_root_pass.instance.label }}'
+            state: absent
+          register: delete_root_pass
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_root_pass.changed
+              - delete_root_pass.instance.id == create_root_pass.instance.id
+
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create_authorized_keys.instance.label }}'
+            state: absent
+          register: delete_authorized_keys
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_authorized_keys.changed
+              - delete_authorized_keys.instance.id == create_authorized_keys.instance.id
+
+        - name: Delete a Linode instance
+          linode.cloud.instance:
+            label: '{{ create_authorized_keys.instance.label }}'
+            state: absent
+          register: delete_multi_auth
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete_multi_auth.changed
+              - delete_multi_auth.instance.id == create_multi_auth.instance.id
+
+        - name: Delete Key
+          linode.cloud.ssh_key:
+            api_token: "{{ api_token }}"
+            ua_prefix: "{{ ua_prefix }}"
+
+            label: "test-key-{{ r }}"
+            state: absent
+
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
