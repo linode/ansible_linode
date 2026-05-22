@@ -7,7 +7,7 @@
       linode.cloud.stackscript:
         label: "ansible-test-{{ r }}"
         images:
-          - "linode/alpine3.19"
+          - "linode/arch"
         script: |
           #!/bin/ash
           # <UDF name="package" label="System Package to Install" example="nginx">
@@ -23,8 +23,9 @@
         booted: false
         disks:
           - label: test-disk
-            size: 1024
-            image: linode/alpine3.19
+            size: 2517
+            image: linode/arch
+            root_pass: Fn$$oobar123
             stackscript_id: "{{ stackscript_create.stackscript.id }}"
             stackscript_data:
               package: cowsay
@@ -37,7 +38,7 @@
         that:
           - instance_create.changed
           - instance_create.disks[0].label == "test-disk"
-          - instance_create.disks[0].size == 1024
+          - instance_create.disks[0].size == 2517
           - instance_create.disks[0].filesystem == "ext4"
 
     - name: Get info about the StackScript

@@ -30,6 +30,8 @@ Manage Linode Instances, Configs, and Disks.
       variable: value
     tags:
       - env=prod
+    boot_size: 8192
+    kernel: "linode/latest-64bit"
     state: present
 ```
 
@@ -227,10 +229,10 @@ Manage Linode Instances, Configs, and Disks.
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type of the Linode you are creating.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The location to deploy the instance in. See the [Linode API documentation](https://api.linode.com/v4/regions).   |
 | `image` | <center>`str`</center> | <center>Optional</center> | The image ID to deploy the instance disk from.  **(Conflicts With: `disks`,`configs`)** |
-| `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
-| `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
+| `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user. If image is provided, one of root_pass, authorized_keys, or authorized_users  is required.   |
+| `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames. If image is provided, one of root_pass, authorized_keys, or authorized_users  is required.   |
 | `maintenance_policy` | <center>`str`</center> | <center>Optional</center> | The slug of the maintenance policy to apply during maintenance.  **(Choices: `linode/migrate`, `linode/power_off_on`)** |
-| `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If not specified, one will be generated. This generated password will be available in the task success JSON.   |
+| `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If image is provided, one of root_pass, authorized_keys, or authorized_users  is required.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `firewall_id` | <center>`int`</center> | <center>Optional</center> | The ID of a Firewall this Linode to assign this Linode to.   |
@@ -258,6 +260,8 @@ Manage Linode Instances, Configs, and Disks.
 | [`placement_group` (sub-options)](#placement_group) | <center>`dict`</center> | <center>Optional</center> | A Placement Group to create this Linode under.   |
 | `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this Linode.  **(Choices: `enabled`, `disabled`)** |
 | `swap_size` | <center>`int`</center> | <center>Optional</center> | When deploying from an Image, this field is optional, otherwise it is ignored. This is used to set the swap disk size for the newly-created Linode.   |
+| `kernel` | <center>`str`</center> | <center>Optional</center> | The kernel to deploy with when creating a Linode.   |
+| `boot_size` | <center>`int`</center> | <center>Optional</center> | The size of the boot disk in MB for the newly-created Linode.  Must be at least 8192 MB.   |
 
 ### configs
 

@@ -16,6 +16,8 @@ specdoc_examples = ['''
       variable: value
     tags:
       - env=prod
+    boot_size: 8192
+    kernel: "linode/latest-64bit"
     state: present''', '''
 - name: Create a new Linode instance with an additional public IPv4 address.
   linode.cloud.instance:
