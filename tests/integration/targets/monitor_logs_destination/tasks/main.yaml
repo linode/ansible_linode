@@ -275,7 +275,7 @@
 
         - name: Attempt to get logs destination info with invalid label
           linode.cloud.monitor_logs_destination_info:
-              label: 'some invalid label'
+            label: 'some invalid label'
           register: invalid_label_info
           failed_when: '"No matching resource found." not in invalid_label_info.msg'
 

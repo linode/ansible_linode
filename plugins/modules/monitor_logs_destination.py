@@ -423,7 +423,7 @@ class LinodeLogsDestination(LinodeModuleBase):
                 access_key_secret=details.pop("access_key_secret"),
                 bucket_name=details.pop("bucket_name"),
                 host=details.pop("host"),
-                path=details.pop("path"),
+                path=details.pop("path", None),
             ),
         )
 
@@ -432,10 +432,49 @@ class LinodeLogsDestination(LinodeModuleBase):
     ) -> Optional[LogsDestination]:
         params = self.module.params
         details = params.pop("details")
-        authentication = details.pop("authentication")
 
-        authentication_details = authentication.pop("authentication_details")
-        client_cert_details = details.pop("client_certificate_details")
+        authentication = details.pop("authentication", {})
+        authentication_details = authentication.pop(
+            "authentication_details", {}
+        )
+        client_cert_details = details.pop("client_certificate_details", {})
+
+        auth_type = authentication.pop("type", "none")
+
+        basic_auth_obj = None
+        if auth_type == "basic":
+            if not authentication_details.get(
+                "basic_authentication_user"
+            ) or not authentication_details.get(
+                "basic_authentication_password"
+            ):
+                return self.fail(
+                    "'basic_authentication_user' and 'basic_authentication_password' "
+                    "are required when authentication type is 'basic'."
+                )
+            basic_auth_obj = BasicAuthenticationDetails(
+                basic_authentication_user=authentication_details.pop(
+                    "basic_authentication_user", None
+                ),
+                basic_authentication_password=authentication_details.pop(
+                    "basic_authentication_password", None
+                ),
+            )
+
+        client_cert_obj = None
+        if client_cert_details:
+            client_cert_obj = ClientCertificateDetails(
+                client_ca_certificate=client_cert_details.pop(
+                    "client_ca_certificate", None
+                ),
+                client_certificate=client_cert_details.pop(
+                    "client_certificate", None
+                ),
+                client_private_key=client_cert_details.pop(
+                    "client_private_key", None
+                ),
+                tls_hostname=client_cert_details.pop("tls_hostname", None),
+            )
 
         custom_headers = [
             CustomHeader(name=h.get("name"), value=h.get("value"))
@@ -448,31 +487,13 @@ class LinodeLogsDestination(LinodeModuleBase):
             details=CustomHTTPSLogsDestinationDetails(
                 endpoint_url=details.pop("endpoint_url"),
                 authentication=DestinationAuthentication(
-                    type=authentication.pop("type"),
-                    details=BasicAuthenticationDetails(
-                        basic_authentication_user=authentication_details.pop(
-                            "basic_authentication_user"
-                        ),
-                        basic_authentication_password=authentication_details.pop(
-                            "basic_authentication_password"
-                        ),
-                    ),
+                    type=auth_type,
+                    details=basic_auth_obj,
                 ),
-                data_compression=details.pop("data_compression"),
-                content_type=details.pop("content_type"),
+                data_compression=details.pop("data_compression", None),
+                content_type=details.pop("content_type", None),
                 custom_headers=custom_headers,
-                client_certificate_details=ClientCertificateDetails(
-                    client_ca_certificate=client_cert_details.pop(
-                        "client_ca_certificate"
-                    ),
-                    client_certificate=client_cert_details.pop(
-                        "client_certificate"
-                    ),
-                    client_private_key=client_cert_details.pop(
-                        "client_private_key"
-                    ),
-                    tls_hostname=client_cert_details.pop("tls_hostname"),
-                ),
+                client_certificate_details=client_cert_obj,
             ),
         )
 
@@ -532,6 +553,9 @@ class LinodeLogsDestination(LinodeModuleBase):
 
     def _handle_logs_destination_absent(self) -> None:
         destination_id: int = self.module.params.get("id")
+
+        if destination_id is None:
+            self.fail("'id' is required when state='absent'.")
 
         self._logs_destination = self._get_logs_destination(destination_id)
 

@@ -23,7 +23,8 @@ Get info about a Linode Logs Destination.
 ```yaml
 - name: Get info about a logs destination by label
   linode.cloud.monitor_logs_destination_info:
-    label: 'OBJ_logs_destination
+    label: 'OBJ_logs_destination'
+
 ```
 
 

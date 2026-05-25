@@ -50,10 +50,10 @@ linode_monitor_logs_stream_spec = {
         required=False,
         choices=["audit_logs", "lke_audit_logs"],
         description=[
-            "The type of stream.",
+            "The type of stream. "
             "This can be ``audit_logs`` for logs consisting of all of the control plane "
             "operations for the services in your Linodes, or ``lke_audit_logs`` for log data "
-            "for your Linode Kubernetes Engine (LKE) enterprise clusters.",
+            "for your Linode Kubernetes Engine (LKE) enterprise clusters."
         ],
     ),
     "details": SpecField(
@@ -194,7 +194,7 @@ class LinodeMonitorLogsStream(LinodeModuleBase):
         except ApiError as err:
             if err.status == 404:
                 return None
-            self.fail(msg=f"Failed to get monitor logs stream: {err}")
+            return self.fail(msg=f"Failed to get monitor logs stream: {err}")
 
     def _create_stream(self) -> Any:
         params = self.module.params
@@ -372,7 +372,7 @@ class LinodeMonitorLogsStream(LinodeModuleBase):
             poll_condition(_check_status, step=10, timeout=wait_timeout)
             return self.client.load(LogsStream, stream.id)
         except Exception as e:
-            self.fail(
+            return self.fail(
                 msg=f"Timeout of {wait_timeout}s exceeded waiting for stream {stream.id} "
                 f"to become active or inactive. Error: {e}"
             )
