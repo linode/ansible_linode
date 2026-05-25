@@ -61,9 +61,9 @@ SPECDOC_META = SpecDocMeta(
     description=[
         "Manage a Linode Reserved IPv4 Address.",
         "NOTE: Reserved IP feature may not currently be available to all users.",
-        "NOTE: When creating a reservation by region (without specifying an address), "
-        "this module is NOT idempotent — each run will allocate a new billable reserved "
-        "IP address. To manage an existing reservation idempotently, "
+        "NOTE: When creating a reservation by region (without specifying an address), ",
+        "this module is NOT idempotent — each run will allocate a new billable reserved ",
+        "IP address. To manage an existing reservation idempotently, ",
         "specify the address parameter.",
     ],
     requirements=global_requirements,
