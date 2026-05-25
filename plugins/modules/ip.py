@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, Optional, Set
+from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
@@ -29,8 +29,8 @@ spec: dict = {
     "linode_id": SpecField(
         type=FieldType.integer,
         description=[
-            "The ID of a Linode you have access to "
-            "that this address will be allocated to."
+            "The ID of a Linode you have access to ",
+            "that this address will be allocated to.",
         ],
     ),
     "public": SpecField(
@@ -41,15 +41,15 @@ spec: dict = {
         type=FieldType.string,
         choices=["ipv4"],
         description=[
-            "The type of address you are requesting. "
-            "Only IPv4 addresses may be allocated through this operation."
+            "The type of address you are requesting. ",
+            "Only IPv4 addresses may be allocated through this operation.",
         ],
     ),
     "address": SpecField(
         type=FieldType.string,
         description=[
             "The IP address to update or delete.",
-            "Required when updating an existing IP (e.g., promoting to reserved) "
+            "Required when updating an existing IP (e.g., promoting to reserved) ",
             "or when deleting (state=absent).",
         ],
         conflicts_with=["linode_id", "public", "type"],
@@ -58,7 +58,7 @@ spec: dict = {
         type=FieldType.bool,
         description=[
             "Whether this IP address should be reserved.",
-            "Setting to true promotes an existing allocated IP to a reserved IP "
+            "Setting to true promotes an existing allocated IP to a reserved IP ",
             "via PUT /networking/ips/{address}.",
             "Requires the address parameter.",
         ],
@@ -77,7 +77,7 @@ spec: dict = {
         type=FieldType.string,
         description=[
             "The region in which to allocate a new reserved IP address.",
-            "Required when allocating a new reserved IP (reserved=true) without "
+            "Required when allocating a new reserved IP (reserved=true) without ",
             "specifying an existing address.",
         ],
         conflicts_with=["linode_id", "public", "address"],
@@ -92,10 +92,10 @@ spec: dict = {
 
 SPECDOC_META = SpecDocMeta(
     description=[
-        "Allocates a new IPv4 Address on your Account, or updates an existing one. "
-        "To allocate, the Linode must be configured to support "
-        "additional addresses - "
-        "please open a support ticket "
+        "Allocates a new IPv4 Address on your Account, or updates an existing one. ",
+        "To allocate, the Linode must be configured to support ",
+        "additional addresses - ",
+        "please open a support ticket ",
         "requesting additional addresses before attempting allocation.",
         "To allocate a new reserved IP, provide region, type, and set reserved=true.",
         "To promote an existing IP to reserved, provide the address and set reserved=true.",
@@ -113,8 +113,6 @@ SPECDOC_META = SpecDocMeta(
         ),
     },
 )
-
-MUTABLE_FIELDS: Set[str] = {"tags"}
 
 DOCUMENTATION = r"""
 """
@@ -137,7 +135,7 @@ class Module(LinodeModuleBase):
         super().__init__(
             module_arg_spec=self.module_arg_spec,
             required_together=[
-                ("linode_id", "public", "type"),
+                ("linode_id", "public"),
             ],
         )
 
