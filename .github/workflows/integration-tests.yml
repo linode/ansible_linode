@@ -22,6 +22,14 @@ on:
         options:
           - 'true'
           - 'false'
+      run_aclp_logs_stream_tests:
+        description: 'Run ACLP monitor logs stream integration tests. Defaults to "false"'
+        type: choice
+        required: false
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
   push:
     branches:
       - main
@@ -71,6 +79,7 @@ jobs:
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
           ANSIBLE_CALLBACKS_ENABLED: "junit"
+          RUN_ACLP_LOGS_STREAM_TESTS: ${{ inputs.run_aclp_logs_stream_tests || 'false' }}
 
       - name: Upload Test Report as Artifact
         if: always()
