@@ -137,6 +137,9 @@ class Module(LinodeModuleBase):
             required_together=[
                 ("linode_id", "public"),
             ],
+            required_if=[
+                ("reserved", True, ["address", "region"], True),
+            ],
         )
 
     def _get_ip(self, address: str) -> Optional[IPAddress]:
@@ -228,6 +231,15 @@ class Module(LinodeModuleBase):
     def _handle_present(self) -> None:
         params = filter_null_values(self.module.params)
         address = params.get("address")
+        tags = params.get("tags")
+        region = params.get("region")
+        reserved = params.get("reserved")
+
+        if tags is not None and address is None:
+            self.fail(msg="tags requires address to be specified")
+
+        if region is not None and not reserved:
+            self.fail(msg="region is only valid when reserved=true")
 
         if address is not None:
             self._handle_update_existing_ip(address, params)
@@ -235,8 +247,6 @@ class Module(LinodeModuleBase):
 
         linode_id = params.get("linode_id")
         public = params.get("public")
-        region = params.get("region")
-        reserved = params.get("reserved")
 
         if region is not None and reserved:
             # Allocate a new reserved IP via POST /networking/ips
@@ -258,7 +268,6 @@ class Module(LinodeModuleBase):
                 self.fail(
                     msg=f"failed to allocate reserved IP in region {region}: {exc}"
                 )
-                return
 
             self.results["ip"] = result
             return
@@ -267,7 +276,6 @@ class Module(LinodeModuleBase):
             self.fail(
                 msg="linode_id, public, and type are required when creating a new IP"
             )
-            return
 
         try:
             ip = self.client.networking.ip_allocate(linode_id, public)
@@ -276,7 +284,6 @@ class Module(LinodeModuleBase):
             )
         except Exception as exc:
             self.fail(msg=f"failed to allocate IP to Linode {linode_id}: {exc}")
-            return
 
         self.results["ip"] = ip._raw_json
 

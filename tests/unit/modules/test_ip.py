@@ -254,3 +254,17 @@ class TestIPModuleHandlePresent:
             module._handle_present()
 
         module._client.put.assert_not_called()
+
+    def test_tags_without_address_fails(self):
+        """tags requires address; omitting address must raise a clear error."""
+        module = _make_module({"tags": ["test-tag"]})
+
+        with pytest.raises(Exception, match="tags requires address to be specified"):
+            module._handle_present()
+
+    def test_region_without_reserved_fails(self):
+        """region is only valid when reserved=true; omitting reserved must raise a clear error."""
+        module = _make_module({"region": "us-east"})
+
+        with pytest.raises(Exception, match="region is only valid when reserved=true"):
+            module._handle_present()
