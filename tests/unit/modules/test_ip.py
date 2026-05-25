@@ -151,7 +151,7 @@ class TestIPModuleHandlePresent:
         """When no address and no linode_id, fail is raised."""
         module = _make_module({})
 
-        with pytest.raises(Exception, match="linode_id, public, and type are required"):
+        with pytest.raises(Exception, match="linode_id and public are required"):
             module._handle_present()
 
     def test_promote_to_reserved_put_failure_raises(self):

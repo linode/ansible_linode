@@ -272,9 +272,9 @@ class Module(LinodeModuleBase):
             self.results["ip"] = result
             return
 
-        if linode_id is None:
+        if linode_id is None or public is None:
             self.fail(
-                msg="linode_id, public, and type are required when creating a new IP"
+                msg="linode_id and public are required when creating a new IP"
             )
 
         try:
