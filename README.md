@@ -36,7 +36,7 @@ Name | Description |
 [linode.cloud.image_share_group_token](./docs/modules/image_share_group_token.md)|Manage an Image Share Group Token.|
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
 [linode.cloud.instance_interface_settings](./docs/modules/instance_interface_settings.md)|Create, read, and update the interface settings for a Linode instance.|
-[linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account. The Linode must be configured to support additional addresses - please Open a support ticket requesting additional addresses before attempting allocation.|
+[linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account, or updates an existing one. |
 [linode.cloud.ip_assign](./docs/modules/ip_assign.md)|Assign IPs to Linodes in a given Region.|
 [linode.cloud.ip_rdns](./docs/modules/ip_rdns.md)|Manage a Linode IP address's rDNS.|
 [linode.cloud.ip_share](./docs/modules/ip_share.md)|Manage the Linode shared IPs.|
@@ -50,6 +50,7 @@ Name | Description |
 [linode.cloud.object_keys](./docs/modules/object_keys.md)|Manage Linode Object Storage Keys.|
 [linode.cloud.placement_group](./docs/modules/placement_group.md)|Manage a Linode Placement Group.|
 [linode.cloud.placement_group_assign](./docs/modules/placement_group_assign.md)|Manages a single assignment between a Linode and a Placement Group.|
+[linode.cloud.reserved_ip](./docs/modules/reserved_ip.md)|Manage a Linode Reserved IPv4 Address.|
 [linode.cloud.ssh_key](./docs/modules/ssh_key.md)|Manage a Linode SSH key.|
 [linode.cloud.stackscript](./docs/modules/stackscript.md)|Manage a Linode StackScript.|
 [linode.cloud.token](./docs/modules/token.md)|Manage a Linode Token.|
@@ -95,6 +96,7 @@ Name | Description |
 [linode.cloud.placement_group_info](./docs/modules/placement_group_info.md)|Get info about a Linode Placement Group.|
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
 [linode.cloud.region_info](./docs/modules/region_info.md)|Get info about a Linode Region.|
+[linode.cloud.reserved_ip_info](./docs/modules/reserved_ip_info.md)|Get info about a Linode Reserved IP address.|
 [linode.cloud.ssh_key_info](./docs/modules/ssh_key_info.md)|Get info about a Linode SSH Key.|
 [linode.cloud.stackscript_info](./docs/modules/stackscript_info.md)|Get info about a Linode StackScript.|
 [linode.cloud.token_info](./docs/modules/token_info.md)|Get info about a Linode Personal Access Token.|
@@ -145,6 +147,7 @@ Name | Description |
 [linode.cloud.object_storage_quota_list](./docs/modules/object_storage_quota_list.md)|List and filter on Object Storage Quotas.|
 [linode.cloud.placement_group_list](./docs/modules/placement_group_list.md)|List and filter on Placement Groups.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
+[linode.cloud.reserved_ip_list](./docs/modules/reserved_ip_list.md)|List and filter on Reserved IPs.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH Keys.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on StackScripts.|
 [linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Tokens.|

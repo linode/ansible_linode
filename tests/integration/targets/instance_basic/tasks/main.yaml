@@ -7,8 +7,28 @@
       linode.cloud.region_list: {}
       register: all_regions
 
+    - name: Get regions availability
+      linode.cloud.api_request:
+        path: "/regions/availability?page_size=500"
+        method: GET
+      register: regions_avail
+
     - set_fact:
-        pg_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Placement Group") | selectattr("capabilities", "search", "Maintenance Policy") | list)[0].id }}'
+        available_for_g6: >-
+          {{ regions_avail.body.data
+             | selectattr("plan", "equalto", "g6-standard-1")
+             | selectattr("available", "equalto", true)
+             | map(attribute="region") | list }}
+
+    - set_fact:
+        pg_region: >-
+          {{ ( all_regions.regions
+               | selectattr("site_type", "equalto", "core")
+               | selectattr("status", "equalto", "ok")
+               | selectattr("capabilities", "search", "Placement Group")
+               | selectattr("capabilities", "search", "Maintenance Policy")
+               | selectattr("id", "in", available_for_g6)
+               | list)[0].id }}
 
     - name: Get account_settings
       linode.cloud.account_settings:

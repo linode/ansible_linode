@@ -35,6 +35,16 @@ specdoc_examples = ['''
     additional_ipv4:
       - public: true
     state: present''', '''
+- name: Create a Linode Instance with a reserved IPv4 address.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-east
+    image: linode/ubuntu22.04
+    root_pass: verysecurepassword!!!
+    ipv4:
+      - "192.0.2.141"
+    state: present''', '''
 - name: Create a Linode Instance with explicit configs and disks.
   linode.cloud.instance:
     label: 'my-complex-instance'

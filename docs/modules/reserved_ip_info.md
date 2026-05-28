@@ -1,6 +1,8 @@
-# ip_info
+# reserved_ip_info
 
-Get info about a Linode IP.
+Get info about a Linode Reserved IP address.
+
+NOTE: Reserved IP feature may not currently be available to all users.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -15,9 +17,10 @@ Get info about a Linode IP.
 ## Examples
 
 ```yaml
-- name: Get info about an IP address
-  linode.cloud.ip_info:
-    address: 97.107.143.141
+- name: Get info about a reserved IP address
+  linode.cloud.reserved_ip_info:
+    address: "192.0.2.141"
+  register: ip_info
 ```
 
 
@@ -25,57 +28,34 @@ Get info about a Linode IP.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `address` | <center>`str`</center> | <center>**Required**</center> | The IP address to operate on.   |
+| `address` | <center>`str`</center> | <center>**Required**</center> | The reserved IP address to retrieve information about.   |
 
 ## Return Values
 
-- `ip` - The IP in JSON serialized form.
+- `reserved_ip` - The reserved IP address in JSON serialized form.
 
     - Sample Response:
         ```json
         {
-          "address": "97.107.143.141",
+          "address": "192.0.2.141",
           "assigned_entity": null,
-          "gateway": "97.107.143.1",
-          "linode_id": 123,
-          "interface_id": 1234,
-          "prefix": 24,
-          "public": true,
-          "rdns": "test.example.org",
-          "region": "us-east",
-          "reserved": false,
-          "subnet_mask": "255.255.255.0",
-          "tags": [],
-          "type": "ipv4",
-          "vpc_nat_1_1": {
-            "vpc_id": 242,
-            "subnet_id": 194,
-            "address": "139.144.244.36"
-          }
-        }
-        ```
-        ```json
-        {
-          "address": "97.107.143.141",
-          "assigned_entity": null,
-          "gateway": "97.107.143.1",
-          "linode_id": 123,
+          "gateway": "192.0.2.1",
           "interface_id": null,
+          "linode_id": null,
           "prefix": 24,
           "public": true,
-          "rdns": "test.example.org",
+          "rdns": "",
           "region": "us-east",
-          "reserved": false,
+          "reserved": true,
           "subnet_mask": "255.255.255.0",
-          "tags": [],
+          "tags": [
+            "lb",
+            "prod"
+          ],
           "type": "ipv4",
-          "vpc_nat_1_1": {
-            "vpc_id": 242,
-            "subnet_id": 194,
-            "address": "139.144.244.36"
-          }
+          "vpc_nat_1_1": null
         }
         ```
-    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-ip) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-reserved-ip) for a list of returned fields
 
 

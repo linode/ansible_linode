@@ -600,6 +600,15 @@ linode_instance_spec = {
         description=["Additional ipv4 addresses to allocate."],
         editable=False,
     ),
+    "ipv4": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "A list of reserved IPv4 addresses to assign to this Linode on creation.",
+            "The list must contain exactly one reserved, unassigned IPv4 address.",
+            "NOTE: This field is create-only. Changes after creation are ignored.",
+        ],
+    ),
     "rebooted": SpecField(
         type=FieldType.bool,
         description=[
@@ -976,6 +985,16 @@ class LinodeInstance(LinodeModuleBase):
                     interface["firewall_id"] = ExplicitNullValue()
 
             params["interfaces"] = _linode_interfaces
+
+        ipv4 = params.get("ipv4")
+        if ipv4 is None:
+            params.pop("ipv4", None)
+        elif len(ipv4) != 1:
+            self.fail(
+                msg="ipv4 must contain exactly one reserved IPv4 address, got {0}".format(
+                    len(ipv4)
+                )
+            )
 
         result = {"instance": None, "root_pass": ""}
 
@@ -1449,6 +1468,10 @@ class LinodeInstance(LinodeModuleBase):
                 "type",
                 "region",
                 "placement_group",
+                # "ipv4" is a create-only field; excluding it prevents
+                # handle_updates from comparing it against Instance.ipv4
+                # (the list of current IPs) and raising a RuntimeError.
+                "ipv4",
             )
         }
 

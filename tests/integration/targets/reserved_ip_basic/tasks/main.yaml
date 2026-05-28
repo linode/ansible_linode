@@ -1,0 +1,55 @@
+- name: reserved_ip_basic
+  block:
+    - name: Reserve a new IP address
+      linode.cloud.reserved_ip:
+        api_token: "{{ api_token }}"
+        ua_prefix: "{{ ua_prefix }}"
+        region: us-ord
+        tags:
+          - test-tag
+        state: present
+      register: reserve_ip
+
+    - name: Assert reserved IP was created
+      assert:
+        that:
+          - reserve_ip.changed
+          - reserve_ip.reserved_ip.address is defined
+          - reserve_ip.reserved_ip.region == "us-ord"
+          - reserve_ip.reserved_ip.reserved == true
+          - reserve_ip.reserved_ip.public == true
+          - '"test-tag" in reserve_ip.reserved_ip.tags'
+
+    - name: Update tags on the reserved IP
+      linode.cloud.reserved_ip:
+        api_token: "{{ api_token }}"
+        ua_prefix: "{{ ua_prefix }}"
+        address: "{{ reserve_ip.reserved_ip.address }}"
+        tags:
+          - updated-tag
+        state: present
+      register: update_ip
+
+    - name: Assert tags were updated
+      assert:
+        that:
+          - '"updated-tag" in update_ip.reserved_ip.tags'
+          - '"test-tag" not in update_ip.reserved_ip.tags'
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete reserved IP
+          linode.cloud.reserved_ip:
+            api_token: "{{ api_token }}"
+            ua_prefix: "{{ ua_prefix }}"
+            address: "{{ reserve_ip.reserved_ip.address }}"
+            state: absent
+          when: reserve_ip is defined
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

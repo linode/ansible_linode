@@ -7,6 +7,7 @@ specdoc_examples = ['''
 
 result_ip_samples = ['''{
   "address": "97.107.143.141",
+  "assigned_entity": null,
   "gateway": "97.107.143.1",
   "linode_id": 123,
   "interface_id": 1234,
@@ -14,7 +15,9 @@ result_ip_samples = ['''{
   "public": true,
   "rdns": "test.example.org",
   "region": "us-east",
+  "reserved": false,
   "subnet_mask": "255.255.255.0",
+  "tags": [],
   "type": "ipv4",
   "vpc_nat_1_1": {
     "vpc_id": 242,
@@ -23,6 +26,7 @@ result_ip_samples = ['''{
   }
 }''', '''{
   "address": "97.107.143.141",
+  "assigned_entity": null,
   "gateway": "97.107.143.1",
   "linode_id": 123,
   "interface_id": null,
@@ -30,7 +34,9 @@ result_ip_samples = ['''{
   "public": true,
   "rdns": "test.example.org",
   "region": "us-east",
+  "reserved": false,
   "subnet_mask": "255.255.255.0",
+  "tags": [],
   "type": "ipv4",
   "vpc_nat_1_1": {
     "vpc_id": 242,
