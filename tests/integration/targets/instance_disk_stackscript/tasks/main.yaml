@@ -9,9 +9,9 @@
         images:
           - "linode/arch"
         script: |
-          #!/bin/ash
+          #!/bin/bash
           # <UDF name="package" label="System Package to Install" example="nginx">
-          apk add $PACKAGE
+          pacman -Syu --noconfirm "$PACKAGE"
         state: present
       register: stackscript_create
 
