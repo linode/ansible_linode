@@ -130,7 +130,7 @@
 
         - name: Delete a Linode instance
           linode.cloud.instance:
-            label: '{{ create_authorized_keys.instance.label }}'
+            label: '{{ create_multi_auth.instance.label }}'
             state: absent
           register: delete_multi_auth
 

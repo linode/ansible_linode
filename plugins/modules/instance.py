@@ -418,7 +418,7 @@ linode_instance_spec = {
         description=[
             "A list of SSH public key parts to deploy for the root user.",
             "If image is provided, one of root_pass, authorized_keys, or authorized_users",
-            " is required.",
+            "is required.",
         ],
     ),
     "authorized_users": SpecField(
@@ -427,7 +427,7 @@ linode_instance_spec = {
         description=[
             "A list of usernames.",
             "If image is provided, one of root_pass, authorized_keys, or authorized_users",
-            " is required.",
+            "is required.",
         ],
     ),
     "maintenance_policy": SpecField(
@@ -443,7 +443,7 @@ linode_instance_spec = {
         description=[
             "The password for the root user.",
             "If image is provided, one of root_pass, authorized_keys, or authorized_users",
-            " is required.",
+            "is required.",
         ],
     ),
     "stackscript_id": SpecField(
@@ -1024,8 +1024,8 @@ class LinodeInstance(LinodeModuleBase):
         response = self.client.linode.instance_create(ltype, region, **params)
 
         result["instance"] = response
-        # Return the explicit root_pass provided by the caller, or an empty string.
-        result["root_pass"] = params.get("root_pass", "") or ""
+        # API-generated passwords are no longer supported; avoid echoing the caller-provided secret.
+        result["root_pass"] = ""
 
         return result
 
