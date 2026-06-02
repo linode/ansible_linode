@@ -416,13 +416,19 @@ linode_instance_spec = {
         type=FieldType.list,
         element_type=FieldType.string,
         description=[
-            "A list of SSH public key parts to deploy for the root user."
+            "A list of SSH public key parts to deploy for the root user.",
+            "If image is provided, one of root_pass, authorized_keys, or authorized_users",
+            "is required.",
         ],
     ),
     "authorized_users": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
-        description=["A list of usernames."],
+        description=[
+            "A list of usernames.",
+            "If image is provided, one of root_pass, authorized_keys, or authorized_users",
+            "is required.",
+        ],
     ),
     "maintenance_policy": SpecField(
         type=FieldType.string,
@@ -436,8 +442,8 @@ linode_instance_spec = {
         no_log=True,
         description=[
             "The password for the root user.",
-            "If not specified, one will be generated.",
-            "This generated password will be available in the task success JSON.",
+            "If image is provided, one of root_pass, authorized_keys, or authorized_users",
+            "is required.",
         ],
     ),
     "stackscript_id": SpecField(
@@ -657,6 +663,19 @@ linode_instance_spec = {
         description=[
             "When deploying from an Image, this field is optional, otherwise it is ignored. "
             "This is used to set the swap disk size for the newly-created Linode."
+        ],
+    ),
+    "kernel": SpecField(
+        type=FieldType.string,
+        description=[
+            "The kernel to deploy with when creating a Linode.",
+        ],
+    ),
+    "boot_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The size of the boot disk in MB for the newly-created Linode. ",
+            "Must be at least 8192 MB.",
         ],
     ),
 }
@@ -950,7 +969,7 @@ class LinodeInstance(LinodeModuleBase):
         """Creates a Linode instance"""
         params = copy.deepcopy(self.module.params)
 
-        if "root_pass" in params.keys() and params.get("root_pass") is None:
+        if "root_pass" in params and params.get("root_pass") is None:
             params.pop("root_pass")
 
         ltype = params.pop("type")
@@ -977,16 +996,36 @@ class LinodeInstance(LinodeModuleBase):
 
             params["interfaces"] = _linode_interfaces
 
+        # If deploying from an image, require at least one authentication
+        # option to be explicitly provided by the caller. This prevents
+        # silently relying on API-generated passwords when the user did not
+        # intend to receive them.
+        if params.get("image") is not None:
+            has_root_pass = "root_pass" in params and params.get("root_pass")
+            has_auth_users = (
+                params.get("authorized_users") is not None
+                and len(params.get("authorized_users") or []) > 0
+            )
+            has_auth_keys = (
+                params.get("authorized_keys") is not None
+                and len(params.get("authorized_keys") or []) > 0
+            )
+
+            if not (has_root_pass or has_auth_users or has_auth_keys):
+                self.fail(
+                    msg=(
+                        "When deploying from an image, one of 'root_pass',"
+                        " 'authorized_users', or 'authorized_keys' must be provided"
+                    )
+                )
+
         result = {"instance": None, "root_pass": ""}
 
         response = self.client.linode.instance_create(ltype, region, **params)
 
-        # Weird variable return type
-        if isinstance(response, tuple):
-            result["instance"] = response[0]
-            result["root_pass"] = response[1]
-        else:
-            result["instance"] = response
+        result["instance"] = response
+        # API-generated passwords are no longer supported; avoid echoing the caller-provided secret.
+        result["root_pass"] = ""
 
         return result
 
@@ -1072,6 +1111,28 @@ class LinodeInstance(LinodeModuleBase):
 
     def _create_disk_register(self, **params: Any) -> None:
         size = params.pop("size")
+
+        if "root_pass" in params and params.get("root_pass") is None:
+            params.pop("root_pass")
+
+        if params.get("image") is not None:
+            has_root_pass = "root_pass" in params and params.get("root_pass")
+            has_auth_users = (
+                params.get("authorized_users") is not None
+                and len(params.get("authorized_users") or []) > 0
+            )
+            has_auth_keys = (
+                params.get("authorized_keys") is not None
+                and len(params.get("authorized_keys") or []) > 0
+            )
+
+            if not (has_root_pass or has_auth_users or has_auth_keys):
+                self.fail(
+                    msg=(
+                        "When creating a disk from an image, one of 'root_pass',"
+                        " 'authorized_users', or 'authorized_keys' must be provided"
+                    )
+                )
 
         stackscript_id = params.pop("stackscript_id", None)
         if stackscript_id is not None:
