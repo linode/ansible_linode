@@ -7,6 +7,7 @@ from __future__ import absolute_import, division, print_function
 
 import copy
 import ipaddress
+import time
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.firewall as docs
@@ -219,14 +220,28 @@ class LinodeFirewall(LinodeModuleBase):
         super().__init__(module_arg_spec=self.module_arg_spec)
 
     def _get_firewall_by_label(self, label: str) -> Optional[Firewall]:
-        try:
-            return self.client.networking.firewalls(Firewall.label == label)[0]
-        except IndexError:
-            return None
-        except Exception as exception:
-            return self.fail(
-                msg="failed to get firewall {0}: {1}".format(label, exception)
-            )
+        attempt = 0
+        retries = 5
+        retry_delay = 3
+
+        while attempt < retries:
+            try:
+                return self.client.networking.firewalls(
+                    Firewall.label == label
+                )[0]
+            except IndexError:
+                attempt += 1
+                if attempt < retries:
+                    time.sleep(retry_delay)
+                else:
+                    return None
+            except Exception as exception:
+                return self.fail(
+                    msg="failed to get firewall {0}: {1}".format(
+                        label, exception
+                    )
+                )
+        return None
 
     def _create_firewall(self) -> Optional[Firewall]:
         params = self.module.params
@@ -348,20 +363,21 @@ class LinodeFirewall(LinodeModuleBase):
         if self._state != "update":
             return local_rules
 
-        # Add new local rules to remote rules if they don't exist
+        # Amend existing rules and append new local rules
         for direction in ["inbound", "outbound"]:
-            rlr = {
-                remote_rule["label"]
-                for remote_rule in remote_rules.get(direction, {})
+            remote_labeled = {
+                r["label"] for r in remote_rules.get(direction, [])
             }
-            for local_rule in local_rules.get(direction, {}):
-                if local_rule["label"] not in rlr:
-                    remote_rules[direction].append(local_rule)
-
-        for direction in ["inbound", "outbound"]:
-            local_rules[direction] = self._amend_rules(
-                remote_rules[direction], local_rules[direction]
+            # Start with amended existing remote rules
+            amended = self._amend_rules(
+                remote_rules.get(direction, []),
+                local_rules.get(direction, []),
             )
+            # Append any new local rules not present in remote
+            for local_rule in local_rules.get(direction, []):
+                if local_rule["label"] not in remote_labeled:
+                    amended.append(local_rule)
+            local_rules[direction] = amended
         return local_rules
 
     def _change_rules(self) -> Optional[dict]:
@@ -438,6 +454,12 @@ class LinodeFirewall(LinodeModuleBase):
         self._firewall = self._get_firewall_by_label(label)
 
         if self._firewall is None:
+            if self._state == "update":
+                self.fail(
+                    msg="Firewall {0} does not exist and cannot be updated.".format(
+                        label
+                    )
+                )
             self._firewall = self._create_firewall()
             self.register_action("Created Firewall {0}".format(label))
 
