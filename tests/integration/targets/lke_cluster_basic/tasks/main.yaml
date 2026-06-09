@@ -212,6 +212,7 @@
           linode.cloud.lke_cluster:
             label: '{{ create_cluster_disk_encryption.cluster.label }}'
             state: absent
+          when: create_cluster_disk_encryption is defined
 
 
   environment:

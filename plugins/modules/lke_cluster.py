@@ -738,6 +738,7 @@ class LinodeLKECluster(LinodeModuleBase):
                     pool["type"],
                     pool["count"],
                     autoscaler=pool.get("autoscaler"),
+                    disk_encryption=pool.get("disk_encryption"),
                 )
 
         for i, pool in enumerate(existing_pools):
