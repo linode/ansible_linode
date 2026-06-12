@@ -1,4 +1,4 @@
-  
+
 - name: ip_share
   block:
     - set_fact:
@@ -10,7 +10,8 @@
         label: 'ansible-test-{{ r1 }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/alpine3.19
+        image: linode/arch
+        root_pass: Fn$$oobar123
         wait: false
         state: present
       register: instance_create
@@ -20,7 +21,8 @@
         label: 'ansible-test-{{ r2 }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/alpine3.19
+        image: linode/arch
+        root_pass: Fn$$oobar123
         wait: false
         state: present
         firewall_id: '{{ firewall_id }}'
@@ -82,7 +84,7 @@
           - ip_shared.ips[0] == ip_shared_address
           - ip_already_shared.changed == false
           - ip_unshared.ips == []
-          
+
   always:
     - ignore_errors: true
       block:

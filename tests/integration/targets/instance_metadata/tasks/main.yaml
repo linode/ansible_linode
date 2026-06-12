@@ -10,6 +10,7 @@
         region: "{{ region }}"
         type: g6-nanode-1
         image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
         wait: false
         metadata:
           user_data: cool

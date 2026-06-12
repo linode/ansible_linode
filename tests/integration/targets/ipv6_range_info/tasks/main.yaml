@@ -8,21 +8,23 @@
         label: 'ansible-test-{{ r }}'
         region: us-ord
         type: g6-standard-1
-        image: linode/alpine3.19
+        image: linode/arch
+        root_pass: Fn$$oobar123
         wait: no
         state: present
         firewall_id: '{{ firewall_id }}'
       register: instance_create
 
     - set_fact:
-        ipv6_body: >
-          {"linode_id": {{ instance_create.instance.id }}, "prefix_length": 64}
+        ipv6_body:
+          linode_id: "{{ instance_create.instance.id }}"
+          prefix_length: 64
 
     - name: Assign an IPv6 range to the instance
       linode.cloud.api_request:
         path: networking/ipv6/ranges
         method: POST
-        body_json: '{{ ipv6_body | to_json }}'
+        body_json: "{{ ipv6_body }}"
       register: range_create
 
     - name: Get ipv6_range_info about the IPv6 range
