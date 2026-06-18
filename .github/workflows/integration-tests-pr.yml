@@ -11,6 +11,14 @@ on:
       pull_request_number:
         description: 'Specify pull request number associated with the commit. Optional, but recommended when providing a commit hash (sha)'
         required: false
+      run_aclp_logs_stream_tests:
+        description: 'Run ACLP monitor logs stream integration tests. Defaults to "false"'
+        type: choice
+        required: false
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
 
 name: Integration tests on PR
 
@@ -58,7 +66,8 @@ jobs:
         if: ${{ steps.disallowed-char-check.outputs.match == '' }}
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
-      
+          RUN_ACLP_LOGS_STREAM_TESTS: ${{ inputs.run_aclp_logs_stream_tests || 'false' }}
+
       - name: Get the hash value of the latest commit from the PR branch
         uses: octokit/graphql-action@v2.x
         id: commit-hash
