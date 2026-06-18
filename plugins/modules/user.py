@@ -437,7 +437,10 @@ class Module(LinodeModuleBase):
         user._api_get()
 
         self.results["user"] = user._raw_json
-        self.results["grants"] = self._get_raw_grants(user)
+
+        # Fetching grants for unrestricted users is not permitted
+        if self.results["user"]["restricted"]:
+            self.results["grants"] = self._get_raw_grants(user)
 
     def _handle_absent(self) -> None:
         username: str = self.module.params.get("username")
@@ -446,7 +449,11 @@ class Module(LinodeModuleBase):
 
         if user is not None:
             self.results["user"] = user._raw_json
-            self.results["grants"] = self._get_raw_grants(user)
+
+            # Fetching grants for unrestricted users is not permitted
+            if self.results["user"]["restricted"]:
+                self.results["grants"] = self._get_raw_grants(user)
+
             user.delete()
             self.register_action("Deleted user {0}".format(user.username))
 
