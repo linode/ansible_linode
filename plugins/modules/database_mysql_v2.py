@@ -486,14 +486,14 @@ class Module(LinodeModuleBase):
             if len(engine_components) < 2:
                 raise ValueError(f"Invalid engine: {engine}")
 
-            major_version = int(engine_components[1])
+            major_version = engine_components[1].split(".")[0]
 
             # Evil hack to correct for the API returning a three-part value for the
             # `version` field while the user specifies the major version, while still
             # using handle_updates.
             #
             # If anyone can think of a better way to do this, please correct it :)
-            if int(database.version.split(".")[0]) != major_version:
+            if database.version.split(".")[0] != major_version:
                 params["version"] = major_version
 
         # The `updates` field is returned with an additional `pending` key that isn't
