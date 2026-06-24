@@ -49,6 +49,11 @@ Get info about a Linode VPC.
                     "range": "2001:db8:acad:0::/52"
                 }
             ],
+            "ipv4": [
+                {
+                    "range": "10.1.0.0/16"
+                }
+            ],
             "label": "my-vpc",
             "region": "us-east",
             "subnets": [],

@@ -108,6 +108,7 @@ Name | Description |
 [linode.cloud.user_info](./docs/modules/user_info.md)|Get info about a Linode User.|
 [linode.cloud.vlan_info](./docs/modules/vlan_info.md)|Get info about a Linode VLAN.|
 [linode.cloud.volume_info](./docs/modules/volume_info.md)|Get info about a Linode Volume.|
+[linode.cloud.vpc_default_ranges_info](./docs/modules/vpc_default_ranges_info.md)|Get info about a Linode VPC Default Ranges.|
 [linode.cloud.vpc_info](./docs/modules/vpc_info.md)|Get info about a Linode VPC.|
 [linode.cloud.vpc_subnet_info](./docs/modules/vpc_subnet_info.md)|Get info about a Linode VPC Subnet.|
 
