@@ -153,7 +153,7 @@
       linode.cloud.database_mysql_v2:
         label: "ansible-test-{{ r }}-forked"
         region: us-mia
-        engine: mysql/8
+        engine: "{{ engine_id }}"
         type: g6-nanode-1
         fork:
           source: "{{ db_refresh.database.id }}"
