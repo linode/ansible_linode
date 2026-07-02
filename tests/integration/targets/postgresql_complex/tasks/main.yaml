@@ -21,7 +21,7 @@
         engine_version: "{{ available_engines.database_engines[0]['version'] }}"
 
     - name: Validation check
-      linode.cloud.database_postgresql:
+      linode.cloud.database_postgresql_v2:
         label: 'ansible-test-{{ r }}'
         region: us-ord
         engine: '{{ engine_id }}'
@@ -33,7 +33,7 @@
       failed_when: '"Invalid CIDR format for IP" not in allow_list_validation.msg'
 
     - name: Create a database
-      linode.cloud.database_postgresql:
+      linode.cloud.database_postgresql_v2:
         label: 'ansible-test-{{ r }}'
         region: us-ord
         engine: '{{ engine_id }}'
@@ -80,7 +80,7 @@
     - ignore_errors: true
       block:
         - name: Delete postgres db
-          linode.cloud.database_postgresql:
+          linode.cloud.database_postgresql_v2:
             label: '{{ db_create.database.label }}'
             state: absent
 
