@@ -9,6 +9,8 @@ target-version = [
     "py310",
     "py311",
     "py312",
+    "py313",
+    "py314",
 ]
 exclude = "plugins/module_utils/doc_fragments"
 
@@ -56,5 +58,5 @@ disable = [
     "fixme",
 ]
 max-positional-arguments = 12
-py-version = "3.9"
+py-version = "3.10"
 extension-pkg-whitelist = "math"
