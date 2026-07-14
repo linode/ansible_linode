@@ -1,0 +1,18 @@
+- name: object_storage_global_quota_list
+  block:
+    - name: List Object Storage global quotas
+      linode.cloud.object_storage_global_quota_list:
+      register: obj_global_quota_list
+
+    - name: Assert global quotas are listed correctly
+      assert:
+        that:
+          - obj_global_quota_list.object_storage_global_quotas | length > 0
+          - "(obj_global_quota_list.object_storage_global_quotas | selectattr('quota_id', 'equalto', 'keys') | list | length) > 0"
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
