@@ -62,11 +62,12 @@ jobs:
       - name: replace existing keys
         run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
 
-      - run: make deps && make TEST_SUITE="${{ inputs.test_suite }}" test-int
+      - run: make deps && make TEST_SUITE="$TEST_SUITE" test-int
         if: ${{ steps.disallowed-char-check.outputs.match == '' }}
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
           RUN_ACLP_LOGS_STREAM_TESTS: ${{ inputs.run_aclp_logs_stream_tests || 'false' }}
+          TEST_SUITE: ${{ inputs.test_suite }}
 
       - name: Get the hash value of the latest commit from the PR branch
         uses: octokit/graphql-action@v2.x
