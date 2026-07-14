@@ -5,19 +5,26 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import Any
+
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     object_storage_global_quota_info as docs,
 )
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
     InfoModule,
     InfoModuleAttr,
+    InfoModuleParam,
     InfoModuleResult,
 )
 from ansible_specdoc.objects import FieldType
-from linode_api4 import ObjectStorageGlobalQuota
+from linode_api4 import LinodeClient, ObjectStorageGlobalQuota
 
 
-def get_quota_usage(client, object_storage_global_quota, params):
+def get_quota_usage(
+    client: LinodeClient,
+    object_storage_global_quota: dict[str, Any],
+    params: list[InfoModuleParam],
+) -> dict[str, Any] | None:
     """Return quota usage details for a quota when usage is available."""
     if not object_storage_global_quota["has_usage"]:
         return None
