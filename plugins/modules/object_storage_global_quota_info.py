@@ -13,7 +13,6 @@ from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import 
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
     InfoModule,
     InfoModuleAttr,
-    InfoModuleParam,
     InfoModuleResult,
 )
 from ansible_specdoc.objects import FieldType
@@ -23,7 +22,7 @@ from linode_api4 import LinodeClient, ObjectStorageGlobalQuota
 def get_quota_usage(
     client: LinodeClient,
     object_storage_global_quota: dict[str, Any],
-    params: list[InfoModuleParam],
+    params: dict | None,
 ) -> dict[str, Any] | None:
     """Return quota usage details for a quota when usage is available."""
     if not object_storage_global_quota["has_usage"]:
