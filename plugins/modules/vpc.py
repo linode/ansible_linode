@@ -140,8 +140,10 @@ class Module(LinodeModuleBase):
     ) -> Tuple[bool, Any]:
 
         def normalize(
-            values: Iterable[dict[str, Any]],
+            values: Optional[Iterable[dict[str, Any]]],
         ) -> Set[Tuple[Tuple[str, Any], ...]]:
+            if not values:
+                return set()
             return {tuple(sorted(v.items())) for v in values}
 
         return (
