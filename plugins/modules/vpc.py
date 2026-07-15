@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from typing import Any, Optional
+from typing import Any, Iterable, Optional, Set, Tuple
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vpc as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
@@ -75,6 +75,20 @@ SPEC = {
             ),
         },
     ),
+    "ipv4": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        description=[
+            "A list of IPv4 ranges in CIDR notation.",
+            "NOTE: IPv4 VPCs may not currently be available to all users.",
+        ],
+        suboptions={
+            "range": SpecField(
+                type=FieldType.string,
+                description="The IPv4 range assigned to this VPC.",
+            )
+        },
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -95,8 +109,8 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-CREATE_FIELDS = {"label", "region", "description", "ipv6"}
-MUTABLE_FIELDS = {"description"}
+CREATE_FIELDS = {"label", "region", "description", "ipv6", "ipv4"}
+MUTABLE_FIELDS = {"description", "ipv4"}
 
 DOCUMENTATION = r"""
 """
@@ -116,6 +130,25 @@ class Module(LinodeModuleBase):
         super().__init__(
             module_arg_spec=self.module_arg_spec,
             required_if=[("state", "present", ["region"])],
+        )
+
+    @staticmethod
+    def _diff_ipv4(
+        _key: str,
+        old_value: Any,
+        new_value: Any,
+    ) -> Tuple[bool, Any]:
+
+        def normalize(
+            values: Optional[Iterable[dict[str, Any]]],
+        ) -> Set[Tuple[Tuple[str, Any], ...]]:
+            if not values:
+                return set()
+            return {tuple(sorted(v.items())) for v in values}
+
+        return (
+            normalize(old_value) != normalize(new_value),
+            new_value,
         )
 
     def __ipv6_updated(self, vpc: VPC) -> bool:
@@ -159,6 +192,9 @@ class Module(LinodeModuleBase):
             MUTABLE_FIELDS,
             self.register_action,
             ignore_keys={"ipv6"},
+            diff_overrides={
+                "ipv4": self._diff_ipv4,
+            },
         )
 
         if self.__ipv6_updated(vpc):

@@ -1,0 +1,98 @@
+- name: vpc_ipv4
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: no-osl-1
+        ipv4:
+          - range: "10.0.0.0/16"
+        state: present
+      register: create_vpc
+
+    - name: Assert VPC created
+      assert:
+        that:
+          - create_vpc.changed
+          - create_vpc.vpc.label == 'ansible-test-{{ r }}'
+          - create_vpc.vpc.region == 'no-osl-1'
+          - create_vpc.vpc.ipv4 | length == 1
+          - create_vpc.vpc.ipv4[0].range == "10.0.0.0/16"
+
+    - name: Update the IPv4 range
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: no-osl-1
+        ipv4:
+          - range: "10.1.0.0/16"
+        state: present
+      register: update_vpc
+
+    - name: Assert VPC updated
+      assert:
+        that:
+          - update_vpc.changed
+          - update_vpc.vpc.label == 'ansible-test-{{ r }}'
+          - update_vpc.vpc.region == 'no-osl-1'
+          - update_vpc.vpc.ipv4 | length == 1
+          - update_vpc.vpc.ipv4[0].range == "10.1.0.0/16"
+
+    - name: List VPCs
+      linode.cloud.vpc_list:
+        filters:
+          - name: label
+            values: '{{ create_vpc.vpc.label }}'
+      register: list_vpc
+      until:
+        - list_vpc.vpcs | length == 1
+        - list_vpc.vpcs[0].ipv4 | length == 1
+        - list_vpc.vpcs[0].ipv4[0].range == "10.1.0.0/16"
+      retries: 10
+      delay: 2
+
+    - name: Assert VPC is returned with ipv4 range
+      assert:
+        that:
+          - list_vpc.vpcs | length == 1
+          - list_vpc.vpcs[0].id == create_vpc.vpc.id
+          - list_vpc.vpcs[0].ipv4 | length == 1
+          - list_vpc.vpcs[0].ipv4[0].range == "10.1.0.0/16"
+
+    - name: Get information about the VPC by ID
+      linode.cloud.vpc_info:
+        id: '{{ create_vpc.vpc.id }}'
+      register: vpc_info_id
+
+    - name: Get information about the VPC by label
+      linode.cloud.vpc_info:
+        label: '{{ create_vpc.vpc.label }}'
+      register: vpc_info_label
+
+    - name: Assert results
+      assert:
+        that:
+          - vpc_info_id.vpc.id == create_vpc.vpc.id
+          - vpc_info_id.vpc.id == vpc_info_label.vpc.id
+          - vpc_info_id.vpc.ipv4 | length == 1
+          - vpc_info_id.vpc.ipv4[0].range == "10.1.0.0/16"
+          - vpc_info_label.vpc.ipv4 | length == 1
+          - vpc_info_label.vpc.ipv4[0].range == "10.1.0.0/16"
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+
+    LINODE_CA: '{{ ca_file or "" }}'
