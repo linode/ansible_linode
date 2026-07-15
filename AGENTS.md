@@ -3,9 +3,12 @@
 ## Scope
 
 This repository is the `linode.cloud` Ansible collection. Treat
-[linode/cloud](.) as the collection root; `galaxy.yml`, `plugins/`, `tests/`,
-and the Makefile are the source of truth for local workflows. Keep changes
-small and aligned with the existing collection layout.
+[linode/cloud](.) as the collection root. The tracked
+[`template/galaxy.template.yml`](template/galaxy.template.yml), `plugins/`,
+`tests/`, and the Makefile define collection metadata, implementation, tests,
+and local workflows. `galaxy.yml` is generated during `make build`; do not edit
+it directly. Keep changes small and aligned with the existing collection
+layout.
 
 Edit tracked sources at this root. The gitignored `collections/` directory is
 local install/test state, not an implementation or test target.
