@@ -40,6 +40,7 @@ from linode_api4 import (
 authentication_details_spec: dict = {
     "basic_authentication_password": SpecField(
         type=FieldType.string,
+        no_log=True,
         editable=True,
         description=[
             "The password tied to the basic_authentication_user, for basic authentication."
@@ -94,6 +95,7 @@ client_certificate_details_spec: dict = {
     ),
     "client_private_key": SpecField(
         type=FieldType.string,
+        no_log=True,
         editable=True,
         description=[
             "The private key in the non-encrypted PKCS8 format that authenticates "

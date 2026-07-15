@@ -70,6 +70,7 @@ MIN_DEVICE_LIMIT = 8
 linode_instance_metadata_spec = {
     "user_data": SpecField(
         type=FieldType.string,
+        no_log=True,
         description=[
             "The user-defined data to supply for the Linode through the Metadata service."
         ],
@@ -117,6 +118,7 @@ linode_instance_disk_spec = {
     ),
     "root_pass": SpecField(
         type=FieldType.string,
+        no_log=True,
         description=["The root user’s password on the newly-created Linode."],
     ),
     "size": SpecField(
@@ -135,6 +137,7 @@ linode_instance_disk_spec = {
     ),
     "stackscript_data": SpecField(
         type=FieldType.dict,
+        no_log=True,
         description=[
             "An object containing arguments to any User Defined Fields present in "
             "the StackScript used when creating the instance.",
@@ -456,6 +459,7 @@ linode_instance_spec = {
     ),
     "stackscript_data": SpecField(
         type=FieldType.dict,
+        no_log=True,
         description=[
             "An object containing arguments to any User Defined Fields present in "
             "the StackScript used when creating the instance.",
