@@ -217,6 +217,7 @@ linode_configs_spec = {
     "ssl_key": SpecField(
         type=FieldType.string,
         required=False,
+        no_log=True,
         editable=True,
         description=[
             "The PEM-formatted private key for the SSL certificate "
