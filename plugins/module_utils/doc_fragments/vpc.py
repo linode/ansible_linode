@@ -17,6 +17,15 @@ specdoc_examples = ['''
     - range: auto
     state: present''',
 '''
+# NOTE: IPv4 VPCs may not currently be available to all users.
+- name: Create a VPC with an IPv4 range
+  linode.cloud.vpc:
+    label: my-vpc
+    region: us-east
+    ipv4:
+    - range: 10.1.0.0/16
+    state: present''',
+'''
 - name: Delete a VPC
   linode.cloud.vpc:
     label: my-vpc
@@ -29,6 +38,11 @@ result_vpc_samples = ['''{
     "ipv6": [
         {
             "range": "2001:db8:acad:0::/52"
+        }
+    ],
+    "ipv4": [
+        {
+            "range": "10.1.0.0/16"
         }
     ],
     "label": "my-vpc",

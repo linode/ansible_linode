@@ -5,6 +5,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+from typing import Any
+
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     object_storage_quota_info as docs,
 )
@@ -14,7 +16,24 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info im
     InfoModuleResult,
 )
 from ansible_specdoc.objects import FieldType
-from linode_api4 import ObjectStorageQuota
+from linode_api4 import LinodeClient, ObjectStorageQuota
+
+
+def get_quota_usage(
+    client: LinodeClient,
+    object_storage_quota: dict[str, Any],
+    _: dict | None,
+) -> dict[str, Any] | None:
+    """Return quota usage details for a quota when usage is available."""
+    if not object_storage_quota["has_usage"]:
+        return None
+
+    return (
+        ObjectStorageQuota(client, object_storage_quota["quota_id"])
+        .usage()
+        .dict
+    )
+
 
 module = InfoModule(
     examples=docs.specdoc_examples,
@@ -33,11 +52,7 @@ module = InfoModule(
             docs_url="https://techdocs.akamai.com/linode-api/reference"
             "/get-object-storage-quota-usage",
             samples=docs.result_object_storage_quota_usage_samples,
-            get=lambda client, object_storage_quota, params: ObjectStorageQuota(
-                client, object_storage_quota["quota_id"]
-            )
-            .usage()
-            .dict,
+            get=get_quota_usage,
         ),
     ],
     attributes=[

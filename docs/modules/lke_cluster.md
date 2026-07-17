@@ -94,6 +94,7 @@ Manage Linode LKE clusters.
 | `labels` | <center>`dict`</center> | <center>Optional</center> | Key-value pairs added as labels to nodes in the node pool. Labels help classify your nodes and to easily select subsets of objects.  **(Updatable)** |
 | [`taints` (sub-options)](#taints) | <center>`list`</center> | <center>Optional</center> | Kubernetes taints to add to node pool nodes. Taints help control how pods are scheduled onto nodes, specifically allowing them to repel certain pods.  **(Updatable)** |
 | `firewall_id` | <center>`int`</center> | <center>Optional</center> | Firewall ID for the Node Pool.  **(Updatable)** |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | Local disk encryption setting for this LKE node pool. This option can only be set during creation.  **(Choices: `disabled`, `enabled`)** |
 
 ### autoscaler
 
