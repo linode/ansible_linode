@@ -14,7 +14,7 @@ module = ListModule(
     result_display_name="Locks",
     result_field_name="locks",
     endpoint_template="/locks",
-    result_docs_url="TBD",
+    result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-resource-locks",
     examples=docs.specdoc_examples,
     result_samples=docs.result_locks_samples,
 )

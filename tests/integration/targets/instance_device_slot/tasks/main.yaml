@@ -1,0 +1,52 @@
+- name: instance_device_slot
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create an instance with a disk only in slot sdl
+      linode.cloud.instance:
+        label: 'ansible-test-slot-{{ r }}'
+        region: us-ord
+        type: g6-standard-6
+        booted: false
+        disks:
+          - label: test-disk
+            filesystem: ext4
+            size: 512
+        configs:
+          - label: test-config
+            devices:
+              sdl:
+                disk_label: test-disk
+        state: present
+        firewall_id: '{{ firewall_id }}'
+      register: slot_test
+
+    - name: Assert disk is in slot sdl, not shifted to sda
+      assert:
+        that:
+          - slot_test.changed
+          - slot_test.configs[0].devices.sdl.disk_id is not none
+          - slot_test.configs[0].devices.sda is none
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete instance
+          linode.cloud.instance:
+            label: 'ansible-test-slot-{{ r }}'
+            state: absent
+          register: delete
+
+        - name: Assert instance delete succeeded
+          assert:
+            that:
+              - delete.changed
+              - delete.instance.id == slot_test.instance.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

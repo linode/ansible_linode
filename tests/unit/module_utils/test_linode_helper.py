@@ -1,10 +1,12 @@
 import pytest
 from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import (
     dict_select_spec,
-    filter_null_values,
     drop_empty_strings,
+    filter_null_values,
+    generate_device_suffixes,
     validate_required,
 )
+from ansible_collections.linode.cloud.plugins.modules.instance import MAX_DEVICE_LIMIT
 
 
 class TestLinodeHelper:
@@ -80,3 +82,13 @@ class TestLinodeHelper:
             pytest.fail(
                 f"validate_required raised an unexpected exception: {e}"
             )
+
+    def test_generate_device_suffixes(self):
+        expected_suffixes = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 
+                             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+                             'aa', 'ab', 'ac', 'ad', 'ae', 'af', 'ag', 'ah', 'ai', 'aj', 'ak', 
+                             'al', 'am', 'an', 'ao', 'ap', 'aq', 'ar', 'as', 'at', 'au', 'av', 
+                             'aw', 'ax', 'ay', 'az', 'ba', 'bb', 'bc', 'bd', 'be', 'bf', 'bg', 
+                             'bh', 'bi', 'bj', 'bk', 'bl']
+        result = generate_device_suffixes(MAX_DEVICE_LIMIT)
+        assert result == expected_suffixes

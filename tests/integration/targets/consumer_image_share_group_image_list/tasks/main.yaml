@@ -28,6 +28,7 @@
         region: '{{ capable_regions[1] }}'
         type: g6-standard-1
         image: linode/alpine3.19
+        root_pass: Fn$$oobar123
         state: present
         firewall_id: '{{ firewall_id }}'
       register: instance_one_create
@@ -50,6 +51,7 @@
         region: '{{ capable_regions[1] }}'
         type: g6-standard-1
         image: linode/alpine3.19
+        root_pass: Fn$$oobar123
         state: present
         firewall_id: '{{ firewall_id }}'
       register: instance_two_create

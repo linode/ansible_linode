@@ -11,6 +11,14 @@ on:
       pull_request_number:
         description: 'Specify pull request number associated with the commit. Optional, but recommended when providing a commit hash (sha)'
         required: false
+      run_aclp_logs_stream_tests:
+        description: 'Run ACLP monitor logs stream integration tests. Defaults to "false"'
+        type: choice
+        required: false
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
 
 name: Integration tests on PR
 
@@ -32,7 +40,7 @@ jobs:
 
       # Check out merge commit
       - name: Checkout PR
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.sha }}
           path: .ansible/collections/ansible_collections/linode/cloud
@@ -54,11 +62,13 @@ jobs:
       - name: replace existing keys
         run: rm -rf ~/.ansible/test && mkdir -p ~/.ansible/test && ssh-keygen -m PEM -q -t rsa -N '' -f ~/.ansible/test/id_rsa
 
-      - run: make deps && make TEST_SUITE="${{ inputs.test_suite }}" test-int
+      - run: make deps && make TEST_SUITE="$TEST_SUITE" test-int
         if: ${{ steps.disallowed-char-check.outputs.match == '' }}
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
-      
+          RUN_ACLP_LOGS_STREAM_TESTS: ${{ inputs.run_aclp_logs_stream_tests || 'false' }}
+          TEST_SUITE: ${{ inputs.test_suite }}
+
       - name: Get the hash value of the latest commit from the PR branch
         uses: octokit/graphql-action@v2.x
         id: commit-hash
@@ -84,7 +94,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/github-script@v8
+      - uses: actions/github-script@v9
         id: update-check-run
         if: ${{ inputs.pull_request_number != '' && fromJson(steps.commit-hash.outputs.data).repository.pullRequest.headRef.target.oid == inputs.sha }}
         env:
@@ -119,7 +129,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: 'recursive'

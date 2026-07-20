@@ -15,13 +15,14 @@
         state: 'present'
       register: account_info
 
-    - name: Create a Linode instance without a root password
+    - name: Create a Linode instance
       linode.cloud.instance:
         label: 'ansible-test-nopass-{{ r }}'
         region: '{{ pg_region }}'
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
+        root_pass: Fn$$oobar123
         wait: false
         state: present
         firewall_id: '{{ firewall_id }}'
@@ -35,13 +36,14 @@
           - create.networking.ipv4.public[0].address != None
           - create.instance.maintenance_policy == account_info.account_settings.maintenance_policy
 
-    - name: Create a Linode instance with additional ips and without a root password
+    - name: Create a Linode instance with additional ips
       linode.cloud.instance:
         label: 'ansible-test-additional-ips-nopass-{{ r }}'
         region: '{{ pg_region }}'
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
+        root_pass: Fn$$oobar123
         wait: false
         state: present
         additional_ipv4:
@@ -63,6 +65,7 @@
         type: g6-standard-2
         image: linode/ubuntu22.04
         private_ip: true
+        root_pass: Fn$$oobar123
         state: present
       register: invalid_update
       failed_when:
@@ -75,6 +78,7 @@
         type: g6-standard-2
         image: linode/ubuntu22.04
         private_ip: true
+        root_pass: Fn$$oobar123
         state: present
       register: invalid_update
       failed_when:
@@ -87,6 +91,7 @@
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
+        root_pass: Fn$$oobar123
         wait: false
         state: present
         additional_ipv4:
@@ -103,6 +108,7 @@
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
+        root_pass: Fn$$oobar123
         wait: false
         state: present
       register: invalid_update_remove_ips
@@ -114,7 +120,7 @@
         toggled_maintenance_policy: >-
           {{ 'linode/power_off_on' if account_info.account_settings.maintenance_policy == 'linode/migrate'
              else 'linode/migrate' }}
-          
+
     - set_fact:
         updated_label: '{{ create.instance.label }}-updated'
 
@@ -125,6 +131,7 @@
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
+        root_pass: Fn$$oobar123
         maintenance_policy: '{{ toggled_maintenance_policy }}'
         state: present
       register: update
@@ -194,25 +201,25 @@
           linode.cloud.instance:
             label: '{{ update.instance.label }}'
             state: absent
-          register: delete_nopass
+          register: delete
 
         - name: Assert instance delete succeeded
           assert:
             that:
-              - delete_nopass.changed
-              - delete_nopass.instance.id == update.instance.id
+              - delete.changed
+              - delete.instance.id == update.instance.id
 
         - name: Delete a Linode instance
           linode.cloud.instance:
             label: '{{ create_additional_ips.instance.label }}'
             state: absent
-          register: delete_nopass_ips
+          register: delete_ips
 
         - name: Assert instance delete succeeded
           assert:
             that:
-              - delete_nopass_ips.changed
-              - delete_nopass_ips.instance.id == create_additional_ips.instance.id
+              - delete_ips.changed
+              - delete_ips.instance.id == create_additional_ips.instance.id
 
         - name: Delete a Linode instance
           linode.cloud.instance:

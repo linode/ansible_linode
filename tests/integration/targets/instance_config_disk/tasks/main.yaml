@@ -164,6 +164,7 @@
         region: us-ord
         type: g6-standard-1
         image: linode/alpine3.19
+        root_pass: Fn$$oobar123
         booted: false
         disks:
           - label: test-disk
@@ -184,7 +185,8 @@
 
           - label: boot-disk
             size: 4096
-            image: linode/alpine3.19
+            image: linode/arch
+            root_pass: Fn$$oobar123
 
         configs:
           - label: boot-config

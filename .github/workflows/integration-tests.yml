@@ -22,6 +22,14 @@ on:
         options:
           - 'true'
           - 'false'
+      run_aclp_logs_stream_tests:
+        description: 'Run ACLP monitor logs stream integration tests. Defaults to "false"'
+        type: choice
+        required: false
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
   push:
     branches:
       - main
@@ -42,7 +50,7 @@ jobs:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: .ansible/collections/ansible_collections/linode/cloud
           fetch-depth: 0
@@ -71,10 +79,11 @@ jobs:
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
           ANSIBLE_CALLBACKS_ENABLED: "junit"
+          RUN_ACLP_LOGS_STREAM_TESTS: ${{ inputs.run_aclp_logs_stream_tests || 'false' }}
 
       - name: Upload Test Report as Artifact
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: xml-test-reports
           if-no-files-found: ignore
@@ -91,7 +100,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: 'recursive'
@@ -110,7 +119,7 @@ jobs:
         run: mkdir -p tests/output/junit
 
       - name: Download test report
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: xml-test-reports  # Specify the artifact name from the 'run-tests' job
           path: tests/output/junit
@@ -157,7 +166,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: 'recursive'
@@ -216,7 +225,7 @@ jobs:
     steps:
       - name: Notify Slack
         id: main_message
-        uses: slackapi/slack-github-action@v2.1.1
+        uses: slackapi/slack-github-action@v3
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
@@ -248,7 +257,7 @@ jobs:
 
       - name: Test summary thread
         if: success()
-        uses: slackapi/slack-github-action@v2.1.1
+        uses: slackapi/slack-github-action@v3
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}

@@ -1,0 +1,30 @@
+- name: monitor_services_alert_channel_list
+  block:
+    - name: List available alert channels
+      linode.cloud.monitor_alert_channel_list:
+      register: alert_channel_list
+
+    - name: Assert monitor_alert_channel_list response
+      assert:
+        that:
+          - alert_channel_list.alert_channels | length > 0
+
+    - name: List system alert channels
+      linode.cloud.monitor_alert_channel_list:
+        filters:
+          - name: label
+            values: ["Read-Write Channel"]
+      register: alert_channel_list_filter
+
+    - name: Assert alert_channel_list_filter response
+      assert:
+        that:
+          - alert_channel_list_filter.alert_channels | length > 0
+          - alert_channel_list_filter.alert_channels.0.label == 'Read-Write Channel'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

@@ -1,0 +1,249 @@
+- name: instance_volumes_limit
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+        r2: "{{ 1000000000 | random }}"
+
+    - name: Create 16 volumes 
+      linode.cloud.volume:
+        region: 'us-ord'
+        label: "{{ item.label }}"
+        size: "{{ item.size }}"
+        state: present
+      loop:
+        - { label: 'sdy-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdz-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdaa-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdaz-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdba-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbb-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbc-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbd-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbe-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbf-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbg-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbh-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbi-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbj-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbk-{{ r }}', region: 'us-ord', size: 10 }
+        - { label: 'sdbl-{{ r }}', region: 'us-ord', size: 10 }
+      register: volumes_output
+
+    - name: Create a Linode instance with 16 volumes
+      linode.cloud.instance:
+        label: 'ansible-test-volumes-limit-{{ r }}'
+        region: 'us-ord'
+        type: g6-standard-6
+        private_ip: true
+        wait: false
+        state: present
+        firewall_id: '{{ firewall_id }}'
+        configs:
+          - label: linode-config-max-volumes
+            devices:
+              sdy:
+                volume_id: "{{ volumes_output.results[0].volume.id }}"
+              sdz:
+                volume_id: "{{ volumes_output.results[1].volume.id }}"
+              sdaa:
+                volume_id: "{{ volumes_output.results[2].volume.id }}"
+              sdaz:
+                volume_id: "{{ volumes_output.results[3].volume.id }}"
+              sdba:
+                volume_id: "{{ volumes_output.results[4].volume.id }}"
+              sdbb:
+                volume_id: "{{ volumes_output.results[5].volume.id }}"
+              sdbc:
+                volume_id: "{{ volumes_output.results[6].volume.id }}"
+              sdbd:
+                volume_id: "{{ volumes_output.results[7].volume.id }}"
+              sdbe:
+                volume_id: "{{ volumes_output.results[8].volume.id }}"
+              sdbf:
+                volume_id: "{{ volumes_output.results[9].volume.id }}"
+              sdbg:
+                volume_id: "{{ volumes_output.results[10].volume.id }}"
+              sdbh:
+                volume_id: "{{ volumes_output.results[11].volume.id }}"
+              sdbi:
+                volume_id: "{{ volumes_output.results[12].volume.id }}"
+              sdbj:
+                volume_id: "{{ volumes_output.results[13].volume.id }}"
+              sdbk:
+                volume_id: "{{ volumes_output.results[14].volume.id }}"
+              sdbl:
+                volume_id: "{{ volumes_output.results[15].volume.id }}"
+      register: create
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create.changed
+          - create.instance.ipv4|length > 1
+          - create.networking.ipv4.public[0].address != None
+
+    - name: Fetch every volume's information
+      linode.cloud.volume_info:
+        id: "{{ item.volume.id }}"
+      loop: "{{ volumes_output.results }}"
+      register: volume_info_output
+
+    - name: Assert volumes are attached to the instance
+      assert:
+        that:
+          - volume_info_output.results[0].volume.linode_id == create.instance.id
+          - volume_info_output.results[1].volume.linode_id == create.instance.id
+          - volume_info_output.results[2].volume.linode_id == create.instance.id
+          - volume_info_output.results[3].volume.linode_id == create.instance.id
+          - volume_info_output.results[4].volume.linode_id == create.instance.id
+          - volume_info_output.results[5].volume.linode_id == create.instance.id
+          - volume_info_output.results[6].volume.linode_id == create.instance.id
+          - volume_info_output.results[7].volume.linode_id == create.instance.id
+          - volume_info_output.results[8].volume.linode_id == create.instance.id
+          - volume_info_output.results[9].volume.linode_id == create.instance.id
+          - volume_info_output.results[10].volume.linode_id == create.instance.id
+          - volume_info_output.results[11].volume.linode_id == create.instance.id
+          - volume_info_output.results[12].volume.linode_id == create.instance.id
+          - volume_info_output.results[13].volume.linode_id == create.instance.id
+          - volume_info_output.results[14].volume.linode_id == create.instance.id
+          - volume_info_output.results[15].volume.linode_id == create.instance.id
+
+    - name: Create extra volume for the instance to exceed the max limit
+      linode.cloud.volume:
+        region: 'us-ord'
+        label: 'sda-extra-{{ r2 }}'
+        size: 10
+        state: present
+      register: extra_volume
+
+    - name: Attempt to create an instance with 17 volumes
+      linode.cloud.instance:
+        region: 'us-ord'
+        label: 'ansible-test-volumes-limit-exceeded-{{ r2 }}'
+        type: g6-standard-6
+        private_ip: true
+        wait: false
+        state: present
+        firewall_id: '{{ firewall_id }}'
+        configs:
+          - label: linode-config-max-volumes-exceeded
+            devices:
+              sdy:
+                volume_id: "{{ volumes_output.results[0].volume.id }}"
+              sdz:
+                volume_id: "{{ volumes_output.results[1].volume.id }}"
+              sdaa:
+                volume_id: "{{ volumes_output.results[2].volume.id }}"
+              sdaz:
+                volume_id: "{{ volumes_output.results[3].volume.id }}"
+              sdba:
+                volume_id: "{{ volumes_output.results[4].volume.id }}"
+              sdbb:
+                volume_id: "{{ volumes_output.results[5].volume.id }}"
+              sdbc:
+                volume_id: "{{ volumes_output.results[6].volume.id }}"
+              sdbd:
+                volume_id: "{{ volumes_output.results[7].volume.id }}"
+              sdbe:
+                volume_id: "{{ volumes_output.results[8].volume.id }}"
+              sdbf:
+                volume_id: "{{ volumes_output.results[9].volume.id }}"
+              sdbg:
+                volume_id: "{{ volumes_output.results[10].volume.id }}"
+              sdbh:
+                volume_id: "{{ volumes_output.results[11].volume.id }}"
+              sdbi:
+                volume_id: "{{ volumes_output.results[12].volume.id }}"
+              sdbj:
+                volume_id: "{{ volumes_output.results[13].volume.id }}"
+              sdbk:
+                volume_id: "{{ volumes_output.results[14].volume.id }}"
+              sdbl:
+                volume_id: "{{ volumes_output.results[15].volume.id }}"
+              sda:
+                volume_id: "{{ extra_volume.volume.id }}"
+      register: invalid_create
+      failed_when:
+        - invalid_create.changed == true
+        - '"Too many devices specified for this instance type." not in invalid_create.msg'
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete first Linode instance
+          linode.cloud.instance:
+            label: '{{ create.instance.label }}'
+            state: absent
+          register: delete_instance
+
+        - name: Delete second Linode instance
+          linode.cloud.instance:
+            label: 'ansible-test-volumes-limit-exceeded-{{ r2 }}'
+            state: absent
+          register: delete_instance_2
+
+        - name: Assert first instance delete succeeded
+          assert:
+            that:
+              - delete_instance.changed
+              - delete_instance.instance.id == create.instance.id
+
+        - name: Assert second instance delete succeeded
+          assert:
+            that:
+              - delete_instance_2.changed == false or delete_instance_2.instance.id is defined
+          when: not invalid_create.failed
+
+        - name: Delete volumes
+          linode.cloud.volume:
+            label: '{{ item.label }}'
+            state: absent
+          loop:
+            - { label: 'sdy-{{ r }}' }
+            - { label: 'sdz-{{ r }}' }
+            - { label: 'sdaa-{{ r }}' }
+            - { label: 'sdaz-{{ r }}' }
+            - { label: 'sdba-{{ r }}' }
+            - { label: 'sdbb-{{ r }}' }
+            - { label: 'sdbc-{{ r }}' }
+            - { label: 'sdbd-{{ r }}' }
+            - { label: 'sdbe-{{ r }}' }
+            - { label: 'sdbf-{{ r }}' }
+            - { label: 'sdbg-{{ r }}' }
+            - { label: 'sdbh-{{ r }}' }
+            - { label: 'sdbi-{{ r }}' }
+            - { label: 'sdbj-{{ r }}' }
+            - { label: 'sdbk-{{ r }}' }
+            - { label: 'sdbl-{{ r }}' }
+            - { label: 'sda-extra-{{ r2 }}' }
+          register: delete_volumes
+
+        - name: Assert volumes delete succeeded
+          assert:
+            that:
+              - delete_volumes.changed
+              - delete_volumes.results[0].volume.id == volumes_output.results[0].volume.id
+              - delete_volumes.results[1].volume.id == volumes_output.results[1].volume.id
+              - delete_volumes.results[2].volume.id == volumes_output.results[2].volume.id
+              - delete_volumes.results[3].volume.id == volumes_output.results[3].volume.id
+              - delete_volumes.results[4].volume.id == volumes_output.results[4].volume.id
+              - delete_volumes.results[5].volume.id == volumes_output.results[5].volume.id
+              - delete_volumes.results[6].volume.id == volumes_output.results[6].volume.id
+              - delete_volumes.results[7].volume.id == volumes_output.results[7].volume.id
+              - delete_volumes.results[8].volume.id == volumes_output.results[8].volume.id
+              - delete_volumes.results[9].volume.id == volumes_output.results[9].volume.id
+              - delete_volumes.results[10].volume.id == volumes_output.results[10].volume.id
+              - delete_volumes.results[11].volume.id == volumes_output.results[11].volume.id
+              - delete_volumes.results[12].volume.id == volumes_output.results[12].volume.id
+              - delete_volumes.results[13].volume.id == volumes_output.results[13].volume.id
+              - delete_volumes.results[14].volume.id == volumes_output.results[14].volume.id
+              - delete_volumes.results[15].volume.id == volumes_output.results[15].volume.id
+              - delete_volumes.results[16].volume.id == extra_volume.volume.id
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

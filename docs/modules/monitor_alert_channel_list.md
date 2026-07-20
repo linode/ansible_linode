@@ -47,35 +47,28 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
         ```json
         [
             {
-              "alerts": [
-                {
-                  "id": 10000,
-                  "label": "High Memory Usage Plan Dedicated",
-                  "type": "alerts-definitions",
-                  "url": "/monitor/alerts-definitions/10000"
+                "id": 123,
+                "label": "alert notification channel",
+                "type": "user",
+                "channel_type": "email",
+                "details": {
+                    "email": {
+                        "usernames": [
+                            "admin-user1",
+                            "admin-user2"
+                        ],
+                        "recipient_type": "user"
+                    }
                 },
-                {
-                  "id": 10001,
-                  "label": "High Memory Usage Plan Shared",
-                  "type": "alerts-definitions",
-                  "url": "/monitor/alerts-definitions/10001"
-                }
-              ],
-              "channel_type": "email",
-              "content": {
-                "email": {
-                  "email_addresses": [
-                    "Users-with-read-write-access-to-resources"
-                  ]
-                }
-              },
-              "created": "2025-03-20T01:41:09",
-              "created_by": "system",
-              "id": 10000,
-              "label": "Read-Write Channel",
-              "type": "system",
-              "updated": "2025-03-20T01:41:09",
-              "updated_by": "system"
+                "alerts": {
+                    "url": "/monitor/alert-channels/123/alerts",
+                    "type": "alerts-definitions",
+                    "alert_count": 0
+                },
+                "created": "2024-01-01T00:00:00",
+                "updated": "2024-01-01T00:00:00",
+                "created_by": "tester",
+                "updated_by": "tester"
             }
         ]
         

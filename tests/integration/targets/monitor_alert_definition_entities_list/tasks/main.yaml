@@ -1,0 +1,31 @@
+- name: monitor_alert_definition_entities_list
+  block:
+    - name: List available alert definitions by service type
+      linode.cloud.monitor_services_alert_definition_by_service_type_list:
+        service_type: 'dbaas'
+      register: alert_definitions_list
+
+    - name: Assert alert_definitions_list response
+      assert:
+        that:
+          - alert_definitions_list.alert_definitions | length > 0
+
+    - name: List entities for the alert definition
+      linode.cloud.monitor_alert_definition_entities_list:
+        service_type: 'dbaas'
+        id: '{{ alert_definitions_list.alert_definitions[0].id }}'
+      register: entities_list
+
+    - name: Assert entities list response
+      assert:
+        that:
+          - entities_list.alert_definition_entities is defined
+          - entities_list.alert_definition_entities | type_debug == 'list'
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
+

@@ -1,4 +1,4 @@
-- name: vpc_basic
+- name: vpc_ip_list
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"

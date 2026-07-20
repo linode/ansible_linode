@@ -28,6 +28,7 @@
         region: no-osl-1
         type: g6-nanode-1
         image: linode/alpine3.21
+        root_pass: Fn$$oobar123
         interfaces:
           - purpose: vpc
             subnet_id: '{{ create_subnet.subnet.id }}'
@@ -66,6 +67,7 @@
         region: no-osl-1
         type: g6-nanode-1
         image: linode/alpine3.21
+        root_pass: Fn$$oobar123
         interfaces:
           - purpose: vpc
             subnet_id: '{{ create_subnet.subnet.id }}'
@@ -101,6 +103,7 @@
         region: no-osl-1
         type: g6-nanode-1
         image: linode/alpine3.21
+        root_pass: Fn$$oobar123
         interfaces:
           - purpose: vpc
             subnet_id: '{{ create_subnet.subnet.id }}'

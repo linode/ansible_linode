@@ -43,6 +43,10 @@ Name | Description |
 [linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|Manage Linode LKE clusters.|
 [linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|Manage Linode LKE cluster node pools.|
 [linode.cloud.lock](./docs/modules/lock.md)|Create and delete Linode resource locks.|
+[linode.cloud.monitor_logs_destination](./docs/modules/monitor_logs_destination.md)|Manage logs destination that serves as a sync point for logs data. You need read_write access to the scope to call this operation.|
+[linode.cloud.monitor_logs_destination_history](./docs/modules/monitor_logs_destination_history.md)|List and filter on Logs Destination History.|
+[linode.cloud.monitor_logs_stream](./docs/modules/monitor_logs_stream.md)|Create, update, and delete Monitor Logs Streams.|
+[linode.cloud.monitor_logs_stream_history](./docs/modules/monitor_logs_stream_history.md)|List and filter on Logs Stream History.|
 [linode.cloud.monitor_services_alert_definition](./docs/modules/monitor_services_alert_definition.md)|Manage an alert definition for a specific service type. Akamai refers to these as user alerts. You need read_only access to the scope for the selected serviceType. |
 [linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|Manage a Linode NodeBalancer.|
 [linode.cloud.nodebalancer_node](./docs/modules/nodebalancer_node.md)|Manage Linode NodeBalancer Nodes.|
@@ -88,10 +92,13 @@ Name | Description |
 [linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|Get info about a Linode LKE cluster.|
 [linode.cloud.lke_version_info](./docs/modules/lke_version_info.md)|Get info about a Linode LKE Version.|
 [linode.cloud.lock_info](./docs/modules/lock_info.md)|Get info about a Linode Lock.|
+[linode.cloud.monitor_logs_destination_info](./docs/modules/monitor_logs_destination_info.md)|Get info about a Linode Logs Destination.|
+[linode.cloud.monitor_logs_stream_info](./docs/modules/monitor_logs_stream_info.md)|Get info about a Linode Monitor Logs Stream.|
 [linode.cloud.monitor_services_alert_definition_info](./docs/modules/monitor_services_alert_definition_info.md)|Get info about a Linode Alert Definition.|
 [linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode Node Balancer.|
 [linode.cloud.nodebalancer_vpc_info](./docs/modules/nodebalancer_vpc_info.md)|Get info about a Linode VPC Configuration.|
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
+[linode.cloud.object_storage_global_quota_info](./docs/modules/object_storage_global_quota_info.md)|Get info about a Linode Object Storage Global Quota.|
 [linode.cloud.object_storage_quota_info](./docs/modules/object_storage_quota_info.md)|Get info about a Linode Object Storage Quota.|
 [linode.cloud.placement_group_info](./docs/modules/placement_group_info.md)|Get info about a Linode Placement Group.|
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
@@ -103,6 +110,7 @@ Name | Description |
 [linode.cloud.user_info](./docs/modules/user_info.md)|Get info about a Linode User.|
 [linode.cloud.vlan_info](./docs/modules/vlan_info.md)|Get info about a Linode VLAN.|
 [linode.cloud.volume_info](./docs/modules/volume_info.md)|Get info about a Linode Volume.|
+[linode.cloud.vpc_default_ranges_info](./docs/modules/vpc_default_ranges_info.md)|Get info about a Linode VPC Default Ranges.|
 [linode.cloud.vpc_info](./docs/modules/vpc_info.md)|Get info about a Linode VPC.|
 [linode.cloud.vpc_subnet_info](./docs/modules/vpc_subnet_info.md)|Get info about a Linode VPC Subnet.|
 
@@ -135,6 +143,9 @@ Name | Description |
 [linode.cloud.lock_list](./docs/modules/lock_list.md)|List and filter on Locks.|
 [linode.cloud.maintenance_policy_list](./docs/modules/maintenance_policy_list.md)|List and filter on Maintenance Policies.|
 [linode.cloud.monitor_alert_channel_list](./docs/modules/monitor_alert_channel_list.md)|List and filter on Alert Channels.|
+[linode.cloud.monitor_alert_definition_entities_list](./docs/modules/monitor_alert_definition_entities_list.md)|List and filter on Alert Definition Entities.|
+[linode.cloud.monitor_logs_destination_list](./docs/modules/monitor_logs_destination_list.md)|List and filter on Logs Destinations.|
+[linode.cloud.monitor_logs_stream_list](./docs/modules/monitor_logs_stream_list.md)|List and filter on Monitor Logs Streams.|
 [linode.cloud.monitor_services_alert_definition_by_service_type_list](./docs/modules/monitor_services_alert_definition_by_service_type_list.md)|The return alert definitions by service type. **Note: filters and order are currently NOT supported by this endpoint.|
 [linode.cloud.monitor_services_alert_definition_list](./docs/modules/monitor_services_alert_definition_list.md)|List and filter on Alert Definitions.|
 [linode.cloud.network_transfer_prices_list](./docs/modules/network_transfer_prices_list.md)|List and filter on Network Transfer Prices.|
@@ -143,6 +154,7 @@ Name | Description |
 [linode.cloud.nodebalancer_vpc_list](./docs/modules/nodebalancer_vpc_list.md)|List and filter on Node Balancer VPC Configurations.|
 [linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.object_storage_endpoint_list](./docs/modules/object_storage_endpoint_list.md)|List and filter on Object Storage Endpoints.|
+[linode.cloud.object_storage_global_quota_list](./docs/modules/object_storage_global_quota_list.md)|List Object Storage Global Quotas.|
 [linode.cloud.object_storage_quota_list](./docs/modules/object_storage_quota_list.md)|List and filter on Object Storage Quotas.|
 [linode.cloud.placement_group_list](./docs/modules/placement_group_list.md)|List and filter on Placement Groups.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
