@@ -223,7 +223,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         name: str, desired_type: Any, option_value: Any
     ) -> Any:
         """Validate user specified configuration data against types."""
-        if isinstance(option_value, str) and desired_type == list:
+        if isinstance(option_value, str) and desired_type is list:
             option_value = [option_value]
 
         if option_value is None:
