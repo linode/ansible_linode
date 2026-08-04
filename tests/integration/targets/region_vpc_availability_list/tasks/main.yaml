@@ -10,6 +10,7 @@
           - no_filter.vpc_availabilities | length > 0
           - no_filter.vpc_availabilities[0].region is defined
           - no_filter.vpc_availabilities[0].available is defined
+          - no_filter.vpc_availabilities[0].available_ipv6_prefix_lengths is defined
 
     - name: List VPC availability limited by count
       linode.cloud.region_vpc_availability_list:
