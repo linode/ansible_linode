@@ -63,9 +63,9 @@
           - update_backups_canceled.changed
           - update_backups_canceled.instance.backups.enabled == False
 
-    - name: Re-enable backups on instance
+    - name: Enable backups on the backups-less instance
       linode.cloud.instance:
-        label: '{{ create_backups_enabled.instance.label }}'
+        label: '{{ create_no_set_backup.instance.label }}'
         region: us-mia
         type: g6-standard-1
         image: linode/ubuntu24.04
