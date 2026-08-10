@@ -57,7 +57,7 @@ jobs:
           submodules: 'recursive'
 
       - name: Setup Python 3
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ inputs.run-eol-python-version == 'true' && env.EOL_PYTHON_VERSION || inputs.python-version || env.DEFAULT_PYTHON_VERSION }}
 
@@ -106,7 +106,7 @@ jobs:
           submodules: 'recursive'
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
           python-version: '3.13'
@@ -192,7 +192,7 @@ jobs:
 
     steps:
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
           python-version: '3.13'
@@ -225,7 +225,7 @@ jobs:
     steps:
       - name: Notify Slack
         id: main_message
-        uses: slackapi/slack-github-action@v3
+        uses: slackapi/slack-github-action@v4
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
@@ -257,7 +257,7 @@ jobs:
 
       - name: Test summary thread
         if: success()
-        uses: slackapi/slack-github-action@v3
+        uses: slackapi/slack-github-action@v4
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
