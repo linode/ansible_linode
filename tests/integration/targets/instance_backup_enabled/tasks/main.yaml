@@ -63,7 +63,7 @@
           - update_backups_canceled.changed
           - update_backups_canceled.instance.backups.enabled == False
 
-    - name: Re-enable backups on instance
+    - name: Enable backups on the backups-less instance
       linode.cloud.instance:
         label: '{{ create_no_set_backup.instance.label }}'
         region: us-mia
@@ -111,4 +111,3 @@
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file or "" }}'
     E2E_FIREWALL_ID: '{{ firewall_id }}'
-

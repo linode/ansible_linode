@@ -17,14 +17,14 @@
 
     - set_fact:
         ipv6_body:
-          linode_id: "{{ instance_create.instance.id }}"
+          linode_id: "{{ instance_create.instance.id | int }}"
           prefix_length: 64
 
     - name: Assign an IPv6 range to the instance
       linode.cloud.api_request:
         path: networking/ipv6/ranges
         method: POST
-        body_json: "{{ ipv6_body }}"
+        body: "{{ ipv6_body }}"
       register: range_create
 
     - name: Get ipv6_range_info about the IPv6 range
@@ -60,4 +60,3 @@
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file or "" }}'
-

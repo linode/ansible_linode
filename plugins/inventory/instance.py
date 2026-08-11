@@ -12,7 +12,6 @@ import os
 from typing import Any, Dict, List, Optional, Set, Tuple
 
 from ansible.errors import AnsibleError, AnsibleParserError
-from ansible.module_utils.six import string_types
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common import (
     COLLECTION_USER_AGENT,
@@ -224,7 +223,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         name: str, desired_type: Any, option_value: Any
     ) -> Any:
         """Validate user specified configuration data against types."""
-        if isinstance(option_value, string_types) and desired_type == list:
+        if isinstance(option_value, str) and desired_type is list:
             option_value = [option_value]
 
         if option_value is None:

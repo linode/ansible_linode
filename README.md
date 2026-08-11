@@ -156,6 +156,7 @@ Name | Description |
 [linode.cloud.object_storage_quota_list](./docs/modules/object_storage_quota_list.md)|List and filter on Object Storage Quotas.|
 [linode.cloud.placement_group_list](./docs/modules/placement_group_list.md)|List and filter on Placement Groups.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
+[linode.cloud.region_vpc_availability_list](./docs/modules/region_vpc_availability_list.md)|List and filter on VPC availability for all regions.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH Keys.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on StackScripts.|
 [linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Tokens.|
