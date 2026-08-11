@@ -25,6 +25,8 @@ specdoc_examples = ['''
       evaluation_period_seconds: 300
       polling_interval_seconds: 300
       trigger_occurrences: 1
+    group_by:
+      - entity_id
     channel_ids: '{{ alert_channels }}'
     state: present''',  '''
 - name: Delete alert definition
@@ -43,6 +45,9 @@ result_aclp_alert_definition_sample = ['''{
   "description": "A test alert for dbaas service",
   "scope": "entity",
   "regions": [],
+  "group_by": [
+    "entity_id"
+  ],
   "entities": {
     "url": "/monitor/services/dbaas/alert-definitions/12345/entities",
     "count": 1,
