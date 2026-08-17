@@ -3,8 +3,6 @@
 
 """This module allows users to retrieve info about Linode Firewalls Settings for the account."""
 
-from __future__ import absolute_import, division, print_function
-
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     firewall_settings as docs_parent,
 )

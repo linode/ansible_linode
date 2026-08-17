@@ -3,8 +3,6 @@
 
 """This module allows users to retrieve information about a Linode LKE Version."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, Dict
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_version_info as docs

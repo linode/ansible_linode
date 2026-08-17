@@ -3,10 +3,7 @@
 
 """This module contains the logic for the Linode instance inventory module."""
 
-from __future__ import absolute_import, division, print_function
-
 # pylint: disable=invalid-name
-__metaclass__ = type
 
 import os
 from typing import Any, Dict, List, Optional, Set, Tuple

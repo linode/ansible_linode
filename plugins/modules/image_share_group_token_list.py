@@ -3,8 +3,6 @@
 
 """This module allows users to list Image Share Group Tokens."""
 
-from __future__ import absolute_import, division, print_function
-
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     image_share_group_token_list as docs,
 )

@@ -3,8 +3,6 @@
 
 """This module contains all the functionality for Image Share Groups for a Producer."""
 
-from __future__ import absolute_import, division, print_function
-
 import copy
 from typing import Any, Optional
 

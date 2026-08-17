@@ -3,8 +3,6 @@
 
 """This module contains the implementation for the linode.cloud.database_postgresql_v2 module."""
 
-from __future__ import absolute_import, division, print_function
-
 import copy
 from typing import Any, Optional
 

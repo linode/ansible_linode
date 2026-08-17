@@ -4,8 +4,6 @@
 """This module allows users to retrieve information
 about a ACLP Monitor Service Logs Destination."""
 
-from __future__ import absolute_import, division, print_function
-
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     monitor_logs_destination_info as docs,
 )
