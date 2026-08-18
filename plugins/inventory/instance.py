@@ -3,8 +3,6 @@
 
 """This module contains the logic for the Linode instance inventory module."""
 
-# pylint: disable=invalid-name
-
 import os
 from typing import Any, Dict, List, Optional, Set, Tuple
 
