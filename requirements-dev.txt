@@ -9,6 +9,6 @@ black>=26.5.1
 isort>=8.0.1
 autoflake>=2.3.3
 pytest>=9.1.1
-pytest-forked>=1.6.0
+pytest-forked>=1.7.5
 pytest-xdist>=3.8.0
 types-requests==2.31.0.1
