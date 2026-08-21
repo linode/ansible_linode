@@ -57,6 +57,7 @@
         that:
           - create_populated_nodebalancer.changed
           - create_populated_nodebalancer.node_balancer.region == 'us-ord'
+          - create_populated_nodebalancer.node_balancer.type == 'common'
           - create_populated_nodebalancer.configs|length == 1
           - create_populated_nodebalancer.configs[0].port == 80
           - create_populated_nodebalancer.configs[0].protocol == 'http'
