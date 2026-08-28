@@ -3,8 +3,6 @@
 
 """This module allows users to list all Volumes they have permission to view."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, Dict, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.volume_list as docs

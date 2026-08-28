@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """This module allows users to assign IP addresses to multiple Linodes in one Region."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip_assign as docs

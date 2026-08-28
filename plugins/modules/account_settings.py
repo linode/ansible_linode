@@ -3,8 +3,6 @@
 
 """This module allows users to retrieve and modify Linode account settings."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.account_settings as docs
