@@ -222,6 +222,15 @@ spec: dict = {
         editable=True,
         description=["The regions to monitor for this alert definition."],
     ),
+    "group_by": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        editable=True,
+        description=[
+            "Aggregates metric data by dimension so that alert conditions "
+            "are evaluated independently for each dimension value."
+        ],
+    ),
     "status": SpecField(
         type=FieldType.string,
         editable=True,
@@ -273,6 +282,7 @@ MUTABLE_FIELDS = {
     "channel_ids",
     "description",
     "entity_ids",
+    "group_by",
     "label",
     "regions",
     "rule_criteria",
@@ -374,6 +384,10 @@ class LinodeMonitorServicesAlertDefinition(LinodeModuleBase):
         entity_ids = params.get("entity_ids")
         if entity_ids is not None:
             create_kwargs["entity_ids"] = entity_ids
+
+        group_by = params.get("group_by")
+        if group_by is not None:
+            create_kwargs["group_by"] = group_by
 
         try:
             self.register_action(
