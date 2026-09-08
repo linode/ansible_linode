@@ -3,8 +3,6 @@
 
 """Implementation for linode.cloud.instance_interface_settings_info module."""
 
-from __future__ import absolute_import, division, print_function
-
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     instance_interface_settings as docs_parent,
 )

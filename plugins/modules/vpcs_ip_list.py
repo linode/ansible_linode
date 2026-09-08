@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for listing IP addresses of all VPCs."""
 
-from __future__ import absolute_import, division, print_function
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vpcs_ip_list as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list import (
     ListModule,

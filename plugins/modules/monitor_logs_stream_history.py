@@ -3,8 +3,6 @@
 
 """This module contains all the functionality for listing history of Monitor Logs Streams."""
 
-from __future__ import absolute_import, division, print_function
-
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     monitor_logs_stream_history as docs,
 )

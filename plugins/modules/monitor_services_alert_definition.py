@@ -3,8 +3,6 @@
 """This module allows users to manage ACLP alert definitions.
 NOTE: This module is under v4beta."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.alert_definition as docs
