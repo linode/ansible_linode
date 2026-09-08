@@ -47,6 +47,9 @@ WARNING! This module makes use of beta endpoints and requires the C(api_version)
               "description": "A test alert for dbaas service",
               "scope": "entity",
               "regions": [],
+              "group_by": [
+                "entity_id"
+              ],
               "entities": {
                 "url": "/monitor/services/dbaas/alert-definitions/12345/entities",
                 "count": 1,
