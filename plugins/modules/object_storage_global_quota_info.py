@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for Linode Object Storage global quota info."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (

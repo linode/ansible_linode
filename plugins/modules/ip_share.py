@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for Linode IP Share."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip_share as ip_share_docs

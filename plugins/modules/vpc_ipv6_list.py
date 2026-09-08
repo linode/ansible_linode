@@ -3,8 +3,6 @@
 
 """This module contains the implementation of the vpc_ipv6_list module."""
 
-from __future__ import absolute_import, division, print_function
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vpc_ipv6_list as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list import (
     ListModule,

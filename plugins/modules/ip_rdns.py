@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for Linode rDNS."""
 
-from __future__ import absolute_import, division, print_function
-
 from ipaddress import IPv6Address, ip_address
 from typing import Any, Optional, Union
 
