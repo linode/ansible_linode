@@ -7,6 +7,12 @@ specdoc_examples = ['''
     region: us-east
     tags: [ prod-env ]
     state: present
+    backend_vpcs:
+      - subnet_id: 12345
+        ipv4_range: '10.0.0.4/30'
+    frontend_vpcs:
+      - subnet_id: 67890
+        ipv4_range: '10.0.0.8/30'
     configs:
       - port: 80
         protocol: http
@@ -27,8 +33,11 @@ result_node_balancer_samples = ['''{
   "id": 12345,
   "ipv4": "12.34.56.78",
   "ipv6": null,
+  "frontend_address_type": "public",
+  "frontend_vpc_subnet_id": null,
   "label": "balancer12345",
   "region": "us-east",
+  "type": "common",
   "tags": [
     "example tag",
     "another example"
@@ -113,3 +122,39 @@ result_firewalls_data_samples = ['''[
       "updated": "2020-04-10T13:34:01"
   }
 ]''']
+
+result_vpcs_samples = ['''[
+  {
+    "id": 123,
+    "nodebalancer_id": 12345,
+    "subnet_id": 456,
+    "vpc_id": 789,
+    "ipv4_range": "10.0.0.4/30",
+    "ipv6_range": null,
+    "purpose": "backend"
+  }
+]''']
+
+result_frontend_vpcs_samples = ['''[
+  {
+    "id": 123,
+    "nodebalancer_id": 12345,
+    "subnet_id": 456,
+    "vpc_id": 789,
+    "ipv4_range": "10.0.0.4/30",
+    "ipv6_range": "2001:db8:1234::/48",
+    "purpose": "frontend"
+  }
+]''']
+
+result_vpc_samples = ['''
+  {
+    "id": 123,
+    "nodebalancer_id": 12345,
+    "subnet_id": 456,
+    "vpc_id": 789,
+    "ipv4_range": "10.0.0.4/30",
+    "ipv6_range": null,
+    "purpose": "backend"
+  }
+''']

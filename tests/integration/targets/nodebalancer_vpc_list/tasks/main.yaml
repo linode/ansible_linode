@@ -1,4 +1,4 @@
-- name: nodebalancer_list
+- name: nodebalancer_vpc_list
   block:
     - set_fact:
         r: "{{ 1000000000 | random }}"
@@ -67,35 +67,38 @@
           - create.frontend_vpcs[0].subnet_id == create_subnet.subnet.id
           - create.frontend_vpcs[0].purpose == "frontend"
 
-    - name: List nodebalancers with no filter
-      linode.cloud.nodebalancer_list:
+    - name: List nodebalancer VPC configs with no filter
+      linode.cloud.nodebalancer_vpc_list:
+        nodebalancer_id: '{{ create.node_balancer.id }}'
       register: no_filter
 
-    - name: Assert nodebalancer_list with no filter
+    - name: Select frontend and backend VPC configs by purpose
+      set_fact:
+        frontend_vpc_config: >-
+          {{ (no_filter.nodebalancer_vpc_configs
+              | selectattr('purpose', 'equalto', 'frontend')
+              | list)[0] }}
+        backend_vpc_config: >-
+          {{ (no_filter.nodebalancer_vpc_configs
+              | selectattr('purpose', 'equalto', 'backend')
+              | list)[0] }}
+    - name: Assert frontend and backend VPC configs fields
       assert:
         that:
-          - no_filter.nodebalancers | length >= 1
-          - no_filter.nodebalancers[0].type == 'premium'
-          - no_filter.nodebalancers[0].frontend_address_type == 'vpc'
-          - no_filter.nodebalancers[0].frontend_vpc_subnet_id != None
-
-    - name: List nodebalancers with filter on region
-      linode.cloud.nodebalancer_list:
-        order_by: created
-        order: desc
-        filters:
-          - name: region
-            values: us-ord
-      register: filter
-
-    - name: Assert nodebalancer_list with filter on region
-      assert:
-        that:
-          - filter.nodebalancers | length >= 1
-          - filter.nodebalancers[0].region == 'us-ord'
-          - filter.nodebalancers[0].type == 'premium'
-          - filter.nodebalancers[0].frontend_address_type == 'vpc'
-          - filter.nodebalancers[0].frontend_vpc_subnet_id != None
+          - frontend_vpc_config.id != None
+          - frontend_vpc_config.nodebalancer_id == create.node_balancer.id
+          - frontend_vpc_config.vpc_id == create_vpc.vpc.id
+          - frontend_vpc_config.subnet_id == create_subnet.subnet.id
+          - frontend_vpc_config.ipv4_range != None
+          - frontend_vpc_config.ipv6_range != None
+          - frontend_vpc_config.purpose == 'frontend'
+          - backend_vpc_config.id != None
+          - backend_vpc_config.nodebalancer_id == create.node_balancer.id
+          - backend_vpc_config.vpc_id == create_vpc.vpc.id
+          - backend_vpc_config.subnet_id == create_subnet.subnet.id
+          - backend_vpc_config.ipv4_range != None
+          - backend_vpc_config.ipv6_range != None
+          - backend_vpc_config.purpose == 'backend'
 
   always:
     - ignore_errors: yes
