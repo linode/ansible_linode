@@ -39,6 +39,8 @@ Manage an alert definition for a specific service type. Akamai refers to these a
       evaluation_period_seconds: 300
       polling_interval_seconds: 300
       trigger_occurrences: 1
+    group_by:
+      - entity_id
     channel_ids: '{{ alert_channels }}'
     state: present
 ```
@@ -69,6 +71,7 @@ Manage an alert definition for a specific service type. Akamai refers to these a
 | `id` | <center>`int`</center> | <center>Optional</center> | The unique identifier assigned to the alert definition. Run the List alert definitions operation and store the id for the applicable alert definition. Required for updating.   |
 | `scope` | <center>`str`</center> | <center>Optional</center> | The alert scope. Supported values include account, entity, and region. Defaults to entity.  **(Choices: `account`, `entity`, `region`)** |
 | `regions` | <center>`list`</center> | <center>Optional</center> | The regions to monitor for this alert definition.  **(Updatable)** |
+| `group_by` | <center>`list`</center> | <center>Optional</center> | Aggregates metric data by dimension so that alert conditions are evaluated independently for each dimension value.  **(Updatable)** |
 | `status` | <center>`str`</center> | <center>Optional</center> | The current status of the alert.  **(Choices: `enabled`, `disabled`; Updatable)** |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the alert definition ready (not in progress).  **(Default: `False`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for the alert definition.  **(Default: `600`)** |
@@ -121,6 +124,9 @@ Manage an alert definition for a specific service type. Akamai refers to these a
           "description": "A test alert for dbaas service",
           "scope": "entity",
           "regions": [],
+          "group_by": [
+            "entity_id"
+          ],
           "entities": {
             "url": "/monitor/services/dbaas/alert-definitions/12345/entities",
             "count": 1,

@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """This module allows users to allocate a new IPv4 Address on their accounts."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ip as docs

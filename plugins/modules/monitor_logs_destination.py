@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """This module allows users to manage ACLP logs destinations."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, List, Optional
 
 import polling

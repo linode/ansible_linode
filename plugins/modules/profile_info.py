@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for Linode Profile info."""
 
-from __future__ import absolute_import, division, print_function
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.profile_info as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
     InfoModule,
