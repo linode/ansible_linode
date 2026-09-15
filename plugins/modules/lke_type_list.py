@@ -3,8 +3,6 @@
 
 """This module allows users to list Linode LKE Types."""
 
-from __future__ import absolute_import, division, print_function
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lke_type_list as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list import (
     ListModule,

@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for Linode VPCs."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, Iterable, Optional, Set, Tuple
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.vpc as docs

@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for Linode Users."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, Dict, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.user as docs

@@ -3,8 +3,6 @@
 
 """This module allows users to retrieve information about a Linode Monitor Logs Stream."""
 
-from __future__ import absolute_import, division, print_function
-
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     monitor_logs_stream as docs_parent,
 )

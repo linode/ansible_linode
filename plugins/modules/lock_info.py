@@ -3,8 +3,6 @@
 
 """This module allows users to retrieve information about a Linode resource lock."""
 
-from __future__ import absolute_import, division, print_function
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lock as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.lock_info as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
