@@ -1,0 +1,26 @@
+---
+- name: Check RUN_MONITOR_LOGS_STREAM_QUOTA_TESTS guard
+  ansible.builtin.meta: end_play
+  when: run_monitor_logs_stream_quota_tests | default('false') | lower not in ['true', 'yes']
+
+- name: monitor_logs_stream_quota_list
+  block:
+    - name: List Monitor Logs Stream quotas
+      linode.cloud.monitor_logs_stream_quota_list:
+      register: stream_quota_list
+
+    - name: Assert Monitor Logs Stream quotas are listed correctly
+      assert:
+        that:
+          - stream_quota_list.stream_quotas | length > 0
+          - stream_quota_list.stream_quotas[0].quota_id is defined
+          - stream_quota_list.stream_quotas[0].quota_name is string
+          - stream_quota_list.stream_quotas[0].quota_limit is number
+          - stream_quota_list.stream_quotas[0].quota_type is defined
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
