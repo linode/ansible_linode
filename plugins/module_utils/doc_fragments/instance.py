@@ -142,8 +142,8 @@ specdoc_examples = ['''
               - range: auto
     state: present''',
 '''
-- name: Create a Linode Instance with a VPC interface '''
-+ '''and a NAT 1-1 mapping to its public IPv4 address.
+- name: Create a Linode Instance with a legacy VPC interface '''
++ '''assigning a specific VPC subnet IPv4 address and a NAT 1-1 mapping to its public IPv4 address.
   linode.cloud.instance:
     label: my-vpc-instance
     region: us-mia
@@ -153,8 +153,12 @@ specdoc_examples = ['''
     interface_generation: legacy_config
     interfaces:
       - purpose: vpc
+        primary: true
         subnet_id: '{{ create_subnet.subnet.id }}'
         ipv4:
+          # The IPv4 address to assign from the VPC subnet.
+          # Omit or use `auto` to have one automatically allocated.
+          vpc: 10.0.0.10
           nat_1_1: any
     state: present''',
 '''
