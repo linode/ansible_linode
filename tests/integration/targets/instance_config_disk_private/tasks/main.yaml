@@ -38,6 +38,7 @@
             filesystem: raw
             image: '{{ image_create.image.id }}'
             size: 5000
+            root_pass: Fn$$oobar123
           - label: swap
             filesystem: swap
             size: 4000

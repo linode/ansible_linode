@@ -3,8 +3,6 @@
 
 """This module allows users to list SSH keys in their Linode profile."""
 
-from __future__ import absolute_import, division, print_function
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.ssh_key_list as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_list import (
     ListModule,

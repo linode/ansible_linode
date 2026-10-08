@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for Linode Domains."""
 
-from __future__ import absolute_import, division, print_function
-
 import copy
 from typing import Any, List, Optional, Set
 
@@ -182,6 +180,15 @@ linode_lke_cluster_node_pool_spec = {
         editable=True,
         description=["Firewall ID for the Node Pool."],
         required=False,
+    ),
+    "disk_encryption": SpecField(
+        type=FieldType.string,
+        editable=False,
+        choices=["disabled", "enabled"],
+        description=[
+            "Local disk encryption setting for this LKE node pool.",
+            "This option can only be set during creation.",
+        ],
     ),
 }
 
@@ -729,6 +736,7 @@ class LinodeLKECluster(LinodeModuleBase):
                     pool["type"],
                     pool["count"],
                     autoscaler=pool.get("autoscaler"),
+                    disk_encryption=pool.get("disk_encryption"),
                 )
 
         for i, pool in enumerate(existing_pools):

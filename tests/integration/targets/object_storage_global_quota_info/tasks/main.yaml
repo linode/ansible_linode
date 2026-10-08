@@ -1,0 +1,28 @@
+- name: object_storage_global_quota_info
+  block:
+    - name: List Object Storage global quotas
+      linode.cloud.object_storage_global_quota_list:
+      register: obj_global_quota_list
+
+    - name: Assert at least one global quota returned for the following test
+      assert:
+        that:
+          - obj_global_quota_list.object_storage_global_quotas | length > 0
+
+    - name: Get info about an Object Storage global quota
+      linode.cloud.object_storage_global_quota_info:
+        quota_id: '{{ obj_global_quota_list.object_storage_global_quotas[0].quota_id }}'
+      register: obj_global_quota
+
+    - name: Assert GET Object Storage global quota response
+      assert:
+        that:
+          - obj_global_quota.object_storage_global_quota.quota_id == obj_global_quota_list.object_storage_global_quotas[0].quota_id
+          - not (obj_global_quota.object_storage_global_quota.has_usage | bool) or (obj_global_quota.quota_usage.quota_limit is integer)
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

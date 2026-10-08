@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for Linode NodeBalancers."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, List, Optional, Set, Tuple, cast
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer as docs
@@ -217,6 +215,7 @@ linode_configs_spec = {
     "ssl_key": SpecField(
         type=FieldType.string,
         required=False,
+        no_log=True,
         editable=True,
         description=[
             "The PEM-formatted private key for the SSL certificate "

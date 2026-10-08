@@ -125,6 +125,9 @@ endif
 	@echo "producer_api_token: $${LINODE_PRODUCER_API_TOKEN:-}" >> $(INTEGRATION_CONFIG)
 	@echo "consumer_api_token: $${LINODE_CONSUMER_API_TOKEN:-}" >> $(INTEGRATION_CONFIG)
 
+    # Feature tests flags
+	@echo "run_aclp_logs_stream_tests: $${RUN_ACLP_LOGS_STREAM_TESTS:-false}" >> $(INTEGRATION_CONFIG)
+
     # Common settings
 	@echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)
 	@echo "api_url: $$(url=$${LINODE_API_URL:-$${TEST_API_URL:-https://api.linode.com}}; echo $${url%/}/)" >> $(INTEGRATION_CONFIG)

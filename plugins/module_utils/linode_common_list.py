@@ -3,8 +3,6 @@
 
 """This module allows users to list SSH keys in their Linode profile."""
 
-from __future__ import absolute_import, division, print_function
-
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
@@ -81,7 +79,7 @@ class ListModule(
         self.params = params or []
         self.examples = examples or []
         self.description = description or [
-            f"List and filter on {self.result_display_name}."
+            f"List{' and filter on' if not disable_filters else ''} {self.result_display_name}."
         ]
         self.result_samples = result_samples or []
         self.requires_beta = requires_beta

@@ -8,7 +8,8 @@
         label: 'ansible-test-{{ r }}'
         region: us-southeast
         type: g6-standard-1
-        image: linode/alpine3.23
+        image: linode/arch
+        root_pass: Fn$$oobar123
         state: present
         firewall_id: '{{ firewall_id }}'
       register: create_instance
@@ -90,12 +91,6 @@
   always:
     - ignore_errors: true
       block:
-        - name: Delete the reserved IP
-          linode.cloud.reserved_ip:
-            address: '{{ allocate_ip.ip.address }}'
-            state: absent
-          when: allocate_ip is defined and allocate_ip.ip is defined
-
         - name: Delete instance
           linode.cloud.instance:
             label: '{{ create_instance.instance.label }}'

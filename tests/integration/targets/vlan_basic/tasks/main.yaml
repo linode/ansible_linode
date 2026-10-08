@@ -9,9 +9,10 @@
         region: us-southeast
         type: g6-standard-1
         image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
         interfaces:
           - purpose: vlan
-            label: really-cool-vlan
+            label: 'really-cool-vlan-{{ r }}'
         private_ip: true
         wait: false
         state: present
@@ -25,12 +26,12 @@
           - create_instance.instance.ipv4|length > 1
 
           - create_instance.configs[0].interfaces[0].purpose == 'vlan'
-          - create_instance.configs[0].interfaces[0].label == 'really-cool-vlan'
+          - create_instance.configs[0].interfaces[0].label == 'really-cool-vlan-' ~ r
 
     - name: Get information about the VLAN
       linode.cloud.vlan_info:
         api_version: v4beta
-        label: 'really-cool-vlan'
+        label: 'really-cool-vlan-{{ r }}'
       register: vlan_info
 
     - name: Assert VLAN information
@@ -38,7 +39,7 @@
         that:
           - vlan_info.changed == false
           - vlan_info.vlan.region == 'us-southeast'
-          - vlan_info.vlan.label == 'really-cool-vlan'
+          - vlan_info.vlan.label == 'really-cool-vlan-' ~ r
 
   always:
     - ignore_errors: yes

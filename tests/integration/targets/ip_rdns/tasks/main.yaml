@@ -9,6 +9,7 @@
         region: us-ord
         type: g6-standard-1
         image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
         wait: no
         state: present
         firewall_id: '{{ firewall_id }}'
@@ -18,7 +19,7 @@
       linode.cloud.ip_info:
         address: '{{ instance_create.instance.ipv4[0] }}'
       register: ip_info
-    
+
     - set_fact:
         new_rdns: '{{ instance_create.instance.ipv4[0] }}.nip.io'
 

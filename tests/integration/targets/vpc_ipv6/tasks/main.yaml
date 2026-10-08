@@ -16,10 +16,18 @@
       assert:
         that:
           - create_vpc.changed
-          - create_vpc.vpc.label == 'ansible-test-{{ r }}'
+          - create_vpc.vpc.label == 'ansible-test-' + (r | string)
           - create_vpc.vpc.region == 'no-osl-1'
           - create_vpc.vpc.ipv6 | length == 1
           - create_vpc.vpc.ipv6[0].range.endswith('/52')
+
+    - name: Wait for VPC to be findable by label
+      linode.cloud.vpc_info:
+        label: '{{ create_vpc.vpc.label }}'
+      register: vpc_wait
+      retries: 10
+      delay: 2
+      until: vpc_wait.vpc is defined
 
     - name: Attempt to update the IPv6 range's prefix
       linode.cloud.vpc:

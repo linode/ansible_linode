@@ -24,8 +24,6 @@
 
     - set_fact:
         engine_id: "{{ available_engines.database_engines[0]['id'] }}"
-        engine_version: "{{ available_engines.database_engines[0]['version'] }}"
-
 
     - name: Create a VPC
       linode.cloud.vpc:

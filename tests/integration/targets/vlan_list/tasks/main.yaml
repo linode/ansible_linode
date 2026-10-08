@@ -8,7 +8,8 @@
         label: 'ansible-test-{{ r }}-i'
         region: us-southeast
         type: g6-standard-1
-        image: linode/alpine3.19
+        image: linode/arch
+        root_pass: Fn$$oobar123
         interfaces:
           - purpose: vlan
             label: really-cool-vlan

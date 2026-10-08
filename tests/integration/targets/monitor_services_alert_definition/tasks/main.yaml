@@ -36,6 +36,8 @@
               evaluation_period_seconds: 300
               polling_interval_seconds: 300
               trigger_occurrences: 1
+            group_by:
+              - entity_id
             channel_ids: '{{ alert_channels }}'
             wait: yes
             state: present
@@ -49,6 +51,7 @@
               - create.alert_definition.severity == 1
               - create.alert_definition.scope == 'entity'
               - create.alert_definition.regions is defined
+              - create.alert_definition.group_by == ['entity_id']
               - create.alert_definition.entities is not none
               - create.alert_definition.rule_criteria.rules[0].aggregate_function == 'avg'
               - create.alert_definition.rule_criteria.rules[0].dimension_filters[0].dimension_label == 'node_type'
@@ -91,6 +94,7 @@
               - update.alert_definition.label == (label + '-updated')
               - update.alert_definition.description == 'An updated alert definition for ansible test'
               - update.alert_definition.rule_criteria.rules[0].aggregate_function == 'sum'
+              - update.alert_definition.group_by == ['entity_id']
 
         - name: Get alert definition information
           linode.cloud.monitor_services_alert_definition_info:

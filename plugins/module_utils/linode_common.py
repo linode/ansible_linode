@@ -1,7 +1,5 @@
 """This module contains the base Linode module that other modules inherit from."""
 
-from __future__ import absolute_import, division, print_function
-
 import traceback
 from typing import Any, Type
 

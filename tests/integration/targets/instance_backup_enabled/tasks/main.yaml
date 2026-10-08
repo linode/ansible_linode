@@ -14,6 +14,7 @@
         region: us-ord
         type: g6-standard-1
         image: linode/ubuntu24.04
+        root_pass: Fn$$oobar123
         wait: false
         state: present
         firewall_id: '{{ firewall_id }}'
@@ -31,6 +32,7 @@
         region: us-mia
         type: g6-standard-1
         image: linode/ubuntu24.04
+        root_pass: Fn$$oobar123
         wait: true
         state: present
         backups_enabled: true
@@ -49,6 +51,7 @@
         region: us-mia
         type: g6-standard-1
         image: linode/ubuntu24.04
+        root_pass: Fn$$oobar123
         wait: false
         state: present
         backups_enabled: False
@@ -60,12 +63,13 @@
           - update_backups_canceled.changed
           - update_backups_canceled.instance.backups.enabled == False
 
-    - name: Re-enable backups on instance
+    - name: Enable backups on the backups-less instance
       linode.cloud.instance:
         label: '{{ create_no_set_backup.instance.label }}'
         region: us-mia
         type: g6-standard-1
         image: linode/ubuntu24.04
+        root_pass: Fn$$oobar123
         wait: false
         state: present
         backups_enabled: True
@@ -107,4 +111,3 @@
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file or "" }}'
     E2E_FIREWALL_ID: '{{ firewall_id }}'
-

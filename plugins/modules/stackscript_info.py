@@ -3,8 +3,6 @@
 
 """This module allows users to retrieve information about a Linode StackScript."""
 
-from __future__ import absolute_import, division, print_function
-
 # pylint: disable=line-too-long
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript as docs_parent
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.stackscript_info as docs

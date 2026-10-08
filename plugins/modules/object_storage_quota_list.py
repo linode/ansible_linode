@@ -3,8 +3,6 @@
 
 """This module allows users to list Object Storage Quotas."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, Dict
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (

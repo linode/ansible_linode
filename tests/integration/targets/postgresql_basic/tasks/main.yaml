@@ -21,7 +21,7 @@
         engine_version: "{{ available_engines.database_engines[0]['version'] }}"
 
     - name: Create a database
-      linode.cloud.database_postgresql:
+      linode.cloud.database_postgresql_v2:
         label: 'ansible-test-{{ r }}'
         region: us-ord
         engine: '{{ engine_id }}'
@@ -68,7 +68,7 @@
           - by_id.database.type == 'g6-standard-1'
 
     - name: Update the database
-      linode.cloud.database_postgresql:
+      linode.cloud.database_postgresql_v2:
         label: 'ansible-test-{{ r }}'
         region: us-ord
         engine: '{{ engine_id }}'
@@ -85,7 +85,7 @@
           - db_update.database.allow_list[0] == '10.0.0.1/32'
 
     - name: Update the database
-      linode.cloud.database_postgresql:
+      linode.cloud.database_postgresql_v2:
         label: 'ansible-test-{{ r }}'
         region: us-ord
         engine: '{{ engine_id }}'
@@ -101,7 +101,7 @@
     - ignore_errors: true
       block:
         - name: Delete postgres db
-          linode.cloud.database_postgresql:
+          linode.cloud.database_postgresql_v2:
             label: '{{ db_create.database.label }}'
             state: absent
 

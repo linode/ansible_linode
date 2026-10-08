@@ -60,6 +60,11 @@ List and filter on VPCs.
                         "range": "2001:db8:acad:0::/52"
                     }
                 ],
+                "ipv4": [
+                    {
+                        "range": "10.0.0.0/16"
+                    }
+                ],
                 "label": "my-vpc",
                 "region": "us-east",
                 "subnets": [],

@@ -1,0 +1,20 @@
+- name: region_vpc_availability_info
+  block:
+    - name: Get info about VPC availability for a region
+      linode.cloud.region_vpc_availability_info:
+        region: us-east
+      register: vpc_availability
+
+    - name: Assert region_vpc_availability_info response
+      assert:
+        that:
+          - vpc_availability.vpc_availability.region == "us-east"
+          - vpc_availability.vpc_availability.available is defined
+          - vpc_availability.vpc_availability.available_ipv6_prefix_lengths is defined
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
