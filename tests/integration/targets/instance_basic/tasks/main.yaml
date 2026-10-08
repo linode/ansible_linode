@@ -7,8 +7,28 @@
       linode.cloud.region_list: {}
       register: all_regions
 
+    - name: Get regions availability
+      linode.cloud.api_request:
+        path: "/regions/availability?page_size=500"
+        method: GET
+      register: regions_avail
+
     - set_fact:
-        pg_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Placement Group") | selectattr("capabilities", "search", "Maintenance Policy") | list)[0].id }}'
+        available_for_g6: >-
+          {{ regions_avail.body.data
+             | selectattr("plan", "equalto", "g6-standard-1")
+             | selectattr("available", "equalto", true)
+             | map(attribute="region") | list }}
+
+    - set_fact:
+        pg_region: >-
+          {{ ( all_regions.regions
+               | selectattr("site_type", "equalto", "core")
+               | selectattr("status", "equalto", "ok")
+               | selectattr("capabilities", "search", "Placement Group")
+               | selectattr("capabilities", "search", "Maintenance Policy")
+               | selectattr("id", "in", available_for_g6)
+               | list)[0].id }}
 
     - name: Get account_settings
       linode.cloud.account_settings:
@@ -122,11 +142,11 @@
              else 'linode/migrate' }}
 
     - set_fact:
-        updated_label: '{{ create.instance.label }}-updated'
+        instance_tags: ["testing", "ansible-test"]
 
     - name: Update the instance
       linode.cloud.instance:
-        label: '{{ updated_label }}'
+        label: '{{ create.instance.label }}'
         region: '{{ pg_region }}'
         type: g6-standard-1
         image: linode/ubuntu22.04
@@ -134,13 +154,17 @@
         root_pass: Fn$$oobar123
         maintenance_policy: '{{ toggled_maintenance_policy }}'
         state: present
+        tags: '{{ instance_tags }}'
       register: update
 
     - name: Assert update
       assert:
         that:
+          - update.changed
           - update.instance.maintenance_policy == toggled_maintenance_policy
-          - update.instance.label == updated_label
+          - update.instance.tags|length == 2
+          - "'ansible-test' in update.instance.tags"
+          - "'testing' in update.instance.tags"
 
     - name: Get info about the instance by id
       linode.cloud.instance_info:
@@ -155,11 +179,14 @@
           - info_id.configs|length == 1
           - info_id.networking.ipv4.public[0].address != None
           - info_id.instance.capabilities == create.instance.capabilities
-          - info_id.instance.maintenance_policy == account_info.account_settings.maintenance_policy
+          - info_id.instance.maintenance_policy == toggled_maintenance_policy
+          - info_id.instance.tags|length == 2
+          - "'ansible-test' in info_id.instance.tags"
+          - "'testing' in info_id.instance.tags"
 
     - name: Get info about the instance by label
       linode.cloud.instance_info:
-        label: '{{ updated_label }}'
+        label: '{{ create.instance.label }}'
       register: info_label
 
     - name: Assert instance info
@@ -199,7 +226,7 @@
       block:
         - name: Delete a Linode instance
           linode.cloud.instance:
-            label: '{{ update.instance.label }}'
+            label: '{{ create.instance.label }}'
             state: absent
           register: delete
 

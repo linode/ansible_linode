@@ -3,6 +3,8 @@
 
 """This module contains all of the functionality for Linode instances."""
 
+from __future__ import absolute_import, division, print_function
+
 import copy
 import json
 from typing import Any, Dict, List, Optional, Union, cast
@@ -68,7 +70,6 @@ MIN_DEVICE_LIMIT = 8
 linode_instance_metadata_spec = {
     "user_data": SpecField(
         type=FieldType.string,
-        no_log=True,
         description=[
             "The user-defined data to supply for the Linode through the Metadata service."
         ],
@@ -116,7 +117,6 @@ linode_instance_disk_spec = {
     ),
     "root_pass": SpecField(
         type=FieldType.string,
-        no_log=True,
         description=["The root user’s password on the newly-created Linode."],
     ),
     "size": SpecField(
@@ -135,7 +135,6 @@ linode_instance_disk_spec = {
     ),
     "stackscript_data": SpecField(
         type=FieldType.dict,
-        no_log=True,
         description=[
             "An object containing arguments to any User Defined Fields present in "
             "the StackScript used when creating the instance.",
@@ -417,19 +416,13 @@ linode_instance_spec = {
         type=FieldType.list,
         element_type=FieldType.string,
         description=[
-            "A list of SSH public key parts to deploy for the root user.",
-            "If image is provided, one of root_pass, authorized_keys, or authorized_users",
-            "is required.",
+            "A list of SSH public key parts to deploy for the root user."
         ],
     ),
     "authorized_users": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
-        description=[
-            "A list of usernames.",
-            "If image is provided, one of root_pass, authorized_keys, or authorized_users",
-            "is required.",
-        ],
+        description=["A list of usernames."],
     ),
     "maintenance_policy": SpecField(
         type=FieldType.string,
@@ -443,8 +436,8 @@ linode_instance_spec = {
         no_log=True,
         description=[
             "The password for the root user.",
-            "If image is provided, one of root_pass, authorized_keys, or authorized_users",
-            "is required.",
+            "If not specified, one will be generated.",
+            "This generated password will be available in the task success JSON.",
         ],
     ),
     "stackscript_id": SpecField(
@@ -457,7 +450,6 @@ linode_instance_spec = {
     ),
     "stackscript_data": SpecField(
         type=FieldType.dict,
-        no_log=True,
         description=[
             "An object containing arguments to any User Defined Fields present in "
             "the StackScript used when creating the instance.",
@@ -665,19 +657,6 @@ linode_instance_spec = {
         description=[
             "When deploying from an Image, this field is optional, otherwise it is ignored. "
             "This is used to set the swap disk size for the newly-created Linode."
-        ],
-    ),
-    "kernel": SpecField(
-        type=FieldType.string,
-        description=[
-            "The kernel to deploy with when creating a Linode.",
-        ],
-    ),
-    "boot_size": SpecField(
-        type=FieldType.integer,
-        description=[
-            "The size of the boot disk in MB for the newly-created Linode. ",
-            "Must be at least 8192 MB.",
         ],
     ),
 }
@@ -971,7 +950,7 @@ class LinodeInstance(LinodeModuleBase):
         """Creates a Linode instance"""
         params = copy.deepcopy(self.module.params)
 
-        if "root_pass" in params and params.get("root_pass") is None:
+        if "root_pass" in params.keys() and params.get("root_pass") is None:
             params.pop("root_pass")
 
         ltype = params.pop("type")
@@ -998,28 +977,40 @@ class LinodeInstance(LinodeModuleBase):
 
             params["interfaces"] = _linode_interfaces
 
-        # If deploying from an image, require at least one authentication
-        # option to be explicitly provided by the caller. This prevents
-        # silently relying on API-generated passwords when the user did not
-        # intend to receive them.
-        if params.get("image") is not None:
-            has_root_pass = "root_pass" in params and params.get("root_pass")
-            has_auth_users = (
-                params.get("authorized_users") is not None
-                and len(params.get("authorized_users") or []) > 0
-            )
-            has_auth_keys = (
-                params.get("authorized_keys") is not None
-                and len(params.get("authorized_keys") or []) > 0
+        ipv4 = params.get("ipv4")
+        if ipv4 is None:
+            params.pop("ipv4", None)
+        elif len(ipv4) != 1:
+            self.fail(
+                msg="ipv4 must contain exactly one reserved IPv4 address, got {0}".format(
+                    len(ipv4)
+                )
             )
 
-            if not (has_root_pass or has_auth_users or has_auth_keys):
-                self.fail(
-                    msg=(
-                        "When deploying from an image, one of 'root_pass',"
-                        " 'authorized_users', or 'authorized_keys' must be provided"
-                    )
+            # If deploying from an image, require at least one authentication
+            # option to be explicitly provided by the caller. This prevents
+            # silently relying on API-generated passwords when the user did not
+            # intend to receive them.
+            if params.get("image") is not None:
+                has_root_pass = "root_pass" in params and params.get(
+                    "root_pass"
                 )
+                has_auth_users = (
+                    params.get("authorized_users") is not None
+                    and len(params.get("authorized_users") or []) > 0
+                )
+                has_auth_keys = (
+                    params.get("authorized_keys") is not None
+                    and len(params.get("authorized_keys") or []) > 0
+                )
+
+                if not (has_root_pass or has_auth_users or has_auth_keys):
+                    self.fail(
+                        msg=(
+                            "When deploying from an image, one of 'root_pass',"
+                            " 'authorized_users', or 'authorized_keys' must be provided"
+                        )
+                    )
 
         result = {"instance": None, "root_pass": ""}
 
@@ -1113,28 +1104,6 @@ class LinodeInstance(LinodeModuleBase):
 
     def _create_disk_register(self, **params: Any) -> None:
         size = params.pop("size")
-
-        if "root_pass" in params and params.get("root_pass") is None:
-            params.pop("root_pass")
-
-        if params.get("image") is not None:
-            has_root_pass = "root_pass" in params and params.get("root_pass")
-            has_auth_users = (
-                params.get("authorized_users") is not None
-                and len(params.get("authorized_users") or []) > 0
-            )
-            has_auth_keys = (
-                params.get("authorized_keys") is not None
-                and len(params.get("authorized_keys") or []) > 0
-            )
-
-            if not (has_root_pass or has_auth_users or has_auth_keys):
-                self.fail(
-                    msg=(
-                        "When creating a disk from an image, one of 'root_pass',"
-                        " 'authorized_users', or 'authorized_keys' must be provided"
-                    )
-                )
 
         stackscript_id = params.pop("stackscript_id", None)
         if stackscript_id is not None:
