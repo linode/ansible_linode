@@ -992,14 +992,16 @@ class LinodeInstance(LinodeModuleBase):
             # silently relying on API-generated passwords when the user did not
             # intend to receive them.
             if params.get("image") is not None:
-                has_root_pass = "root_pass" in params and params.get("root_pass")
+                has_root_pass = "root_pass" in params and params.get(
+                    "root_pass"
+                )
                 has_auth_users = (
-                        params.get("authorized_users") is not None
-                        and len(params.get("authorized_users") or []) > 0
+                    params.get("authorized_users") is not None
+                    and len(params.get("authorized_users") or []) > 0
                 )
                 has_auth_keys = (
-                        params.get("authorized_keys") is not None
-                        and len(params.get("authorized_keys") or []) > 0
+                    params.get("authorized_keys") is not None
+                    and len(params.get("authorized_keys") or []) > 0
                 )
 
                 if not (has_root_pass or has_auth_users or has_auth_keys):
