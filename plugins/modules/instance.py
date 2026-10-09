@@ -600,6 +600,15 @@ linode_instance_spec = {
         description=["Additional ipv4 addresses to allocate."],
         editable=False,
     ),
+    "ipv4": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "A list of reserved IPv4 addresses to assign to this Linode on creation.",
+            "The list must contain exactly one reserved, unassigned IPv4 address.",
+            "NOTE: This field is create-only. Changes after creation are ignored.",
+        ],
+    ),
     "rebooted": SpecField(
         type=FieldType.bool,
         description=[
@@ -657,6 +666,19 @@ linode_instance_spec = {
         description=[
             "When deploying from an Image, this field is optional, otherwise it is ignored. "
             "This is used to set the swap disk size for the newly-created Linode."
+        ],
+    ),
+    "kernel": SpecField(
+        type=FieldType.string,
+        description=[
+            "The kernel to deploy with when creating a Linode.",
+        ],
+    ),
+    "boot_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The size of the boot disk in MB for the newly-created Linode. ",
+            "Must be at least 8192 MB.",
         ],
     ),
 }
@@ -987,30 +1009,28 @@ class LinodeInstance(LinodeModuleBase):
                 )
             )
 
-            # If deploying from an image, require at least one authentication
-            # option to be explicitly provided by the caller. This prevents
-            # silently relying on API-generated passwords when the user did not
-            # intend to receive them.
-            if params.get("image") is not None:
-                has_root_pass = "root_pass" in params and params.get(
-                    "root_pass"
-                )
-                has_auth_users = (
-                    params.get("authorized_users") is not None
-                    and len(params.get("authorized_users") or []) > 0
-                )
-                has_auth_keys = (
-                    params.get("authorized_keys") is not None
-                    and len(params.get("authorized_keys") or []) > 0
-                )
+        # If deploying from an image, require at least one authentication
+        # option to be explicitly provided by the caller. This prevents
+        # silently relying on API-generated passwords when the user did not
+        # intend to receive them.
+        if params.get("image") is not None:
+            has_root_pass = "root_pass" in params and params.get("root_pass")
+            has_auth_users = (
+                params.get("authorized_users") is not None
+                and len(params.get("authorized_users") or []) > 0
+            )
+            has_auth_keys = (
+                params.get("authorized_keys") is not None
+                and len(params.get("authorized_keys") or []) > 0
+            )
 
-                if not (has_root_pass or has_auth_users or has_auth_keys):
-                    self.fail(
-                        msg=(
-                            "When deploying from an image, one of 'root_pass',"
-                            " 'authorized_users', or 'authorized_keys' must be provided"
-                        )
+            if not (has_root_pass or has_auth_users or has_auth_keys):
+                self.fail(
+                    msg=(
+                        "When deploying from an image, one of 'root_pass',"
+                        " 'authorized_users', or 'authorized_keys' must be provided"
                     )
+                )
 
         result = {"instance": None, "root_pass": ""}
 
@@ -1481,6 +1501,10 @@ class LinodeInstance(LinodeModuleBase):
                 "type",
                 "region",
                 "placement_group",
+                # "ipv4" is a create-only field; excluding it prevents
+                # handle_updates from comparing it against Instance.ipv4
+                # (the list of current IPs) and raising a RuntimeError.
+                "ipv4",
             )
         }
 

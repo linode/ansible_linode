@@ -265,6 +265,7 @@ Manage Linode Instances, Configs, and Disks.
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status "running" before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `1500`)** |
 | [`additional_ipv4` (sub-options)](#additional_ipv4) | <center>`list`</center> | <center>Optional</center> | Additional ipv4 addresses to allocate.   |
+| `ipv4` | <center>`list`</center> | <center>Optional</center> | A list of reserved IPv4 addresses to assign to this Linode on creation. The list must contain exactly one reserved, unassigned IPv4 address. NOTE: This field is create-only. Changes after creation are ignored.   |
 | `rebooted` | <center>`bool`</center> | <center>Optional</center> | If true, the Linode Instance will be rebooted. NOTE: The instance will only be rebooted if it was previously in a running state. To ensure your Linode will always be rebooted, consider also setting the `booted` field.  **(Default: `False`)** |
 | `migration_type` | <center>`str`</center> | <center>Optional</center> | The type of migration to use for Region and Type migrations.  **(Choices: `cold`, `warm`; Default: `cold`)** |
 | `auto_disk_resize` | <center>`bool`</center> | <center>Optional</center> | Whether implicitly created disks should be resized during a type change operation.  **(Default: `False`)** |
@@ -273,6 +274,8 @@ Manage Linode Instances, Configs, and Disks.
 | [`placement_group` (sub-options)](#placement_group) | <center>`dict`</center> | <center>Optional</center> | A Placement Group to create this Linode under.   |
 | `disk_encryption` | <center>`str`</center> | <center>Optional</center> | The disk encryption status of this Linode.  **(Choices: `enabled`, `disabled`)** |
 | `swap_size` | <center>`int`</center> | <center>Optional</center> | When deploying from an Image, this field is optional, otherwise it is ignored. This is used to set the swap disk size for the newly-created Linode.   |
+| `kernel` | <center>`str`</center> | <center>Optional</center> | The kernel to deploy with when creating a Linode.   |
+| `boot_size` | <center>`int`</center> | <center>Optional</center> | The size of the boot disk in MB for the newly-created Linode.  Must be at least 8192 MB.   |
 
 ### configs
 
