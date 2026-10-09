@@ -17,6 +17,7 @@
         ua_prefix: "{{ ua_prefix }}"
         label: "ansible-test-inst-{{ r }}"
         region: us-ord
+        root_pass: Fn$$oobar123
         type: g6-nanode-1
         image: linode/alpine3.23
         ipv4:
