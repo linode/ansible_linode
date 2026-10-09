@@ -5,17 +5,32 @@ specdoc_examples = ['''
     linode_id: 123
     public: true
     type: ipv4
+    state: present''', '''
+- name: Promote an existing IP to reserved
+  linode.cloud.ip:
+    address: "97.107.143.141"
+    reserved: true
+    state: present''', '''
+- name: Allocate a new reserved IP in a region
+  linode.cloud.ip:
+    region: us-east
+    type: ipv4
+    reserved: true
     state: present''']
 
 result_ip_samples = ['''{
   "address": "97.107.143.141",
+  "assigned_entity": null,
   "gateway": "97.107.143.1",
+  "interface_id": null,
   "linode_id": 123,
   "prefix": 24,
   "public": true,
   "rdns": "test.example.org",
   "region": "us-east",
+  "reserved": false,
   "subnet_mask": "255.255.255.0",
+  "tags": [],
   "type": "ipv4",
   "vpc_nat_1_1": {
     "vpc_id": 242,

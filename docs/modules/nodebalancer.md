@@ -33,6 +33,15 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 ```
 
 ```yaml
+- name: Create a NodeBalancer with a reserved IP
+  linode.cloud.nodebalancer:
+    label: my-loadbalancer
+    region: us-east
+    ipv4: "192.0.2.141"
+    state: present
+```
+
+```yaml
 - name: Delete the NodeBalancer
   linode.cloud.nodebalancer:
     label: my-loadbalancer
@@ -50,6 +59,7 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 | `client_conn_throttle` | <center>`int`</center> | <center>Optional</center> | Throttle connections per second. Set to 0 (zero) to disable throttling.  **(Updatable)** |
 | `client_udp_sess_throttle` | <center>`int`</center> | <center>Optional</center> | Throttle UDP sessions per second (0-20). Set to 0 (zero) to disable throttling.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>Optional</center> | The ID of the Region to create this NodeBalancer in.   |
+| `ipv4` | <center>`str`</center> | <center>Optional</center> | A reserved IPv4 address to assign to this NodeBalancer on creation. The address must be a reserved, unassigned IPv4 address owned by the account. NOTE: This field is only used at creation time.   |
 | `firewall_id` | <center>`int`</center> | <center>Optional</center> | The ID of the Firewall to assign this NodeBalancer to.   |
 | `tags` | <center>`list`</center> | <center>Optional</center> | Tags to assign to this NodeBalancer.  **(Updatable)** |
 | [`configs` (sub-options)](#configs) | <center>`list`</center> | <center>Optional</center> | A list of configs to apply to the NodeBalancer.  **(Updatable)** |

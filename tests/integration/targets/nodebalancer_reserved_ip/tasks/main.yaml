@@ -1,0 +1,54 @@
+- name: nodebalancer_reserved_ip
+  block:
+    - name: Reserve a new IP address
+      linode.cloud.reserved_ip:
+        api_token: "{{ api_token }}"
+        ua_prefix: "{{ ua_prefix }}"
+        region: us-ord
+        state: present
+      register: reserve_ip
+
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a NodeBalancer with the reserved IP
+      linode.cloud.nodebalancer:
+        api_token: "{{ api_token }}"
+        ua_prefix: "{{ ua_prefix }}"
+        label: "ansible-test-nb-{{ r }}"
+        region: us-ord
+        ipv4: "{{ reserve_ip.reserved_ip.address }}"
+        state: present
+      register: nb_create
+
+    - name: Assert NodeBalancer was created with the reserved IP
+      assert:
+        that:
+          - nb_create.changed
+          - nb_create.node_balancer.ipv4 == reserve_ip.reserved_ip.address
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete NodeBalancer
+          linode.cloud.nodebalancer:
+            api_token: "{{ api_token }}"
+            ua_prefix: "{{ ua_prefix }}"
+            label: "ansible-test-nb-{{ r }}"
+            state: absent
+          when: nb_create is defined
+
+        - name: Delete reserved IP
+          linode.cloud.reserved_ip:
+            api_token: "{{ api_token }}"
+            ua_prefix: "{{ ua_prefix }}"
+            address: "{{ reserve_ip.reserved_ip.address }}"
+            state: absent
+          when: reserve_ip is defined
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
