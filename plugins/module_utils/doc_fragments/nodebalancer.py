@@ -14,6 +14,12 @@ specdoc_examples = ['''
         nodes:
           - label: node1
             address: 0.0.0.0:80''', '''
+- name: Create a NodeBalancer with a reserved IP
+  linode.cloud.nodebalancer:
+    label: my-loadbalancer
+    region: us-east
+    ipv4: "192.0.2.141"
+    state: present''', '''
 - name: Delete the NodeBalancer
   linode.cloud.nodebalancer:
     label: my-loadbalancer

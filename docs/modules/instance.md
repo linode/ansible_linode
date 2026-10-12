@@ -57,6 +57,19 @@ Manage Linode Instances, Configs, and Disks.
 ```
 
 ```yaml
+- name: Create a Linode Instance with a reserved IPv4 address.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-east
+    image: linode/ubuntu22.04
+    root_pass: verysecurepassword!!!
+    ipv4:
+      - "192.0.2.141"
+    state: present
+```
+
+```yaml
 - name: Create a Linode Instance with explicit configs and disks.
   linode.cloud.instance:
     label: 'my-complex-instance'
@@ -229,10 +242,10 @@ Manage Linode Instances, Configs, and Disks.
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type of the Linode you are creating.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The location to deploy the instance in. See the [Linode API documentation](https://api.linode.com/v4/regions).   |
 | `image` | <center>`str`</center> | <center>Optional</center> | The image ID to deploy the instance disk from.  **(Conflicts With: `disks`,`configs`)** |
-| `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user. If image is provided, one of root_pass, authorized_keys, or authorized_users is required.   |
-| `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames. If image is provided, one of root_pass, authorized_keys, or authorized_users is required.   |
+| `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
+| `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
 | `maintenance_policy` | <center>`str`</center> | <center>Optional</center> | The slug of the maintenance policy to apply during maintenance.  **(Choices: `linode/migrate`, `linode/power_off_on`)** |
-| `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If image is provided, one of root_pass, authorized_keys, or authorized_users is required.   |
+| `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If not specified, one will be generated. This generated password will be available in the task success JSON.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `firewall_id` | <center>`int`</center> | <center>Optional</center> | The ID of a Firewall this Linode to assign this Linode to.   |
@@ -252,6 +265,7 @@ Manage Linode Instances, Configs, and Disks.
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status "running" before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `1500`)** |
 | [`additional_ipv4` (sub-options)](#additional_ipv4) | <center>`list`</center> | <center>Optional</center> | Additional ipv4 addresses to allocate.   |
+| `ipv4` | <center>`list`</center> | <center>Optional</center> | A list of reserved IPv4 addresses to assign to this Linode on creation. The list must contain exactly one reserved, unassigned IPv4 address. NOTE: This field is create-only. Changes after creation are ignored.   |
 | `rebooted` | <center>`bool`</center> | <center>Optional</center> | If true, the Linode Instance will be rebooted. NOTE: The instance will only be rebooted if it was previously in a running state. To ensure your Linode will always be rebooted, consider also setting the `booted` field.  **(Default: `False`)** |
 | `migration_type` | <center>`str`</center> | <center>Optional</center> | The type of migration to use for Region and Type migrations.  **(Choices: `cold`, `warm`; Default: `cold`)** |
 | `auto_disk_resize` | <center>`bool`</center> | <center>Optional</center> | Whether implicitly created disks should be resized during a type change operation.  **(Default: `False`)** |

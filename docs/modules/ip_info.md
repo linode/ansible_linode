@@ -35,6 +35,7 @@ Get info about a Linode IP.
         ```json
         {
           "address": "97.107.143.141",
+          "assigned_entity": null,
           "gateway": "97.107.143.1",
           "linode_id": 123,
           "interface_id": 1234,
@@ -42,7 +43,9 @@ Get info about a Linode IP.
           "public": true,
           "rdns": "test.example.org",
           "region": "us-east",
+          "reserved": false,
           "subnet_mask": "255.255.255.0",
+          "tags": [],
           "type": "ipv4",
           "vpc_nat_1_1": {
             "vpc_id": 242,
@@ -54,6 +57,7 @@ Get info about a Linode IP.
         ```json
         {
           "address": "97.107.143.141",
+          "assigned_entity": null,
           "gateway": "97.107.143.1",
           "linode_id": 123,
           "interface_id": null,
@@ -61,7 +65,9 @@ Get info about a Linode IP.
           "public": true,
           "rdns": "test.example.org",
           "region": "us-east",
+          "reserved": false,
           "subnet_mask": "255.255.255.0",
+          "tags": [],
           "type": "ipv4",
           "vpc_nat_1_1": {
             "vpc_id": 242,
