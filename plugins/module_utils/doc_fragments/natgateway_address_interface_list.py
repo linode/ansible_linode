@@ -24,4 +24,5 @@ result_natgateway_address_interface_samples = ['''[
         "type": "linode",
         "url": "/v4/linode/instances/1002"
       }
+    }
   ]''']

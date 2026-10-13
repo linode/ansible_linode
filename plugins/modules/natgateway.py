@@ -288,7 +288,8 @@ class Module(LinodeModuleBase):
         # Create NAT Gateway if doesn't exist
         if self._natgateway is None:
             if natgateway_label is None:
-                return self.fail("label is required to create a NAT Gateway")
+                self.fail("label is required to create a NAT Gateway")
+                return
             self._natgateway = self._create_natgateway()
             self.register_action(
                 "Created NAT Gateway {}".format(natgateway_label)
@@ -297,7 +298,8 @@ class Module(LinodeModuleBase):
             self._update_natgateway()
 
         if self._natgateway is None:
-            return self.fail("failed to create NAT Gateway")
+            self.fail("failed to create NAT Gateway")
+            return
 
         self._natgateway._api_get()
 

@@ -64,6 +64,7 @@ List and filter on NAT Gateway Interfaces.
                 "type": "linode",
                 "url": "/v4/linode/instances/1002"
               }
+            }
           ]
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-natgateway-address-interfaces) for a list of returned fields
