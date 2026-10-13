@@ -52,12 +52,19 @@ Create, read, and update a Linode VPC Subnet.
 | `state` | <center>`str`</center> | <center>**Required**</center> | The state of this token.  **(Choices: `present`, `absent`)** |
 | `ipv4` | <center>`str`</center> | <center>Optional</center> | The IPV4 range for this subnet in CIDR format.   |
 | [`ipv6` (sub-options)](#ipv6) | <center>`list`</center> | <center>Optional</center> | The IPv6 ranges of this subnet. NOTE: IPv6 VPCs may not currently be available to all users.   |
+| [`natgateway` (sub-options)](#natgateway) | <center>`dict`</center> | <center>Optional</center> | The NAT gateway for this subnet.   |
 
 ### ipv6
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `range` | <center>`str`</center> | <center>Optional</center> | An existing IPv6 prefix owned by the current account or a forward slash (/) followed by a valid prefix length. If unspecified, a range with the default prefix will be allocated for this VPC.   |
+
+### natgateway
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `id` | <center>`int`</center> | <center>Optional</center> | The ID of the NAT Gateway associated with this subnet.   |
 
 ## Return Values
 

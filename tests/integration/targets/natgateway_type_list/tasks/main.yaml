@@ -1,0 +1,31 @@
+- name: natgateway_type_list
+  block:
+    - name: List NAT Gateway types with no filter
+      linode.cloud.natgateway_type_list:
+      register: no_filter
+
+    - name: Assert NAT Gateway types with no filter
+      assert:
+        that:
+          - no_filter.natgateway_types | length >= 1
+          - no_filter.natgateway_types[0].id is defined
+          - no_filter.natgateway_types[0].label is defined
+
+    - name: List NAT Gateway types with order
+      linode.cloud.natgateway_type_list:
+        order: asc
+        order_by: id
+      register: ordered
+
+    - name: Assert NAT Gateway types are ordered
+      assert:
+        that:
+          - ordered.natgateway_types | length >= 1
+          - ordered.natgateway_types[0].id is defined
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

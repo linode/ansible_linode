@@ -1,0 +1,149 @@
+- name: natgateway_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        target_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "NAT Gateway") | map(attribute="id") | list | random) }}'
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-{{ r }}'
+        region: '{{ target_region }}'
+        description: test VPC for NAT gateway
+        state: present
+      register: create_vpc
+
+    - name: Assert VPC created
+      assert:
+        that:
+          - create_vpc.changed
+          - create_vpc.vpc.label == 'ansible-test-' + (r | string)
+          - create_vpc.vpc.region == target_region
+
+    - name: Create a VPC subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet-{{ r }}'
+        ipv4: '10.0.0.0/24'
+        state: present
+      register: create_subnet
+
+    - name: Assert Subnet created
+      assert:
+        that:
+          - create_subnet.changed
+          - create_subnet.subnet.label == 'test-subnet-' + (r | string)
+
+    - name: Create a NAT Gateway
+      linode.cloud.natgateway:
+        label: 'ansible-test-ng-{{ r }}'
+        region: '{{ target_region }}'
+        vpc_subnet_id: '{{ create_subnet.subnet.id }}'
+        default_ports_per_interface: 4096
+        use_autoscaling: false
+        state: present
+      register: create_natgateway
+
+    - name: Assert NAT Gateway created
+      assert:
+        that:
+          - create_natgateway.changed
+          - create_natgateway.natgateway.label == 'ansible-test-ng-' + (r | string)
+          - create_natgateway.natgateway.region == target_region
+          - create_natgateway.natgateway.default_ports_per_interface == 4096
+          - create_natgateway.natgateway.vpc_subnet.id == create_subnet.subnet.id
+
+    - name: Get NAT Gateway by label
+      linode.cloud.natgateway:
+        label: '{{ create_natgateway.natgateway.label }}'
+        state: present
+      register: get_natgateway
+
+    - name: Assert NAT Gateway retrieved
+      assert:
+        that:
+          - get_natgateway.natgateway.id == create_natgateway.natgateway.id
+          - get_natgateway.natgateway.label == create_natgateway.natgateway.label
+
+    - name: Get NAT Gateway by id
+      linode.cloud.natgateway:
+        id: '{{ create_natgateway.natgateway.id }}'
+        state: present
+      register: get_natgateway_by_id
+
+    - name: Assert NAT Gateway retrieved by id
+      assert:
+        that:
+          - get_natgateway_by_id.natgateway.id == create_natgateway.natgateway.id
+          - get_natgateway_by_id.natgateway.label == create_natgateway.natgateway.label
+
+    - name: Get NAT Gateway info by id
+      linode.cloud.natgateway_info:
+        id: '{{ create_natgateway.natgateway.id }}'
+      register: natgateway_info_id
+
+    - name: Assert NAT Gateway info by id
+      assert:
+        that:
+          - natgateway_info_id.natgateway.id == create_natgateway.natgateway.id
+          - natgateway_info_id.natgateway.label == create_natgateway.natgateway.label
+
+    - name: Get NAT Gateway info by label
+      linode.cloud.natgateway_info:
+        label: '{{ create_natgateway.natgateway.label }}'
+      register: natgateway_info_label
+
+    - name: Assert NAT Gateway info by label
+      assert:
+        that:
+          - natgateway_info_label.natgateway.id == create_natgateway.natgateway.id
+          - natgateway_info_label.natgateway.label == create_natgateway.natgateway.label
+
+    - name: List NAT Gateways
+      linode.cloud.natgateway_list:
+      register: natgateway_list
+
+    - name: Assert NAT Gateways in list
+      assert:
+        that:
+          - natgateway_list.natgateways | selectattr('id', 'equalto', create_natgateway.natgateway.id) | length == 1
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a VPC subnet
+          linode.cloud.vpc_subnet:
+            vpc_id: '{{ create_vpc.vpc.id }}'
+            label: '{{ create_subnet.subnet.label }}'
+            state: absent
+          register: delete_subnet
+
+        - name: Delete a NAT Gateway by id
+          linode.cloud.natgateway:
+            id: '{{ create_natgateway.natgateway.id }}'
+            state: absent
+          register: delete_natgateway
+
+        - name: Assert NAT Gateway deleted
+          assert:
+            that:
+              - delete_natgateway.changed
+              - delete_natgateway.natgateway.id == create_natgateway.natgateway.id
+
+        - name: Delete a VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          register: delete_vpc
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

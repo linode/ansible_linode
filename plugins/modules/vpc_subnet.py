@@ -70,6 +70,16 @@ SPEC = {
             ),
         },
     ),
+    "natgateway": SpecField(
+        type=FieldType.dict,
+        description=["The NAT gateway for this subnet."],
+        suboptions={
+            "id": SpecField(
+                type=FieldType.integer,
+                description="The ID of the NAT Gateway associated with this subnet.",
+            )
+        },
+    ),
 }
 
 
@@ -91,7 +101,7 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-CREATE_FIELDS = {"label", "ipv4", "ipv6"}
+CREATE_FIELDS = {"label", "ipv4", "ipv6", "natgateway"}
 
 DOCUMENTATION = r"""
 """
@@ -147,17 +157,29 @@ class Module(LinodeModuleBase):
             return self.fail(msg="failed to create VPC: {0}".format(exception))
 
     def _update(self, subnet: VPCSubnet) -> None:
-        # VPC Subnets cannot be updated
+        # VPC Subnets cannot be updated except for natgateway
         handle_updates(
             subnet,
             self.module.params,
             set(),
             self.register_action,
-            ignore_keys={"ipv6"},
+            ignore_keys={"ipv6", "natgateway"},
         )
 
         if subnet.ipv6 is not None and self.__ipv6_updated(subnet):
             self.fail(msg="IPv6 cannot be updated after VPC subnet creation.")
+
+        # Handle natgateway separately due to special null semantics
+        natgateway_param = self.module.params.get("natgateway")
+        if natgateway_param is not None:
+            try:
+                subnet.natgateway = natgateway_param
+                subnet.save()
+                self.register_action("Updated NAT Gateway assignment")
+            except Exception as exception:
+                self.fail(
+                    msg="failed to update NAT Gateway: {0}".format(exception)
+                )
 
     def _handle_present(self) -> None:
         params = self.module.params

@@ -1,0 +1,186 @@
+- name: vpc_subnet_natgateway
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        target_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "NAT Gateway") | map(attribute="id") | list | random) }}'
+
+    - name: Create a NAT Gateway
+      linode.cloud.natgateway:
+        label: 'ansible-test-ng-{{ r }}'
+        region: '{{ target_region }}'
+        default_ports_per_interface: 4096
+        use_autoscaling: false
+        state: present
+      register: create_natgateway
+
+    - name: Assert NAT Gateway created
+      assert:
+        that:
+          - create_natgateway.changed
+          - create_natgateway.natgateway.id is defined
+
+    - name: Create a VPC
+      linode.cloud.vpc:
+        label: 'ansible-test-vpc-{{ r }}'
+        region: '{{ target_region }}'
+        description: test VPC for NAT gateway assignment
+        state: present
+      register: create_vpc
+
+    - name: Assert VPC created
+      assert:
+        that:
+          - create_vpc.changed
+          - create_vpc.vpc.id is defined
+
+    - name: Create a VPC subnet with NAT Gateway assigned
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'test-subnet-{{ r }}'
+        ipv4: '10.0.0.0/24'
+        natgateway:
+          id: '{{ create_natgateway.natgateway.id }}'
+        state: present
+      register: create_subnet
+
+    - name: Assert subnet created with NAT Gateway
+      assert:
+        that:
+          - create_subnet.changed
+          - create_subnet.subnet.natgateway is not none
+          - create_subnet.subnet.natgateway.id == create_natgateway.natgateway.id
+
+    - name: Get subnet info
+      linode.cloud.vpc_subnet_info:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        id: '{{ create_subnet.subnet.id }}'
+      register: subnet_info
+
+    - name: Assert subnet info has natgateway field
+      assert:
+        that:
+          - subnet_info.subnet.natgateway is defined
+          - subnet_info.subnet.natgateway is not none
+          - subnet_info.subnet.natgateway.id == create_natgateway.natgateway.id
+
+    - name: List VPC subnets
+      linode.cloud.vpc_subnet_list:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+      register: subnet_list
+
+    - name: Assert subnet list has natgateway field
+      assert:
+        that:
+          - subnet_list.subnets | length >= 1
+          - subnet_list.subnets[0].natgateway is defined
+          - subnet_list.subnets[0].natgateway is not none
+          - subnet_list.subnets[0].natgateway.id == create_natgateway.natgateway.id
+
+    - name: Unassign NAT Gateway from subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: '{{ create_subnet.subnet.label }}'
+        natgateway:
+          id: null
+        state: present
+      register: unassign_natgateway
+
+    - name: Assert NAT Gateway unassigned
+      assert:
+        that:
+          - unassign_natgateway.changed
+          - unassign_natgateway.subnet.natgateway is none
+
+    - name: Verify unassignment via info module
+      linode.cloud.vpc_subnet_info:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        id: '{{ create_subnet.subnet.id }}'
+      register: subnet_info_after_unassign
+
+    - name: Assert natgateway is null in info response
+      assert:
+        that:
+          - subnet_info_after_unassign.subnet.natgateway is none
+
+    - name: Verify unassignment via list module
+      linode.cloud.vpc_subnet_list:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+      register: subnet_list_after_unassign
+
+    - name: Assert natgateway is null in list response
+      assert:
+        that:
+          - subnet_list_after_unassign.subnets[0].natgateway is none
+
+    - name: Reassign NAT Gateway to subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: '{{ create_subnet.subnet.label }}'
+        natgateway:
+          id: '{{ create_natgateway.natgateway.id }}'
+        state: present
+      register: reassign_natgateway
+
+    - name: Assert NAT Gateway reassigned
+      assert:
+        that:
+          - reassign_natgateway.changed
+          - reassign_natgateway.subnet.natgateway.id == create_natgateway.natgateway.id
+
+    - name: Verify reassignment via info module
+      linode.cloud.vpc_subnet_info:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        id: '{{ create_subnet.subnet.id }}'
+      register: subnet_info_after_reassign
+
+    - name: Assert natgateway is assigned in info response
+      assert:
+        that:
+          - subnet_info_after_reassign.subnet.natgateway is not none
+          - subnet_info_after_reassign.subnet.natgateway.id == create_natgateway.natgateway.id
+
+    - name: Verify reassignment via list module
+      linode.cloud.vpc_subnet_list:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+      register: subnet_list_after_reassign
+
+    - name: Assert natgateway is assigned in list response
+      assert:
+        that:
+          - subnet_list_after_reassign.subnets[0].natgateway is not none
+          - subnet_list_after_reassign.subnets[0].natgateway.id == create_natgateway.natgateway.id
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete VPC subnet
+          linode.cloud.vpc_subnet:
+            vpc_id: '{{ create_vpc.vpc.id }}'
+            label: '{{ create_subnet.subnet.label }}'
+            state: absent
+          when: create_subnet is defined
+
+        - name: Delete VPC
+          linode.cloud.vpc:
+            label: '{{ create_vpc.vpc.label }}'
+            state: absent
+          when: create_vpc is defined
+
+        - name: Delete NAT Gateway
+          linode.cloud.natgateway:
+            id: '{{ create_natgateway.natgateway.id }}'
+            state: absent
+          when: create_natgateway is defined
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
