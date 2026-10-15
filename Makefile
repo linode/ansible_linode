@@ -127,6 +127,7 @@ endif
 
     # Feature tests flags
 	@echo "run_aclp_logs_stream_tests: $${RUN_ACLP_LOGS_STREAM_TESTS:-false}" >> $(INTEGRATION_CONFIG)
+	@echo "run_monitor_logs_stream_quota_tests: $${RUN_MONITOR_LOGS_STREAM_QUOTA_TESTS:-false}" >> $(INTEGRATION_CONFIG)
 
     # Common settings
 	@echo "ua_prefix: E2E" >> $(INTEGRATION_CONFIG)
