@@ -69,7 +69,7 @@ Manage a NAT Gateway.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `address` | <center>`str`</center> | <center>Optional</center> | The IPv4 address.   |
+| `address` | <center>`str`</center> | <center>**Required**</center> | The IPv4 address.   |
 
 ## Return Values
 

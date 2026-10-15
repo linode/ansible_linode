@@ -104,6 +104,20 @@
           - natgateway_info_label.natgateway.id == create_natgateway.natgateway.id
           - natgateway_info_label.natgateway.label == create_natgateway.natgateway.label
 
+    - name: Update NAT Gateway label
+      linode.cloud.natgateway:
+        id: '{{ create_natgateway.natgateway.id }}'
+        label: 'ansible-test-ng-updated-{{ r }}'
+        state: present
+      register: update_natgateway
+
+    - name: Assert NAT Gateway label updated
+      assert:
+        that:
+          - update_natgateway.changed
+          - update_natgateway.natgateway.label == 'ansible-test-ng-updated-' + (r | string)
+          - update_natgateway.natgateway.id == create_natgateway.natgateway.id
+
     - name: List NAT Gateways
       linode.cloud.natgateway_list:
       register: natgateway_list

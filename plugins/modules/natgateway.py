@@ -25,7 +25,7 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import NATGateway
+from linode_api4 import ApiError, NATGateway
 
 SPEC = {
     "state": SpecField(
@@ -53,6 +53,7 @@ SPEC = {
         suboptions={
             "address": SpecField(
                 type=FieldType.string,
+                required=True,
                 description=["The IPv4 address."],
             )
         },
@@ -109,9 +110,7 @@ CREATE_FIELDS = {
     "vpc_subnet_id",
 }
 
-# Label is editable in the API but since it is used as an identifier in this module,
-# it is not editable here. Addresses are handled separately.
-MUTABLE_FIELDS: set[str] = set()
+MUTABLE_FIELDS = {"label"}
 
 DOCUMENTATION = r"""
 """
@@ -165,6 +164,14 @@ class Module(LinodeModuleBase):
     def _get_natgateway_by_id(self, natgateway_id: int) -> Optional[NATGateway]:
         try:
             return self.client.load(NATGateway, natgateway_id)
+        except ApiError as exception:
+            if exception.status == 404:
+                return None
+            return self.fail(
+                msg="failed to get NAT Gateway {0}: {1}".format(
+                    natgateway_id, exception
+                )
+            )
         except Exception as exception:
             return self.fail(
                 msg="failed to get NAT Gateway {0}: {1}".format(
@@ -304,6 +311,7 @@ class Module(LinodeModuleBase):
         self._natgateway._api_get()
 
         self.results["natgateway"] = self._natgateway._raw_json
+        self.results["addresses"] = self._get_natgateway_addresses()
 
     def _handle_absent(self) -> None:
         """Handles deletion of NAT Gateway for the absent state"""

@@ -171,7 +171,9 @@ class Module(LinodeModuleBase):
 
         # Handle natgateway separately due to special null semantics
         natgateway_param = self.module.params.get("natgateway")
-        if natgateway_param is not None:
+        if natgateway_param is not None and natgateway_param.get("id") != (
+            subnet.natgateway.id if subnet.natgateway is not None else None
+        ):
             try:
                 subnet.natgateway = natgateway_param
                 subnet.save()
