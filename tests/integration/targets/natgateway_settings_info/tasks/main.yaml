@@ -1,0 +1,20 @@
+- name: natgateway_settings_info
+  block:
+    - name: Get NAT Gateway settings
+      linode.cloud.natgateway_settings_info:
+      register: settings
+
+    - name: Assert NAT Gateway settings response
+      assert:
+        that:
+          - settings.settings is defined
+          - settings.settings.allowed_ports_per_interface is defined
+          - settings.settings.maximum_autoscaling_addresses_per_natgateway is defined
+          - settings.settings.maximum_reserved_addresses_per_natgateway is defined
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

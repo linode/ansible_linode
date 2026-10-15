@@ -1,0 +1,287 @@
+- name: natgateway_complex
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        target_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "NAT Gateway") | map(attribute="id") | list | random) }}'
+
+    - name: Reserve a new IP address
+      linode.cloud.reserved_ip:
+        api_token: "{{ api_token }}"
+        ua_prefix: "{{ ua_prefix }}"
+        region: '{{ target_region }}'
+        state: present
+      register: reserve_ip_one
+
+    - name: Reserve a second IP address
+      linode.cloud.reserved_ip:
+        api_token: "{{ api_token }}"
+        ua_prefix: "{{ ua_prefix }}"
+        region: '{{ target_region }}'
+        state: present
+      register: reserve_ip_two
+
+    - name: Reserve a third IP address
+      linode.cloud.reserved_ip:
+        api_token: "{{ api_token }}"
+        ua_prefix: "{{ ua_prefix }}"
+        region: '{{ target_region }}'
+        state: present
+      register: reserve_ip_three
+
+    - name: Create a NAT Gateway with one address
+      linode.cloud.natgateway:
+        label: 'ansible-test-ng-{{ r }}'
+        region: '{{ target_region }}'
+        default_ports_per_interface: 4096
+        use_autoscaling: false
+        addresses:
+          - address: '{{ reserve_ip_one.reserved_ip.address }}'
+        state: present
+      register: create_natgateway
+
+    - name: Assert NAT Gateway created with one address
+      assert:
+        that:
+          - create_natgateway.changed
+          - create_natgateway.natgateway.label == 'ansible-test-ng-' + (r | string)
+          - create_natgateway.natgateway.region == target_region
+          - create_natgateway.natgateway.addresses | length == 1
+          - reserve_ip_one.reserved_ip.address in (create_natgateway.natgateway.addresses | map(attribute='address') | list)
+
+    - name: List NAT Gateway addresses after creation
+      linode.cloud.natgateway_address_list:
+        id: '{{ create_natgateway.natgateway.id }}'
+      register: addresses_after_create
+
+    - name: Assert address list after creation
+      assert:
+        that:
+          - addresses_after_create.addresses | length == 1
+          - reserve_ip_one.reserved_ip.address in (addresses_after_create.addresses | map(attribute='address') | list)
+
+    - name: Update NAT Gateway - remove first address, add second address
+      linode.cloud.natgateway:
+        id: '{{ create_natgateway.natgateway.id }}'
+        addresses:
+          - address: '{{ reserve_ip_two.reserved_ip.address }}'
+        state: present
+      register: update_natgateway_one
+
+    - name: Assert first update replaced address
+      assert:
+        that:
+          - update_natgateway_one.changed
+          - update_natgateway_one.natgateway.addresses | length == 1
+          - reserve_ip_two.reserved_ip.address in (update_natgateway_one.natgateway.addresses | map(attribute='address') | list)
+          - reserve_ip_one.reserved_ip.address not in (update_natgateway_one.natgateway.addresses | map(attribute='address') | list)
+
+    - name: Update NAT Gateway - add back first and third addresses
+      linode.cloud.natgateway:
+        id: '{{ create_natgateway.natgateway.id }}'
+        addresses:
+          - address: '{{ reserve_ip_one.reserved_ip.address }}'
+          - address: '{{ reserve_ip_two.reserved_ip.address }}'
+          - address: '{{ reserve_ip_three.reserved_ip.address }}'
+        state: present
+      register: update_natgateway_two
+
+    - name: Assert second update added addresses
+      assert:
+        that:
+          - update_natgateway_two.changed
+          - update_natgateway_two.natgateway.addresses | length == 3
+          - reserve_ip_one.reserved_ip.address in (update_natgateway_two.natgateway.addresses | map(attribute='address') | list)
+          - reserve_ip_two.reserved_ip.address in (update_natgateway_two.natgateway.addresses | map(attribute='address') | list)
+          - reserve_ip_three.reserved_ip.address in (update_natgateway_two.natgateway.addresses | map(attribute='address') | list)
+
+    - name: List NAT Gateway addresses after update
+      linode.cloud.natgateway_address_list:
+        id: '{{ create_natgateway.natgateway.id }}'
+      register: addresses_after_update
+
+    - name: Assert address list after update
+      assert:
+        that:
+          - addresses_after_update.addresses | length == 3
+          - reserve_ip_one.reserved_ip.address in (addresses_after_update.addresses | map(attribute='address') | list)
+          - reserve_ip_two.reserved_ip.address in (addresses_after_update.addresses | map(attribute='address') | list)
+          - reserve_ip_three.reserved_ip.address in (addresses_after_update.addresses | map(attribute='address') | list)
+
+    - name: Get info about first address
+      linode.cloud.natgateway_address_info:
+        id: '{{ create_natgateway.natgateway.id }}'
+        address: '{{ reserve_ip_one.reserved_ip.address }}'
+      register: address_info_one
+
+    - name: Assert first address info
+      assert:
+        that:
+          - address_info_one.address.address == reserve_ip_one.reserved_ip.address
+
+    - name: Get info about second address
+      linode.cloud.natgateway_address_info:
+        id: '{{ create_natgateway.natgateway.id }}'
+        address: '{{ reserve_ip_two.reserved_ip.address }}'
+      register: address_info_two
+
+    - name: Assert second address info
+      assert:
+        that:
+          - address_info_two.address.address == reserve_ip_two.reserved_ip.address
+
+    - name: Get info about third address
+      linode.cloud.natgateway_address_info:
+        id: '{{ create_natgateway.natgateway.id }}'
+        address: '{{ reserve_ip_three.reserved_ip.address }}'
+      register: address_info_three
+
+    - name: Assert third address info
+      assert:
+        that:
+          - address_info_three.address.address == reserve_ip_three.reserved_ip.address
+
+    - name: Create a VPC for interface testing
+      linode.cloud.vpc:
+        label: 'ansible-test-vpc-{{ r }}'
+        region: '{{ target_region }}'
+        state: present
+      register: create_vpc
+
+    - name: Create a VPC subnet with NAT Gateway
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: 'ansible-test-subnet-{{ r }}'
+        ipv4: '10.0.0.0/24'
+        natgateway:
+          id: '{{ create_natgateway.natgateway.id }}'
+        state: present
+      register: create_subnet
+
+    - name: Create a Linode instance with VPC interface
+      linode.cloud.instance:
+        api_token: "{{ api_token }}"
+        ua_prefix: "{{ ua_prefix }}"
+        label: 'ansible-test-instance-{{ r }}'
+        region: '{{ target_region }}'
+        type: g6-nanode-1
+        image: linode/alpine3.23
+        root_pass: Fn$$oobar123
+        booted: false
+        interface_generation: linode
+        linode_interfaces:
+          - firewall_id: -1
+            public:
+              ipv4:
+                addresses:
+                  - address: auto
+                    primary: true
+          - firewall_id: -1
+            vpc:
+              subnet_id: '{{ create_subnet.subnet.id }}'
+              ipv4:
+                addresses:
+                  - address: 10.0.0.5
+                    primary: true
+        wait: false
+        state: present
+      register: create_instance
+
+    - name: List NAT Gateway interfaces
+      linode.cloud.natgateway_interface_list:
+        id: '{{ create_natgateway.natgateway.id }}'
+      register: natgateway_interfaces
+
+    - name: Assert natgateway interfaces listed
+      assert:
+        that:
+          - natgateway_interfaces.interfaces | length >= 1
+          - natgateway_interfaces.interfaces[0].linode.id == create_instance.instance.id
+
+    - name: Unassign NAT Gateway from subnet
+      linode.cloud.vpc_subnet:
+        vpc_id: '{{ create_vpc.vpc.id }}'
+        label: '{{ create_subnet.subnet.label }}'
+        natgateway:
+          id: null
+        state: present
+      register: unassign_natgateway
+
+    - name: Update NAT Gateway - remove all addresses
+      linode.cloud.natgateway:
+        id: '{{ create_natgateway.natgateway.id }}'
+        addresses: []
+        state: present
+      register: update_natgateway_three
+
+    - name: Assert third update removed all addresses
+      assert:
+        that:
+          - update_natgateway_three.changed
+          - update_natgateway_three.natgateway.addresses | length == 0
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete instance
+          linode.cloud.instance:
+            api_token: "{{ api_token }}"
+            ua_prefix: "{{ ua_prefix }}"
+            label: 'ansible-test-instance-{{ r }}'
+            state: absent
+          when: create_instance is defined
+
+        - name: Delete VPC subnet
+          linode.cloud.vpc_subnet:
+            vpc_id: '{{ create_vpc.vpc.id }}'
+            label: '{{ create_subnet.subnet.label }}'
+            state: absent
+          when: create_subnet is defined
+
+        - name: Delete VPC
+          linode.cloud.vpc:
+            label: 'ansible-test-vpc-{{ r }}'
+            state: absent
+          when: create_vpc is defined
+
+        - name: Delete NAT Gateway
+          linode.cloud.natgateway:
+            id: '{{ create_natgateway.natgateway.id }}'
+            state: absent
+          when: create_natgateway is defined
+
+        - name: Delete first reserved IP
+          linode.cloud.reserved_ip:
+            api_token: "{{ api_token }}"
+            ua_prefix: "{{ ua_prefix }}"
+            address: '{{ reserve_ip_one.reserved_ip.address }}'
+            state: absent
+          when: reserve_ip_one is defined
+
+        - name: Delete second reserved IP
+          linode.cloud.reserved_ip:
+            api_token: "{{ api_token }}"
+            ua_prefix: "{{ ua_prefix }}"
+            address: '{{ reserve_ip_two.reserved_ip.address }}'
+            state: absent
+          when: reserve_ip_two is defined
+
+        - name: Delete third reserved IP
+          linode.cloud.reserved_ip:
+            api_token: "{{ api_token }}"
+            ua_prefix: "{{ ua_prefix }}"
+            address: '{{ reserve_ip_three.reserved_ip.address }}'
+            state: absent
+          when: reserve_ip_three is defined
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
