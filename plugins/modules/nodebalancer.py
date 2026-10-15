@@ -304,8 +304,7 @@ linode_nodebalancer_spec = {
         description=[
             "How this NodeBalancer connects to backend nodes. If omitted, the "
             "API infers the value from VPC attachments or configured nodes. "
-            "This cannot be changed after creation. This option requires "
-            "v4beta API access and may not be available to all accounts.",
+            "This cannot be changed after creation.",
         ],
     ),
     "vpcs": SpecField(
