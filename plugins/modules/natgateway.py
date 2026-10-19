@@ -281,11 +281,13 @@ class Module(LinodeModuleBase):
                 self._add_address(address)
                 added_addresses.append(address)
             except Exception as exception:
-                # Rollback any addresses we've already added
+                # Rollback: remove any addresses we've already added
                 for added_addr in added_addresses:
                     try:
                         self._delete_address(added_addr)
                     except Exception:
+                        # Best-effort rollback; ignore deletion failures to ensure
+                        # the original failure is reported to the user
                         pass
                 self.fail(
                     msg="failed to add address {0}: {1}".format(
