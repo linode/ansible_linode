@@ -69,11 +69,17 @@ SPEC = {
     ),
     "use_autoscaling": SpecField(
         type=FieldType.bool,
-        description=["Whether or not to use autoscaling."],
+        description=[
+            "Whether or not to use autoscaling. "
+            "This field is set during creation and cannot be changed after creation."
+        ],
     ),
     "vpc_subnet_id": SpecField(
         type=FieldType.integer,
-        description=["The ID of the VPC subnet that the NAT Gateway is in."],
+        description=[
+            "The ID of the VPC subnet that the NAT Gateway is in. "
+            "This field is set during creation and cannot be changed after creation."
+        ],
     ),
 }
 
@@ -135,7 +141,10 @@ class Module(LinodeModuleBase):
         self._natgateway: Optional[NATGateway] = None
         self._state = "present"
 
-        super().__init__(module_arg_spec=self.module_arg_spec)
+        super().__init__(
+            module_arg_spec=self.module_arg_spec,
+            required_one_of=[("id", "label")],
+        )
 
     def _get_natgateway_by_label(self, label: str) -> Optional[NATGateway]:
         attempt = 0
@@ -207,6 +216,13 @@ class Module(LinodeModuleBase):
         params = filter_null_values(self.module.params)
         params.pop("addresses", None)
 
+        # Reject attempts to update creation-only fields
+        for creation_only_field in ("vpc_subnet_id", "use_autoscaling"):
+            if params.get(creation_only_field) is not None:
+                self.fail(
+                    msg=f"{creation_only_field} cannot be changed after gateway creation"
+                )
+
         # Handle label and other updates
         handle_updates(
             self._natgateway,
@@ -258,24 +274,32 @@ class Module(LinodeModuleBase):
         addresses_to_add = desired_addresses - current_addresses
         addresses_to_remove = current_addresses - desired_addresses
 
-        # Remove addresses not in desired state
+        # Add new addresses before removing old ones to avoid leaving the gateway without egress
+        added_addresses = []
+        for address in addresses_to_add:
+            try:
+                self._add_address(address)
+                added_addresses.append(address)
+            except Exception as exception:
+                # Rollback any addresses we've already added
+                for added_addr in added_addresses:
+                    try:
+                        self._delete_address(added_addr)
+                    except Exception:
+                        pass
+                self.fail(
+                    msg="failed to add address {0}: {1}".format(
+                        address, exception
+                    )
+                )
+
+        # Remove addresses not in desired state (only after new addresses are confirmed)
         for address in addresses_to_remove:
             try:
                 self._delete_address(address)
             except Exception as exception:
                 self.fail(
                     msg="failed to delete address {0}: {1}".format(
-                        address, exception
-                    )
-                )
-
-        # Add new addresses
-        for address in addresses_to_add:
-            try:
-                self._add_address(address)
-            except Exception as exception:
-                self.fail(
-                    msg="failed to add address {0}: {1}".format(
                         address, exception
                     )
                 )
@@ -294,6 +318,9 @@ class Module(LinodeModuleBase):
 
         # Create NAT Gateway if doesn't exist
         if self._natgateway is None:
+            if natgateway_id is not None:
+                self.fail("NAT Gateway {} not found".format(natgateway_id))
+                return
             if natgateway_label is None:
                 self.fail("label is required to create a NAT Gateway")
                 return
