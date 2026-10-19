@@ -42,8 +42,8 @@ result_natgateway_samples = ['''{
   "vpc_subnet": {
     "id": 42,
     "type": "vpc_subnet",
-    "label":"my-subnet",
-    "url": "https://www.something.com/vpcs/42/subnets/41"
+    "label": "my-subnet",
+    "url": "https://www.something.com/vpcs/42/subnets/41",
     "vpc_id": 13,
     "vpc_label": "my-vpc"
   },
