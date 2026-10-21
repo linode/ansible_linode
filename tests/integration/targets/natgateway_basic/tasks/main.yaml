@@ -58,6 +58,22 @@
           - create_natgateway.natgateway.default_ports_per_interface == 4096
           - create_natgateway.natgateway.vpc_subnet.id == create_subnet.subnet.id
 
+    - name: Re-run NAT Gateway creation with unchanged arguments
+      linode.cloud.natgateway:
+        label: 'ansible-test-ng-{{ r }}'
+        region: '{{ target_region }}'
+        vpc_subnet_id: '{{ create_subnet.subnet.id }}'
+        default_ports_per_interface: 4096
+        use_autoscaling: false
+        state: present
+      register: recreate_natgateway
+
+    - name: Assert NAT Gateway unchanged
+      assert:
+        that:
+          - not recreate_natgateway.changed
+          - recreate_natgateway.natgateway.id == create_natgateway.natgateway.id
+
     - name: Get NAT Gateway by label
       linode.cloud.natgateway:
         label: '{{ create_natgateway.natgateway.label }}'

@@ -71,7 +71,8 @@ SPEC = {
         type=FieldType.bool,
         description=[
             "Whether or not to use autoscaling. "
-            "This field is set during creation and cannot be changed after creation."
+            "This field is set during creation and cannot be changed after creation. "
+            "It is ignored for existing NAT Gateways."
         ],
     ),
     "vpc_subnet_id": SpecField(
@@ -216,11 +217,21 @@ class Module(LinodeModuleBase):
         params = filter_null_values(self.module.params)
         params.pop("addresses", None)
 
-        # Reject attempts to update creation-only fields
-        for creation_only_field in ("vpc_subnet_id", "use_autoscaling"):
-            if params.get(creation_only_field) is not None:
+        # Creation-only fields are excluded from the generic update check;
+        # only reject changes that can be detected against the current gateway.
+        vpc_subnet_id = params.pop("vpc_subnet_id", None)
+
+        # use_autoscaling is not returned by the API, so it cannot be compared
+        # and is ignored for existing gateways.
+        params.pop("use_autoscaling", None)
+
+        if vpc_subnet_id is not None:
+            current_subnet = self._natgateway.vpc_subnet
+            current_subnet_id = current_subnet.id if current_subnet else None
+            if current_subnet_id != vpc_subnet_id:
                 self.fail(
-                    msg=f"{creation_only_field} cannot be changed after gateway creation"
+                    msg="vpc_subnet_id cannot be changed after gateway creation "
+                    f"(current: {current_subnet_id}, requested: {vpc_subnet_id})"
                 )
 
         # Handle label and other updates
@@ -257,6 +268,57 @@ class Module(LinodeModuleBase):
         self._natgateway.address_assignment_delete(address)
         self.register_action("Deleted address {}".format(address))
 
+    def _check_address_capacity(
+        self, current: set, to_add: set, to_remove: set
+    ) -> int:
+        """
+        Validates the desired address count against the account's per-gateway
+        limit and returns how many removals must happen before additions.
+        """
+        try:
+            settings = self.client.networking.natgateway_settings()
+            limit = settings.maximum_reserved_addresses_per_natgateway
+        except Exception as exception:
+            self.fail(msg=f"failed to get NAT Gateway settings: {exception}")
+            return 0
+
+        desired_count = len(current) - len(to_remove) + len(to_add)
+        if desired_count > limit:
+            self.fail(
+                msg=f"{desired_count} addresses requested, but this account "
+                f"allows at most {limit} per NAT Gateway"
+            )
+            return 0
+
+        overflow = len(current) + len(to_add) - limit
+        if overflow <= 0:
+            return 0
+
+        self.warn(
+            "Adding addresses before removing old ones would exceed the limit "
+            f"of {limit} per NAT Gateway; removing {overflow} address(es) "
+            "first. The gateway will briefly have reduced egress capacity."
+        )
+        return overflow
+
+    def _rollback_addresses(self, added: list, removed: list) -> None:
+        """Best-effort restore of the original address set."""
+        for address in added:
+            try:
+                self._delete_address(address)
+            except Exception:
+                # Best-effort rollback; ignore deletion failures to ensure
+                # the original failure is reported to the user
+                pass
+
+        for address in removed:
+            try:
+                self._add_address(address)
+            except Exception:
+                # Best-effort rollback; ignore re-add failures to ensure
+                # the original failure is reported to the user
+                pass
+
     def _update_addresses(self, spec_addresses: list) -> None:
         """Sync addresses to desired state"""
         # Get current addresses from API (single call, converted to JSON list)
@@ -274,21 +336,50 @@ class Module(LinodeModuleBase):
         addresses_to_add = desired_addresses - current_addresses
         addresses_to_remove = current_addresses - desired_addresses
 
-        # Add new addresses before removing old ones to avoid leaving the gateway without egress
+        if not addresses_to_add and not addresses_to_remove:
+            return
+
+        early_remove_count = 0
+        if addresses_to_add:
+            early_remove_count = self._check_address_capacity(
+                current_addresses, addresses_to_add, addresses_to_remove
+            )
+
+        # Prefer removing addresses that are not in use when freeing slots early
+        in_use = {
+            addr.get("address")
+            for addr in current_addresses_list
+            if addr.get("in_use")
+        }
+        ordered_removals = sorted(
+            addresses_to_remove, key=lambda addr: (addr in in_use, addr)
+        )
+        early_removals = ordered_removals[:early_remove_count]
+        late_removals = ordered_removals[early_remove_count:]
+
+        # Free only the slots needed to stay within the per-gateway limit
+        removed_addresses = []
+        for address in early_removals:
+            try:
+                self._delete_address(address)
+                removed_addresses.append(address)
+            except Exception as exception:
+                self._rollback_addresses([], removed_addresses)
+                self.fail(
+                    msg="failed to delete address {0}: {1}".format(
+                        address, exception
+                    )
+                )
+
+        # Add new addresses before removing the remaining old ones to avoid
+        # leaving the gateway without egress
         added_addresses = []
-        for address in addresses_to_add:
+        for address in sorted(addresses_to_add):
             try:
                 self._add_address(address)
                 added_addresses.append(address)
             except Exception as exception:
-                # Rollback: remove any addresses we've already added
-                for added_addr in added_addresses:
-                    try:
-                        self._delete_address(added_addr)
-                    except Exception:
-                        # Best-effort rollback; ignore deletion failures to ensure
-                        # the original failure is reported to the user
-                        pass
+                self._rollback_addresses(added_addresses, removed_addresses)
                 self.fail(
                     msg="failed to add address {0}: {1}".format(
                         address, exception
@@ -296,7 +387,7 @@ class Module(LinodeModuleBase):
                 )
 
         # Remove addresses not in desired state (only after new addresses are confirmed)
-        for address in addresses_to_remove:
+        for address in late_removals:
             try:
                 self._delete_address(address)
             except Exception as exception:

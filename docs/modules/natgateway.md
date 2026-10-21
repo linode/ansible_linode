@@ -62,7 +62,7 @@ Manage a NAT Gateway.
 | [`addresses` (sub-options)](#addresses) | <center>`list`</center> | <center>Optional</center> | The list of IP addresses assigned to the NAT Gateway.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>Optional</center> | The region that the NAT Gateway is in.   |
 | `default_ports_per_interface` | <center>`int`</center> | <center>Optional</center> | The default number of ports per interface.   |
-| `use_autoscaling` | <center>`bool`</center> | <center>Optional</center> | Whether or not to use autoscaling. This field is set during creation and cannot be changed after creation.   |
+| `use_autoscaling` | <center>`bool`</center> | <center>Optional</center> | Whether or not to use autoscaling. This field is set during creation and cannot be changed after creation. It is ignored for existing NAT Gateways.   |
 | `vpc_subnet_id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC subnet that the NAT Gateway is in. This field is set during creation and cannot be changed after creation.   |
 
 ### addresses
