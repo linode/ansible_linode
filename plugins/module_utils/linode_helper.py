@@ -168,7 +168,7 @@ def create_filter_and(
 def mapping_to_dict(obj: Any) -> Any:
     """Recursively converts a mapping to a dict. This is useful for nested API responses."""
 
-    if isinstance(obj, MappedObject):
+    if isinstance(obj, (MappedObject, JSONObject)):
         obj = obj.dict
 
     if isinstance(obj, dict):
