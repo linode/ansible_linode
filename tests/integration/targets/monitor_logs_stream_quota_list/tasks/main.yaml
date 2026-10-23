@@ -1,7 +1,7 @@
 ---
-- name: Check RUN_MONITOR_LOGS_STREAM_QUOTA_TESTS guard
+- name: Check RUN_ACLP_LOGS_STREAM_TESTS guard
   ansible.builtin.meta: end_play
-  when: run_monitor_logs_stream_quota_tests | default('false') | lower not in ['true', 'yes']
+  when: run_aclp_logs_stream_tests | default('false') | lower not in ['true', 'yes']
 
 - name: monitor_logs_stream_quota_list
   block:
