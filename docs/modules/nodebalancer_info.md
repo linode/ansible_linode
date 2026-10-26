@@ -48,6 +48,9 @@ Get info about a Linode Node Balancer.
           "ipv4": "12.34.56.78",
           "ipv6": null,
           "label": "balancer12345",
+          "type": "common",
+          "backend_connectivity": "ipv6",
+          "backend_ipv6_prefix": "2600:3c22:1:20:0:3039::/96",
           "region": "us-east",
           "tags": [
             "example tag",

@@ -42,6 +42,28 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 ```
 
 ```yaml
+- name: Create a NodeBalancer with IPv6 backends
+  linode.cloud.nodebalancer:
+    label: my-ipv6-loadbalancer
+    region: us-east
+    type: common
+    backend_connectivity: ipv6
+    state: present
+```
+
+```yaml
+- name: Create a NodeBalancer with VPC connectivity
+  linode.cloud.nodebalancer:
+    label: my-vpc-loadbalancer
+    region: us-east
+    backend_connectivity: vpc
+    vpcs:
+      - subnet_id: 12345
+        ipv4_range: 10.0.0.0/24
+    state: present
+```
+
+```yaml
 - name: Delete the NodeBalancer
   linode.cloud.nodebalancer:
     label: my-loadbalancer
@@ -59,10 +81,20 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 | `client_conn_throttle` | <center>`int`</center> | <center>Optional</center> | Throttle connections per second. Set to 0 (zero) to disable throttling.  **(Updatable)** |
 | `client_udp_sess_throttle` | <center>`int`</center> | <center>Optional</center> | Throttle UDP sessions per second (0-20). Set to 0 (zero) to disable throttling.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>Optional</center> | The ID of the Region to create this NodeBalancer in.   |
+| `type` | <center>`str`</center> | <center>Optional</center> | The type of NodeBalancer to create. Defaults to common and cannot be changed after creation. Premium and Enterprise NodeBalancers may not be available to all users.  **(Choices: `common`, `premium`, `premium_40gb`, `enterprise`)** |
+| `backend_connectivity` | <center>`str`</center> | <center>Optional</center> | How this NodeBalancer connects to backend nodes. If omitted, the API infers the value from VPC attachments or configured nodes. This cannot be changed after creation.  **(Choices: `legacy`, `ipv6`, `vpc`)** |
+| [`vpcs` (sub-options)](#vpcs) | <center>`list`</center> | <center>Optional</center> | VPC subnets to attach to this NodeBalancer. Required when backend_connectivity is vpc and cannot be changed after creation.   |
 | `ipv4` | <center>`str`</center> | <center>Optional</center> | A reserved IPv4 address to assign to this NodeBalancer on creation. The address must be a reserved, unassigned IPv4 address owned by the account. NOTE: This field is only used at creation time.   |
 | `firewall_id` | <center>`int`</center> | <center>Optional</center> | The ID of the Firewall to assign this NodeBalancer to.   |
 | `tags` | <center>`list`</center> | <center>Optional</center> | Tags to assign to this NodeBalancer.  **(Updatable)** |
 | [`configs` (sub-options)](#configs) | <center>`list`</center> | <center>Optional</center> | A list of configs to apply to the NodeBalancer.  **(Updatable)** |
+
+### vpcs
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `subnet_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the VPC subnet to attach to this NodeBalancer.   |
+| `ipv4_range` | <center>`str`</center> | <center>Optional</center> | The IPv4 range in the subnet that this NodeBalancer can use.   |
 
 ### configs
 
@@ -92,7 +124,7 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label for this node.   |
-| `address` | <center>`str`</center> | <center>**Required**</center> | The private IP Address where this backend can be reached. This must be a private IP address.  **(Updatable)** |
+| `address` | <center>`str`</center> | <center>**Required**</center> | The IP address where this backend can be reached. The address must match the NodeBalancer's backend connectivity. For legacy, use a private IPv4 address. For ipv6, use a public IPv6 address in [IPv6]:port format. For vpc, use an address in the attached VPC subnet.  **(Updatable)** |
 | `weight` | <center>`int`</center> | <center>Optional</center> | Nodes with a higher weight will receive more traffic.  **(Updatable)** |
 | `mode` | <center>`str`</center> | <center>Optional</center> | The mode this NodeBalancer should use when sending traffic to this backend.  **(Choices: `accept`, `reject`, `drain`, `backup`; Updatable)** |
 
@@ -110,6 +142,9 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
           "ipv4": "12.34.56.78",
           "ipv6": null,
           "label": "balancer12345",
+          "type": "common",
+          "backend_connectivity": "ipv6",
+          "backend_ipv6_prefix": "2600:3c22:1:20:0:3039::/96",
           "region": "us-east",
           "tags": [
             "example tag",

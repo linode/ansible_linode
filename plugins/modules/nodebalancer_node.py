@@ -49,8 +49,10 @@ MODULE_SPEC = {
         type=FieldType.string,
         editable=True,
         description=[
-            "The private IP Address where this backend can be reached. "
-            "This must be a private IP address."
+            "The IP address where this backend can be reached. It must match "
+            "the NodeBalancer's backend connectivity: private IPv4 for legacy, "
+            "public IPv6 in [IPv6]:port format for ipv6, or an address in the "
+            "attached VPC subnet for vpc."
         ],
     ),
     "state": SpecField(
