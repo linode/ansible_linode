@@ -1,6 +1,6 @@
 boto3>=1.43.102
 botocore>=1.43.82
-pylint>=4.0.9
+pylint>=4.1.3
 ansible-doc-extractor>=0.1.11
 mypy>=2.4.0
 ansible>=10.7.0
