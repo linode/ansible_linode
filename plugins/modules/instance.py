@@ -70,6 +70,7 @@ MIN_DEVICE_LIMIT = 8
 linode_instance_metadata_spec = {
     "user_data": SpecField(
         type=FieldType.string,
+        no_log=True,
         description=[
             "The user-defined data to supply for the Linode through the Metadata service."
         ],
@@ -117,6 +118,7 @@ linode_instance_disk_spec = {
     ),
     "root_pass": SpecField(
         type=FieldType.string,
+        no_log=True,
         description=["The root user’s password on the newly-created Linode."],
     ),
     "size": SpecField(
@@ -135,6 +137,7 @@ linode_instance_disk_spec = {
     ),
     "stackscript_data": SpecField(
         type=FieldType.dict,
+        no_log=True,
         description=[
             "An object containing arguments to any User Defined Fields present in "
             "the StackScript used when creating the instance.",
@@ -416,13 +419,19 @@ linode_instance_spec = {
         type=FieldType.list,
         element_type=FieldType.string,
         description=[
-            "A list of SSH public key parts to deploy for the root user."
+            "A list of SSH public key parts to deploy for the root user.",
+            "If image is provided, one of root_pass, authorized_keys, or authorized_users",
+            "is required.",
         ],
     ),
     "authorized_users": SpecField(
         type=FieldType.list,
         element_type=FieldType.string,
-        description=["A list of usernames."],
+        description=[
+            "A list of SSH public key parts to deploy for the root user.",
+            "If image is provided, one of root_pass, authorized_keys, or authorized_users",
+            "is required.",
+        ],
     ),
     "maintenance_policy": SpecField(
         type=FieldType.string,
@@ -436,8 +445,8 @@ linode_instance_spec = {
         no_log=True,
         description=[
             "The password for the root user.",
-            "If not specified, one will be generated.",
-            "This generated password will be available in the task success JSON.",
+            "If image is provided, one of root_pass, authorized_keys, or authorized_users",
+            "is required.",
         ],
     ),
     "stackscript_id": SpecField(
@@ -450,6 +459,7 @@ linode_instance_spec = {
     ),
     "stackscript_data": SpecField(
         type=FieldType.dict,
+        no_log=True,
         description=[
             "An object containing arguments to any User Defined Fields present in "
             "the StackScript used when creating the instance.",
