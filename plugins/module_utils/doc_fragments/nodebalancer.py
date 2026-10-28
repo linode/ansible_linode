@@ -14,6 +14,28 @@ specdoc_examples = ['''
         nodes:
           - label: node1
             address: 0.0.0.0:80''', '''
+- name: Create a NodeBalancer with a reserved IP
+  linode.cloud.nodebalancer:
+    label: my-loadbalancer
+    region: us-east
+    ipv4: "192.0.2.141"
+    state: present''', '''
+- name: Create a NodeBalancer with IPv6 backends
+  linode.cloud.nodebalancer:
+    label: my-ipv6-loadbalancer
+    region: us-east
+    type: common
+    backend_connectivity: ipv6
+    state: present''', '''
+- name: Create a NodeBalancer with VPC connectivity
+  linode.cloud.nodebalancer:
+    label: my-vpc-loadbalancer
+    region: us-east
+    backend_connectivity: vpc
+    vpcs:
+      - subnet_id: 12345
+        ipv4_range: 10.0.0.0/24
+    state: present''', '''
 - name: Delete the NodeBalancer
   linode.cloud.nodebalancer:
     label: my-loadbalancer
@@ -28,6 +50,9 @@ result_node_balancer_samples = ['''{
   "ipv4": "12.34.56.78",
   "ipv6": null,
   "label": "balancer12345",
+  "type": "common",
+  "backend_connectivity": "ipv6",
+  "backend_ipv6_prefix": "2600:3c22:1:20:0:3039::/96",
   "region": "us-east",
   "tags": [
     "example tag",

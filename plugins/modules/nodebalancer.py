@@ -55,8 +55,11 @@ linode_nodes_spec = {
         required=True,
         editable=True,
         description=[
-            "The private IP Address where this backend can be reached.",
-            "This must be a private IP address.",
+            "The IP address where this backend can be reached.",
+            "The address must match the NodeBalancer's backend connectivity.",
+            "For legacy, use a private IPv4 address.",
+            "For ipv6, use a public IPv6 address in [IPv6]:port format.",
+            "For vpc, use an address in the attached VPC subnet.",
         ],
     ),
     "weight": SpecField(
@@ -73,6 +76,22 @@ linode_nodes_spec = {
             "The mode this NodeBalancer should use when sending traffic to this backend."
         ],
         choices=["accept", "reject", "drain", "backup"],
+    ),
+}
+
+linode_nodebalancer_vpcs_spec = {
+    "subnet_id": SpecField(
+        type=FieldType.integer,
+        required=True,
+        description=[
+            "The ID of the VPC subnet to attach to this NodeBalancer."
+        ],
+    ),
+    "ipv4_range": SpecField(
+        type=FieldType.string,
+        description=[
+            "The IPv4 range in the subnet that this NodeBalancer can use."
+        ],
     ),
 }
 
@@ -270,6 +289,41 @@ linode_nodebalancer_spec = {
         type=FieldType.string,
         description=["The ID of the Region to create this NodeBalancer in."],
     ),
+    "type": SpecField(
+        type=FieldType.string,
+        choices=["common", "premium", "premium_40gb", "enterprise"],
+        description=[
+            "The type of NodeBalancer to create. Defaults to common and cannot "
+            "be changed after creation. Premium and Enterprise NodeBalancers "
+            "may not be available to all users.",
+        ],
+    ),
+    "backend_connectivity": SpecField(
+        type=FieldType.string,
+        choices=["legacy", "ipv6", "vpc"],
+        description=[
+            "How this NodeBalancer connects to backend nodes. If omitted, the "
+            "API infers the value from VPC attachments or configured nodes. "
+            "This cannot be changed after creation.",
+        ],
+    ),
+    "vpcs": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_nodebalancer_vpcs_spec,
+        description=[
+            "VPC subnets to attach to this NodeBalancer. Required when "
+            "backend_connectivity is vpc and cannot be changed after creation.",
+        ],
+    ),
+    "ipv4": SpecField(
+        type=FieldType.string,
+        description=[
+            "A reserved IPv4 address to assign to this NodeBalancer on creation.",
+            "The address must be a reserved, unassigned IPv4 address owned by the account.",
+            "NOTE: This field is only used at creation time.",
+        ],
+    ),
     "firewall_id": SpecField(
         type=FieldType.integer,
         description=["The ID of the Firewall to assign this NodeBalancer to."],
@@ -430,7 +484,12 @@ class LinodeNodeBalancer(LinodeModuleBase):
                 "label",
                 "firewall_id",
                 "tags",
+                "ipv4",
+                "type",
+                "backend_connectivity",
+                "vpcs",
             }
+            and v is not None
         }
 
         try:
@@ -687,6 +746,15 @@ class LinodeNodeBalancer(LinodeModuleBase):
         if "configs" in params.keys():
             params.pop("configs")
 
+        # These fields are accepted at creation time only.
+        for create_only_field in (
+            "ipv4",
+            "type",
+            "backend_connectivity",
+            "vpcs",
+        ):
+            params.pop(create_only_field, None)
+
         if "firewall_id" in params.keys():
             firewall_id = params.pop("firewall_id")
             firewall = self.client.load(Firewall, firewall_id)
@@ -762,6 +830,10 @@ class LinodeNodeBalancer(LinodeModuleBase):
         self.results["firewalls"] = [
             v.id for v in self._node_balancer.firewalls()
         ]
+
+        # Backend changes can update connectivity and the assigned IPv6 prefix.
+        self._node_balancer._api_get()
+        self.results["node_balancer"] = self._node_balancer._raw_json
 
         return self.results
 

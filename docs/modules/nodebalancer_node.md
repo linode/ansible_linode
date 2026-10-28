@@ -42,7 +42,7 @@ Manage Linode NodeBalancer Nodes.
 
     label: my-node
 
-    # Use the private ip address of the instance
+    # Use an address that matches the NodeBalancer's backend connectivity.
     address: '{{ instance_result.instance.ipv4[1] }}:80'
 
     state: present
@@ -57,7 +57,7 @@ Manage Linode NodeBalancer Nodes.
 | `config_id` | <center>`int`</center> | <center>**Required**</center> | The ID of the NodeBalancer Config that contains this node.   |
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label for this node. This is used to identify nodes within a config.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | Whether the NodeBalancer node should be present or absent.  **(Choices: `present`, `absent`)** |
-| `address` | <center>`str`</center> | <center>Optional</center> | The private IP Address where this backend can be reached. This must be a private IP address.  **(Updatable)** |
+| `address` | <center>`str`</center> | <center>Optional</center> | The IP address where this backend can be reached. It must match the NodeBalancer's backend connectivity: private IPv4 for legacy, public IPv6 in [IPv6]:port format for ipv6, or an address in the attached VPC subnet for vpc.  **(Updatable)** |
 | `mode` | <center>`str`</center> | <center>Optional</center> | The mode this NodeBalancer should use when sending traffic to this backend.  **(Choices: `accept`, `reject`, `drain`, `backup`; Updatable)** |
 | `weight` | <center>`int`</center> | <center>Optional</center> | Nodes with a higher weight will receive more traffic.  **(Updatable)** |
 
