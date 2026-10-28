@@ -28,6 +28,41 @@ A stream defines a flow of logs (like audit logs) to a specific destination.
 ```
 
 ```yaml
+- name: Create a VPN Gateway IPsec logs stream
+  linode.cloud.monitor_logs_stream:
+    label: "my-vpn-ipsec-logs"
+    type: "vpngw_ipsec_logs"
+    status: "active"
+    destinations:
+      - 12345
+    details:
+      vpn_gateway_ids: [50, 60]
+    state: present
+```
+
+```yaml
+- name: Create a VPN Gateway BGP logs stream
+  linode.cloud.monitor_logs_stream:
+    label: "my-vpn-bgp-logs"
+    type: "vpngw_bgp_logs"
+    status: "active"
+    destinations:
+      - 12345
+    details:
+      vpn_gateway_ids: [50, 60]
+    state: present
+```
+
+```yaml
+- name: Replace the VPN Gateways selected for an existing stream
+  linode.cloud.monitor_logs_stream:
+    id: 9876
+    details:
+      vpn_gateway_ids: [70, 80]
+    state: present
+```
+
+```yaml
 - name: Update an existing stream's destinations
   linode.cloud.monitor_logs_stream:
     id: 9876
@@ -52,8 +87,8 @@ A stream defines a flow of logs (like audit logs) to a specific destination.
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the logs stream.  **(Choices: `present`, `absent`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the logs stream. Used to identify an existing stream to update or delete.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The name of the stream. This is used for display purposes in Akamai Cloud Manager.  **(Updatable)** |
-| `type` | <center>`str`</center> | <center>Optional</center> | The type of stream. This can be ``audit_logs`` for logs consisting of all of the control plane operations for the services in your Linodes, or ``lke_audit_logs`` for log data for your Linode Kubernetes Engine (LKE) enterprise clusters.  **(Choices: `audit_logs`, `lke_audit_logs`)** |
-| [`details` (sub-options)](#details) | <center>`dict`</center> | <center>Optional</center> | Additional details for the stream, based on the selected type. Currently, this only applies to streams with a type of ``lke_audit_logs``.  **(Updatable)** |
+| `type` | <center>`str`</center> | <center>Optional</center> | The type of stream. This can be ``audit_logs`` for logs consisting of all of the control plane operations for the services in your Linodes, or ``lke_audit_logs`` for log data for your Linode Kubernetes Engine (LKE) enterprise clusters, or ``vpngw_ipsec_logs`` or ``vpngw_bgp_logs`` for VPN Gateway IPsec or BGP logs, respectively.  **(Choices: `audit_logs`, `lke_audit_logs`, `vpngw_ipsec_logs`, `vpngw_bgp_logs`)** |
+| [`details` (sub-options)](#details) | <center>`dict`</center> | <center>Optional</center> | Additional details for the stream, based on the selected type. Applies to ``lke_audit_logs``, ``vpngw_ipsec_logs``, and ``vpngw_bgp_logs`` streams.  **(Updatable)** |
 | `status` | <center>`str`</center> | <center>Optional</center> | The availability status of the stream. While creating or updating, you can pass ``active`` or ``inactive``. Note that the API might return ``provisioning`` while it is being set up.  **(Choices: `active`, `inactive`; Updatable)** |
 | `destinations` | <center>`list`</center> | <center>Optional</center> | List of unique identifiers for the sync points that will receive logs data. At the moment only a single destination is supported by the API.  **(Updatable)** |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the stream to finish provisioning before returning.  **(Default: `False`)** |
@@ -63,8 +98,9 @@ A stream defines a flow of logs (like audit logs) to a specific destination.
 
 | Field     | Type | Required | Description                                                                  |
 |-----------|------|----------|------------------------------------------------------------------------------|
-| `cluster_ids` | <center>`list`</center> | <center>Optional</center> | The unique identifiers for each LKE enterprise cluster.   |
-| `is_auto_add_all_clusters_enabled` | <center>`bool`</center> | <center>Optional</center> | When set to ``true``, newly added LKE enterprise clusters on your account will be included in the stream. If ``false``, only existing LKE enterprise clusters are included.  **(Default: `False`)** |
+| `vpn_gateway_ids` | <center>`list`</center> | <center>Optional</center> | The IDs of the VPN Gateways to include in the stream. Required when creating a stream of type ``vpngw_ipsec_logs`` or ``vpngw_bgp_logs``. Only allowed for VPN Gateway streams. Cannot be combined with LKE details. Must be a non-empty list of unique positive integers. Updating this list replaces all previously selected IDs. The order of IDs does not affect the configuration.   |
+| `cluster_ids` | <center>`list`</center> | <center>Optional</center> | The unique identifiers for each LKE enterprise cluster. Only allowed for LKE streams, not VPN Gateway streams.   |
+| `is_auto_add_all_clusters_enabled` | <center>`bool`</center> | <center>Optional</center> | When set to ``true``, newly added LKE enterprise clusters on your account will be included in the stream. If ``false``, only existing LKE enterprise clusters are included. Only allowed for LKE streams, not VPN Gateway streams, even when set to ``false``. Defaults to ``false`` when LKE details are provided without this option.   |
 
 ## Return Values
 
