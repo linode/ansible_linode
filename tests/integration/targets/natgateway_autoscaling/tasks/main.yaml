@@ -1,0 +1,73 @@
+- name: natgateway_autoscaling
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        target_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "NAT Gateway") | map(attribute="id") | list | random) }}'
+
+    - name: Reserve a new IP address
+      linode.cloud.reserved_ip:
+        api_token: "{{ api_token }}"
+        ua_prefix: "{{ ua_prefix }}"
+        region: '{{ target_region }}'
+        state: present
+      register: reserve_ip
+
+    - name: Create a NAT Gateway with autoscaling enabled
+      linode.cloud.natgateway:
+        label: 'ansible-test-ng-{{ r }}'
+        region: '{{ target_region }}'
+        default_ports_per_interface: 4096
+        use_autoscaling: true
+        state: present
+      register: create_natgateway
+
+    - name: Assert NAT Gateway created with autoscaling
+      assert:
+        that:
+          - create_natgateway.changed
+          - create_natgateway.natgateway.address_autoscale_max > 0
+
+    - name: Attempt to update NAT Gateway addresses while autoscaling is enabled
+      linode.cloud.natgateway:
+        id: '{{ create_natgateway.natgateway.id }}'
+        addresses:
+          - address: '{{ reserve_ip.reserved_ip.address }}'
+        state: present
+      register: update_natgateway
+      ignore_errors: yes
+
+    - name: Assert address update is rejected by the API
+      assert:
+        that:
+          - update_natgateway.failed
+          - "'autoscaling' in update_natgateway.msg"
+
+  always:
+    - ignore_errors: yes
+      block:
+        - name: Delete a NAT Gateway by id
+          linode.cloud.natgateway:
+            id: '{{ create_natgateway.natgateway.id }}'
+            state: absent
+          when: create_natgateway is defined and create_natgateway.natgateway is defined
+
+        - name: Delete reserved IP address
+          linode.cloud.reserved_ip:
+            api_token: "{{ api_token }}"
+            ua_prefix: "{{ ua_prefix }}"
+            address: '{{ reserve_ip.reserved_ip.address }}'
+            state: absent
+          when: reserve_ip is defined and reserve_ip.reserved_ip is defined
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

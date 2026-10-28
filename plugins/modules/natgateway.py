@@ -49,7 +49,11 @@ SPEC = {
     "addresses": SpecField(
         type=FieldType.list,
         element_type=FieldType.dict,
-        description=["The list of IP addresses assigned to the NAT Gateway."],
+        description=[
+            "The list of IP addresses assigned to the NAT Gateway. "
+            "Addresses cannot be modified when the NAT Gateway uses autoscaling, "
+            "as the API manages them in that case."
+        ],
         suboptions={
             "address": SpecField(
                 type=FieldType.string,

@@ -59,7 +59,7 @@ Manage a NAT Gateway.
 | `state` | <center>`str`</center> | <center>**Required**</center> | The desired state of the target.  **(Choices: `present`, `absent`)** |
 | `id` | <center>`int`</center> | <center>Optional</center> | The ID of the NAT Gateway.   |
 | `label` | <center>`str`</center> | <center>Optional</center> | The label of the NAT Gateway. This field can only contain ASCII letters, digits and dashes.  **(Updatable)** |
-| [`addresses` (sub-options)](#addresses) | <center>`list`</center> | <center>Optional</center> | The list of IP addresses assigned to the NAT Gateway.  **(Updatable)** |
+| [`addresses` (sub-options)](#addresses) | <center>`list`</center> | <center>Optional</center> | The list of IP addresses assigned to the NAT Gateway. Addresses cannot be modified when the NAT Gateway uses autoscaling, as the API manages them in that case.  **(Updatable)** |
 | `region` | <center>`str`</center> | <center>Optional</center> | The region that the NAT Gateway is in.   |
 | `default_ports_per_interface` | <center>`int`</center> | <center>Optional</center> | The default number of ports per interface.   |
 | `use_autoscaling` | <center>`bool`</center> | <center>Optional</center> | Whether or not to use autoscaling. This field is set during creation and cannot be changed after creation. It is ignored for existing NAT Gateways.   |
