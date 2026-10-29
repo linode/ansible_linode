@@ -72,8 +72,7 @@ linode_monitor_logs_stream_spec = {
         editable=True,
         description=[
             "Additional details for the stream, based on the selected type.",
-            "Applies to ``lke_audit_logs``, ``vpngw_ipsec_logs``, "
-            "and ``vpngw_bgp_logs`` streams.",
+            "Applies to ``lke_audit_logs``, ``vpngw_ipsec_logs``, and ``vpngw_bgp_logs`` streams.",
         ],
         suboptions={
             "vpn_gateway_ids": SpecField(
@@ -82,10 +81,8 @@ linode_monitor_logs_stream_spec = {
                 required=False,
                 description=[
                     "The IDs of the VPN Gateways to include in the stream.",
-                    "Required when creating a stream of type "
-                    "``vpngw_ipsec_logs`` or ``vpngw_bgp_logs``.",
-                    "Only allowed for VPN Gateway streams. "
-                    "Cannot be combined with LKE details.",
+                    "Required to create ``vpngw_ipsec_logs`` or ``vpngw_bgp_logs`` streams.",
+                    "Only allowed for VPN Gateway streams. Cannot be combined with LKE details.",
                     "Must be a non-empty list of unique positive integers.",
                     "Updating this list replaces all previously selected IDs.",
                     "The order of IDs does not affect the configuration.",
@@ -107,10 +104,8 @@ linode_monitor_logs_stream_spec = {
                     "When set to ``true``, newly added LKE enterprise clusters on your account "
                     "will be included in the stream. "
                     "If ``false``, only existing LKE enterprise clusters are included.",
-                    "Only allowed for LKE streams, not VPN Gateway streams, "
-                    "even when set to ``false``.",
-                    "Defaults to ``false`` when LKE details are provided "
-                    "without this option.",
+                    "LKE-only; not allowed for VPN Gateway streams, even when ``false``.",
+                    "Defaults to ``false`` when LKE details are provided without this option.",
                 ],
             ),
         },
