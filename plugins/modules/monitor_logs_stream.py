@@ -3,7 +3,7 @@
 
 """This module contains all the functionality for Monitor Logs Streams."""
 
-from typing import Any, List, Optional, Set
+from typing import Any, List, Optional, Set, Union
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     monitor_logs_stream as docs,
@@ -25,7 +25,12 @@ from ansible_specdoc.objects import (
     SpecField,
     SpecReturnValue,
 )
-from linode_api4 import ApiError, LogsStream, LogsStreamDetails
+from linode_api4 import (
+    ApiError,
+    LogsStream,
+    LogsStreamDetails,
+    VpnGatewayLogsStreamDetails,
+)
 
 linode_monitor_logs_stream_spec = {
     "id": SpecField(
@@ -46,12 +51,19 @@ linode_monitor_logs_stream_spec = {
     "type": SpecField(
         type=FieldType.string,
         required=False,
-        choices=["audit_logs", "lke_audit_logs"],
+        choices=[
+            "audit_logs",
+            "lke_audit_logs",
+            "vpngw_ipsec_logs",
+            "vpngw_bgp_logs",
+        ],
         description=[
             "The type of stream. "
             "This can be ``audit_logs`` for logs consisting of all of the control plane "
             "operations for the services in your Linodes, or ``lke_audit_logs`` for log data "
-            "for your Linode Kubernetes Engine (LKE) enterprise clusters."
+            "for your Linode Kubernetes Engine (LKE) enterprise clusters, "
+            "or ``vpngw_ipsec_logs`` or ``vpngw_bgp_logs`` for VPN Gateway "
+            "IPsec or BGP logs, respectively."
         ],
     ),
     "details": SpecField(
@@ -60,25 +72,40 @@ linode_monitor_logs_stream_spec = {
         editable=True,
         description=[
             "Additional details for the stream, based on the selected type.",
-            "Currently, this only applies to streams with a type of ``lke_audit_logs``.",
+            "Applies to ``lke_audit_logs``, ``vpngw_ipsec_logs``, and ``vpngw_bgp_logs`` streams.",
         ],
         suboptions={
+            "vpn_gateway_ids": SpecField(
+                type=FieldType.list,
+                element_type=FieldType.integer,
+                required=False,
+                description=[
+                    "The IDs of the VPN Gateways to include in the stream.",
+                    "Required to create ``vpngw_ipsec_logs`` or ``vpngw_bgp_logs`` streams.",
+                    "Only allowed for VPN Gateway streams. Cannot be combined with LKE details.",
+                    "Must be a non-empty list of unique positive integers.",
+                    "Updating this list replaces all previously selected IDs.",
+                    "The order of IDs does not affect the configuration.",
+                ],
+            ),
             "cluster_ids": SpecField(
                 type=FieldType.list,
                 element_type=FieldType.integer,
                 required=False,
                 description=[
-                    "The unique identifiers for each LKE enterprise cluster."
+                    "The unique identifiers for each LKE enterprise cluster.",
+                    "Only allowed for LKE streams, not VPN Gateway streams.",
                 ],
             ),
             "is_auto_add_all_clusters_enabled": SpecField(
                 type=FieldType.bool,
                 required=False,
-                default=False,
                 description=[
                     "When set to ``true``, newly added LKE enterprise clusters on your account "
                     "will be included in the stream. "
-                    "If ``false``, only existing LKE enterprise clusters are included."
+                    "If ``false``, only existing LKE enterprise clusters are included.",
+                    "LKE-only; not allowed for VPN Gateway streams, even when ``false``.",
+                    "Defaults to ``false`` when LKE details are provided without this option.",
                 ],
             ),
         },
@@ -157,6 +184,8 @@ RETURN = r"""
 
 REQUIRED_PRESENT: Set[str] = {"label", "type", "destinations"}
 
+VPN_STREAM_TYPES: Set[str] = {"vpngw_ipsec_logs", "vpngw_bgp_logs"}
+
 
 class LinodeMonitorLogsStream(LinodeModuleBase):
     """Module for creating, updating, and deleting Linode Monitor Logs Streams"""
@@ -175,6 +204,43 @@ class LinodeMonitorLogsStream(LinodeModuleBase):
             required_one_of=self.required_one_of,
             supports_check_mode=True,
         )
+
+    def _validate_vpn_gateway_ids(self, vpn_gateway_ids: Any) -> None:
+        if not isinstance(vpn_gateway_ids, list) or not vpn_gateway_ids:
+            self.fail(msg="details.vpn_gateway_ids must be a non-empty list.")
+
+        if any(
+            not isinstance(gateway_id, int)
+            or isinstance(gateway_id, bool)
+            or gateway_id <= 0
+            for gateway_id in vpn_gateway_ids
+        ):
+            self.fail(
+                msg="details.vpn_gateway_ids must contain only positive integers."
+            )
+
+        if len(vpn_gateway_ids) != len(set(vpn_gateway_ids)):
+            self.fail(msg="details.vpn_gateway_ids must contain unique IDs.")
+
+    def _build_vpn_stream_details(
+        self, details: Optional[dict]
+    ) -> VpnGatewayLogsStreamDetails:
+        if details is None:
+            details = {}
+
+        for field in (
+            "cluster_ids",
+            "is_auto_add_all_clusters_enabled",
+        ):
+            if details.get(field) is not None:
+                self.fail(
+                    msg=f"details.{field} is not allowed for VPN Gateway streams."
+                )
+
+        vpn_gateway_ids = details.get("vpn_gateway_ids")
+        self._validate_vpn_gateway_ids(vpn_gateway_ids)
+
+        return VpnGatewayLogsStreamDetails(vpn_gateway_ids=vpn_gateway_ids)
 
     def _get_stream(
         self, stream_id: Optional[int], label: Optional[str]
@@ -202,9 +268,24 @@ class LinodeMonitorLogsStream(LinodeModuleBase):
         status = params.get("status")
         details = params.get("details")
 
-        details_obj = None
-        if details is not None:
-            details_obj = LogsStreamDetails(**details)
+        details_obj: Optional[
+            Union[LogsStreamDetails, VpnGatewayLogsStreamDetails]
+        ] = None
+
+        if stream_type in VPN_STREAM_TYPES:
+            details_obj = self._build_vpn_stream_details(details)
+        elif details is not None:
+            if details.get("vpn_gateway_ids") is not None:
+                self.fail(
+                    msg="details.vpn_gateway_ids is only allowed for VPN Gateway streams."
+                )
+
+            details_obj = LogsStreamDetails(
+                cluster_ids=details.get("cluster_ids"),
+                is_auto_add_all_clusters_enabled=(
+                    details.get("is_auto_add_all_clusters_enabled") or False
+                ),
+            )
 
         self.results["changed"] = True
         self.register_action(f"Created Logs stream {label}")
@@ -223,6 +304,44 @@ class LinodeMonitorLogsStream(LinodeModuleBase):
                 self.fail(msg=f"Failed to create stream: {e}")
 
         return None
+
+    def _update_stream_details(self, stream: Any, details: dict) -> bool:
+        stream_type = stream.type
+        details = {
+            key: value for key, value in details.items() if value is not None
+        }
+
+        if stream_type not in VPN_STREAM_TYPES:
+            if details.get("vpn_gateway_ids") is not None:
+                self.fail(
+                    msg="details.vpn_gateway_ids is only allowed for VPN Gateway streams."
+                )
+
+            details.setdefault("is_auto_add_all_clusters_enabled", False)
+
+        current_details = getattr(stream, "details", None)
+        current_details_dict = current_details.dict if current_details else {}
+
+        merged_details = current_details_dict.copy()
+        merged_details.update(details)
+
+        updated_details: Union[LogsStreamDetails, VpnGatewayLogsStreamDetails]
+
+        if stream_type in VPN_STREAM_TYPES:
+            updated_details = self._build_vpn_stream_details(merged_details)
+            details_changed = sorted(
+                current_details_dict.get("vpn_gateway_ids") or []
+            ) != sorted(updated_details.vpn_gateway_ids or [])
+        else:
+            updated_details = LogsStreamDetails(**merged_details)
+            details_changed = current_details_dict != merged_details
+
+        if not details_changed:
+            return False
+
+        stream.details = updated_details
+        self.register_action(f"Updated details for stream {stream.id}")
+        return True
 
     def _update_stream(self, stream: Any) -> Any:
         params = self.module.params
@@ -244,19 +363,8 @@ class LinodeMonitorLogsStream(LinodeModuleBase):
             needs_save = True
             self.register_action(f"Updated status for stream {stream.id}")
 
-        if details is not None:
-            current_details = getattr(stream, "details", None)
-            current_details_dict = (
-                current_details.dict if current_details else {}
-            )
-
-            merged_details = current_details_dict.copy()
-            merged_details.update(details)
-
-            if current_details_dict != merged_details:
-                stream.details = LogsStreamDetails(**merged_details)
-                needs_save = True
-                self.register_action(f"Updated details for stream {stream.id}")
+        if details is not None and self._update_stream_details(stream, details):
+            needs_save = True
 
         current_dest_ids = (
             [d.id for d in stream.destinations]
