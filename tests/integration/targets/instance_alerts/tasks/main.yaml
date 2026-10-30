@@ -3,12 +3,19 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    - name: List regions that support PGs
+    - name: List regions
       linode.cloud.region_list: {}
       register: all_regions
 
+    # ACLP system/user alerts are only applied at creation in regions whose
+    # `monitors.alerts` support for the `linode` service type.
     - set_fact:
-        pg_region: "{{ ( all_regions.regions | selectattr('site_type', 'equalto', 'core') | selectattr('capabilities', 'search', 'Placement Group') | selectattr('capabilities', 'search', 'Maintenance Policy') | list)[0].id }}"
+        aclp_region: >-
+          {{ ( all_regions.regions
+               | selectattr('site_type', 'equalto', 'core')
+               | selectattr('monitors.alerts', 'defined')
+               | selectattr('monitors.alerts', 'contains', 'Linodes')
+               | list)[0].id }}
 
     - name: Get available system alert definitions for Linode
       linode.cloud.monitor_services_alert_definition_by_service_type_list:
@@ -18,14 +25,18 @@
     - name: Set a system_alert_id for tests (if any exist)
       set_fact:
         system_alert_id: >-
-          {{ (linode_system_alert_defs.alert_definitions | default([]) | first).id
-             if (linode_system_alert_defs.alert_definitions | default([]) | length) > 0
+          {{ (system_alert_defs | first).id
+             if (system_alert_defs | length) > 0
              else None }}
+      vars:
+        system_alert_defs: >-
+          {{ linode_system_alert_defs.alert_definitions | default([])
+             | selectattr('type', 'equalto', 'system') | list }}
 
     - name: Attempt to create instance with legacy alerts (should fail)
       linode.cloud.instance:
         label: "ansible-test-alerts-invalid-create-{{ r }}"
-        region: "{{ pg_region }}"
+        region: "{{ aclp_region }}"
         type: g6-standard-1
         image: linode/ubuntu22.04
         private_ip: true
@@ -45,9 +56,10 @@
     - name: Create instance with ACLP system alerts
       linode.cloud.instance:
         label: "ansible-test-aclp-alerts-create-{{ r }}"
-        region: "{{ pg_region }}"
+        region: "{{ aclp_region }}"
         type: g6-standard-1
         image: linode/ubuntu22.04
+        root_pass: My@Root_passhere
         wait: true
         alerts:
           system_alerts:
@@ -69,7 +81,7 @@
     - name: Disable ACLP system alerts for the instance
       linode.cloud.instance:
         label: "ansible-test-aclp-alerts-create-{{ r }}"
-        region: "{{ pg_region }}"
+        region: "{{ aclp_region }}"
         type: g6-standard-1
         image: linode/ubuntu22.04
         wait: true
@@ -92,7 +104,7 @@
     - name: Update alerts instance with legacy alerts
       linode.cloud.instance:
         label: "{{ create_system_alerts.instance.label }}"
-        region: "{{ pg_region }}"
+        region: "{{ aclp_region }}"
         type: g6-standard-1
         image: linode/ubuntu22.04
         wait: false
