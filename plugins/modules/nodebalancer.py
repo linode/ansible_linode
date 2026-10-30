@@ -62,6 +62,13 @@ linode_nodes_spec = {
             "For vpc, use an address in the attached VPC subnet.",
         ],
     ),
+    "subnet_id": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The ID of the VPC subnet for this backend node. "
+            "Required for VPC backend nodes."
+        ],
+    ),
     "weight": SpecField(
         type=FieldType.integer,
         required=False,

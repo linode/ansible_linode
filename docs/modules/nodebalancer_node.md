@@ -58,6 +58,7 @@ Manage Linode NodeBalancer Nodes.
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label for this node. This is used to identify nodes within a config.   |
 | `state` | <center>`str`</center> | <center>**Required**</center> | Whether the NodeBalancer node should be present or absent.  **(Choices: `present`, `absent`)** |
 | `address` | <center>`str`</center> | <center>Optional</center> | The IP address where this backend can be reached. It must match the NodeBalancer's backend connectivity: private IPv4 for legacy, public IPv6 in [IPv6]:port format for ipv6, or an address in the attached VPC subnet for vpc.  **(Updatable)** |
+| `subnet_id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC subnet for this backend node. Required for VPC backend nodes.   |
 | `mode` | <center>`str`</center> | <center>Optional</center> | The mode this NodeBalancer should use when sending traffic to this backend.  **(Choices: `accept`, `reject`, `drain`, `backup`; Updatable)** |
 | `weight` | <center>`int`</center> | <center>Optional</center> | Nodes with a higher weight will receive more traffic.  **(Updatable)** |
 
