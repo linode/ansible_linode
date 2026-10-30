@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for Linode StackScripts."""
 
-from __future__ import absolute_import, division, print_function
-
 import copy
 from typing import Any, Optional
 

@@ -14,6 +14,22 @@ on:
         options:
           - 'true'
           - 'false'
+      test_report_upload:
+        description: 'Indicates whether to upload the test report to object storage. Defaults to "false"'
+        type: choice
+        required: false
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
+      run_aclp_logs_stream_tests:
+        description: 'Run ACLP monitor logs stream integration tests. Defaults to "false"'
+        type: choice
+        required: false
+        default: 'false'
+        options:
+          - 'true'
+          - 'false'
   push:
     branches:
       - main
@@ -34,14 +50,14 @@ jobs:
         working-directory: .ansible/collections/ansible_collections/linode/cloud
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: .ansible/collections/ansible_collections/linode/cloud
           fetch-depth: 0
           submodules: 'recursive'
 
       - name: Setup Python 3
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ inputs.run-eol-python-version == 'true' && env.EOL_PYTHON_VERSION || inputs.python-version || env.DEFAULT_PYTHON_VERSION }}
 
@@ -63,10 +79,11 @@ jobs:
         env:
           LINODE_API_TOKEN: ${{ secrets.DX_LINODE_TOKEN }}
           ANSIBLE_CALLBACKS_ENABLED: "junit"
+          RUN_ACLP_LOGS_STREAM_TESTS: ${{ inputs.run_aclp_logs_stream_tests || 'false' }}
 
       - name: Upload Test Report as Artifact
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: xml-test-reports
           if-no-files-found: ignore
@@ -77,19 +94,19 @@ jobs:
   process-upload-report:
     runs-on: ubuntu-latest
     needs: [integration-tests]
-    if: ${{ (success() || failure()) && github.repository == 'linode/ansible_linode' }}
+    if: (success() || failure()) && github.repository == 'linode/ansible_linode' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.test_report_upload == 'true'))
     outputs:
       summary: ${{ steps.set-test-summary.outputs.summary }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: 'recursive'
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
           python-version: '3.13'
@@ -102,7 +119,7 @@ jobs:
         run: mkdir -p tests/output/junit
 
       - name: Download test report
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: xml-test-reports  # Specify the artifact name from the 'run-tests' job
           path: tests/output/junit
@@ -149,7 +166,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: 'recursive'
@@ -175,7 +192,7 @@ jobs:
 
     steps:
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           # TODO: Unpin minor version after `ansible` package v13.0.0 releases.
           python-version: '3.13'
@@ -208,7 +225,7 @@ jobs:
     steps:
       - name: Notify Slack
         id: main_message
-        uses: slackapi/slack-github-action@v2.1.1
+        uses: slackapi/slack-github-action@v4
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}
@@ -240,7 +257,7 @@ jobs:
 
       - name: Test summary thread
         if: success()
-        uses: slackapi/slack-github-action@v2.1.1
+        uses: slackapi/slack-github-action@v4
         with:
           method: chat.postMessage
           token: ${{ secrets.SLACK_BOT_TOKEN }}

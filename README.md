@@ -7,7 +7,7 @@ The Ansible Linode Collection contains various plugins for managing Linode servi
 <!--start requires_ansible-->
 ## Ansible version compatibility
 
-This collection has been tested against following Ansible versions: **>=2.9.10**.
+This collection has been tested against the following Ansible versions: **>=2.16.0**.
 
 Plugins and modules within a collection may be tested with only specific Ansible versions.
 A collection may contain metadata that identifies these versions.
@@ -23,9 +23,7 @@ Name | Description |
 --- | ------------ |
 [linode.cloud.account_settings](./docs/modules/account_settings.md)|Returns information related to your Account settings.|
 [linode.cloud.api_request](./docs/modules/api_request.md)|Make an arbitrary Linode API request.|
-[linode.cloud.database_mysql](./docs/modules/database_mysql.md)|Manage a Linode MySQL database.|
 [linode.cloud.database_mysql_v2](./docs/modules/database_mysql_v2.md)|Create, read, and update a Linode MySQL database.|
-[linode.cloud.database_postgresql](./docs/modules/database_postgresql.md)|Manage a Linode PostgreSQL database.|
 [linode.cloud.database_postgresql_v2](./docs/modules/database_postgresql_v2.md)|Create, read, and update a Linode PostgreSQL database.|
 [linode.cloud.domain](./docs/modules/domain.md)|Manage Linode Domains.|
 [linode.cloud.domain_record](./docs/modules/domain_record.md)|Manage Linode Domain Records.|
@@ -38,12 +36,17 @@ Name | Description |
 [linode.cloud.image_share_group_token](./docs/modules/image_share_group_token.md)|Manage an Image Share Group Token.|
 [linode.cloud.instance](./docs/modules/instance.md)|Manage Linode Instances, Configs, and Disks.|
 [linode.cloud.instance_interface_settings](./docs/modules/instance_interface_settings.md)|Create, read, and update the interface settings for a Linode instance.|
-[linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account. The Linode must be configured to support additional addresses - please Open a support ticket requesting additional addresses before attempting allocation.|
+[linode.cloud.ip](./docs/modules/ip.md)|Allocates a new IPv4 Address on your Account, or updates an existing one. |
 [linode.cloud.ip_assign](./docs/modules/ip_assign.md)|Assign IPs to Linodes in a given Region.|
 [linode.cloud.ip_rdns](./docs/modules/ip_rdns.md)|Manage a Linode IP address's rDNS.|
 [linode.cloud.ip_share](./docs/modules/ip_share.md)|Manage the Linode shared IPs.|
 [linode.cloud.lke_cluster](./docs/modules/lke_cluster.md)|Manage Linode LKE clusters.|
 [linode.cloud.lke_node_pool](./docs/modules/lke_node_pool.md)|Manage Linode LKE cluster node pools.|
+[linode.cloud.lock](./docs/modules/lock.md)|Create and delete Linode resource locks.|
+[linode.cloud.monitor_logs_destination](./docs/modules/monitor_logs_destination.md)|Manage logs destination that serves as a sync point for logs data. You need read_write access to the scope to call this operation.|
+[linode.cloud.monitor_logs_destination_history](./docs/modules/monitor_logs_destination_history.md)|List and filter on Logs Destination History.|
+[linode.cloud.monitor_logs_stream](./docs/modules/monitor_logs_stream.md)|Create, update, and delete Monitor Logs Streams.|
+[linode.cloud.monitor_logs_stream_history](./docs/modules/monitor_logs_stream_history.md)|List and filter on Logs Stream History.|
 [linode.cloud.monitor_services_alert_definition](./docs/modules/monitor_services_alert_definition.md)|Manage an alert definition for a specific service type. Akamai refers to these as user alerts. You need read_only access to the scope for the selected serviceType. |
 [linode.cloud.nodebalancer](./docs/modules/nodebalancer.md)|Manage a Linode NodeBalancer.|
 [linode.cloud.nodebalancer_node](./docs/modules/nodebalancer_node.md)|Manage Linode NodeBalancer Nodes.|
@@ -51,6 +54,7 @@ Name | Description |
 [linode.cloud.object_keys](./docs/modules/object_keys.md)|Manage Linode Object Storage Keys.|
 [linode.cloud.placement_group](./docs/modules/placement_group.md)|Manage a Linode Placement Group.|
 [linode.cloud.placement_group_assign](./docs/modules/placement_group_assign.md)|Manages a single assignment between a Linode and a Placement Group.|
+[linode.cloud.reserved_ip](./docs/modules/reserved_ip.md)|Manage a Linode Reserved IPv4 Address.|
 [linode.cloud.ssh_key](./docs/modules/ssh_key.md)|Manage a Linode SSH key.|
 [linode.cloud.stackscript](./docs/modules/stackscript.md)|Manage a Linode StackScript.|
 [linode.cloud.token](./docs/modules/token.md)|Manage a Linode Token.|
@@ -88,13 +92,19 @@ Name | Description |
 [linode.cloud.ipv6_range_info](./docs/modules/ipv6_range_info.md)|Get info about a Linode IPv6 range.|
 [linode.cloud.lke_cluster_info](./docs/modules/lke_cluster_info.md)|Get info about a Linode LKE cluster.|
 [linode.cloud.lke_version_info](./docs/modules/lke_version_info.md)|Get info about a Linode LKE Version.|
+[linode.cloud.lock_info](./docs/modules/lock_info.md)|Get info about a Linode Lock.|
+[linode.cloud.monitor_logs_destination_info](./docs/modules/monitor_logs_destination_info.md)|Get info about a Linode Logs Destination.|
+[linode.cloud.monitor_logs_stream_info](./docs/modules/monitor_logs_stream_info.md)|Get info about a Linode Monitor Logs Stream.|
 [linode.cloud.monitor_services_alert_definition_info](./docs/modules/monitor_services_alert_definition_info.md)|Get info about a Linode Alert Definition.|
 [linode.cloud.nodebalancer_info](./docs/modules/nodebalancer_info.md)|Get info about a Linode Node Balancer.|
 [linode.cloud.object_cluster_info](./docs/modules/object_cluster_info.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
+[linode.cloud.object_storage_global_quota_info](./docs/modules/object_storage_global_quota_info.md)|Get info about a Linode Object Storage Global Quota.|
 [linode.cloud.object_storage_quota_info](./docs/modules/object_storage_quota_info.md)|Get info about a Linode Object Storage Quota.|
 [linode.cloud.placement_group_info](./docs/modules/placement_group_info.md)|Get info about a Linode Placement Group.|
 [linode.cloud.profile_info](./docs/modules/profile_info.md)|Get info about a Linode Profile.|
 [linode.cloud.region_info](./docs/modules/region_info.md)|Get info about a Linode Region.|
+[linode.cloud.region_vpc_availability_info](./docs/modules/region_vpc_availability_info.md)|Get info about a Linode Region VPC Availability.|
+[linode.cloud.reserved_ip_info](./docs/modules/reserved_ip_info.md)|Get info about a Linode Reserved IP address.|
 [linode.cloud.ssh_key_info](./docs/modules/ssh_key_info.md)|Get info about a Linode SSH Key.|
 [linode.cloud.stackscript_info](./docs/modules/stackscript_info.md)|Get info about a Linode StackScript.|
 [linode.cloud.token_info](./docs/modules/token_info.md)|Get info about a Linode Personal Access Token.|
@@ -102,6 +112,7 @@ Name | Description |
 [linode.cloud.user_info](./docs/modules/user_info.md)|Get info about a Linode User.|
 [linode.cloud.vlan_info](./docs/modules/vlan_info.md)|Get info about a Linode VLAN.|
 [linode.cloud.volume_info](./docs/modules/volume_info.md)|Get info about a Linode Volume.|
+[linode.cloud.vpc_default_ranges_info](./docs/modules/vpc_default_ranges_info.md)|Get info about a Linode VPC Default Ranges.|
 [linode.cloud.vpc_info](./docs/modules/vpc_info.md)|Get info about a Linode VPC.|
 [linode.cloud.vpc_subnet_info](./docs/modules/vpc_subnet_info.md)|Get info about a Linode VPC Subnet.|
 
@@ -131,8 +142,12 @@ Name | Description |
 [linode.cloud.instance_type_list](./docs/modules/instance_type_list.md)|**NOTE: This module has been deprecated in favor of `type_list`.**|
 [linode.cloud.lke_type_list](./docs/modules/lke_type_list.md)|List and filter on LKE Types.|
 [linode.cloud.lke_version_list](./docs/modules/lke_version_list.md)|List and filter on LKE Versions.|
+[linode.cloud.lock_list](./docs/modules/lock_list.md)|List and filter on Locks.|
 [linode.cloud.maintenance_policy_list](./docs/modules/maintenance_policy_list.md)|List and filter on Maintenance Policies.|
 [linode.cloud.monitor_alert_channel_list](./docs/modules/monitor_alert_channel_list.md)|List and filter on Alert Channels.|
+[linode.cloud.monitor_alert_definition_entities_list](./docs/modules/monitor_alert_definition_entities_list.md)|List and filter on Alert Definition Entities.|
+[linode.cloud.monitor_logs_destination_list](./docs/modules/monitor_logs_destination_list.md)|List and filter on Logs Destinations.|
+[linode.cloud.monitor_logs_stream_list](./docs/modules/monitor_logs_stream_list.md)|List and filter on Monitor Logs Streams.|
 [linode.cloud.monitor_services_alert_definition_by_service_type_list](./docs/modules/monitor_services_alert_definition_by_service_type_list.md)|The return alert definitions by service type. **Note: filters and order are currently NOT supported by this endpoint.|
 [linode.cloud.monitor_services_alert_definition_list](./docs/modules/monitor_services_alert_definition_list.md)|List and filter on Alert Definitions.|
 [linode.cloud.network_transfer_prices_list](./docs/modules/network_transfer_prices_list.md)|List and filter on Network Transfer Prices.|
@@ -140,9 +155,12 @@ Name | Description |
 [linode.cloud.nodebalancer_type_list](./docs/modules/nodebalancer_type_list.md)|List and filter on Node Balancer Types.|
 [linode.cloud.object_cluster_list](./docs/modules/object_cluster_list.md)|**NOTE: This module has been deprecated because it relies on deprecated API endpoints. Going forward, `region` will be the preferred way to designate where Object Storage resources should be created.**|
 [linode.cloud.object_storage_endpoint_list](./docs/modules/object_storage_endpoint_list.md)|List and filter on Object Storage Endpoints.|
+[linode.cloud.object_storage_global_quota_list](./docs/modules/object_storage_global_quota_list.md)|List Object Storage Global Quotas.|
 [linode.cloud.object_storage_quota_list](./docs/modules/object_storage_quota_list.md)|List and filter on Object Storage Quotas.|
 [linode.cloud.placement_group_list](./docs/modules/placement_group_list.md)|List and filter on Placement Groups.|
 [linode.cloud.region_list](./docs/modules/region_list.md)|List and filter on Regions.|
+[linode.cloud.region_vpc_availability_list](./docs/modules/region_vpc_availability_list.md)|List and filter on VPC availability for all regions.|
+[linode.cloud.reserved_ip_list](./docs/modules/reserved_ip_list.md)|List and filter on Reserved IPs.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH Keys.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on StackScripts.|
 [linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Tokens.|

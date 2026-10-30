@@ -24,7 +24,7 @@
 
     - set_fact:
         engine_id: "{{ available_engines.database_engines[0]['id'] }}"
-        engine_version: "{{ available_engines.database_engines[0]['version'] }}"
+        engine_version: "{{ (available_engines.database_engines[0]['version'] | split('.'))[0] }}"
 
     - name: Create a database
       linode.cloud.database_mysql_v2:

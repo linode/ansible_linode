@@ -16,6 +16,8 @@ specdoc_examples = ['''
       variable: value
     tags:
       - env=prod
+    boot_size: 8192
+    kernel: "linode/latest-64bit"
     state: present''', '''
 - name: Create a new Linode instance with an additional public IPv4 address.
   linode.cloud.instance:
@@ -34,6 +36,16 @@ specdoc_examples = ['''
       - env=prod
     additional_ipv4:
       - public: true
+    state: present''', '''
+- name: Create a Linode Instance with a reserved IPv4 address.
+  linode.cloud.instance:
+    label: my-linode
+    type: g6-nanode-1
+    region: us-east
+    image: linode/ubuntu22.04
+    root_pass: verysecurepassword!!!
+    ipv4:
+      - "192.0.2.141"
     state: present''', '''
 - name: Create a Linode Instance with explicit configs and disks.
   linode.cloud.instance:
@@ -228,6 +240,7 @@ result_instance_samples = ['''{
   "disk_encryption": "enabled",
   "lke_cluster_id": null,
   "maintenance_policy": "linode/migrate",
+  "locks": [],
   "placement_group": {
     "id": 123,
     "label": "test",

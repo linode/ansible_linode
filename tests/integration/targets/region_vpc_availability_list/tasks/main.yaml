@@ -1,0 +1,30 @@
+- name: region_vpc_availability_list
+  block:
+    - name: List VPC availability for all regions with no filter
+      linode.cloud.region_vpc_availability_list:
+      register: no_filter
+
+    - name: Assert region_vpc_availability_list with no filter
+      assert:
+        that:
+          - no_filter.vpc_availabilities | length > 0
+          - no_filter.vpc_availabilities[0].region is defined
+          - no_filter.vpc_availabilities[0].available is defined
+          - no_filter.vpc_availabilities[0].available_ipv6_prefix_lengths is defined
+
+    - name: List VPC availability limited by count
+      linode.cloud.region_vpc_availability_list:
+        count: 1
+      register: filter_count
+
+    - name: Assert region_vpc_availability_list limited by count
+      assert:
+        that:
+          - filter_count.vpc_availabilities | length == 1
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

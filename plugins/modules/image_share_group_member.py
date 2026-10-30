@@ -3,8 +3,6 @@
 
 """This module contains all the functionality for Image Share Group Members for a Producer."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, Dict, Optional
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (

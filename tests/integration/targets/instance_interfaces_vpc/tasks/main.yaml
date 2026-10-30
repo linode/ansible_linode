@@ -25,6 +25,7 @@
         region: us-mia
         type: g6-nanode-1
         image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
         interfaces:
           - purpose: vpc
             subnet_id: '{{ create_subnet.subnet.id }}'
@@ -57,6 +58,7 @@
         region: us-mia
         type: g6-nanode-1
         image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
         interfaces:
           - purpose: public
             primary: true
@@ -102,6 +104,7 @@
         region: us-mia
         type: g6-nanode-1
         image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
         interfaces:
           - purpose: public
             primary: true

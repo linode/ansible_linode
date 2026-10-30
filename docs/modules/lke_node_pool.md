@@ -67,6 +67,7 @@ Manage Linode LKE cluster node pools.
 | `k8s_version` | <center>`str`</center> | <center>Optional</center> | The desired Kubernetes version for this Kubernetes  Node Pool in the format of <major>.<minor>, and the  latest supported patch version. NOTE: Only available for LKE Enterprise to support node pool upgrades.  This field may not currently be available to all users and is under v4beta.  **(Updatable)** |
 | `update_strategy` | <center>`str`</center> | <center>Optional</center> | Upgrade strategy describes the available upgrade strategies. NOTE: Only available for LKE Enterprise to support node pool upgrades.  This field may not currently be available to all users and is under v4beta.  **(Choices: `rolling_update`, `on_recycle`; Updatable)** |
 | `firewall_id` | <center>`int`</center> | <center>Optional</center> | Firewall ID for the Node Pool.  **(Updatable)** |
+| `disk_encryption` | <center>`str`</center> | <center>Optional</center> | Local disk encryption setting for this LKE node pool.  **(Choices: `disabled`, `enabled`)** |
 
 ### autoscaler
 

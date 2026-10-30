@@ -1,10 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""This module allows users to list Linode Maintenance Policies.
-"NOTE: This module is under v4beta.","""
-
-from __future__ import absolute_import, division, print_function
+"""This module allows users to list Linode Maintenance Policies."""
 
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     maintenance_policy_list as docs,
@@ -20,7 +17,6 @@ module = ListModule(
     result_docs_url="https://techdocs.akamai.com/linode-api/reference/get-maintenance-policies",
     examples=docs.specdoc_examples,
     result_samples=docs.result_maintenance_policy_samples,
-    requires_beta=True,
 )
 
 SPECDOC_META = module.spec

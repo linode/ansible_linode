@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for running an API request."""
 
-from __future__ import absolute_import, division, print_function
-
 import ast
 import contextlib
 import json

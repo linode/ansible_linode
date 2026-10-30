@@ -35,6 +35,17 @@ Create, read, and update a Linode VPC.
 ```
 
 ```yaml
+# NOTE: IPv4 VPCs may not currently be available to all users.
+- name: Create a VPC with an IPv4 range
+  linode.cloud.vpc:
+    label: my-vpc
+    region: us-east
+    ipv4:
+    - range: 10.1.0.0/16
+    state: present
+```
+
+```yaml
 - name: Delete a VPC
   linode.cloud.vpc:
     label: my-vpc
@@ -51,6 +62,7 @@ Create, read, and update a Linode VPC.
 | `description` | <center>`str`</center> | <center>Optional</center> | A description describing this VPC.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The region this VPC is located in.   |
 | [`ipv6` (sub-options)](#ipv6) | <center>`list`</center> | <center>Optional</center> | A list of IPv6 ranges in CIDR notation. NOTE: IPv6 VPCs may not currently be available to all users.   |
+| [`ipv4` (sub-options)](#ipv4) | <center>`list`</center> | <center>Optional</center> | A list of IPv4 ranges in CIDR notation. NOTE: IPv4 VPCs may not currently be available to all users.   |
 
 ### ipv6
 
@@ -58,6 +70,12 @@ Create, read, and update a Linode VPC.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `range` | <center>`str`</center> | <center>Optional</center> | The IPv6 range assigned to this VPC.   |
 | `allocation_class` | <center>`str`</center> | <center>Optional</center> | The labeled IPv6 Inventory that the VPC Prefix should be allocated from.   |
+
+### ipv4
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `range` | <center>`str`</center> | <center>Optional</center> | The IPv4 range assigned to this VPC.   |
 
 ## Return Values
 
@@ -72,6 +90,11 @@ Create, read, and update a Linode VPC.
             "ipv6": [
                 {
                     "range": "2001:db8:acad:0::/52"
+                }
+            ],
+            "ipv4": [
+                {
+                    "range": "10.1.0.0/16"
                 }
             ],
             "label": "my-vpc",

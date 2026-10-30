@@ -43,6 +43,7 @@
 
         tags: ['my-pool']
         type: g6-standard-1
+        disk_encryption: 'enabled'
         count: 2
         label: new-pool-label
         labels:
@@ -68,6 +69,7 @@
           - new_pool.node_pool.taints[0].key == 'foo.example.com/test2'
           - new_pool.node_pool.taints[0].value == 'test'
           - new_pool.node_pool.taints[0].effect == 'NoExecute'
+          - new_pool.node_pool.disk_encryption == 'enabled'
 
     - name: Attempt to update an invalid field on the node pool
       linode.cloud.lke_node_pool:

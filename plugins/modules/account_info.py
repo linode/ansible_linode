@@ -3,8 +3,6 @@
 
 """This module allows users to retrieve information about the current Linode account."""
 
-from __future__ import absolute_import, division, print_function
-
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.account_info as docs
 from ansible_collections.linode.cloud.plugins.module_utils.linode_common_info import (
     InfoModule,

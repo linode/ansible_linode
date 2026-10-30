@@ -3,8 +3,6 @@
 
 """Implementation for the linode.cloud.instance_interface_firewall_list module."""
 
-from __future__ import absolute_import, division, print_function
-
 from ansible_collections.linode.cloud.plugins.module_utils.doc_fragments import (
     instance_interface_firewall_list as docs,
 )

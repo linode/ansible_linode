@@ -1,0 +1,171 @@
+- name: lock_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode instance for testing locks
+      linode.cloud.instance:
+        label: 'ansible-test-lock-{{ r }}'
+        region: us-mia
+        type: g6-nanode-1
+        booted: false
+        firewall_id: '{{ firewall_id }}'
+        state: present
+      register: create_instance
+
+    - name: Assert instance created
+      assert:
+        that:
+          - create_instance.changed
+          - create_instance.instance.label == 'ansible-test-lock-{{ r }}'
+
+    - name: Create a lock on the Linode instance
+      linode.cloud.lock:
+        entity_type: linode
+        entity_id: '{{ create_instance.instance.id }}'
+        lock_type: cannot_delete
+        state: present
+      register: create_lock
+
+    - name: Assert lock created
+      assert:
+        that:
+          - create_lock.changed
+          - create_lock.lock.entity.id == create_instance.instance.id
+          - create_lock.lock.entity.type == 'linode'
+          - create_lock.lock.lock_type == 'cannot_delete'
+
+    - name: Create the same lock again (should be idempotent)
+      linode.cloud.lock:
+        entity_type: linode
+        entity_id: '{{ create_instance.instance.id }}'
+        lock_type: cannot_delete
+        state: present
+      register: create_lock_again
+
+    - name: Assert lock creation is idempotent
+      assert:
+        that:
+          - create_lock_again.changed == false
+          - create_lock_again.lock.id == create_lock.lock.id
+
+    - name: Get lock info by ID
+      linode.cloud.lock_info:
+        id: '{{ create_lock.lock.id }}'
+      register: lock_info
+
+    - name: Assert lock info retrieved
+      assert:
+        that:
+          - lock_info.lock.id == create_lock.lock.id
+          - lock_info.lock.lock_type == 'cannot_delete'
+
+    - name: List all locks
+      linode.cloud.lock_list: {}
+      register: list_locks
+
+    - name: Assert lock is in the list
+      assert:
+        that:
+          - list_locks.locks | length >= 1
+
+    - name: List locks filtered by lock_type
+      linode.cloud.lock_list:
+        filters:
+          - name: lock_type
+            values: cannot_delete
+      register: list_locks_filtered
+
+    - name: Assert filtered lock list
+      assert:
+        that:
+          - list_locks_filtered.locks | length >= 1
+
+    - name: Try to delete the locked instance (should fail)
+      linode.cloud.instance:
+        label: 'ansible-test-lock-{{ r }}'
+        state: absent
+      register: delete_locked_instance
+      failed_when: "'lock' not in delete_locked_instance.msg | lower"
+
+    - name: Delete the lock
+      linode.cloud.lock:
+        id: '{{ create_lock.lock.id }}'
+        state: absent
+      register: delete_lock
+
+    - name: Assert lock deleted
+      assert:
+        that:
+          - delete_lock.changed
+          - delete_lock.lock.id == create_lock.lock.id
+
+    - name: Delete the lock again (should be idempotent)
+      linode.cloud.lock:
+        id: '{{ create_lock.lock.id }}'
+        state: absent
+      register: delete_lock_again
+
+    - name: Assert lock deletion is idempotent
+      assert:
+        that:
+          - delete_lock_again.changed == false
+
+    - name: Create a lock with subresource protection
+      linode.cloud.lock:
+        entity_type: linode
+        entity_id: '{{ create_instance.instance.id }}'
+        lock_type: cannot_delete_with_subresources
+        state: present
+      register: create_subresource_lock
+
+    - name: Assert subresource lock created
+      assert:
+        that:
+          - create_subresource_lock.changed
+          - create_subresource_lock.lock.lock_type == 'cannot_delete_with_subresources'
+
+    - name: Delete the subresource lock
+      linode.cloud.lock:
+        id: '{{ create_subresource_lock.lock.id }}'
+        state: absent
+      register: delete_subresource_lock
+
+    - name: Assert subresource lock deleted
+      assert:
+        that:
+          - delete_subresource_lock.changed
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete lock (cannot_delete) if created
+          linode.cloud.lock:
+            id: '{{ create_lock.lock.id }}'
+            state: absent
+          when:
+            - create_lock is defined
+            - create_lock.lock is defined
+            - create_lock.lock.id is defined
+
+        - name: Delete lock (cannot_delete_with_subresources) if created
+          linode.cloud.lock:
+            id: '{{ create_subresource_lock.lock.id }}'
+            state: absent
+          when:
+            - create_subresource_lock is defined
+            - create_subresource_lock.lock is defined
+            - create_subresource_lock.lock.id is defined
+
+        - name: Delete the Linode instance
+          linode.cloud.instance:
+            label: 'ansible-test-lock-{{ r }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+
+    LINODE_CA: '{{ ca_file or "" }}'

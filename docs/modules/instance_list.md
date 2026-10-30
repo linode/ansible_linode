@@ -97,7 +97,8 @@ List and filter on Instances.
               "watchdog_enabled": true,
               "disk_encryption": "enabled",
               "lke_cluster_id": null,
-              "maintenance_policy": "linode/migrate"
+              "maintenance_policy": "linode/migrate",
+              "locks": []
             }
         ]
         ```

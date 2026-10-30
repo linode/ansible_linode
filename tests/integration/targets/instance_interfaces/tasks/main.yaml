@@ -9,6 +9,7 @@
         region: us-ord
         type: g6-standard-1
         image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
         interfaces:
           - purpose: vlan
             label: really-cool-vlan
@@ -33,6 +34,7 @@
         region: us-ord
         type: g6-standard-1
         image: linode/ubuntu22.04
+        root_pass: Fn$$oobar123
         private_ip: true
         interfaces:
           - purpose: vlan

@@ -3,8 +3,6 @@
 
 """This module contains all of the functionality for Linode Domain records."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, List, Optional, Set
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.domain_record as docs
@@ -110,9 +108,11 @@ linode_domain_record_spec = {
         type=FieldType.integer,
         editable=True,
         description=[
-            "The amount of time in seconds that this Domain’s "
-            "records may be cached by resolvers "
-            "or other domain servers."
+            "Time to Live - the amount of time in seconds that this Domain's "
+            "records may be cached by resolvers or other domain servers. "
+            "Valid values are 300, 3600, 7200, 14400, 28800, 57600, 86400, "
+            "172800, 345600, 604800, 1209600, and 2419200 - any other value "
+            "will be rounded to the nearest valid value."
         ],
     ),
     "type": SpecField(
@@ -158,6 +158,21 @@ MUTABLE_FIELDS: Set[str] = {
     "weight",
 }
 
+# Valid TTL values for domain records
+VALID_TTL_VALUES = [
+    300,
+    3600,
+    7200,
+    14400,
+    28800,
+    57600,
+    86400,
+    172800,
+    345600,
+    604800,
+    1209600,
+    2419200,
+]
 DOCUMENTATION = r"""
 """
 EXAMPLES = r"""
@@ -186,6 +201,21 @@ class LinodeDomainRecord(LinodeModuleBase):
             required_one_of=self.required_one_of,
             mutually_exclusive=self.mutually_exclusive,
         )
+
+    def _normalize_ttl_sec(self, ttl_value: Optional[int]) -> Optional[int]:
+        """Normalize TTL value to the nearest valid value."""
+        if ttl_value is None:
+            return None
+
+        # Find the closest valid TTL value
+        closest = min(VALID_TTL_VALUES, key=lambda x: abs(x - ttl_value))
+
+        if closest != ttl_value:
+            self.warn(
+                f"TTL value {ttl_value} is not valid. Using nearest valid value: {closest}"
+            )
+
+        return closest
 
     def _find_record(
         self, domain: Domain, name: str, rtype: str, target: str
@@ -268,6 +298,10 @@ class LinodeDomainRecord(LinodeModuleBase):
         record_name = params.get("name")
         record_service = params.get("service")
 
+        # Normalize TTL value if provided
+        if "ttl_sec" in params:
+            params["ttl_sec"] = self._normalize_ttl_sec(params["ttl_sec"])
+
         try:
             self.register_action(
                 "Created domain record type {0}: name is {1}; service is {2}".format(
@@ -283,9 +317,14 @@ class LinodeDomainRecord(LinodeModuleBase):
     def _update_record(self) -> None:
         """Handles all update functionality for the current Domain record"""
 
+        # Get filtered parameters and normalize TTL if present
+        params = filter_null_values(self.module.params)
+        if "ttl_sec" in params:
+            params["ttl_sec"] = self._normalize_ttl_sec(params["ttl_sec"])
+
         handle_updates(
             self._record,
-            filter_null_values(self.module.params),
+            params,
             MUTABLE_FIELDS,
             self.register_action,
             ignore_keys={"name", "record", "target"},

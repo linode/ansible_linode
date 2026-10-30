@@ -3,9 +3,6 @@
 
 """This module contains all of the functionality for Linode NodeBalancers."""
 
-from __future__ import absolute_import, division, print_function
-
-import copy
 from typing import Any, List, Optional, Set, Tuple, cast
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.nodebalancer as docs
@@ -20,7 +17,8 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     dict_select_matching,
     filter_null_values,
     handle_updates,
-    paginated_list_to_json,
+    poll_condition,
+    poll_for_response_status,
 )
 from ansible_specdoc.objects import (
     FieldType,
@@ -29,11 +27,22 @@ from ansible_specdoc.objects import (
     SpecReturnValue,
 )
 from linode_api4 import (
+    ApiError,
     Firewall,
     NodeBalancer,
     NodeBalancerConfig,
     NodeBalancerNode,
 )
+from linode_api4.polling import TimeoutContext
+
+# tcp/http/https share a port namespace; udp is independent. Used to detect
+# which existing config is blocking a create on a given port.
+_TCP_FAMILY = {"tcp", "http", "https"}
+
+
+def _protocol_family(protocol: Optional[str]) -> Optional[str]:
+    return "tcp" if protocol in _TCP_FAMILY else protocol
+
 
 linode_nodes_spec = {
     "label": SpecField(
@@ -46,8 +55,11 @@ linode_nodes_spec = {
         required=True,
         editable=True,
         description=[
-            "The private IP Address where this backend can be reached.",
-            "This must be a private IP address.",
+            "The IP address where this backend can be reached.",
+            "The address must match the NodeBalancer's backend connectivity.",
+            "For legacy, use a private IPv4 address.",
+            "For ipv6, use a public IPv6 address in [IPv6]:port format.",
+            "For vpc, use an address in the attached VPC subnet.",
         ],
     ),
     "weight": SpecField(
@@ -64,6 +76,22 @@ linode_nodes_spec = {
             "The mode this NodeBalancer should use when sending traffic to this backend."
         ],
         choices=["accept", "reject", "drain", "backup"],
+    ),
+}
+
+linode_nodebalancer_vpcs_spec = {
+    "subnet_id": SpecField(
+        type=FieldType.integer,
+        required=True,
+        description=[
+            "The ID of the VPC subnet to attach to this NodeBalancer."
+        ],
+    ),
+    "ipv4_range": SpecField(
+        type=FieldType.string,
+        description=[
+            "The IPv4 range in the subnet that this NodeBalancer can use."
+        ],
     ),
 }
 
@@ -206,6 +234,7 @@ linode_configs_spec = {
     "ssl_key": SpecField(
         type=FieldType.string,
         required=False,
+        no_log=True,
         editable=True,
         description=[
             "The PEM-formatted private key for the SSL certificate "
@@ -259,6 +288,41 @@ linode_nodebalancer_spec = {
     "region": SpecField(
         type=FieldType.string,
         description=["The ID of the Region to create this NodeBalancer in."],
+    ),
+    "type": SpecField(
+        type=FieldType.string,
+        choices=["common", "premium", "premium_40gb", "enterprise"],
+        description=[
+            "The type of NodeBalancer to create. Defaults to common and cannot "
+            "be changed after creation. Premium and Enterprise NodeBalancers "
+            "may not be available to all users.",
+        ],
+    ),
+    "backend_connectivity": SpecField(
+        type=FieldType.string,
+        choices=["legacy", "ipv6", "vpc"],
+        description=[
+            "How this NodeBalancer connects to backend nodes. If omitted, the "
+            "API infers the value from VPC attachments or configured nodes. "
+            "This cannot be changed after creation.",
+        ],
+    ),
+    "vpcs": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.dict,
+        suboptions=linode_nodebalancer_vpcs_spec,
+        description=[
+            "VPC subnets to attach to this NodeBalancer. Required when "
+            "backend_connectivity is vpc and cannot be changed after creation.",
+        ],
+    ),
+    "ipv4": SpecField(
+        type=FieldType.string,
+        description=[
+            "A reserved IPv4 address to assign to this NodeBalancer on creation.",
+            "The address must be a reserved, unassigned IPv4 address owned by the account.",
+            "NOTE: This field is only used at creation time.",
+        ],
     ),
     "firewall_id": SpecField(
         type=FieldType.integer,
@@ -330,6 +394,23 @@ MUTABLE_FIELDS: Set[str] = {
     "client_udp_sess_throttle",
 }
 
+MUTABLE_CONFIG_FIELDS: set[str] = {
+    "algorithm",
+    "check",
+    "check_attempts",
+    "check_body",
+    "check_interval",
+    "check_passive",
+    "check_path",
+    "check_timeout",
+    "cipher_suite",
+    "port",
+    "protocol",
+    "proxy_protocol",
+    "stickiness",
+    "udp_check_port",
+}
+
 DOCUMENTATION = r"""
 """
 EXAMPLES = r"""
@@ -354,6 +435,7 @@ class LinodeNodeBalancer(LinodeModuleBase):
         }
 
         self._node_balancer: Optional[NodeBalancer] = None
+        self._deleted_config_ids: Set[int] = set()
 
         super().__init__(
             module_arg_spec=self.module_arg_spec,
@@ -402,7 +484,12 @@ class LinodeNodeBalancer(LinodeModuleBase):
                 "label",
                 "firewall_id",
                 "tags",
+                "ipv4",
+                "type",
+                "backend_connectivity",
+                "vpcs",
             }
+            and v is not None
         }
 
         try:
@@ -414,17 +501,16 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
     def _create_config(
         self, node_balancer: NodeBalancer, config_params: dict
-    ) -> Optional[NodeBalancerConfig]:
-        """Creates a config with the given kwargs within the given NodeBalancer"""
+    ) -> tuple[Optional[NodeBalancerConfig], bool]:
+        """Creates a config with the given kwargs within the given NodeBalancer."""
 
         try:
-            return node_balancer.config_create(**config_params)
-        except Exception as exception:
-            return self.fail(
-                msg="failed to create nodebalancer config: {0}".format(
-                    exception
-                )
+            return node_balancer.config_create(**config_params), True
+        except ApiError as err:
+            self.fail(
+                msg="failed to create nodebalancer config: {0}".format(err)
             )
+            return None, False
 
     def _create_node(
         self, config: NodeBalancerConfig, node_params: dict
@@ -442,19 +528,21 @@ class LinodeNodeBalancer(LinodeModuleBase):
 
     def _create_config_register(
         self, node_balancer: NodeBalancer, config_params: dict
-    ) -> NodeBalancerConfig:
+    ) -> Tuple[NodeBalancerConfig, bool]:
         """Registers a create action for the given config"""
 
-        config = self._create_config(node_balancer, config_params)
-        self.register_action("Created config: {0}".format(config.id))
+        config, created = self._create_config(node_balancer, config_params)
+        if created:
+            self.register_action("Created config: {0}".format(config.id))
 
-        return config
+        return config, created
 
     def _delete_config_register(self, config: NodeBalancerConfig) -> None:
         """Registers a delete action for the given config"""
 
         self.register_action("Deleted config: {0}".format(config.id))
         config.delete()
+        self._deleted_config_ids.add(config.id)
 
     def _create_node_register(
         self, config: NodeBalancerConfig, node_params: dict
@@ -503,72 +591,151 @@ class LinodeNodeBalancer(LinodeModuleBase):
         for node in node_map.values():
             self._delete_node_register(node)
 
-    @staticmethod
-    def _check_config_exists(
-        target: Set[NodeBalancerConfig], config: dict
-    ) -> Tuple[bool, Optional[NodeBalancerConfig]]:
-        """Returns whether a config exists in the target set"""
+        # Wait for nodes to propagate
+        expected_node_count = len(new_nodes)
 
-        tmp_config = copy.deepcopy(config)
+        def _nodes_synced() -> bool:
+            if hasattr(config, "_nodes"):
+                # In the future we should fix the invalidation behavior in the Python SDK,
+                # but this works as a workaround
+                object.__delattr__(config, "_nodes")
 
-        # These fields will return as <REDACTED> so we should not diff on them
-        tmp_config.pop("ssl_cert")
-        tmp_config.pop("ssl_key")
+            return len(config.nodes) == expected_node_count
+
+        poll_condition(_nodes_synced, step=2, timeout=120)
+
+    def _find_port_conflict(
+        self,
+        target: Set[NodeBalancerConfig],
+        config: dict[str, Any],
+    ) -> Optional[NodeBalancerConfig]:
+        """Return a remote config matching on port+protocol-family."""
+
+        port = config.get("port")
+        family = _protocol_family(config.get("protocol"))
 
         for remote_config in target:
-            config_match, remote_config_match = dict_select_matching(
-                filter_null_values(tmp_config), remote_config._raw_json
-            )
+            if (
+                remote_config.id in self._deleted_config_ids
+                or remote_config.port != port
+                or _protocol_family(remote_config.protocol) != family
+            ):
+                continue
 
-            if config_match == remote_config_match:
-                return True, remote_config
+            return remote_config
 
-        return False, None
+        return None
 
-    def _handle_configs(self) -> None:
+    def _handle_configs(self) -> list:
         """Updates the configs defined in new_configs under this NodeBalancer"""
 
-        new_configs = self.module.params.get("configs") or []
-        remote_configs = set(self._node_balancer.configs)
+        configs_param = self.module.params.get("configs")
+        if configs_param is None:
+            return []
 
-        to_create = []
-        to_update = []
-        to_delete = remote_configs
+        new_configs = configs_param
 
-        for config in new_configs:
-            config_exists, remote_config = self._check_config_exists(
-                remote_configs, config
-            )
+        to_create, to_update, to_delete = self._plan_configs(new_configs)
 
-            if not config_exists:
-                to_create.append((config, remote_config))
-                continue
-
-            if config.get("recreate"):
-                to_create.append((config, remote_config))
-                continue
-
-            to_update.append((config, remote_config))
-            to_delete.remove(remote_config)
-
-        # Remove remaining configs
         for config in to_delete:
             self._delete_config_register(config)
 
-        for config, remote_config in to_create:
-            new_config = self._create_config_register(
+        # Wait for deletions to propagate before attempting creates; otherwise
+        # the API returns "already using port" 400s on overlapping ports.
+        for config in to_delete:
+            poll_for_response_status(
+                TimeoutContext(timeout_seconds=120), config._api_get, 404
+            )
+
+        result_configs = []
+
+        for config in to_create:
+            new_config, _ = self._create_config_register(
                 self._node_balancer, config
             )
-            if config.get("nodes") is not None:
-                self._handle_config_nodes(new_config, config.get("nodes"))
+            self._sync_config_nodes(new_config, config.get("nodes"))
+            result_configs.append(new_config)
 
         for config, remote_config in to_update:
-            if config.get("nodes") is not None:
-                self._handle_config_nodes(remote_config, config.get("nodes"))
+            handle_updates(
+                remote_config,
+                filter_null_values(config),
+                MUTABLE_CONFIG_FIELDS,
+                self.register_action,
+            )
+            self._sync_config_nodes(remote_config, config.get("nodes"))
+            result_configs.append(remote_config)
 
         cast(list, self.results["configs"]).extend(
-            paginated_list_to_json(self._node_balancer.configs)
+            [c._raw_json for c in result_configs]
         )
+
+        return result_configs
+
+    def _stable_configs(
+        self, consecutive_threshold: int = 3
+    ) -> List[NodeBalancerConfig]:
+        """
+        Wait for the list endpoint to consistently show the expected config
+        count. Workaround for API propagation behavior.
+        """
+        successful_requests = 0
+        last_len = -1
+        last_configs: List[NodeBalancerConfig] = []
+
+        def _stable() -> bool:
+            nonlocal successful_requests, last_len, last_configs
+            self._node_balancer.invalidate()
+            last_configs = list(self._node_balancer.configs)
+
+            if len(last_configs) != last_len:
+                successful_requests = 0
+                last_len = len(last_configs)
+
+                return False
+
+            successful_requests += 1
+            return successful_requests >= consecutive_threshold
+
+        poll_condition(_stable, step=2, timeout=180)
+
+        return last_configs
+
+    def _plan_configs(self, new_configs: list[dict]) -> tuple[
+        list[dict],
+        list[tuple[dict, NodeBalancerConfig]],
+        set[NodeBalancerConfig],
+    ]:
+        """Partition desired configs into (create, update, delete) sets."""
+
+        remote_configs = set(self._stable_configs())
+        to_create: list[dict] = []
+        to_update: list[tuple[dict, NodeBalancerConfig]] = []
+        to_delete = remote_configs
+
+        for config in new_configs:
+            match = self._find_port_conflict(to_delete, config)
+
+            if match is not None and not config.get("recreate"):
+                to_update.append((config, match))
+                to_delete.remove(match)
+                continue
+
+            to_create.append(config)
+
+        return to_create, to_update, to_delete
+
+    def _sync_config_nodes(
+        self,
+        config: NodeBalancerConfig,
+        nodes: Optional[List[dict]],
+    ) -> None:
+        """Sync nodes against the given config if provided."""
+
+        if nodes is not None:
+            self._handle_config_nodes(config, nodes)
+
+        config._api_get()
 
     def _update_nodebalancer(self) -> None:
         """Handles updating the current NodeBalancer"""
@@ -578,6 +745,15 @@ class LinodeNodeBalancer(LinodeModuleBase):
         # "configs" is defined in NodeBalancer, but is a property method
         if "configs" in params.keys():
             params.pop("configs")
+
+        # These fields are accepted at creation time only.
+        for create_only_field in (
+            "ipv4",
+            "type",
+            "backend_connectivity",
+            "vpcs",
+        ):
+            params.pop(create_only_field, None)
 
         if "firewall_id" in params.keys():
             firewall_id = params.pop("firewall_id")
@@ -635,10 +811,15 @@ class LinodeNodeBalancer(LinodeModuleBase):
             return self.results
 
         self._handle_nodebalancer()
-        self._handle_configs()
+        result_configs = self._handle_configs()
 
-        # Append all nodes to the result
-        for config in self._node_balancer.configs:
+        result_configs = (
+            result_configs
+            if self.module.params.get("configs") is not None
+            else self._node_balancer.configs
+        )
+
+        for config in result_configs:
             for node in config.nodes:
                 node._api_get()
                 cast(list, self.results["nodes"]).append(node._raw_json)
@@ -649,6 +830,10 @@ class LinodeNodeBalancer(LinodeModuleBase):
         self.results["firewalls"] = [
             v.id for v in self._node_balancer.firewalls()
         ]
+
+        # Backend changes can update connectivity and the assigned IPv6 prefix.
+        self._node_balancer._api_get()
+        self.results["node_balancer"] = self._node_balancer._raw_json
 
         return self.results
 

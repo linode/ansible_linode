@@ -3,8 +3,6 @@
 """This module allows users to manage ACLP alert definitions.
 NOTE: This module is under v4beta."""
 
-from __future__ import absolute_import, division, print_function
-
 from typing import Any, List, Optional
 
 import ansible_collections.linode.cloud.plugins.module_utils.doc_fragments.alert_definition as docs
@@ -207,6 +205,30 @@ spec: dict = {
             "Required for updating."
         ],
     ),
+    "scope": SpecField(
+        type=FieldType.string,
+        choices=["account", "entity", "region"],
+        description=[
+            "The alert scope. "
+            "Supported values include account, entity, and region. "
+            "Defaults to entity."
+        ],
+    ),
+    "regions": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        editable=True,
+        description=["The regions to monitor for this alert definition."],
+    ),
+    "group_by": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        editable=True,
+        description=[
+            "Aggregates metric data by dimension so that alert conditions "
+            "are evaluated independently for each dimension value."
+        ],
+    ),
     "status": SpecField(
         type=FieldType.string,
         editable=True,
@@ -258,7 +280,9 @@ MUTABLE_FIELDS = {
     "channel_ids",
     "description",
     "entity_ids",
+    "group_by",
     "label",
+    "regions",
     "rule_criteria",
     "severity",
     "status",
@@ -334,21 +358,42 @@ class LinodeMonitorServicesAlertDefinition(LinodeModuleBase):
         params = self.module.params
         service_type = params.pop("service_type")
 
+        create_kwargs: dict = {
+            "service_type": service_type,
+            "label": params.pop("label"),
+            "severity": params.pop("severity"),
+            "channel_ids": params.pop("channel_ids"),
+            "rule_criteria": params.pop("rule_criteria"),
+            "trigger_conditions": params.pop("trigger_conditions"),
+        }
+
+        description = params.get("description")
+        if description is not None:
+            create_kwargs["description"] = description
+
+        scope = params.get("scope")
+        if scope is not None:
+            create_kwargs["scope"] = scope
+
+        regions = params.get("regions")
+        if regions is not None:
+            create_kwargs["regions"] = regions
+
+        entity_ids = params.get("entity_ids")
+        if entity_ids is not None:
+            create_kwargs["entity_ids"] = entity_ids
+
+        group_by = params.get("group_by")
+        if group_by is not None:
+            create_kwargs["group_by"] = group_by
+
         try:
             self.register_action(
                 "Created alert definition for service type {0}".format(
                     service_type
                 )
             )
-            return self.client.monitor.create_alert_definition(
-                service_type=service_type,
-                label=params.pop("label"),
-                severity=params.pop("severity"),
-                description=params.pop("description"),
-                channel_ids=params.pop("channel_ids"),
-                rule_criteria=params.pop("rule_criteria"),
-                trigger_conditions=params.pop("trigger_conditions"),
-            )
+            return self.client.monitor.create_alert_definition(**create_kwargs)
         except Exception as exception:
             return self.fail(
                 msg="failed to create alert definition: {0}".format(exception)

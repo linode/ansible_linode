@@ -13,6 +13,9 @@
         that:
           - no_filter.images | length == 5
 
+    - set_fact:
+        target_image: "{{ no_filter.images[0] }}"
+
     - name: List image_list with filter on label
       linode.cloud.image_list:
         count: 1
@@ -20,14 +23,14 @@
         order: desc
         filters:
           - name: label
-            values: Alpine 3.19
+            values: "{{ target_image.label }}"
       register: filter
 
     - name: Assert image_list with filter on label
       assert:
         that:
           - filter.images | length == 1
-          - filter.images[0].id == 'linode/alpine3.19'
+          - filter.images[0].label == target_image.label
 
     - name: List image_list with empty filter
       linode.cloud.image_list:

@@ -3,7 +3,7 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
-    # Create node instances
+    # Create node instances in parallel
     - name: Create node1
       linode.cloud.instance:
         label: 'ansible-test-node1-{{ r }}'
@@ -12,15 +12,12 @@
         image: linode/ubuntu22.04
         root_pass: Fn$$oobar123
         private_ip: true
+        booted: false
         state: present
         firewall_id: '{{ firewall_id }}'
-      register: node1_inst
-
-    - name: Assert node1 is created
-      assert:
-        that:
-          - node1_inst.changed
-          - node1_inst.instance.ipv4|length > 1
+      register: node1_job
+      async: 600
+      poll: 0
 
     - name: Create node2
       linode.cloud.instance:
@@ -30,15 +27,11 @@
         image: linode/ubuntu22.04
         root_pass: Fn$$oobar123
         private_ip: true
+        booted: false
         state: present
-
-      register: node2_inst
-
-    - name: Assert node2 is created
-      assert:
-        that:
-          - node2_inst.changed
-          - node2_inst.instance.ipv4|length > 1
+      register: node2_job
+      async: 600
+      poll: 0
 
     - name: Create node3
       linode.cloud.instance:
@@ -48,13 +41,36 @@
         image: linode/ubuntu22.04
         root_pass: Fn$$oobar123
         private_ip: true
+        booted: false
         state: present
+      register: node3_job
+      async: 600
+      poll: 0
 
-      register: node3_inst
+    - name: Wait for all node instances to be created
+      async_status:
+        jid: '{{ item }}'
+      loop:
+        - '{{ node1_job.ansible_job_id }}'
+        - '{{ node2_job.ansible_job_id }}'
+        - '{{ node3_job.ansible_job_id }}'
+      register: node_jobs
+      until: node_jobs.finished
+      retries: 60
+      delay: 10
 
-    - name: Assert node3 is created
+    - set_fact:
+        node1_inst: '{{ node_jobs.results[0] }}'
+        node2_inst: '{{ node_jobs.results[1] }}'
+        node3_inst: '{{ node_jobs.results[2] }}'
+
+    - name: Assert node instances are created
       assert:
         that:
+          - node1_inst.changed
+          - node1_inst.instance.ipv4|length > 1
+          - node2_inst.changed
+          - node2_inst.instance.ipv4|length > 1
           - node3_inst.changed
           - node3_inst.instance.ipv4|length > 1
 
@@ -217,15 +233,20 @@
 
       register: add_config
 
+    - name: Ensure order is safe for comparison
+      set_fact:
+        add_config_nodes_sorted: "{{ add_config.nodes | sort(attribute='id') }}"
+        add_config_configs_sorted: "{{ add_config.configs | sort(attribute='id') }}"
+
     - name: Assert Config was added
       assert:
         that:
           - add_config.changed
           - add_config.configs|length == 2
           - add_config.nodes|length == 3
-          - add_config.nodes[0].config_id == add_config.configs[0].id
-          - add_config.nodes[1].config_id == add_config.configs[0].id
-          - add_config.nodes[2].config_id == add_config.configs[1].id
+          - add_config_nodes_sorted[0].config_id == add_config_configs_sorted[0].id
+          - add_config_nodes_sorted[1].config_id == add_config_configs_sorted[0].id
+          - add_config_nodes_sorted[2].config_id == add_config_configs_sorted[1].id
 
     - name: Remove a config from the NodeBalancer
       linode.cloud.nodebalancer:

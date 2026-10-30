@@ -23,6 +23,7 @@ from ansible_collections.linode.cloud.plugins.module_utils.linode_helper import 
     drop_empty_strings,
     filter_null_values,
     filter_null_values_recursive,
+    generate_device_suffixes,
     handle_updates,
     matching_keys_eq,
     paginated_list_to_json,
@@ -62,6 +63,10 @@ except ImportError:
     # handled in module_utils.linode_common
     pass
 
+MB_PER_GB = 1024
+MAX_DEVICE_LIMIT = 64
+MIN_DEVICE_LIMIT = 8
+
 linode_instance_metadata_spec = {
     "user_data": SpecField(
         type=FieldType.string,
@@ -97,9 +102,8 @@ linode_instance_disk_spec = {
     ),
     "disk_encryption": SpecField(
         type=FieldType.string,
-        description="**READ ONLY** The disk encryption status of this disk."
-        + "NOTE: Disk encryption may not currently be available to all users "
-        + "and is set at the Linode Level.",
+        description="**READ ONLY** The disk encryption status of this disk. "
+        + "This value is set at the Linode level.",
         choices=["enabled", "disabled"],
     ),
     "image": SpecField(
@@ -162,7 +166,7 @@ linode_instance_devices_spec = {
         description=[f"The device to be mapped to /dev/sd{k}"],
         suboptions=linode_instance_device_spec,
     )
-    for k in "abcdefgh"
+    for k in generate_device_suffixes(MAX_DEVICE_LIMIT)
 }
 
 linode_instance_helpers_spec = {
@@ -498,7 +502,6 @@ linode_instance_spec = {
         type=FieldType.string,
         description=[
             "The slug of the maintenance policy to apply during maintenance.",
-            "NOTE: This field is under v4beta.",
         ],
         choices=["linode/migrate", "linode/power_off_on"],
     ),
@@ -679,6 +682,15 @@ linode_instance_spec = {
         description=["Additional ipv4 addresses to allocate."],
         editable=False,
     ),
+    "ipv4": SpecField(
+        type=FieldType.list,
+        element_type=FieldType.string,
+        description=[
+            "A list of reserved IPv4 addresses to assign to this Linode on creation.",
+            "The list must contain exactly one reserved, unassigned IPv4 address.",
+            "NOTE: This field is create-only. Changes after creation are ignored.",
+        ],
+    ),
     "rebooted": SpecField(
         type=FieldType.bool,
         description=[
@@ -728,8 +740,7 @@ linode_instance_spec = {
     ),
     "disk_encryption": SpecField(
         type=FieldType.string,
-        description="The disk encryption status of this Linode. "
-        + "NOTE: Disk encryption may not currently be available to all users.",
+        description=["The disk encryption status of this Linode."],
         choices=["enabled", "disabled"],
     ),
     "swap_size": SpecField(
@@ -737,6 +748,19 @@ linode_instance_spec = {
         description=[
             "When deploying from an Image, this field is optional, otherwise it is ignored. "
             "This is used to set the swap disk size for the newly-created Linode."
+        ],
+    ),
+    "kernel": SpecField(
+        type=FieldType.string,
+        description=[
+            "The kernel to deploy with when creating a Linode.",
+        ],
+    ),
+    "boot_size": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The size of the boot disk in MB for the newly-created Linode. ",
+            "Must be at least 8192 MB.",
         ],
     ),
 }
@@ -1074,16 +1098,46 @@ class LinodeInstance(LinodeModuleBase):
 
             params["interfaces"] = _linode_interfaces
 
+        ipv4 = params.get("ipv4")
+        if ipv4 is None:
+            params.pop("ipv4", None)
+        elif len(ipv4) != 1:
+            self.fail(
+                msg="ipv4 must contain exactly one reserved IPv4 address, got {0}".format(
+                    len(ipv4)
+                )
+            )
+
+        # If deploying from an image, require at least one authentication
+        # option to be explicitly provided by the caller. This prevents
+        # silently relying on API-generated passwords when the user did not
+        # intend to receive them.
+        if params.get("image") is not None:
+            has_root_pass = "root_pass" in params and params.get("root_pass")
+            has_auth_users = (
+                params.get("authorized_users") is not None
+                and len(params.get("authorized_users") or []) > 0
+            )
+            has_auth_keys = (
+                params.get("authorized_keys") is not None
+                and len(params.get("authorized_keys") or []) > 0
+            )
+
+            if not (has_root_pass or has_auth_users or has_auth_keys):
+                self.fail(
+                    msg=(
+                        "When deploying from an image, one of 'root_pass',"
+                        " 'authorized_users', or 'authorized_keys' must be provided"
+                    )
+                )
+
         result = {"instance": None, "root_pass": ""}
 
         response = self.client.linode.instance_create(ltype, region, **params)
 
-        # Weird variable return type
-        if isinstance(response, tuple):
-            result["instance"] = response[0]
-            result["root_pass"] = response[1]
-        else:
-            result["instance"] = response
+        result["instance"] = response
+        # API-generated passwords are no longer supported; avoid echoing the caller-provided secret.
+        result["root_pass"] = ""
 
         return result
 
@@ -1112,21 +1166,46 @@ class LinodeInstance(LinodeModuleBase):
 
         return None
 
-    def _create_config_register(self, config_params: Dict[str, Any]) -> None:
+    def _reconcile_devices(
+        self, config_params: Dict[str, Any]
+    ) -> Dict[str, Union[Disk, Volume]]:
         device_params = config_params.pop("devices")
-        devices = []
+        devices = {}
 
         if device_params is not None:
-            for device_suffix in ["a", "b", "c", "d", "e", "f", "g", "h"]:
+            device_limit = int(
+                max(
+                    MIN_DEVICE_LIMIT,
+                    min(
+                        self._instance.specs.memory // MB_PER_GB,
+                        MAX_DEVICE_LIMIT,
+                    ),
+                )
+            )
+
+            for device_suffix in generate_device_suffixes(MAX_DEVICE_LIMIT):
                 device_name = "sd{0}".format(device_suffix)
                 if device_name not in device_params:
                     continue
 
                 device_dict = device_params.get(device_name)
-                devices.append(self._param_device_to_device(device_dict))
+                device = self._param_device_to_device(device_dict)
+                if device is not None:
+                    devices[device_name] = device
+                    if len(devices) > device_limit:
+                        self.fail(
+                            msg=f"Too many devices specified for this instance type. "
+                            f"Instance '{self._instance.label}' (type: {self._instance.type.id}, "
+                            f"memory: {self._instance.specs.memory}MB) supports a maximum of "
+                            f"{device_limit} devices."
+                        )
 
+        return devices
+
+    def _create_config_register(self, config_params: Dict[str, Any]) -> Config:
+        devices = self._reconcile_devices(config_params)
         try:
-            self._instance.config_create(
+            config = self._instance.config_create(
                 devices=devices, **filter_null_values(config_params)
             )
         except ValueError as err:
@@ -1135,6 +1214,8 @@ class LinodeInstance(LinodeModuleBase):
         self.register_action(
             "Created config {0}".format(config_params.get("label"))
         )
+
+        return config
 
     def _delete_config_register(self, config: Config) -> None:
         self.register_action("Deleted config {0}".format(config.label))
@@ -1210,7 +1291,7 @@ class LinodeInstance(LinodeModuleBase):
         """
         firewall_id = self.module.params.get("firewall_id")
         # Nothing to do
-        if firewall_id is None:
+        if firewall_id in (None, -1):
             return
 
         # Resolve the expected firewall; fail if firewall doesn't exist
@@ -1414,14 +1495,15 @@ class LinodeInstance(LinodeModuleBase):
         if should_update:
             config.save()
 
-    def _update_configs(self) -> None:
+    def _update_configs(self) -> List[Config]:
         current_configs = self._instance.configs
 
         if self.module.params.get("image") is not None:
-            return
+            return []
 
         config_params = self.module.params["configs"] or []
         config_map: Dict[str, Config] = {}
+        created_configs: List[Config] = []
 
         for config in current_configs:
             config_map[config.label] = config
@@ -1435,10 +1517,12 @@ class LinodeInstance(LinodeModuleBase):
                 del config_map[config_label]
                 continue
 
-            self._create_config_register(config)
+            created_configs.append(self._create_config_register(config))
 
         for config in config_map.values():
             self._delete_config_register(config)
+
+        return created_configs
 
     def _update_disk(self, disk: Disk, disk_params: Dict[str, Any]) -> None:
         new_size = disk_params.pop("size")
@@ -1516,6 +1600,10 @@ class LinodeInstance(LinodeModuleBase):
                 "type",
                 "region",
                 "placement_group",
+                # "ipv4" is a create-only field; excluding it prevents
+                # handle_updates from comparing it against Instance.ipv4
+                # (the list of current IPs) and raising a RuntimeError.
+                "ipv4",
             )
         }
 
@@ -1707,6 +1795,7 @@ class LinodeInstance(LinodeModuleBase):
         # This eliminates the need for unnecessary polling
         disks = self.module.params.get("disks") or []
         configs = self.module.params.get("configs") or []
+        created_configs: List[Config] = []
 
         if len(configs) > 0 or len(disks) > 0:
             self.client.polling.wait_for_entity_free(
@@ -1716,7 +1805,10 @@ class LinodeInstance(LinodeModuleBase):
             )
 
             self._update_disks()
-            self._update_configs()
+
+            self._instance.invalidate()
+
+            created_configs = self._update_configs()
 
         # Don't reboot on instance creation
         if self.module.params.get("rebooted") is not None and already_exists:
@@ -1735,7 +1827,14 @@ class LinodeInstance(LinodeModuleBase):
         inst_result["root_pass"] = self._root_pass
 
         self.results["instance"] = inst_result
-        self.results["configs"] = paginated_list_to_json(self._instance.configs)
+
+        # Use the configs returned directly from config_create if the API
+        # hasn't propagated them yet (self._instance.configs may be empty
+        # immediately after creation due to eventual consistency).
+        fetched_configs = self._instance.configs
+        self.results["configs"] = paginated_list_to_json(
+            fetched_configs if len(fetched_configs) > 0 else created_configs
+        )
         self.results["disks"] = paginated_list_to_json(self._instance.disks)
         self.results["networking"] = self._get_networking()
 
