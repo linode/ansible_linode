@@ -1,7 +1,10 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
+import pytest
+from ansible.module_utils.common.arg_spec import ArgumentSpecValidator
 from ansible_collections.linode.cloud.plugins.modules.nodebalancer import (
+    SPECDOC_META,
     LinodeNodeBalancer,
 )
 
@@ -67,3 +70,41 @@ def test_update_nodebalancer_ignores_creation_only_options():
     assert "type" not in update_params
     assert "backend_connectivity" not in update_params
     assert "vpcs" not in update_params
+
+
+@pytest.mark.parametrize("subnet_id", [None, 12345])
+def test_create_node_accepts_optional_subnet_id(subnet_id):
+    node_params = {"label": "test-node", "address": "10.0.0.10:80"}
+    if subnet_id is not None:
+        node_params["subnet_id"] = subnet_id
+
+    validation = ArgumentSpecValidator(SPECDOC_META.ansible_spec).validate(
+        {
+            "label": "test-nodebalancer",
+            "state": "present",
+            "configs": [
+                {"port": 80, "protocol": "http", "nodes": [node_params]}
+            ],
+        }
+    )
+    assert not validation.error_messages
+
+    module = _make_module({})
+    config = MagicMock()
+    created = object()
+    config.node_create.return_value = created
+
+    assert (
+        module._create_node(
+            config,
+            validation.validated_parameters["configs"][0]["nodes"][0],
+        )
+        is created
+    )
+    config.node_create.assert_called_once_with(
+        "test-node",
+        address="10.0.0.10:80",
+        subnet_id=subnet_id,
+        weight=None,
+        mode=None,
+    )

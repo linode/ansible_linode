@@ -125,6 +125,7 @@ NOTE: UDP NodeBalancer may not currently be available to all users.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `label` | <center>`str`</center> | <center>**Required**</center> | The label for this node.   |
 | `address` | <center>`str`</center> | <center>**Required**</center> | The IP address where this backend can be reached. The address must match the NodeBalancer's backend connectivity. For legacy, use a private IPv4 address. For ipv6, use a public IPv6 address in [IPv6]:port format. For vpc, use an address in the attached VPC subnet.  **(Updatable)** |
+| `subnet_id` | <center>`int`</center> | <center>Optional</center> | The ID of the VPC subnet for this backend node. Required for VPC backend nodes.   |
 | `weight` | <center>`int`</center> | <center>Optional</center> | Nodes with a higher weight will receive more traffic.  **(Updatable)** |
 | `mode` | <center>`str`</center> | <center>Optional</center> | The mode this NodeBalancer should use when sending traffic to this backend.  **(Choices: `accept`, `reject`, `drain`, `backup`; Updatable)** |
 
