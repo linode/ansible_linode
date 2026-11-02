@@ -1,0 +1,232 @@
+- name: Test NodeBalancer VPC backend nodes
+  block:
+    - name: Choose a unique resource label
+      set_fact:
+        test_label: 'ansible-nb-vpc-{{ 1000000000 | random }}'
+
+    - block:
+        - name: Create a VPC
+          linode.cloud.vpc:
+            label: '{{ test_label }}'
+            region: us-mia
+            state: present
+          register: vpc
+
+        - name: Create a VPC subnet
+          linode.cloud.vpc_subnet:
+            vpc_id: '{{ vpc.vpc.id }}'
+            label: test-subnet
+            ipv4: 10.0.0.0/24
+            state: present
+          register: subnet
+
+        - name: Create a firewall for the test resources
+          linode.cloud.firewall:
+            label: '{{ test_label }}'
+            devices: []
+            rules:
+              inbound: []
+              inbound_policy: DROP
+              outbound: []
+              outbound_policy: DROP
+            state: present
+          register: firewall
+
+        - name: Create an instance with a VPC interface
+          linode.cloud.instance:
+            label: '{{ test_label }}'
+            region: us-mia
+            type: g6-nanode-1
+            interface_generation: legacy_config
+            disks:
+              - label: test-disk
+                filesystem: ext4
+                size: 20
+            configs:
+              - label: test-config
+                devices:
+                  sda:
+                    disk_label: test-disk
+                interfaces:
+                  - purpose: vpc
+                    subnet_id: '{{ subnet.subnet.id }}'
+                    primary: true
+                    ipv4:
+                      vpc: 10.0.0.10
+                      nat_1_1: any
+            firewall_id: '{{ firewall.firewall.id }}'
+            booted: false
+            wait: false
+            state: present
+          register: instance
+
+        - name: Define NodeBalancer configurations
+          set_fact:
+            backend_address: '{{ instance.configs[0].interfaces[0].ipv4.vpc }}:80'
+            nodebalancer_configs:
+              - port: 80
+                protocol: http
+                nodes:
+                  - label: nested-node
+                    address: '{{ instance.configs[0].interfaces[0].ipv4.vpc }}:80'
+                    subnet_id: '{{ subnet.subnet.id }}'
+              - port: 81
+                protocol: http
+
+        - name: Create a NodeBalancer with a nested VPC backend node
+          linode.cloud.nodebalancer:
+            label: '{{ test_label }}'
+            region: us-mia
+            backend_connectivity: vpc
+            vpcs:
+              - subnet_id: '{{ subnet.subnet.id }}'
+                ipv4_range: 10.0.0.4/30
+            firewall_id: '{{ firewall.firewall.id }}'
+            configs: '{{ nodebalancer_configs }}'
+            state: present
+          register: nodebalancer
+
+        - name: Assert the nested VPC backend node is created
+          assert:
+            that:
+              - nodebalancer.changed
+              - nodebalancer.node_balancer.backend_connectivity == 'vpc'
+              - nodebalancer.configs | length == 2
+              - nodebalancer.nodes | length == 1
+              - nodebalancer.nodes[0].label == 'nested-node'
+              - nodebalancer.nodes[0].address == backend_address
+
+        - name: Select the standalone node's configuration
+          set_fact:
+            standalone_config_id: "{{ (nodebalancer.configs | selectattr('port', 'equalto', 81) | first).id }}"
+
+        - name: Create a standalone VPC backend node
+          linode.cloud.nodebalancer_node:
+            nodebalancer_id: '{{ nodebalancer.node_balancer.id }}'
+            config_id: '{{ standalone_config_id }}'
+            label: standalone-node
+            address: '{{ backend_address }}'
+            subnet_id: '{{ subnet.subnet.id }}'
+            state: present
+          register: standalone_node
+
+        - name: Assert the standalone VPC backend node is created
+          assert:
+            that:
+              - standalone_node.changed
+              - standalone_node.node.label == 'standalone-node'
+              - standalone_node.node.address == backend_address
+
+        # The VPC configuration ID is only returned by v4beta.
+        - name: Verify the VPC configuration for both nodes
+          when: api_version == 'v4beta'
+          block:
+            - name: Assert both nodes reference the same VPC configuration
+              assert:
+                that:
+                  - nodebalancer.nodes[0].vpc_config_id is integer
+                  - standalone_node.node.vpc_config_id == nodebalancer.nodes[0].vpc_config_id
+
+            - name: Get the NodeBalancer VPC configuration
+              linode.cloud.api_request:
+                path: 'nodebalancers/{{ nodebalancer.node_balancer.id }}/vpcs/{{ nodebalancer.nodes[0].vpc_config_id }}'
+                method: GET
+              register: nodebalancer_vpc
+
+            - name: Assert the nodes use the requested subnet
+              assert:
+                that:
+                  - nodebalancer_vpc.body.vpc_id == vpc.vpc.id
+                  - nodebalancer_vpc.body.subnet_id == subnet.subnet.id
+
+        - name: Reapply the standalone VPC backend node
+          linode.cloud.nodebalancer_node:
+            nodebalancer_id: '{{ nodebalancer.node_balancer.id }}'
+            config_id: '{{ standalone_config_id }}'
+            label: standalone-node
+            address: '{{ backend_address }}'
+            subnet_id: '{{ subnet.subnet.id }}'
+            state: present
+          register: unchanged_standalone_node
+
+        - name: Assert the standalone VPC backend node is unchanged
+          assert:
+            that:
+              - not unchanged_standalone_node.changed
+              - unchanged_standalone_node.node.id == standalone_node.node.id
+
+        - name: Reapply the nested VPC backend node
+          linode.cloud.nodebalancer:
+            label: '{{ test_label }}'
+            region: us-mia
+            backend_connectivity: vpc
+            vpcs:
+              - subnet_id: '{{ subnet.subnet.id }}'
+                ipv4_range: 10.0.0.4/30
+            configs: '{{ nodebalancer_configs }}'
+            state: present
+          register: unchanged_nodebalancer
+
+        - name: Assert the nested VPC backend node is unchanged
+          assert:
+            that:
+              - not unchanged_nodebalancer.changed
+              - unchanged_nodebalancer.nodes | length == 2
+              - (unchanged_nodebalancer.nodes | selectattr('label', 'equalto', 'nested-node') | first).id == nodebalancer.nodes[0].id
+              - (unchanged_nodebalancer.nodes | selectattr('label', 'equalto', 'standalone-node') | first).id == standalone_node.node.id
+
+      always:
+        - name: Delete the NodeBalancer
+          linode.cloud.nodebalancer:
+            label: '{{ test_label }}'
+            state: absent
+          register: delete_nodebalancer
+          until: delete_nodebalancer is succeeded
+          retries: 5
+          delay: 5
+          ignore_errors: true
+
+        - name: Delete the backend instance
+          linode.cloud.instance:
+            label: '{{ test_label }}'
+            state: absent
+          register: delete_instance
+          until: delete_instance is succeeded
+          retries: 5
+          delay: 5
+          ignore_errors: true
+
+        - name: Delete the VPC
+          linode.cloud.vpc:
+            label: '{{ test_label }}'
+            state: absent
+          register: delete_vpc
+          until: delete_vpc is succeeded
+          retries: 5
+          delay: 5
+          ignore_errors: true
+
+        - name: Delete the firewall
+          linode.cloud.firewall:
+            label: '{{ test_label }}'
+            state: absent
+          register: delete_firewall
+          until: delete_firewall is succeeded
+          retries: 5
+          delay: 5
+          ignore_errors: true
+
+        - name: Assert all test resources were removed
+          assert:
+            that:
+              - delete_nodebalancer is succeeded
+              - delete_instance is succeeded
+              - delete_vpc is succeeded
+              - delete_firewall is succeeded
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
