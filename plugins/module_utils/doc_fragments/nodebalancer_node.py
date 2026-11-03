@@ -28,7 +28,7 @@ specdoc_examples = ['''
 
     label: my-node
 
-    # Use the private ip address of the instance
+    # Use an address that matches the NodeBalancer's backend connectivity.
     address: '{{ instance_result.instance.ipv4[1] }}:80'
 
     state: present''']

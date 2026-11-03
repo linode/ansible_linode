@@ -1,0 +1,47 @@
+---
+- name: Test Premium NodeBalancer creation
+  block:
+    - name: Choose a unique NodeBalancer label
+      set_fact:
+        premium_nodebalancer_label: 'ansible-nb-premium-{{ 1000000000 | random }}'
+
+    - block:
+        - name: Create a Premium NodeBalancer
+          linode.cloud.nodebalancer:
+            label: '{{ premium_nodebalancer_label }}'
+            region: us-mia
+            type: premium
+            backend_connectivity: ipv6
+            firewall_id: '{{ firewall_id }}'
+            state: present
+          register: create_premium
+
+        - name: Assert Premium NodeBalancer return values
+          assert:
+            that:
+              - create_premium.changed
+              - create_premium.node_balancer.id is integer
+              - create_premium.node_balancer.label == premium_nodebalancer_label
+              - create_premium.node_balancer.region == 'us-mia'
+              - create_premium.node_balancer.type == 'premium'
+              - create_premium.node_balancer.backend_connectivity == 'ipv6'
+              - create_premium.node_balancer.backend_ipv6_prefix is defined
+              - >-
+                create_premium.node_balancer.backend_ipv6_prefix is none or
+                (create_premium.node_balancer.backend_ipv6_prefix is string and
+                create_premium.node_balancer.backend_ipv6_prefix is match('^[0-9A-Fa-f:]+/96$'))
+              - create_premium.configs | length == 0
+              - create_premium.nodes | length == 0
+
+      always:
+        - name: Delete the Premium NodeBalancer
+          linode.cloud.nodebalancer:
+            label: '{{ premium_nodebalancer_label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
