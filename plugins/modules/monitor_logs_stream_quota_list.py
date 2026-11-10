@@ -14,7 +14,6 @@ module = ListModule(
     result_display_name="Monitor Logs Stream Quotas",
     result_field_name="stream_quotas",
     endpoint_template="/monitor/streams/quotas",
-    result_docs_url="TODO",
     examples=docs.specdoc_examples,
     result_samples=docs.result_stream_quotas_samples,
     disable_filters=True,

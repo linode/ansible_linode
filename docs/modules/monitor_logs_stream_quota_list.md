@@ -49,5 +49,6 @@ List Monitor Logs Stream Quotas.
           }
         ]
         ```
-    - See the [Linode API response documentation](TODO) for a list of returned fields
+    - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/api) for a list of returned fields
+
 
