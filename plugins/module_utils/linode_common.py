@@ -242,7 +242,7 @@ class LinodeModuleBase:
 
             self._client = LinodeClient(
                 api_token,
-                base_url=f"{api_url}{api_version}",
+                base_url=f"{api_url.rstrip('/')}/{api_version}",
                 user_agent=user_agent,
                 retry_rate_limit_interval=RETRY_INTERVAL_SECONDS,
                 retry_max=MAX_RETRIES,
