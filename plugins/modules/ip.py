@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""This module allows users to allocate or update IPv4 Addresses on their accounts."""
+"""This module allows users to allocate, update, or delete IPv4 addresses."""
 
 from typing import Any, Optional
 
@@ -90,13 +90,19 @@ spec: dict = {
 
 SPECDOC_META = SpecDocMeta(
     description=[
-        "Allocates a new IPv4 Address on your Account, or updates an existing one. ",
+        "Allocates, updates, or deletes an IPv4 address on your account.",
         "To allocate, the Linode must be configured to support ",
         "additional addresses - ",
         "please open a support ticket ",
         "requesting additional addresses before attempting allocation.",
         "To allocate a new reserved IP, provide region, type, and set reserved=true.",
         "To promote an existing IP to reserved, provide the address and set reserved=true.",
+        "To delete an IPv4 address assigned to an instance, provide the address "
+        "and set state=absent.",
+        "The API cannot delete an instance's last public IPv4 address, "
+        "an address with active VPC 1:1 NAT, "
+        "or an address assigned to a Linode interface. Resource locks may also prevent deletion.",
+        "For an unassigned reserved IP, use linode.cloud.reserved_ip to delete the reservation.",
     ],
     requirements=global_requirements,
     author=global_authors,
@@ -104,7 +110,8 @@ SPECDOC_META = SpecDocMeta(
     examples=docs.specdoc_examples,
     return_values={
         "ip": SpecReturnValue(
-            description="The IP address in JSON serialized form.",
+            description="The IP address in JSON serialized form. When deleting, "
+            "this is the address before deletion, or null if it was not found.",
             docs_url="https://techdocs.akamai.com/linode-api/reference/get-ip",
             type=FieldType.dict,
             sample=docs.result_ip_samples,
@@ -137,6 +144,7 @@ class Module(LinodeModuleBase):
             ],
             required_if=[
                 ("reserved", True, ["address", "region"], True),
+                ("state", "absent", ["address"]),
             ],
         )
 
@@ -286,11 +294,35 @@ class Module(LinodeModuleBase):
         self.results["ip"] = ip._raw_json
 
     def _handle_absent(self) -> None:
-        # TODO: Implement deleting IP once it's available in python-sdk.
-        #  Raise an error for now when user reaches deleting IP.
-        self.fail(
-            msg="failed to delete IP: IP deleting is currently not supported."
-        )
+        address = self.module.params.get("address")
+        if not address:
+            self.fail(msg="address is required when deleting an IP")
+            return
+
+        ip = self._get_ip(address)
+        if ip is None:
+            return
+
+        if ip.linode_id is None:
+            self.fail(
+                msg=f"IP address {address} is not assigned to a Linode; "
+                "use linode.cloud.reserved_ip to delete an unassigned reserved IP"
+            )
+            return
+
+        ip_data = ip._raw_json
+        try:
+            deleted = ip.delete()
+        except Exception as exception:
+            self.fail(msg=f"failed to delete IP address {address}: {exception}")
+            return
+
+        if not deleted:
+            self.fail(msg=f"failed to delete IP address {address}")
+            return
+
+        self.results["ip"] = ip_data
+        self.register_action(f"Deleted IP address {address}")
 
     def exec_module(self, **kwargs: Any) -> Optional[dict]:
         """Entrypoint for IP module"""

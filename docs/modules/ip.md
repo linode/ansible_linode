@@ -1,6 +1,6 @@
 # ip
 
-Allocates a new IPv4 Address on your Account, or updates an existing one. 
+Allocates, updates, or deletes an IPv4 address on your account.
 
 To allocate, the Linode must be configured to support 
 
@@ -13,6 +13,12 @@ requesting additional addresses before attempting allocation.
 To allocate a new reserved IP, provide region, type, and set reserved=true.
 
 To promote an existing IP to reserved, provide the address and set reserved=true.
+
+To delete an IPv4 address assigned to an instance, provide the address and set state=absent.
+
+The API cannot delete an instance's last public IPv4 address, an address with active VPC 1:1 NAT, or an address assigned to a Linode interface. Resource locks may also prevent deletion.
+
+For an unassigned reserved IP, use linode.cloud.reserved_ip to delete the reservation.
 
 - [Minimum Required Fields](#minimum-required-fields)
 - [Examples](#examples)
@@ -33,6 +39,13 @@ To promote an existing IP to reserved, provide the address and set reserved=true
     public: true
     type: ipv4
     state: present
+```
+
+```yaml
+- name: Delete an IP from a Linode
+  linode.cloud.ip:
+    address: "97.107.143.141"
+    state: absent
 ```
 
 ```yaml
@@ -68,7 +81,7 @@ To promote an existing IP to reserved, provide the address and set reserved=true
 
 ## Return Values
 
-- `ip` - The IP address in JSON serialized form.
+- `ip` - The IP address in JSON serialized form. When deleting, this is the address before deletion, or null if it was not found.
 
     - Sample Response:
         ```json

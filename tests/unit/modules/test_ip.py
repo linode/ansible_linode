@@ -2,6 +2,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
+from ansible.module_utils import basic
 from linode_api4 import ApiError
 
 from ansible_collections.linode.cloud.plugins.modules.ip import Module
@@ -91,6 +92,112 @@ class TestIPModuleGetIP:
         ):
             with pytest.raises(Exception, match="failed to get IP address"):
                 module._get_ip("1.2.3.4")
+
+
+class TestIPModuleHandleAbsent:
+    def test_requires_address_in_module_arguments(self, monkeypatch):
+        monkeypatch.setattr(
+            basic,
+            "_load_params",
+            lambda: {"api_token": "faketoken", "state": "absent"},
+        )
+        with patch.object(
+            basic.AnsibleModule, "fail_json", side_effect=ValueError
+        ) as fail:
+            with pytest.raises(ValueError):
+                Module()
+
+        assert "address" in fail.call_args.kwargs["msg"]
+
+    def test_missing_address_fails(self):
+        module = _make_module({"state": "absent"})
+
+        with pytest.raises(Exception, match="address is required"):
+            module.exec_module(state="absent")
+
+        module._client.get.assert_not_called()
+
+    def test_deletes_using_sdk_model_and_returns_previous_ip(self):
+        module = _make_module({"state": "absent", "address": "1.2.3.4"})
+        ip_data = {
+            "address": "1.2.3.4",
+            "linode_id": 123,
+            "type": "ipv4",
+            "public": True,
+        }
+        module._client.get.return_value = ip_data
+        module._client.delete.return_value = {}
+
+        result = module.exec_module(state="absent")
+
+        module._client.get.assert_called_once()
+        module._client.delete.assert_called_once()
+        args, kwargs = module._client.delete.call_args
+        assert args == ("/linode/instances/123/ips/1.2.3.4",)
+        assert kwargs["model"].address == "1.2.3.4"
+        assert result["changed"] is True
+        assert result["ip"] == ip_data
+        assert result["actions"] == ["Deleted IP address 1.2.3.4"]
+
+    def test_missing_ip_is_unchanged(self):
+        module = _make_module({"state": "absent", "address": "1.2.3.4"})
+        module._client.get.side_effect = ApiError("Not found", status=404)
+
+        result = module.exec_module(state="absent")
+
+        assert result == {"changed": False, "actions": [], "ip": None}
+        module._client.delete.assert_not_called()
+
+    def test_lookup_failure_is_reported(self):
+        module = _make_module({"state": "absent", "address": "1.2.3.4"})
+        module._client.get.side_effect = ApiError("Forbidden", status=403)
+
+        with pytest.raises(
+            Exception, match="failed to get IP address.*Forbidden"
+        ):
+            module.exec_module(state="absent")
+
+        module._client.delete.assert_not_called()
+
+    def test_unassigned_ip_fails_without_deleting(self):
+        module = _make_module({"state": "absent", "address": "1.2.3.4"})
+        module._client.get.return_value = {
+            "address": "1.2.3.4",
+            "linode_id": None,
+        }
+
+        with pytest.raises(Exception, match="not assigned to a Linode"):
+            module.exec_module(state="absent")
+
+        module._client.delete.assert_not_called()
+
+    def test_delete_error_is_reported_without_marking_changed(self):
+        module = _make_module({"state": "absent", "address": "1.2.3.4"})
+        module._client.get.return_value = {
+            "address": "1.2.3.4",
+            "linode_id": 123,
+        }
+        module._client.delete.side_effect = ApiError("Forbidden", status=403)
+
+        with pytest.raises(
+            Exception, match="failed to delete IP address.*Forbidden"
+        ):
+            module.exec_module(state="absent")
+
+        assert module.results == {"changed": False, "actions": [], "ip": None}
+
+    def test_sdk_delete_false_is_reported_without_marking_changed(self):
+        module = _make_module({"state": "absent", "address": "1.2.3.4"})
+        module._client.get.return_value = {
+            "address": "1.2.3.4",
+            "linode_id": 123,
+        }
+        module._client.delete.return_value = {"error": "delete failed"}
+
+        with pytest.raises(Exception, match="failed to delete IP address"):
+            module.exec_module(state="absent")
+
+        assert module.results == {"changed": False, "actions": [], "ip": None}
 
 
 class TestIPModuleHandlePresent:
