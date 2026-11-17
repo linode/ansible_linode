@@ -6,6 +6,10 @@ specdoc_examples = ['''
     public: true
     type: ipv4
     state: present''', '''
+- name: Delete an IP from a Linode
+  linode.cloud.ip:
+    address: "97.107.143.141"
+    state: absent''', '''
 - name: Promote an existing IP to reserved
   linode.cloud.ip:
     address: "97.107.143.141"
