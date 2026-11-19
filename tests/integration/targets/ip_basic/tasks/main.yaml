@@ -3,10 +3,17 @@
     - set_fact:
         r: "{{ 1000000000 | random }}"
 
+    - name: List all regions
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | list)[0].id }}'
+
     - name: Create a Linode Instance
       linode.cloud.instance:
         label: 'ansible-test-{{ r }}'
-        region: us-southeast
+        region: "{{ region }}"
         type: g6-standard-1
         image: linode/arch
         root_pass: Fn$$oobar123
@@ -28,6 +35,41 @@
           - allocate_ip.ip.linode_id == create_instance.instance.id
           - allocate_ip.ip.type == 'ipv4'
           - allocate_ip.ip.region == create_instance.instance.region
+
+    - name: Delete allocated IP on the Linode
+      linode.cloud.ip:
+        address: '{{ allocate_ip.ip.address }}'
+        state: absent
+      register: delete_ip
+
+    - name: Delete the IP again
+      linode.cloud.ip:
+        address: '{{ allocate_ip.ip.address }}'
+        state: absent
+      register: delete_ip_again
+
+    - name: Assert IP has been deleted
+      assert:
+        that:
+          - delete_ip.changed
+          - delete_ip.ip.address == allocate_ip.ip.address
+          - not delete_ip_again.changed
+          - delete_ip_again.ip == none
+
+    - name: Attempt to delete Linode last public IP
+      linode.cloud.ip:
+        address: '{{ create_instance.instance.ipv4[0] }}'
+        state: absent
+      register: delete_last_public_ip
+      failed_when: "'failed to delete IP address' not in delete_last_public_ip.msg"
+
+    - name: Allocate an IP for reserved IP tests
+      linode.cloud.ip:
+        linode_id: '{{ create_instance.instance.id }}'
+        public: true
+        type: ipv4
+        state: present
+      register: allocate_ip
 
     - name: Promote allocated IP to reserved
       linode.cloud.ip:
@@ -82,11 +124,24 @@
         that:
           - not tag_ip_again.changed
 
-#    - name: Delete an IP
-#      linode.cloud.ip:
-#        address: allocate_ip.ip.address
-#        state: absent
-#      register: delete_ip
+    - name: Delete reserved IP from the Linode
+      linode.cloud.ip:
+        address: '{{ allocate_ip.ip.address }}'
+        state: absent
+      register: delete_reserved_ip
+
+    - name: Get the reserved IP after removing it from the Linode
+      linode.cloud.reserved_ip_info:
+        address: '{{ allocate_ip.ip.address }}'
+      register: reserved_ip_after_delete
+
+    - name: Assert IP was removed from the Linode but is still reserved
+      assert:
+        that:
+          - delete_reserved_ip.changed
+          - reserved_ip_after_delete.reserved_ip.reserved == true
+          - reserved_ip_after_delete.reserved_ip.linode_id == none
+          - "'test-tag' in reserved_ip_after_delete.reserved_ip.tags"
 
   always:
     - ignore_errors: true
@@ -96,6 +151,11 @@
             label: '{{ create_instance.instance.label }}'
             state: absent
 
+        - name: Delete reserved IP
+          linode.cloud.reserved_ip:
+            address: '{{ allocate_ip.ip.address }}'
+            state: absent
+          when: allocate_ip.ip.address is defined
 
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
@@ -103,5 +163,3 @@
     LINODE_API_URL: '{{ api_url }}'
     LINODE_API_VERSION: '{{ api_version }}'
     LINODE_CA: '{{ ca_file or "" }}'
-
-
