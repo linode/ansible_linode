@@ -1,0 +1,92 @@
+- name: Choose a temporary username
+  ansible.builtin.set_fact:
+    mfa_test_username: "ansible-mfa-{{ 1000000000000 | random }}"
+
+- name: Test MFA exemptions on a temporary user
+  block:
+    - name: Read the account policy
+      linode.cloud.account_settings:
+        state: present
+      register: settings
+
+    - name: Create the temporary user
+      linode.cloud.user:
+        username: "{{ mfa_test_username }}"
+        email: "dl-linode-dev-dx@akamai.com"
+        state: present
+        restricted: true
+      register: mfa_test_user
+
+    - name: Read existing exemptions
+      linode.cloud.tfa_optional_user_list:
+      register: existing_exemptions
+
+    - name: Build the desired exemption list
+      ansible.builtin.set_fact:
+        expected_exemptions: >-
+          {{ (existing_exemptions.tfa_optional_users | map(attribute='username') | list) + [mfa_test_username] }}
+
+    - name: Add the test user while retaining existing exemptions
+      linode.cloud.tfa_optional_users:
+        usernames: "{{ expected_exemptions }}"
+      register: updated_exemptions
+
+    - name: List exemptions after the update
+      linode.cloud.tfa_optional_user_list:
+      register: listed_exemptions
+
+    - name: Reapply the same exemptions
+      linode.cloud.tfa_optional_users:
+        usernames: "{{ expected_exemptions }}"
+      register: reapplied_exemptions
+
+    - name: Read the current user profile
+      linode.cloud.profile_info:
+      register: current_profile
+
+    # The API returns HTTP 400 for tfa_enforced inside +and or +or.
+    # - name: List users who are not required to use MFA
+    #   linode.cloud.user_list:
+    #     filters:
+    #       - name: tfa_enforced
+    #         values: ["false"]
+    #   register: matching_users
+
+    - name: Verify the new and retained exemptions
+      ansible.builtin.assert:
+        that:
+          - settings.account_settings.tfa_enforced is boolean
+          - mfa_test_user.changed
+          - updated_exemptions.changed
+          - not reapplied_exemptions.changed
+          - >-
+            (listed_exemptions.tfa_optional_users | map(attribute='username') | sort) ==
+            (expected_exemptions | sort)
+          - current_profile.profile.tfa_enforced is boolean
+          # - mfa_test_username in (matching_users.users | map(attribute='username'))
+          # - >-
+          #   matching_users.users | rejectattr('tfa_enforced', 'equalto',
+          #   false) | list | length == 0
+
+  always:
+    # Deleting the user also removes their exemption without rewriting the list.
+    - name: Delete the temporary user
+      linode.cloud.user:
+        username: "{{ mfa_test_username }}"
+        state: absent
+
+    - name: Read exemptions after cleanup
+      linode.cloud.tfa_optional_user_list:
+      register: cleaned_exemptions
+
+    - name: Verify the temporary exemption is gone
+      ansible.builtin.assert:
+        that:
+          - mfa_test_username not in (cleaned_exemptions.tfa_optional_users | map(attribute='username'))
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

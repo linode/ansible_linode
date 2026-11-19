@@ -42,6 +42,7 @@ Get info about a Linode User.
             "laptop"
           ],
           "tfa_enabled": null,
+          "tfa_enforced": true,
           "username": "example_user"
         }
         ```

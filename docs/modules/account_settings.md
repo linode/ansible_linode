@@ -20,6 +20,13 @@ Returns information related to your Account settings.
     state: present
 ```
 
+```yaml
+- name: Require MFA by default for account users
+  linode.cloud.account_settings:
+    state: present
+    tfa_enforced: true
+```
+
 
 ## Parameters
 
@@ -29,6 +36,7 @@ Returns information related to your Account settings.
 | `backups_enabled` | <center>`bool`</center> | <center>Optional</center> | Account-wide backups default. If true, all Linodes created will automatically be enrolled in the Backups service. If false, Linodes will not be enrolled by default, but may still be enrolled on creation or later.   |
 | `network_helper` | <center>`bool`</center> | <center>Optional</center> | Enables network helper across all users by default for new Linodes and Linode Configs.   |
 | `maintenance_policy` | <center>`str`</center> | <center>Optional</center> | The Slug of the maintenance policy associated with the account.  **(Choices: `linode/migrate`, `linode/power_off_on`)** |
+| `tfa_enforced` | <center>`bool`</center> | <center>Optional</center> | Whether the account requires multi-factor authentication (MFA) for users who are not exempt. Changing this setting does not modify user exemptions. Use linode.cloud.tfa_optional_users to manage them. If omitted, the account policy is unchanged.   |
 
 ## Return Values
 
@@ -43,7 +51,8 @@ Returns information related to your Account settings.
           "managed": true,
           "network_helper": false,
           "object_storage": "active",
-          "maintenance_policy": "linode/migrate"
+          "maintenance_policy": "linode/migrate",
+          "tfa_enforced": true
         }
         ```
     - See the [Linode API response documentation](https://techdocs.akamai.com/linode-api/reference/get-account-settings) for a list of returned fields

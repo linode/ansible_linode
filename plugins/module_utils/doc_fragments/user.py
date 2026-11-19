@@ -33,6 +33,7 @@ result_user_samples = ['''{
     "laptop"
   ],
   "tfa_enabled": null,
+  "tfa_enforced": true,
   "username": "example_user"
 }''']
 
