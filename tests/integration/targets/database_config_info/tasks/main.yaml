@@ -88,6 +88,19 @@
           - get_database_config_postgresql.config.pg.max_worker_processes.type == "integer"
           - get_database_config_postgresql.config.pg.password_encryption.type == "string"
 
+    - name: Get all available configuration fields for Valkey databases
+      linode.cloud.database_config_info:
+        engine: valkey
+      register: get_database_config_valkey
+
+    - name: Assert the returned Valkey configuration fields match the expected schema
+      assert:
+        that:
+          - get_database_config_valkey.config.backup_hour.type is iterable
+          - get_database_config_valkey.config.frequent_snapshots.type == "boolean"
+          - get_database_config_valkey.config.valkey_maxmemory_policy.type is iterable
+          - get_database_config_valkey.config.valkey_persistence.enum == ["off", "rdb"]
+
   environment:
     LINODE_UA_PREFIX: '{{ ua_prefix }}'
     LINODE_API_TOKEN: '{{ api_token }}'

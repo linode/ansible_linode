@@ -21,6 +21,22 @@ SPEC_FORK = {
     ),
 }
 
+SPEC_FORK_VALKEY = {
+    "restore_time": SpecField(
+        type=FieldType.string,
+        required=True,
+        description=[
+            "The timestamp to restore from. Must be one of the source "
+            "database's available_restore_times values."
+        ],
+    ),
+    "source": SpecField(
+        type=FieldType.integer,
+        required=True,
+        description=["The instance ID of the database to fork from."],
+    ),
+}
+
 
 SPEC_UPDATE_WINDOW_V2 = {
     "day_of_week": SpecField(
