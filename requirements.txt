@@ -1,3 +1,4 @@
-linode_api4>=5.49.0
+# Temporary MFA enforcement pin (linode_api4-python#751).
+linode_api4 @ git+https://github.com/linode/linode_api4-python.git@c727fe0edd9b544c21d329e9d6380d4898ff50cd
 polling==0.3.2
 ansible-specdoc>=0.0.20

@@ -19,6 +19,14 @@ List and filter on Users.
   linode.cloud.user_list: {}
 ```
 
+```yaml
+- name: List users required to use MFA
+  linode.cloud.user_list:
+    filters:
+      - name: tfa_enforced
+        values: ["true"]
+```
+
 
 ## Parameters
 
@@ -52,6 +60,7 @@ List and filter on Users.
               "laptop"
             ],
             "tfa_enabled": null,
+            "tfa_enforced": true,
             "username": "example_user"
           }
         ]

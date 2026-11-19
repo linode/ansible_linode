@@ -20,6 +20,7 @@ result_profile_samples = ['''{
   "restricted": false,
   "timezone": "US/Eastern",
   "two_factor_auth": true,
+  "tfa_enforced": true,
   "uid": 1234,
   "username": "exampleUser",
   "verified_phone_number": "+5555555555"

@@ -3,7 +3,12 @@
 specdoc_examples = ['''
 - name: Retrieve
   linode.cloud.account_settings:
-    state: present''']
+    state: present''',
+'''
+- name: Require MFA by default for account users
+  linode.cloud.account_settings:
+    state: present
+    tfa_enforced: true''']
 
 result_account_settings_samples = ['''{
   "backups_enabled": true,
@@ -12,5 +17,6 @@ result_account_settings_samples = ['''{
   "managed": true,
   "network_helper": false,
   "object_storage": "active",
-  "maintenance_policy": "linode/migrate"
+  "maintenance_policy": "linode/migrate",
+  "tfa_enforced": true
 }''']

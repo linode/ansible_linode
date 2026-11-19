@@ -57,6 +57,7 @@ Name | Description |
 [linode.cloud.reserved_ip](./docs/modules/reserved_ip.md)|Manage a Linode Reserved IPv4 Address.|
 [linode.cloud.ssh_key](./docs/modules/ssh_key.md)|Manage a Linode SSH key.|
 [linode.cloud.stackscript](./docs/modules/stackscript.md)|Manage a Linode StackScript.|
+[linode.cloud.tfa_optional_users](./docs/modules/tfa_optional_users.md)|Manage the list of account users exempt from multi-factor authentication (MFA) enforcement.|
 [linode.cloud.token](./docs/modules/token.md)|Manage a Linode Token.|
 [linode.cloud.user](./docs/modules/user.md)|Manage a Linode User.|
 [linode.cloud.volume](./docs/modules/volume.md)|Manage a Linode Volume.|
@@ -163,6 +164,7 @@ Name | Description |
 [linode.cloud.reserved_ip_list](./docs/modules/reserved_ip_list.md)|List and filter on Reserved IPs.|
 [linode.cloud.ssh_key_list](./docs/modules/ssh_key_list.md)|List and filter on SSH Keys.|
 [linode.cloud.stackscript_list](./docs/modules/stackscript_list.md)|List and filter on StackScripts.|
+[linode.cloud.tfa_optional_user_list](./docs/modules/tfa_optional_user_list.md)|List users exempt from multi-factor authentication (MFA) enforcement, regardless of the current account-wide enforcement policy.|
 [linode.cloud.token_list](./docs/modules/token_list.md)|List and filter on Tokens.|
 [linode.cloud.type_list](./docs/modules/type_list.md)|List and filter on Types.|
 [linode.cloud.user_list](./docs/modules/user_list.md)|List and filter on Users.|

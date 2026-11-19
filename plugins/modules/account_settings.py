@@ -55,6 +55,16 @@ SPEC = {
         ],
         choices=["linode/migrate", "linode/power_off_on"],
     ),
+    "tfa_enforced": SpecField(
+        type=FieldType.bool,
+        description=[
+            "Whether the account requires multi-factor authentication (MFA) "
+            "for users who are not exempt.",
+            "Changing this setting does not modify user exemptions. "
+            "Use linode.cloud.tfa_optional_users to manage them.",
+            "If omitted, the account policy is unchanged.",
+        ],
+    ),
 }
 
 SPECDOC_META = SpecDocMeta(
@@ -73,7 +83,12 @@ SPECDOC_META = SpecDocMeta(
     },
 )
 
-MUTABLE_FIELDS = {"backups_enabled", "network_helper", "maintenance_policy"}
+MUTABLE_FIELDS = {
+    "backups_enabled",
+    "network_helper",
+    "maintenance_policy",
+    "tfa_enforced",
+}
 
 DOCUMENTATION = r"""
 """
@@ -104,9 +119,19 @@ class Module(LinodeModuleBase):
 
     def _update(self) -> None:
         """Handles all updates for Account Settings"""
+        params = filter_null_values(self.module.params)
+        if (
+            "tfa_enforced" in params
+            and "tfa_enforced" not in AccountSettings.properties
+        ):
+            raise RuntimeError(
+                "Updating tfa_enforced requires a linode_api4 SDK with "
+                "MFA enforcement support."
+            )
+
         handle_updates(
             self._account_settings,
-            filter_null_values(self.module.params),
+            params,
             MUTABLE_FIELDS,
             self.register_action,
         )
