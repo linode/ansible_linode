@@ -59,6 +59,8 @@
         cluster_size: 1
         allow_list:
           - 0.0.0.0/0
+        engine_config:
+          frequent_snapshots: true
         updates:
           duration: 4
           frequency: weekly

@@ -19,7 +19,7 @@ Create, read, and update a Linode Valkey database.
   linode.cloud.database_valkey_v2:
     label: my-db
     region: us-mia
-    engine: valkey/8
+    engine: valkey/8.1
     type: g6-dedicated-2
     allow_list:
       - 0.0.0.0/0
@@ -31,7 +31,7 @@ Create, read, and update a Linode Valkey database.
   linode.cloud.database_valkey_v2:
     label: my-db
     region: us-mia
-    engine: valkey/8
+    engine: valkey/8.1
     type: g6-dedicated-4
     cluster_size: 3
     state: present
@@ -42,7 +42,7 @@ Create, read, and update a Linode Valkey database.
   linode.cloud.database_valkey_v2:
     label: my-db
     region: us-mia
-    engine: valkey/8
+    engine: valkey/8.1
     type: g6-dedicated-2
     engine_config:
       backup_hour: 3
@@ -62,7 +62,7 @@ Create, read, and update a Linode Valkey database.
   linode.cloud.database_valkey_v2:
     label: my-restored-db
     region: us-mia
-    engine: valkey/8
+    engine: valkey/8.1
     type: g6-dedicated-2
     fork:
       source: 12345
