@@ -1,0 +1,39 @@
+- name: entity_list_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Create a Linode instance
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        type: g6-nanode-1
+        booted: false
+        firewall_id: '{{ firewall_id }}'
+        state: present
+      register: create_instance
+
+    - name: List all entities
+      linode.cloud.entity_list:
+        api_version: v4beta
+      register: all_entities
+
+    - name: Assert the instance is listed
+      assert:
+        that:
+          - all_entities.entities | selectattr('type', 'eq', 'linode') | selectattr('id', 'eq', create_instance.instance.id) | list | length == 1
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete the Linode instance
+          linode.cloud.instance:
+            label: '{{ create_instance.instance.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
