@@ -30,6 +30,7 @@ Name | Description |
 [linode.cloud.firewall](./docs/modules/firewall.md)|Manage Linode Firewalls.|
 [linode.cloud.firewall_device](./docs/modules/firewall_device.md)|Manage Linode Firewall Devices.|
 [linode.cloud.firewall_settings](./docs/modules/firewall_settings.md)|Configure the firewall settings for the account.|
+[linode.cloud.iam_role_permissions](./docs/modules/iam_role_permissions.md)|Update the roles assigned to a user.|
 [linode.cloud.image](./docs/modules/image.md)|Manage a Linode Image.|
 [linode.cloud.image_share_group](./docs/modules/image_share_group.md)|Manage an Image Share Group.|
 [linode.cloud.image_share_group_member](./docs/modules/image_share_group_member.md)|Manage an Image Share Group Member.|
@@ -82,6 +83,7 @@ Name | Description |
 [linode.cloud.firewall_info](./docs/modules/firewall_info.md)|Get info about a Linode Firewall.|
 [linode.cloud.firewall_settings_info](./docs/modules/firewall_settings_info.md)|Get info about a Linode Firewall Settings.|
 [linode.cloud.firewall_template_info](./docs/modules/firewall_template_info.md)|Get info about a Linode Firewall Template.|
+[linode.cloud.iam_role_permissions_info](./docs/modules/iam_role_permissions_info.md)|View IAM role permissions.|
 [linode.cloud.image_info](./docs/modules/image_info.md)|Get info about a Linode Image.|
 [linode.cloud.image_share_group_info](./docs/modules/image_share_group_info.md)|Get info about a Linode Image Share Group.|
 [linode.cloud.image_share_group_member_info](./docs/modules/image_share_group_member_info.md)|Get info about a Linode Image Share Group Member.|
@@ -129,6 +131,7 @@ Name | Description |
 [linode.cloud.database_engine_list](./docs/modules/database_engine_list.md)|List and filter on Managed Database engine types.|
 [linode.cloud.database_list](./docs/modules/database_list.md)|List and filter on Linode Managed Databases.|
 [linode.cloud.domain_list](./docs/modules/domain_list.md)|List and filter on Domains.|
+[linode.cloud.entity_list](./docs/modules/entity_list.md)|List Entities.|
 [linode.cloud.event_list](./docs/modules/event_list.md)|List and filter on Events.|
 [linode.cloud.firewall_list](./docs/modules/firewall_list.md)|List and filter on Firewalls.|
 [linode.cloud.firewall_template_list](./docs/modules/firewall_template_list.md)|List and filter on Firewall Templates.|
