@@ -97,7 +97,7 @@ SPEC_ENGINE_CONFIG = {
         description=[
             "The Valkey persistence mode.",
             "When set to off, backup scheduling and maintenance updates are "
-            "not supported.",
+            + "not supported.",
         ],
     ),
     "valkey_pubsub_client_output_buffer_limit": SpecField(
@@ -215,7 +215,7 @@ SPEC = {
         description=[
             "Information about a Valkey database to fork from.",
             "restore_time must be one of the source database's "
-            "available_restore_times values.",
+            + "available_restore_times values.",
         ],
         suboptions=SPEC_FORK_VALKEY,
     ),
