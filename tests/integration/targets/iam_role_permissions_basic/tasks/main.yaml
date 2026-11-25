@@ -1,0 +1,142 @@
+- name: iam_role_permissions_basic
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: Get the roles available on the account
+      linode.cloud.iam_role_permissions_info:
+        api_version: v4beta
+      register: available
+
+    - name: Assert available roles returned
+      assert:
+        that:
+          - available.role_permissions.account_access | length > 0
+          - available.role_permissions.entity_access | length > 0
+
+    - name: Create a Linode User
+      linode.cloud.user:
+        username: 'ansible-test-{{ r }}'
+        email: 'ansible-test-{{ r }}@linode.com'
+        restricted: true
+        state: present
+      register: create_user
+
+    - name: Create a Linode instance to grant access to
+      linode.cloud.instance:
+        label: 'ansible-test-{{ r }}'
+        region: us-mia
+        type: g6-nanode-1
+        booted: false
+        firewall_id: '{{ firewall_id }}'
+        state: present
+      register: create_instance
+
+    - name: Get the user's initial role permissions
+      linode.cloud.iam_role_permissions_info:
+        api_version: v4beta
+        username: '{{ create_user.user.username }}'
+      register: initial
+
+    - name: Assert initial role permissions returned
+      assert:
+        that:
+          - "'account_access' in initial.role_permissions"
+          - "'entity_access' in initial.role_permissions"
+
+    - name: Assign entity access to the user (check mode)
+      linode.cloud.iam_role_permissions:
+        api_version: v4beta
+        username: '{{ create_user.user.username }}'
+        entity_access:
+          - id: '{{ create_instance.instance.id }}'
+            type: linode
+            roles:
+              - linode_contributor
+      check_mode: true
+      register: check_update
+
+    - name: Assert check mode reports a change
+      assert:
+        that:
+          - check_update.changed
+
+    - name: Assign entity access to the user
+      linode.cloud.iam_role_permissions:
+        api_version: v4beta
+        username: '{{ create_user.user.username }}'
+        entity_access:
+          - id: '{{ create_instance.instance.id }}'
+            type: linode
+            roles:
+              - linode_contributor
+      register: update
+
+    - name: Assert role permissions updated
+      assert:
+        that:
+          - update.changed
+          - update.role_permissions.entity_access | length == 1
+          - update.role_permissions.entity_access[0].id == create_instance.instance.id
+          - update.role_permissions.entity_access[0].roles == ['linode_contributor']
+
+    - name: Assign the same entity access again
+      linode.cloud.iam_role_permissions:
+        api_version: v4beta
+        username: '{{ create_user.user.username }}'
+        entity_access:
+          - id: '{{ create_instance.instance.id }}'
+            type: linode
+            roles:
+              - linode_contributor
+      register: update_idempotent
+
+    - name: Assert update is idempotent
+      assert:
+        that:
+          - not update_idempotent.changed
+
+    - name: Verify the user's role permissions
+      linode.cloud.iam_role_permissions_info:
+        api_version: v4beta
+        username: '{{ create_user.user.username }}'
+      register: verify
+
+    - name: Assert info matches the update
+      assert:
+        that:
+          - verify.role_permissions.entity_access | length == 1
+          - verify.role_permissions.entity_access[0].id == create_instance.instance.id
+
+    - name: Remove all entity access from the user
+      linode.cloud.iam_role_permissions:
+        api_version: v4beta
+        username: '{{ create_user.user.username }}'
+        entity_access: []
+      register: clear
+
+    - name: Assert entity access removed
+      assert:
+        that:
+          - clear.changed
+          - clear.role_permissions.entity_access | length == 0
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete the Linode instance
+          linode.cloud.instance:
+            label: '{{ create_instance.instance.label }}'
+            state: absent
+
+        - name: Delete the Linode User
+          linode.cloud.user:
+            username: '{{ create_user.user.username }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
