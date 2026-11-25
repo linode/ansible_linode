@@ -31,6 +31,7 @@ def __resolve_by_engine(
     engine_resolvers = {
         "mysql": client.database.mysql_config_options,
         "postgresql": client.database.postgresql_config_options,
+        "valkey": client.database.valkey_config_options,
     }
 
     engine = params.get("engine").lower()

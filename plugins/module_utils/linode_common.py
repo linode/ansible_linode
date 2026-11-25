@@ -36,6 +36,7 @@ try:
         PostgreSQLDatabase,
         SSHKey,
         StackScript,
+        ValkeyDatabase,
         VPCSubnet,
     )
     from linode_api4.polling import TimeoutContext
@@ -90,6 +91,7 @@ RESOURCE_NAMES = (
         PostgreSQLDatabase: "PostgreSQL database",
         SSHKey: "SSH key",
         StackScript: "stackscript",
+        ValkeyDatabase: "Valkey database",
         IPAddress: "IP address",
         VPC: "VPC",
         VPCSubnet: "VPC Subnet",

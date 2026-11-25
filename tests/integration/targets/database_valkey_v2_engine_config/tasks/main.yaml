@@ -1,0 +1,157 @@
+- name: database_valkey_v2_engine_config
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        target_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Databases") | list)[0]["id"] }}'
+
+    - name: Get an available Valkey engine
+      linode.cloud.database_engine_list:
+        filters:
+          - name: engine
+            values: valkey
+      register: available_engines
+
+    - name: Assert available database_engine_list
+      assert:
+        that:
+          - available_engines.database_engines | length >= 1
+
+    - set_fact:
+        engine_id: "{{ (available_engines.database_engines | sort(attribute='version', reverse=True))[0]['id'] }}"
+
+
+    - name: Get database types that support Valkey
+      linode.cloud.api_request:
+        path: databases/types
+        method: GET
+      register: database_types
+
+    - set_fact:
+        valkey_database_types: '{{ database_types.body.data | selectattr("engines.valkey", "defined") | sort(attribute="engines.valkey.disk") | list }}'
+
+    - name: Assert a Valkey-capable database type is available
+      assert:
+        that:
+          - valkey_database_types | length >= 1
+
+    - set_fact:
+        database_type: "{{ valkey_database_types[0]['id'] }}"
+
+    - name: Create a database with an explicit engine_config
+      linode.cloud.database_valkey_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: "{{ database_type }}"
+        cluster_size: 1
+        engine_config:
+          backup_hour: 3
+          backup_minute: 30
+          frequent_snapshots: true
+          valkey_acl_channels_default: allchannels
+          valkey_active_expire_effort: 1
+          valkey_activedefrag: true
+          valkey_lfu_decay_time: 1
+          valkey_lfu_log_factor: 10
+          valkey_maxmemory_policy: noeviction
+          valkey_number_of_databases: 16
+          valkey_persistence: rdb
+          valkey_pubsub_client_output_buffer_limit: 32
+          valkey_timeout: 300
+        state: present
+      register: db_create
+
+    - name: Assert database is created
+      assert:
+        that:
+          - db_create.changed
+          - db_create.database.status == 'active'
+          - db_create.database.engine == 'valkey'
+          - db_create.database.engine_config.backup_hour == 3
+          - db_create.database.engine_config.frequent_snapshots
+          - db_create.database.engine_config.valkey_persistence == 'rdb'
+          - db_create.database.engine_config.valkey_timeout == 300
+
+    - name: Update the database engine configuration
+      linode.cloud.database_valkey_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: "{{ database_type }}"
+        cluster_size: 1
+        engine_config:
+          backup_hour: 4
+          backup_minute: 45
+          frequent_snapshots: false
+          valkey_acl_channels_default: resetchannels
+          valkey_active_expire_effort: 2
+          valkey_activedefrag: false
+          valkey_lfu_decay_time: 2
+          valkey_lfu_log_factor: 11
+          valkey_maxmemory_policy: volatile-lru
+          valkey_number_of_databases: 32
+          valkey_persistence: rdb
+          valkey_pubsub_client_output_buffer_limit: 64
+          valkey_timeout: 301
+        state: present
+      register: db_update
+
+    - name: Assert database configuration is updated
+      assert:
+        that:
+          - db_update.changed
+          - db_update.database.status == 'active'
+          - db_update.database.engine_config.backup_hour == 4
+          - db_update.database.engine_config.frequent_snapshots == false
+          - db_update.database.engine_config.valkey_persistence == 'rdb'
+          - db_update.database.engine_config.valkey_timeout == 301
+
+    - name: Refresh the database configuration
+      linode.cloud.database_valkey_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: "{{ database_type }}"
+        cluster_size: 1
+        engine_config:
+          backup_hour: 4
+          backup_minute: 45
+          frequent_snapshots: false
+          valkey_acl_channels_default: resetchannels
+          valkey_active_expire_effort: 2
+          valkey_activedefrag: false
+          valkey_lfu_decay_time: 2
+          valkey_lfu_log_factor: 11
+          valkey_maxmemory_policy: volatile-lru
+          valkey_number_of_databases: 32
+          valkey_persistence: rdb
+          valkey_pubsub_client_output_buffer_limit: 64
+          valkey_timeout: 301
+        state: present
+      register: db_refresh
+
+    - name: Assert database configuration is unchanged
+      assert:
+        that:
+          - not db_refresh.changed
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete the original database
+          linode.cloud.database_valkey_v2:
+            label: '{{ db_create.database.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'

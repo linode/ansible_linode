@@ -25,6 +25,7 @@ Name | Description |
 [linode.cloud.api_request](./docs/modules/api_request.md)|Make an arbitrary Linode API request.|
 [linode.cloud.database_mysql_v2](./docs/modules/database_mysql_v2.md)|Create, read, and update a Linode MySQL database.|
 [linode.cloud.database_postgresql_v2](./docs/modules/database_postgresql_v2.md)|Create, read, and update a Linode PostgreSQL database.|
+[linode.cloud.database_valkey_v2](./docs/modules/database_valkey_v2.md)|Create, read, and update a Linode Valkey database.|
 [linode.cloud.domain](./docs/modules/domain.md)|Manage Linode Domains.|
 [linode.cloud.domain_record](./docs/modules/domain_record.md)|Manage Linode Domain Records.|
 [linode.cloud.firewall](./docs/modules/firewall.md)|Manage Linode Firewalls.|
@@ -77,6 +78,7 @@ Name | Description |
 [linode.cloud.database_config_info](./docs/modules/database_config_info.md)|Get info about a Linode Configuration.|
 [linode.cloud.database_mysql_info](./docs/modules/database_mysql_info.md)|Get info about a Linode MySQL Managed Database.|
 [linode.cloud.database_postgresql_info](./docs/modules/database_postgresql_info.md)|Get info about a Linode PostgreSQL Managed Database.|
+[linode.cloud.database_valkey_info](./docs/modules/database_valkey_info.md)|Get info about a Linode Valkey Managed Database.|
 [linode.cloud.domain_info](./docs/modules/domain_info.md)|Get info about a Linode Domain.|
 [linode.cloud.domain_record_info](./docs/modules/domain_record_info.md)|Get info about a Linode Domain Records.|
 [linode.cloud.firewall_info](./docs/modules/firewall_info.md)|Get info about a Linode Firewall.|

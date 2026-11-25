@@ -26,6 +26,12 @@ Get info about a Linode Configuration.
     engine: postgresql
 ```
 
+```yaml
+- name: Get all available engine configuration fields for Valkey databases
+  linode.cloud.database_config_info:
+    engine: valkey
+```
+
 
 ## Parameters
 
@@ -268,6 +274,56 @@ Get info about a Linode Configuration.
               "requires_restart": false,
               "type": "integer"
             }
+          }
+        }
+        ```
+        ```json
+        {
+          "backup_hour": {
+            "description": "The hour of day (in UTC) when the backup starts.",
+            "example": 3,
+            "maximum": 23,
+            "minimum": 0,
+            "requires_restart": false,
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "frequent_snapshots": {
+            "description": "Create frequent local RDB snapshots.",
+            "example": true,
+            "requires_restart": false,
+            "type": "boolean"
+          },
+          "valkey_maxmemory_policy": {
+            "description": "The policy used when Valkey reaches maxmemory.",
+            "enum": [
+              "noeviction",
+              "allkeys-lru",
+              "volatile-lru",
+              "allkeys-random",
+              "volatile-random",
+              "volatile-ttl",
+              "volatile-lfu",
+              "allkeys-lfu"
+            ],
+            "example": "noeviction",
+            "requires_restart": false,
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "valkey_persistence": {
+            "description": "The Valkey persistence mode.",
+            "enum": [
+              "off",
+              "rdb"
+            ],
+            "example": "rdb",
+            "requires_restart": true,
+            "type": "string"
           }
         }
         ```

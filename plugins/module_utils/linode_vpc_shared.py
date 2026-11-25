@@ -23,6 +23,7 @@ def should_retry_subnet_delete_400s(
         for db in chain(
             client.database.mysql_instances(),
             client.database.postgresql_instances(),
+            client.database.valkey_instances(),
         )
     }
 

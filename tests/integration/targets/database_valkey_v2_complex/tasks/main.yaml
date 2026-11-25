@@ -1,0 +1,223 @@
+- name: database_valkey_v2_complex
+  block:
+    - set_fact:
+        r: "{{ 1000000000 | random }}"
+
+    - name: List regions
+      linode.cloud.region_list: {}
+      register: all_regions
+
+    - set_fact:
+        target_region: '{{ ( all_regions.regions | selectattr("site_type", "equalto", "core") | selectattr("capabilities", "search", "Databases") | list)[0]["id"] }}'
+
+    - name: Get an available Valkey engine
+      linode.cloud.database_engine_list:
+        filters:
+          - name: engine
+            values: valkey
+      register: available_engines
+
+    - name: Assert available database_engine_list
+      assert:
+        that:
+          - available_engines.database_engines | length >= 1
+
+    - set_fact:
+        engine_id: "{{ available_engines.database_engines[0]['id'] }}"
+        engine_version: "{{ available_engines.database_engines[0]['version'] }}"
+
+
+    - name: Get database types that support Valkey
+      linode.cloud.api_request:
+        path: databases/types
+        method: GET
+      register: database_types
+
+    - set_fact:
+        valkey_database_types: '{{ database_types.body.data | selectattr("engines.valkey", "defined") | sort(attribute="engines.valkey.disk") | list }}'
+
+    - name: Assert a Valkey-capable database type is available
+      assert:
+        that:
+          - valkey_database_types | length >= 1
+
+    - name: Assert multiple Valkey-capable plans are available for resize
+      assert:
+        that:
+          - valkey_database_types | length >= 2
+
+    - set_fact:
+        database_type: "{{ valkey_database_types[0]['id'] }}"
+        resize_database_type: "{{ valkey_database_types[-1]['id'] }}"
+
+    - name: Create a database
+      linode.cloud.database_valkey_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: "{{ database_type }}"
+        cluster_size: 1
+        allow_list:
+          - 0.0.0.0/0
+        engine_config:
+          frequent_snapshots: true
+        updates:
+          duration: 4
+          frequency: weekly
+          hour_of_day: 22
+          day_of_week: 3
+        state: present
+      register: db_create
+
+    - name: Assert database is created
+      assert:
+        that:
+          - db_create.changed
+          - db_create.database.status == 'active'
+          - db_create.database.allow_list | length == 1
+          - db_create.database.allow_list[0] == '0.0.0.0/0'
+          - db_create.database.cluster_size == 1
+          - db_create.database.engine == 'valkey'
+          - (db_create.database.version | split('.'))[0] == engine_version
+          - db_create.database.region == target_region
+          - db_create.database.type == '{{ database_type }}'
+          - db_create.database.updates.duration == 4
+          - db_create.database.updates.frequency == 'weekly'
+          - db_create.database.updates.hour_of_day == 22
+          - db_create.database.updates.day_of_week == 3
+
+    - name: Update the database
+      linode.cloud.database_valkey_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: "{{ database_type }}"
+        allow_list:
+          - 10.0.0.3/32
+        updates:
+          duration: 4
+          frequency: weekly
+          hour_of_day: 16
+          day_of_week: 4
+        state: present
+      register: db_update
+
+    - name: Assert database is updated
+      assert:
+        that:
+          - db_update.changed
+          - db_update.database.status == 'active'
+          - db_update.database.allow_list | length == 1
+          - db_update.database.allow_list[0] == '10.0.0.3/32'
+          - db_update.database.cluster_size == 1
+          - db_update.database.engine == 'valkey'
+          - (db_update.database.version | split('.'))[0] == engine_version
+          - db_update.database.region == target_region
+          - db_update.database.type == '{{ database_type }}'
+          - db_update.database.updates.duration == 4
+          - db_update.database.updates.frequency == 'weekly'
+          - db_update.database.updates.hour_of_day == 16
+          - db_update.database.updates.day_of_week == 4
+
+    - name: Resize the database
+      linode.cloud.database_valkey_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: "{{ resize_database_type }}"
+        cluster_size: 3
+        allow_list:
+          - 10.0.0.3/32
+        updates:
+          duration: 4
+          frequency: weekly
+          hour_of_day: 16
+          day_of_week: 4
+        state: present
+      register: db_resize
+
+    - name: Assert database is resized
+      assert:
+        that:
+          - db_resize.changed
+          - db_resize.database.status == 'active'
+          - db_resize.database.allow_list | length == 1
+          - db_resize.database.allow_list[0] == '10.0.0.3/32'
+          - db_resize.database.cluster_size == 3
+          - db_resize.database.engine == 'valkey'
+          - (db_resize.database.version | split('.'))[0] == engine_version
+          - db_resize.database.region == target_region
+          - db_resize.database.type == resize_database_type
+          - db_resize.database.updates.duration == 4
+          - db_resize.database.updates.frequency == 'weekly'
+          - db_resize.database.updates.hour_of_day == 16
+          - db_resize.database.updates.day_of_week == 4
+
+    - name: Refresh the database
+      linode.cloud.database_valkey_v2:
+        label: "ansible-test-{{ r }}"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: "{{ resize_database_type }}"
+        cluster_size: 3
+        allow_list:
+          - 10.0.0.3/32
+        updates:
+          duration: 4
+          frequency: weekly
+          hour_of_day: 16
+          day_of_week: 4
+        state: present
+      register: db_refresh
+
+    - name: Assert database is unchanged
+      assert:
+        that:
+          - db_refresh.changed == False
+
+    - name: Wait for an available restore snapshot
+      linode.cloud.database_valkey_info:
+        id: "{{ db_refresh.database.id }}"
+      register: db_with_snapshot
+      until: db_with_snapshot.database.available_restore_times | length > 0
+      retries: 60
+      delay: 60
+
+    - name: Fork the database
+      linode.cloud.database_valkey_v2:
+        label: "ansible-test-{{ r }}-forked"
+        region: "{{ target_region }}"
+        engine: "{{ engine_id }}"
+        type: "{{ database_type }}"
+        fork:
+          source: "{{ db_refresh.database.id }}"
+          restore_time: "{{ db_with_snapshot.database.available_restore_times[0] }}"
+        state: present
+      register: db_forked
+
+    - name: Assert a new forked database has been created
+      assert:
+        that:
+          - db_forked.changed == True
+          - db_forked.database.fork.source == db_refresh.database.id
+          - db_forked.database.fork.restore_time == db_with_snapshot.database.available_restore_times[0]
+
+  always:
+    - ignore_errors: true
+      block:
+        - name: Delete the forked database
+          linode.cloud.database_valkey_v2:
+            label: '{{ db_forked.database.label }}'
+            state: absent
+
+        - name: Delete the original database
+          linode.cloud.database_valkey_v2:
+            label: '{{ db_create.database.label }}'
+            state: absent
+
+  environment:
+    LINODE_UA_PREFIX: '{{ ua_prefix }}'
+    LINODE_API_TOKEN: '{{ api_token }}'
+    LINODE_API_URL: '{{ api_url }}'
+    LINODE_API_VERSION: '{{ api_version }}'
+    LINODE_CA: '{{ ca_file or "" }}'
