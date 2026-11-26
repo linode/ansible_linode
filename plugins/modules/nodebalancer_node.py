@@ -55,6 +55,13 @@ MODULE_SPEC = {
             "attached VPC subnet for vpc."
         ],
     ),
+    "subnet_id": SpecField(
+        type=FieldType.integer,
+        description=[
+            "The ID of the VPC subnet for this backend node. "
+            "Required for VPC backend nodes."
+        ],
+    ),
     "state": SpecField(
         type=FieldType.string,
         description=[

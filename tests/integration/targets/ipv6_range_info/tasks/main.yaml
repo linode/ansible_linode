@@ -16,9 +16,7 @@
       register: instance_create
 
     - set_fact:
-        ipv6_body:
-          linode_id: "{{ instance_create.instance.id | int }}"
-          prefix_length: 64
+        ipv6_body: "{{ { 'linode_id': instance_create.instance.id | int, 'prefix_length': 64 } }}"
 
     - name: Assign an IPv6 range to the instance
       linode.cloud.api_request:

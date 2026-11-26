@@ -187,7 +187,7 @@ Manage Linode Instances, Configs, and Disks.
 ```
 
 ```yaml
-- name: Create a Linode Instance with a VPC interface and a NAT 1-1 mapping to its public IPv4 address.
+- name: Create a Linode Instance with a legacy VPC interface assigning a specific VPC subnet IPv4 address and a NAT 1-1 mapping to its public IPv4 address.
   linode.cloud.instance:
     label: my-vpc-instance
     region: us-mia
@@ -197,8 +197,12 @@ Manage Linode Instances, Configs, and Disks.
     interface_generation: legacy_config
     interfaces:
       - purpose: vpc
+        primary: true
         subnet_id: '{{ create_subnet.subnet.id }}'
         ipv4:
+          # The IPv4 address to assign from the VPC subnet.
+          # Omit or use `auto` to have one automatically allocated.
+          vpc: 10.0.0.10
           nat_1_1: any
     state: present
 ```
@@ -242,10 +246,10 @@ Manage Linode Instances, Configs, and Disks.
 | `type` | <center>`str`</center> | <center>Optional</center> | The Linode Type of the Linode you are creating.   |
 | `region` | <center>`str`</center> | <center>Optional</center> | The location to deploy the instance in. See the [Linode API documentation](https://api.linode.com/v4/regions).   |
 | `image` | <center>`str`</center> | <center>Optional</center> | The image ID to deploy the instance disk from.  **(Conflicts With: `disks`,`configs`)** |
-| `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user.   |
-| `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of usernames.   |
+| `authorized_keys` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user. If image is provided, one of root_pass, authorized_keys, or authorized_users is required.   |
+| `authorized_users` | <center>`list`</center> | <center>Optional</center> | A list of SSH public key parts to deploy for the root user. If image is provided, one of root_pass, authorized_keys, or authorized_users is required.   |
 | `maintenance_policy` | <center>`str`</center> | <center>Optional</center> | The slug of the maintenance policy to apply during maintenance.  **(Choices: `linode/migrate`, `linode/power_off_on`)** |
-| `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If not specified, one will be generated. This generated password will be available in the task success JSON.   |
+| `root_pass` | <center>`str`</center> | <center>Optional</center> | The password for the root user. If image is provided, one of root_pass, authorized_keys, or authorized_users is required.   |
 | `stackscript_id` | <center>`int`</center> | <center>Optional</center> | The ID of the StackScript to use when creating the instance. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `stackscript_data` | <center>`dict`</center> | <center>Optional</center> | An object containing arguments to any User Defined Fields present in the StackScript used when creating the instance. Only valid when a stackscript_id is provided. See the [Linode API documentation](https://techdocs.akamai.com/linode-api/reference/get-stack-scripts).   |
 | `firewall_id` | <center>`int`</center> | <center>Optional</center> | The ID of a Firewall this Linode to assign this Linode to.   |
@@ -262,6 +266,7 @@ Manage Linode Instances, Configs, and Disks.
 | `backup_id` | <center>`int`</center> | <center>Optional</center> | The id of the Backup to restore to the new Instance. May not be provided if "image" is given.   |
 | [`metadata` (sub-options)](#metadata) | <center>`dict`</center> | <center>Optional</center> | Fields relating to the Linode Metadata service.   |
 | `backups_enabled` | <center>`bool`</center> | <center>Optional</center> | Enroll Instance in Linode Backup service.   |
+| [`alerts` (sub-options)](#alerts) | <center>`dict`</center> | <center>Optional</center> | Configuration options for alert triggers on this Linode.  **(Updatable)** |
 | `wait` | <center>`bool`</center> | <center>Optional</center> | Wait for the instance to have status "running" before returning.  **(Default: `True`)** |
 | `wait_timeout` | <center>`int`</center> | <center>Optional</center> | The amount of time, in seconds, to wait for an instance to have status "running".  **(Default: `1500`)** |
 | [`additional_ipv4` (sub-options)](#additional_ipv4) | <center>`list`</center> | <center>Optional</center> | Additional ipv4 addresses to allocate.   |
@@ -991,6 +996,18 @@ Manage Linode Instances, Configs, and Disks.
 |-----------|------|----------|------------------------------------------------------------------------------|
 | `user_data` | <center>`str`</center> | <center>Optional</center> | The user-defined data to supply for the Linode through the Metadata service.   |
 | `user_data_encoded` | <center>`bool`</center> | <center>Optional</center> | Whether the user_data field content is already encoded in Base64.  **(Default: `False`)** |
+
+### alerts
+
+| Field     | Type | Required | Description                                                                  |
+|-----------|------|----------|------------------------------------------------------------------------------|
+| `network_in` | <center>`int`</center> | <center>Optional</center> | The amount of incoming traffic, in Mbit/s, required to trigger an alert. If the average incoming traffic over two hours exceeds this value, we'll send you an alert. If this is set to 0 (zero), the alert is disabled. Update only.   **(Updatable)** |
+| `network_out` | <center>`int`</center> | <center>Optional</center> | The amount of outbound traffic, in Mbit/s, required to trigger an alert. If the average outbound traffic over two hours exceeds this value, we'll send you an alert. If this is set to 0 (zero), the alert is disabled. Update only.   **(Updatable)** |
+| `cpu` | <center>`int`</center> | <center>Optional</center> | The percentage of CPU usage required to trigger an alert. If the average CPU usage over two hours exceeds this value, we'll send you an alert. If this is set to 0, the alert is disabled. Update only.   **(Updatable)** |
+| `transfer_quota` | <center>`int`</center> | <center>Optional</center> | The percentage of network transfer that may be used before an alert is triggered. When this value is exceeded, we'll alert you. If this is set to 0 (zero), the alert is disabled. Update only.   **(Updatable)** |
+| `io` | <center>`int`</center> | <center>Optional</center> | The amount of disk IO operation per second required to trigger an alert. If the average disk IO over two hours exceeds this value, we'll send you an alert. If set to 0, this alert is disabled. Update only.   **(Updatable)** |
+| `system_alerts` | <center>`list`</center> | <center>Optional</center> | A list of system alerts associated with the current instance. Note: v4beta only and may not currently be available to all users.  **(Updatable)** |
+| `user_alerts` | <center>`list`</center> | <center>Optional</center> | A list of user alerts associated with the current instance. Note: v4beta only and may not currently be available to all users.  **(Updatable)** |
 
 ### additional_ipv4
 
