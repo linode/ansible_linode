@@ -9,6 +9,32 @@ specdoc_examples = ['''
     destinations:
       - 12345
     state: present''', '''
+- name: Create a VPN Gateway IPsec logs stream
+  linode.cloud.monitor_logs_stream:
+    label: "my-vpn-ipsec-logs"
+    type: "vpngw_ipsec_logs"
+    status: "active"
+    destinations:
+      - 12345
+    details:
+      vpn_gateway_ids: [50, 60]
+    state: present''', '''
+- name: Create a VPN Gateway BGP logs stream
+  linode.cloud.monitor_logs_stream:
+    label: "my-vpn-bgp-logs"
+    type: "vpngw_bgp_logs"
+    status: "active"
+    destinations:
+      - 12345
+    details:
+      vpn_gateway_ids: [50, 60]
+    state: present''', '''
+- name: Replace the VPN Gateways selected for an existing stream
+  linode.cloud.monitor_logs_stream:
+    id: 9876
+    details:
+      vpn_gateway_ids: [70, 80]
+    state: present''', '''
 - name: Update an existing stream's destinations
   linode.cloud.monitor_logs_stream:
     id: 9876
